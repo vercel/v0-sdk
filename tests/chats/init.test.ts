@@ -10,7 +10,7 @@ vi.mock('../../src/sdk/core', () => ({
 const mockCreateFetcher = vi.mocked(core.createFetcher)
 const mockFetcher = vi.fn()
 
-describe('v0.chats.init.create', () => {
+describe('v0.chats.init', () => {
   let v0: ReturnType<typeof createClient>
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    const result = await v0.chats.init.create({
+    const result = await v0.chats.init({
       files: [
         {
           name: 'app.tsx',
@@ -83,7 +83,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    const result = await v0.chats.init.create({
+    const result = await v0.chats.init({
       files: [
         {
           name: 'component.tsx',
@@ -132,7 +132,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    const result = await v0.chats.init.create({
+    const result = await v0.chats.init({
       files: [
         {
           name: 'main.ts',
@@ -174,7 +174,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    await v0.chats.init.create({
+    await v0.chats.init({
       files: [
         {
           name: 'secret.js',
@@ -213,7 +213,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    await v0.chats.init.create({
+    await v0.chats.init({
       files: [
         {
           name: 'team-config.json',
@@ -253,7 +253,7 @@ describe('v0.chats.init.create', () => {
 
     mockFetcher.mockResolvedValue(mockResponse)
 
-    const result = await v0.chats.init.create({
+    const result = await v0.chats.init({
       files: [
         {
           name: 'local.tsx',
@@ -292,7 +292,7 @@ describe('v0.chats.init.create', () => {
     mockFetcher.mockRejectedValue(mockError)
 
     await expect(
-      v0.chats.init.create({
+      v0.chats.init({
         files: [
           {
             name: 'invalid.xyz',

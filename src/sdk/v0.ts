@@ -199,7 +199,7 @@ export interface ChatsFindResponse {
   data: ChatSummary[]
 }
 
-export interface ChatsInitCreateRequest {
+export interface ChatsInitRequest {
   files: Array<
     | {
         name: string
@@ -216,7 +216,7 @@ export interface ChatsInitCreateRequest {
   projectId?: string
 }
 
-export type ChatsInitCreateResponse = {
+export type ChatsInitResponse = {
   id: string
   object: 'chat'
   url: string
@@ -536,17 +536,13 @@ export function createClient(config: V0ClientConfig = {}) {
         return fetcher(`/chats`, 'GET', { ...(hasQuery ? { query } : {}) })
       },
 
-      init: {
-        async create(
-          params: ChatsInitCreateRequest,
-        ): Promise<ChatsInitCreateResponse> {
-          const body = {
-            files: params.files,
-            chatPrivacy: params.chatPrivacy,
-            projectId: params.projectId,
-          }
-          return fetcher(`/chats/init`, 'POST', { body })
-        },
+      async init(params: ChatsInitRequest): Promise<ChatsInitResponse> {
+        const body = {
+          files: params.files,
+          chatPrivacy: params.chatPrivacy,
+          projectId: params.projectId,
+        }
+        return fetcher(`/chats/init`, 'POST', { body })
       },
 
       async delete(params: { chatId: string }): Promise<ChatsDeleteResponse> {

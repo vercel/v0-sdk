@@ -732,7 +732,7 @@
       "post": {
         "summary": "Initialize Chat",
         "description": "Initialize a new chat from files",
-        "operationId": "chats.init.create",
+        "operationId": "chats.init",
         "tags": [
           "chats"
         ],
