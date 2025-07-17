@@ -464,10 +464,48 @@ function schemaToTypeScript(schema: any, schemas: any): string {
 
   // Handle anyOf (union types)
   if (schema.anyOf) {
-    const unionTypes = schema.anyOf.map((subSchema: any) =>
-      schemaToTypeScript(subSchema, schemas),
+    // Check if this is a discriminated union of objects with additionalProperties: false
+    const isDiscriminatedUnion = schema.anyOf.every(
+      (subSchema: any) =>
+        subSchema.type === 'object' &&
+        subSchema.additionalProperties === false &&
+        subSchema.properties,
     )
-    return unionTypes.join(' | ')
+
+    if (isDiscriminatedUnion) {
+      // Generate discriminated union with never types for mutual exclusion
+      const unionTypes = schema.anyOf.map((subSchema: any) => {
+        const allKeys = new Set<string>()
+        schema.anyOf.forEach((s: any) => {
+          Object.keys(s.properties || {}).forEach((key) => allKeys.add(key))
+        })
+
+        const currentKeys = new Set(Object.keys(subSchema.properties || {}))
+        const properties = Object.entries(subSchema.properties || {}).map(
+          ([key, propSchema]: [string, any]) => {
+            const isRequired = subSchema.required?.includes(key) ?? false
+            const propType = schemaToTypeScript(propSchema, schemas)
+            return `    ${key}${isRequired ? '' : '?'}: ${propType}`
+          },
+        )
+
+        // Add never types for keys that exist in other union members but not this one
+        const neverProperties = Array.from(allKeys)
+          .filter((key) => !currentKeys.has(key))
+          .map((key) => `    ${key}?: never`)
+
+        const allProperties = [...properties, ...neverProperties].join('\n')
+        return `{\n${allProperties}\n  }`
+      })
+
+      return unionTypes.join(' | ')
+    } else {
+      // Regular union handling
+      const unionTypes = schema.anyOf.map((subSchema: any) =>
+        schemaToTypeScript(subSchema, schemas),
+      )
+      return unionTypes.join(' | ')
+    }
   }
 
   // Handle type as array (union types like ["string", "null"])
@@ -487,6 +525,10 @@ function schemaToTypeScript(schema: any, schemas: any): string {
   // Handle arrays
   if (schema.type === 'array') {
     const itemType = schemaToTypeScript(schema.items, schemas)
+    // If item type contains union (|), wrap in Array<> syntax for better readability
+    if (itemType.includes(' | ')) {
+      return `Array<${itemType}>`
+    }
     return `${itemType}[]`
   }
 

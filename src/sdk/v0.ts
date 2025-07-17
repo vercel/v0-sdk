@@ -10,7 +10,7 @@ export type ChatDetail = {
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: {
+  messages: Array<{
     id: string
     object: 'message'
     content: string
@@ -32,7 +32,7 @@ export type ChatDetail = {
       | 'fix-with-v0'
       | 'sync-git'
     role: 'user' | 'assistant'
-  }[]
+  }>
   latestVersion?: {
     id: string
     object: 'version'
@@ -197,6 +197,44 @@ export type ChatsCreateResponse = ChatDetail
 export interface ChatsFindResponse {
   object: 'list'
   data: ChatSummary[]
+}
+
+export interface ChatsInitCreateRequest {
+  files: Array<
+    | {
+        name: string
+        url: string
+        content?: never
+      }
+    | {
+        name: string
+        content: string
+        url?: never
+      }
+  >
+  chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
+  projectId?: string
+}
+
+export type ChatsInitCreateResponse = {
+  id: string
+  object: 'chat'
+  url: string
+  shareable: boolean
+  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  title?: string
+  updatedAt?: string
+  favorite: boolean
+  authorId: string
+  messages: MessageSummary[]
+  latestVersion?: VersionDetail
+  files?: {
+    lang: string
+    meta: Record<string, any>
+    source: string
+  }[]
+  demo?: string
+  text: string
 }
 
 export interface ChatsDeleteResponse {
@@ -496,6 +534,19 @@ export function createClient(config: V0ClientConfig = {}) {
           : {}
         const hasQuery = Object.keys(query).length > 0
         return fetcher(`/chats`, 'GET', { ...(hasQuery ? { query } : {}) })
+      },
+
+      init: {
+        async create(
+          params: ChatsInitCreateRequest,
+        ): Promise<ChatsInitCreateResponse> {
+          const body = {
+            files: params.files,
+            chatPrivacy: params.chatPrivacy,
+            projectId: params.projectId,
+          }
+          return fetcher(`/chats/init`, 'POST', { body })
+        },
       },
 
       async delete(params: { chatId: string }): Promise<ChatsDeleteResponse> {
