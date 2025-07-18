@@ -12,6 +12,7 @@ interface RequestBodyProperty {
   name: string
   required: boolean
   schema: any
+  deprecated?: boolean
 }
 
 interface Operation {
@@ -213,6 +214,7 @@ function extractRequestBodyProperties(
     name,
     required: required.includes(name),
     schema,
+    deprecated: (schema as any)?.deprecated === true,
   }))
 }
 
@@ -255,7 +257,10 @@ function generateInterfaces(operations: Operation[], schemas: any): string {
         const properties = operation.bodyProps
           .map((prop) => {
             const tsType = schemaToTypeScript(prop.schema, schemas)
-            return `  ${prop.name}${prop.required ? '' : '?'}: ${tsType}`
+            const deprecatedComment = prop.deprecated
+              ? '  /** @deprecated */\n'
+              : ''
+            return `${deprecatedComment}  ${prop.name}${prop.required ? '' : '?'}: ${tsType}`
           })
           .join('\n')
 
@@ -485,7 +490,9 @@ function schemaToTypeScript(schema: any, schemas: any): string {
           ([key, propSchema]: [string, any]) => {
             const isRequired = subSchema.required?.includes(key) ?? false
             const propType = schemaToTypeScript(propSchema, schemas)
-            return `    ${key}${isRequired ? '' : '?'}: ${propType}`
+            const deprecatedComment =
+              propSchema?.deprecated === true ? '    /** @deprecated */\n' : ''
+            return `${deprecatedComment}    ${key}${isRequired ? '' : '?'}: ${propType}`
           },
         )
 
@@ -539,7 +546,9 @@ function schemaToTypeScript(schema: any, schemas: any): string {
         .map(([key, propSchema]: [string, any]) => {
           const isRequired = schema.required?.includes(key) ?? false
           const propType = schemaToTypeScript(propSchema, schemas)
-          return `  ${key}${isRequired ? '' : '?'}: ${propType}`
+          const deprecatedComment =
+            propSchema?.deprecated === true ? '  /** @deprecated */\n' : ''
+          return `${deprecatedComment}  ${key}${isRequired ? '' : '?'}: ${propType}`
         })
         .join('\n')
       return `{\n${properties}\n}`

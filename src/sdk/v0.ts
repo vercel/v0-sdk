@@ -6,6 +6,8 @@ export type ChatDetail = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -62,6 +64,8 @@ export type ChatSummary = {
   object: 'chat'
   shareable: boolean
   privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt: string
   favorite: boolean
@@ -200,6 +204,7 @@ export interface ChatsFindResponse {
 }
 
 export interface ChatsInitRequest {
+  name?: string
   files: Array<
     | {
         name: string
@@ -222,6 +227,8 @@ export type ChatsInitResponse = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -249,6 +256,8 @@ export type ChatsGetByIdResponse = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -274,6 +283,8 @@ export type ChatsUpdateResponse = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -309,6 +320,8 @@ export type ChatsForkResponse = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -344,6 +357,8 @@ export type ChatsSendMessageResponse = {
   url: string
   shareable: boolean
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  name?: string
+  /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
@@ -538,6 +553,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async init(params: ChatsInitRequest): Promise<ChatsInitResponse> {
         const body = {
+          name: params.name,
           files: params.files,
           chatPrivacy: params.chatPrivacy,
           projectId: params.projectId,

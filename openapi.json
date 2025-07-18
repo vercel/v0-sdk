@@ -743,6 +743,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 32
+                  },
                   "files": {
                     "type": "array",
                     "items": {
@@ -837,8 +841,12 @@
                         "unlisted"
                       ]
                     },
-                    "title": {
+                    "name": {
                       "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "deprecated": true
                     },
                     "updatedAt": {
                       "type": "string"
@@ -1536,8 +1544,12 @@
                         "unlisted"
                       ]
                     },
-                    "title": {
+                    "name": {
                       "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "deprecated": true
                     },
                     "updatedAt": {
                       "type": "string"
@@ -1948,8 +1960,12 @@
                         "unlisted"
                       ]
                     },
-                    "title": {
+                    "name": {
                       "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "deprecated": true
                     },
                     "updatedAt": {
                       "type": "string"
@@ -2695,8 +2711,12 @@
                         "unlisted"
                       ]
                     },
-                    "title": {
+                    "name": {
                       "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "deprecated": true
                     },
                     "updatedAt": {
                       "type": "string"
@@ -3448,8 +3468,12 @@
                         "unlisted"
                       ]
                     },
-                    "title": {
+                    "name": {
                       "type": "string"
+                    },
+                    "title": {
+                      "type": "string",
+                      "deprecated": true
                     },
                     "updatedAt": {
                       "type": "string"
@@ -8483,8 +8507,12 @@
               "unlisted"
             ]
           },
-          "title": {
+          "name": {
             "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "deprecated": true
           },
           "updatedAt": {
             "type": "string"
@@ -8697,8 +8725,12 @@
               "unlisted"
             ]
           },
-          "title": {
+          "name": {
             "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "deprecated": true
           },
           "updatedAt": {
             "type": "string"
