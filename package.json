@@ -1,6 +1,6 @@
 {
   "name": "v0-sdk",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "TypeScript SDK for the v0 Platform API",
   "type": "module",
   "main": "dist/index.js",
