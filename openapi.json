@@ -741,71 +741,170 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "maxLength": 32
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "chatPrivacy": {
+                        "type": "string",
+                        "enum": [
+                          "public",
+                          "private",
+                          "team-edit",
+                          "team",
+                          "unlisted"
+                        ],
+                        "default": "private"
+                      },
+                      "projectId": {
+                        "type": "string"
+                      }
+                    }
                   },
-                  "files": {
-                    "type": "array",
-                    "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "type": "string"
-                            },
-                            "url": {
-                              "type": "string"
-                            }
+                  {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "files"
                           },
-                          "required": [
-                            "name",
-                            "url"
-                          ],
-                          "additionalProperties": false
+                          "files": {
+                            "type": "array",
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "url"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "content": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "content"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ]
+                            },
+                            "minItems": 1
+                          }
                         },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "type": "string"
-                            },
-                            "content": {
-                              "type": "string"
-                            }
+                        "required": [
+                          "type",
+                          "files"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "repo"
                           },
-                          "required": [
-                            "name",
-                            "content"
-                          ],
-                          "additionalProperties": false
-                        }
-                      ]
-                    },
-                    "minItems": 1
-                  },
-                  "chatPrivacy": {
-                    "type": "string",
-                    "enum": [
-                      "public",
-                      "private",
-                      "team-edit",
-                      "team",
-                      "unlisted"
-                    ],
-                    "default": "private"
-                  },
-                  "projectId": {
-                    "type": "string"
+                          "repo": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "branch": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "url"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "repo"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "registry"
+                          },
+                          "registry": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "url"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "registry"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "zip"
+                          },
+                          "zip": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "url"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "zip"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
                   }
-                },
-                "required": [
-                  "files"
-                ],
-                "additionalProperties": false
+                ]
               }
             }
           }
@@ -852,6 +951,9 @@
                       "type": "boolean"
                     },
                     "authorId": {
+                      "type": "string"
+                    },
+                    "projectId": {
                       "type": "string"
                     },
                     "latestVersion": {
@@ -1558,6 +1660,9 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "projectId": {
+                      "type": "string"
+                    },
                     "latestVersion": {
                       "$ref": "#/components/schemas/VersionDetail"
                     },
@@ -1973,6 +2078,9 @@
                       "type": "boolean"
                     },
                     "authorId": {
+                      "type": "string"
+                    },
+                    "projectId": {
                       "type": "string"
                     },
                     "latestVersion": {
@@ -2725,6 +2833,9 @@
                       "type": "boolean"
                     },
                     "authorId": {
+                      "type": "string"
+                    },
+                    "projectId": {
                       "type": "string"
                     },
                     "latestVersion": {
@@ -3483,6 +3594,9 @@
                       "type": "boolean"
                     },
                     "authorId": {
+                      "type": "string"
+                    },
+                    "projectId": {
                       "type": "string"
                     },
                     "latestVersion": {
@@ -10418,6 +10532,9 @@
           "authorId": {
             "type": "string"
           },
+          "projectId": {
+            "type": "string"
+          },
           "latestVersion": {
             "type": "object",
             "properties": {
@@ -10638,6 +10755,9 @@
             "type": "boolean"
           },
           "authorId": {
+            "type": "string"
+          },
+          "projectId": {
             "type": "string"
           },
           "latestVersion": {
@@ -10977,6 +11097,25 @@
           "name": {
             "type": "string"
           },
+          "vercelProjectId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "apiUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
           "chats": {
             "type": "array",
             "items": {
@@ -11018,6 +11157,9 @@
                 "authorId": {
                   "type": "string"
                 },
+                "projectId": {
+                  "type": "string"
+                },
                 "latestVersion": {
                   "type": "object",
                   "properties": {
@@ -11055,15 +11197,15 @@
               ],
               "additionalProperties": false
             }
-          },
-          "vercelProjectId": {
-            "type": "string"
           }
         },
         "required": [
           "id",
           "object",
           "name",
+          "createdAt",
+          "apiUrl",
+          "webUrl",
           "chats"
         ],
         "additionalProperties": false
@@ -11083,12 +11225,31 @@
           },
           "vercelProjectId": {
             "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "apiUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
           }
         },
         "required": [
           "id",
           "object",
-          "name"
+          "name",
+          "createdAt",
+          "apiUrl",
+          "webUrl"
         ],
         "additionalProperties": false
       },

@@ -11,6 +11,7 @@ export type ChatDetail = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: {
     id: string
     object: 'version'
@@ -70,6 +71,7 @@ export type ChatSummary = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: {
     id: string
     object: 'version'
@@ -177,6 +179,11 @@ export type ProjectDetail = {
   id: string
   object: 'project'
   name: string
+  vercelProjectId?: string
+  createdAt: string
+  updatedAt?: string
+  apiUrl: string
+  webUrl: string
   chats: Array<{
     id: string
     object: 'chat'
@@ -188,13 +195,13 @@ export type ProjectDetail = {
     updatedAt?: string
     favorite: boolean
     authorId: string
+    projectId?: string
     latestVersion?: {
       id: string
       object: 'version'
       status: 'pending' | 'completed' | 'failed'
     }
   }>
-  vercelProjectId?: string
 }
 
 export interface ProjectSummary {
@@ -202,6 +209,10 @@ export interface ProjectSummary {
   object: 'project'
   name: string
   vercelProjectId?: string
+  createdAt: string
+  updatedAt?: string
+  apiUrl: string
+  webUrl: string
 }
 
 export interface ScopeSummary {
@@ -263,23 +274,58 @@ export interface ChatsFindResponse {
   data: ChatSummary[]
 }
 
-export interface ChatsInitRequest {
+export type ChatsInitRequest = {
   name?: string
-  files: Array<
-    | {
-        name: string
-        url: string
-        content?: never
-      }
-    | {
-        name: string
-        content: string
-        url?: never
-      }
-  >
   chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
   projectId?: string
-}
+} & (
+  | {
+      type: 'files'
+      files: Array<
+        | {
+            name: string
+            url: string
+            content?: never
+          }
+        | {
+            name: string
+            content: string
+            url?: never
+          }
+      >
+      repo?: never
+      registry?: never
+      zip?: never
+    }
+  | {
+      type: 'repo'
+      repo: {
+        url: string
+        branch?: string
+      }
+      files?: never
+      registry?: never
+      zip?: never
+    }
+  | {
+      type: 'registry'
+      registry: {
+        url: string
+      }
+      files?: never
+      repo?: never
+      zip?: never
+    }
+  | {
+      type: 'zip'
+      zip: {
+        url: string
+      }
+      files?: never
+      repo?: never
+      registry?: never
+    }
+)
 
 export type ChatsInitResponse = {
   id: string
@@ -292,6 +338,7 @@ export type ChatsInitResponse = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: VersionDetail
   url: string
   messages: MessageSummary[]
@@ -321,6 +368,7 @@ export type ChatsGetByIdResponse = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: VersionDetail
   url: string
   messages: MessageSummary[]
@@ -348,6 +396,7 @@ export type ChatsUpdateResponse = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: VersionDetail
   url: string
   messages: MessageSummary[]
@@ -385,6 +434,7 @@ export type ChatsForkResponse = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: VersionDetail
   url: string
   messages: MessageSummary[]
@@ -422,6 +472,7 @@ export type ChatsSendMessageResponse = {
   updatedAt?: string
   favorite: boolean
   authorId: string
+  projectId?: string
   latestVersion?: VersionDetail
   url: string
   messages: MessageSummary[]
@@ -665,12 +716,7 @@ export function createClient(config: V0ClientConfig = {}) {
       },
 
       async init(params: ChatsInitRequest): Promise<ChatsInitResponse> {
-        const body = {
-          name: params.name,
-          files: params.files,
-          chatPrivacy: params.chatPrivacy,
-          projectId: params.projectId,
-        }
+        const body = params
         return fetcher(`/chats/init`, 'POST', { body })
       },
 

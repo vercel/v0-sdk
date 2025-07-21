@@ -21,6 +21,7 @@ interface Operation {
   route: string
   params: Parameter[]
   bodyProps: RequestBodyProperty[]
+  requestBodySchema?: any
   responseSchema?: any
 }
 
@@ -73,6 +74,10 @@ function generateSdk(openApiSpec: any, outputPath: string) {
         operation.requestBody,
       )
 
+      // Extract request body schema
+      const requestBodySchema =
+        operation.requestBody?.content?.['application/json']?.schema
+
       // Extract response schema
       const responseSchema = extractResponseSchema(operation.responses)
 
@@ -82,6 +87,7 @@ function generateSdk(openApiSpec: any, outputPath: string) {
         route,
         params: allParams,
         bodyProps: requestBodyProps,
+        requestBodySchema,
         responseSchema,
       })
     }
@@ -167,6 +173,7 @@ function generateNestedObject(
       const paramInterface = generateParameterInterface(
         operation.params,
         operation.bodyProps,
+        operation.requestBodySchema,
         operation.operationId,
       )
       const returnType = generateReturnType(
@@ -178,6 +185,7 @@ function generateNestedObject(
         operation.method,
         operation.params,
         operation.bodyProps,
+        operation.requestBodySchema,
       )
 
       entries.push(`${indent}  async ${key}(${paramInterface}): Promise<${returnType}> {
@@ -203,19 +211,54 @@ ${entries.join(',\n\n')}
 function extractRequestBodyProperties(
   requestBody?: any,
 ): RequestBodyProperty[] {
-  if (!requestBody?.content?.['application/json']?.schema?.properties) {
+  if (!requestBody?.content?.['application/json']?.schema) {
     return []
   }
 
-  const properties = requestBody.content['application/json'].schema.properties
-  const required = requestBody.content['application/json'].schema.required || []
+  const schema = requestBody.content['application/json'].schema
 
-  return Object.entries(properties).map(([name, schema]) => ({
-    name,
-    required: required.includes(name),
-    schema,
-    deprecated: (schema as any)?.deprecated === true,
-  }))
+  // For schemas with allOf containing anyOf (discriminated unions),
+  // we don't extract individual properties but let the schema generation handle it
+  if (schema.allOf) {
+    const hasAnyOfWithinAllOf = schema.allOf.some(
+      (subSchema: any) => subSchema.anyOf,
+    )
+    if (hasAnyOfWithinAllOf) {
+      // Return empty - this will be handled as a schema reference in the type generation
+      return []
+    }
+  }
+
+  // Helper function to extract properties from a schema
+  function extractPropertiesFromSchema(schemaObj: any): RequestBodyProperty[] {
+    const props: RequestBodyProperty[] = []
+
+    if (schemaObj.properties) {
+      const required = schemaObj.required || []
+      for (const [name, propSchema] of Object.entries(schemaObj.properties)) {
+        props.push({
+          name,
+          required: required.includes(name),
+          schema: propSchema,
+          deprecated: (propSchema as any)?.deprecated === true,
+        })
+      }
+    }
+
+    return props
+  }
+
+  // Handle allOf schemas by flattening all properties (simple case)
+  if (schema.allOf) {
+    const allProps: RequestBodyProperty[] = []
+    for (const subSchema of schema.allOf) {
+      allProps.push(...extractPropertiesFromSchema(subSchema))
+    }
+    return allProps
+  }
+
+  // Handle direct properties
+  return extractPropertiesFromSchema(schema)
 }
 
 function extractResponseSchema(responses?: any): any {
@@ -251,22 +294,43 @@ function generateInterfaces(operations: Operation[], schemas: any): string {
 
   // Generate interfaces for request bodies
   for (const operation of operations) {
-    if (operation.bodyProps.length > 0) {
+    if (operation.bodyProps.length > 0 || operation.requestBodySchema) {
       const interfaceName = `${toPascalCase(operation.operationId)}Request`
       if (!generatedTypes.has(interfaceName)) {
-        const properties = operation.bodyProps
-          .map((prop) => {
-            const tsType = schemaToTypeScript(prop.schema, schemas)
-            const deprecatedComment = prop.deprecated
-              ? '  /** @deprecated */\n'
-              : ''
-            return `${deprecatedComment}  ${prop.name}${prop.required ? '' : '?'}: ${tsType}`
-          })
-          .join('\n')
+        if (operation.bodyProps.length > 0) {
+          // Generate from body properties
+          const properties = operation.bodyProps
+            .map((prop) => {
+              const tsType = schemaToTypeScript(prop.schema, schemas)
+              const deprecatedComment = prop.deprecated
+                ? '  /** @deprecated */\n'
+                : ''
+              return `${deprecatedComment}  ${prop.name}${prop.required ? '' : '?'}: ${tsType}`
+            })
+            .join('\n')
 
-        interfaces.push(`export interface ${interfaceName} {
+          interfaces.push(`export interface ${interfaceName} {
 ${properties}
 }`)
+        } else if (operation.requestBodySchema) {
+          // Generate from complex schema
+          const tsType = schemaToTypeScript(
+            operation.requestBodySchema,
+            schemas,
+          )
+          if (tsType !== 'any') {
+            if (tsType.includes(' | ')) {
+              // It's a union type, use 'type' instead of 'interface'
+              interfaces.push(`export type ${interfaceName} = ${tsType}`)
+            } else if (tsType.startsWith('{')) {
+              // It's an inline object type, create an interface
+              interfaces.push(`export interface ${interfaceName} ${tsType}`)
+            } else {
+              // It's a type alias
+              interfaces.push(`export type ${interfaceName} = ${tsType}`)
+            }
+          }
+        }
         generatedTypes.add(interfaceName)
       }
     }
@@ -299,6 +363,7 @@ ${properties}
 function generateParameterInterface(
   params: Parameter[],
   bodyProps: RequestBodyProperty[],
+  requestBodySchema: any,
   operationId: string,
 ): string {
   const pathParams = params.filter((p) => p.in === 'path')
@@ -310,7 +375,7 @@ function generateParameterInterface(
   )
 
   let bodyInterface = ''
-  if (bodyProps.length > 0) {
+  if (bodyProps.length > 0 || requestBodySchema) {
     const requestTypeName = `${toPascalCase(operationId)}Request`
     bodyInterface = `params: ${requestTypeName}`
   }
@@ -321,6 +386,7 @@ function generateParameterInterface(
   const hasRequiredParams =
     pathParams.length > 0 ||
     bodyProps.length > 0 ||
+    requestBodySchema ||
     queryParams.some((p) => p.required)
   const paramsOptional = !hasRequiredParams && allProps.length > 0
 
@@ -351,6 +417,7 @@ function generateFunctionBody(
   method: string,
   params: Parameter[],
   bodyProps: RequestBodyProperty[],
+  requestBodySchema?: any,
 ): string {
   const pathParams = params.filter((p) => p.in === 'path')
   const queryParams = params.filter((p) => p.in === 'query')
@@ -371,6 +438,7 @@ function generateFunctionBody(
     const hasRequiredParams =
       pathParams.length > 0 ||
       bodyProps.length > 0 ||
+      requestBodySchema ||
       queryParams.some((p) => p.required)
     const paramsOptional = !hasRequiredParams
     // Check if all query parameters are optional
@@ -403,6 +471,9 @@ function generateFunctionBody(
       .map((p) => `${p.name}: params.${p.name}`)
       .join(', ')
     lines.push(`const body = { ${bodyEntries} }`)
+  } else if (requestBodySchema) {
+    // For complex schemas, pass the entire params object as the body
+    lines.push(`const body = params`)
   }
 
   // Build the fetcher call
@@ -426,7 +497,7 @@ function generateFunctionBody(
       fetcherParams.push('query')
     }
   }
-  if (bodyProps.length > 0) fetcherParams.push('body')
+  if (bodyProps.length > 0 || requestBodySchema) fetcherParams.push('body')
 
   const fetcherParamsObj =
     fetcherParams.length > 0 ? `{ ${fetcherParams.join(', ')} }` : '{}'
@@ -464,6 +535,60 @@ function schemaToTypeScript(schema: any, schemas: any): string {
     } else {
       // For other types, stringify the value
       return JSON.stringify(schema.const)
+    }
+  }
+
+  // Handle allOf (intersection types)
+  if (schema.allOf) {
+    const baseProperties: Record<string, any> = {}
+    const baseRequired: string[] = []
+    let discriminatedUnion: any = null
+
+    for (const subSchema of schema.allOf) {
+      if (subSchema.properties) {
+        Object.assign(baseProperties, subSchema.properties)
+        if (subSchema.required) {
+          baseRequired.push(...subSchema.required)
+        }
+      }
+      // Handle anyOf within allOf - create discriminated union
+      if (subSchema.anyOf) {
+        discriminatedUnion = subSchema
+      }
+    }
+
+    if (discriminatedUnion) {
+      // Create intersection of base properties with discriminated union
+      let baseType = ''
+      if (Object.keys(baseProperties).length > 0) {
+        const properties = Object.entries(baseProperties)
+          .map(([key, propSchema]: [string, any]) => {
+            const isRequired = baseRequired.includes(key)
+            const propType = schemaToTypeScript(propSchema, schemas)
+            const deprecatedComment =
+              propSchema?.deprecated === true ? '  /** @deprecated */\n' : ''
+            return `${deprecatedComment}  ${key}${isRequired ? '' : '?'}: ${propType}`
+          })
+          .join('\n')
+        baseType = `{\n${properties}\n}`
+      }
+
+      const unionType = schemaToTypeScript(discriminatedUnion, schemas)
+      return baseType ? `${baseType} & (${unionType})` : unionType
+    } else {
+      // Simple allOf - merge all properties
+      if (Object.keys(baseProperties).length > 0) {
+        const properties = Object.entries(baseProperties)
+          .map(([key, propSchema]: [string, any]) => {
+            const isRequired = baseRequired.includes(key)
+            const propType = schemaToTypeScript(propSchema, schemas)
+            const deprecatedComment =
+              propSchema?.deprecated === true ? '  /** @deprecated */\n' : ''
+            return `${deprecatedComment}  ${key}${isRequired ? '' : '?'}: ${propType}`
+          })
+          .join('\n')
+        return `{\n${properties}\n}`
+      }
     }
   }
 
