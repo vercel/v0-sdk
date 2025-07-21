@@ -26,11 +26,30 @@ describe('v0.projects.getByChatId()', () => {
       name: 'My Project',
       description: 'My Project Description',
       createdAt: '2021-01-01',
+      chats: [
+        {
+          id: 'chat-123',
+          object: 'chat',
+          name: 'My Chat',
+        },
+        {
+          id: 'chat-456',
+          object: 'chat',
+          name: 'My Other Chat',
+        },
+      ],
     }
 
     mockFetcher.mockResolvedValue(mockResponse)
 
     const result = await v0.projects.getByChatId({ chatId: 'chat-123' })
+    expect(result.chats.length).toBe(2)
+    expect(result.chats[0].id).toBe('chat-123')
+    expect(result.chats[0].object).toBe('chat')
+    expect(result.chats[0].name).toBe('My Chat')
+    expect(result.chats[1].id).toBe('chat-456')
+    expect(result.chats[1].object).toBe('chat')
+    expect(result.chats[1].name).toBe('My Other Chat')
 
     expect(mockFetcher).toHaveBeenCalledWith('/chats/chat-123/project', 'GET', {
       pathParams: { chatId: 'chat-123' },

@@ -825,9 +825,6 @@
                       "type": "string",
                       "const": "chat"
                     },
-                    "url": {
-                      "type": "string"
-                    },
                     "shareable": {
                       "type": "boolean"
                     },
@@ -857,14 +854,17 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "latestVersion": {
+                      "$ref": "#/components/schemas/VersionDetail"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
                       }
-                    },
-                    "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
                     },
                     "files": {
                       "type": "array",
@@ -902,10 +902,11 @@
                   "required": [
                     "id",
                     "object",
-                    "url",
                     "shareable",
+                    "privacy",
                     "favorite",
                     "authorId",
+                    "url",
                     "messages",
                     "text"
                   ],
@@ -1528,9 +1529,6 @@
                       "type": "string",
                       "const": "chat"
                     },
-                    "url": {
-                      "type": "string"
-                    },
                     "shareable": {
                       "type": "boolean"
                     },
@@ -1560,14 +1558,17 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "latestVersion": {
+                      "$ref": "#/components/schemas/VersionDetail"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
                       }
-                    },
-                    "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
                     },
                     "files": {
                       "type": "array",
@@ -1605,10 +1606,11 @@
                   "required": [
                     "id",
                     "object",
-                    "url",
                     "shareable",
+                    "privacy",
                     "favorite",
                     "authorId",
+                    "url",
                     "messages",
                     "text"
                   ],
@@ -1944,9 +1946,6 @@
                       "type": "string",
                       "const": "chat"
                     },
-                    "url": {
-                      "type": "string"
-                    },
                     "shareable": {
                       "type": "boolean"
                     },
@@ -1976,14 +1975,17 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "latestVersion": {
+                      "$ref": "#/components/schemas/VersionDetail"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
                       }
-                    },
-                    "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
                     },
                     "files": {
                       "type": "array",
@@ -2021,10 +2023,11 @@
                   "required": [
                     "id",
                     "object",
-                    "url",
                     "shareable",
+                    "privacy",
                     "favorite",
                     "authorId",
+                    "url",
                     "messages",
                     "text"
                   ],
@@ -2695,9 +2698,6 @@
                       "type": "string",
                       "const": "chat"
                     },
-                    "url": {
-                      "type": "string"
-                    },
                     "shareable": {
                       "type": "boolean"
                     },
@@ -2727,14 +2727,17 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "latestVersion": {
+                      "$ref": "#/components/schemas/VersionDetail"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
                       }
-                    },
-                    "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
                     },
                     "files": {
                       "type": "array",
@@ -2772,10 +2775,11 @@
                   "required": [
                     "id",
                     "object",
-                    "url",
                     "shareable",
+                    "privacy",
                     "favorite",
                     "authorId",
+                    "url",
                     "messages",
                     "text"
                   ],
@@ -3452,9 +3456,6 @@
                       "type": "string",
                       "const": "chat"
                     },
-                    "url": {
-                      "type": "string"
-                    },
                     "shareable": {
                       "type": "boolean"
                     },
@@ -3484,14 +3485,17 @@
                     "authorId": {
                       "type": "string"
                     },
+                    "latestVersion": {
+                      "$ref": "#/components/schemas/VersionDetail"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
                       }
-                    },
-                    "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
                     },
                     "files": {
                       "type": "array",
@@ -3559,10 +3563,11 @@
                   "required": [
                     "id",
                     "object",
-                    "url",
                     "shareable",
+                    "privacy",
                     "favorite",
                     "authorId",
+                    "url",
                     "messages",
                     "text",
                     "modelConfiguration",
@@ -5171,6 +5176,1597 @@
         ]
       }
     },
+    "/hooks": {
+      "get": {
+        "operationId": "hooks.find",
+        "tags": [
+          "hooks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HookSummary"
+                      }
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "hooks.create",
+        "tags": [
+          "hooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "chat.created",
+                        "chat.updated",
+                        "chat.deleted",
+                        "message.created",
+                        "message.updated",
+                        "message.deleted",
+                        "project.created",
+                        "project.updated",
+                        "project.deleted"
+                      ]
+                    }
+                  },
+                  "chatId": {
+                    "type": "string"
+                  },
+                  "projectId": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "events",
+                  "url"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HookDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/hooks/{hookId}": {
+      "get": {
+        "operationId": "hooks.getById",
+        "tags": [
+          "hooks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HookDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"hookId\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "hooks.update",
+        "tags": [
+          "hooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "chat.created",
+                        "chat.updated",
+                        "chat.deleted",
+                        "message.created",
+                        "message.updated",
+                        "message.deleted",
+                        "project.created",
+                        "project.updated",
+                        "project.deleted"
+                      ]
+                    }
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HookDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"hookId\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "hooks.delete",
+        "tags": [
+          "hooks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "const": "hook"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "deleted"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"hookId\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/integrations/vercel/projects": {
       "get": {
         "summary": "Find Vercel Projects",
@@ -5814,7 +7410,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/ProjectDetail"
+                        "$ref": "#/components/schemas/ProjectSummary"
                       }
                     }
                   },
@@ -6434,6 +8030,308 @@
             }
           }
         },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/projects/{projectId}": {
+      "get": {
+        "summary": "Get Project by ID",
+        "description": "Get the project for a project",
+        "operationId": "projects.getById",
+        "tags": [
+          "projects"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"projectId\""
+          }
+        ],
         "security": [
           {
             "apiKey": []
@@ -8491,9 +10389,6 @@
             "type": "string",
             "const": "chat"
           },
-          "url": {
-            "type": "string"
-          },
           "shareable": {
             "type": "boolean"
           },
@@ -8521,6 +10416,60 @@
             "type": "boolean"
           },
           "authorId": {
+            "type": "string"
+          },
+          "latestVersion": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "object": {
+                "type": "string",
+                "const": "version"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "completed",
+                  "failed"
+                ]
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "file"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "name",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "object",
+              "status",
+              "files"
+            ],
+            "additionalProperties": false
+          },
+          "url": {
             "type": "string"
           },
           "messages": {
@@ -8579,57 +10528,6 @@
               ],
               "additionalProperties": false
             }
-          },
-          "latestVersion": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "object": {
-                "type": "string",
-                "const": "version"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ]
-              },
-              "files": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "object": {
-                      "type": "string",
-                      "const": "file"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "content": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "object",
-                    "name",
-                    "content"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            },
-            "required": [
-              "id",
-              "object",
-              "status",
-              "files"
-            ],
-            "additionalProperties": false
           },
           "files": {
             "type": "array",
@@ -8692,10 +10590,11 @@
         "required": [
           "id",
           "object",
-          "url",
           "shareable",
+          "privacy",
           "favorite",
           "authorId",
+          "url",
           "messages",
           "text",
           "modelConfiguration"
@@ -8773,7 +10672,6 @@
           "object",
           "shareable",
           "privacy",
-          "updatedAt",
           "favorite",
           "authorId"
         ],
@@ -8812,6 +10710,122 @@
           }
         },
         "required": [
+          "object",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "HookDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "const": "hook"
+          },
+          "name": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "chat.created",
+                "chat.updated",
+                "chat.deleted",
+                "message.created",
+                "message.updated",
+                "message.deleted",
+                "project.created",
+                "project.updated",
+                "project.deleted"
+              ]
+            }
+          },
+          "chatId": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "name",
+          "events",
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "HookEventDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "const": "hookEvent"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "chat.created",
+              "chat.updated",
+              "chat.deleted",
+              "message.created",
+              "message.updated",
+              "message.deleted",
+              "project.created",
+              "project.updated",
+              "project.deleted"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "success",
+              "error"
+            ],
+            "default": "pending"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "event",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "HookSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "const": "hook"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
           "object",
           "name"
         ],
@@ -8963,6 +10977,85 @@
           "name": {
             "type": "string"
           },
+          "chats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "object": {
+                  "type": "string",
+                  "const": "chat"
+                },
+                "shareable": {
+                  "type": "boolean"
+                },
+                "privacy": {
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private",
+                    "team",
+                    "team-edit",
+                    "unlisted"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string",
+                  "deprecated": true
+                },
+                "updatedAt": {
+                  "type": "string"
+                },
+                "favorite": {
+                  "type": "boolean"
+                },
+                "authorId": {
+                  "type": "string"
+                },
+                "latestVersion": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "const": "version"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "completed",
+                        "failed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "shareable",
+                "privacy",
+                "favorite",
+                "authorId"
+              ],
+              "additionalProperties": false
+            }
+          },
           "vercelProjectId": {
             "type": "string"
           }
@@ -8970,7 +11063,8 @@
         "required": [
           "id",
           "object",
-          "name"
+          "name",
+          "chats"
         ],
         "additionalProperties": false
       },

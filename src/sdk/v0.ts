@@ -3,15 +3,25 @@ import { createFetcher } from './core'
 export type ChatDetail = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    files: {
+      object: 'file'
+      name: string
+      content: string
+    }[]
+  }
+  url: string
   messages: Array<{
     id: string
     object: 'message'
@@ -35,16 +45,6 @@ export type ChatDetail = {
       | 'sync-git'
     role: 'user' | 'assistant'
   }>
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    files: {
-      object: 'file'
-      name: string
-      content: string
-    }[]
-  }
   files?: {
     lang: string
     meta: Record<string, any>
@@ -67,7 +67,7 @@ export type ChatSummary = {
   name?: string
   /** @deprecated */
   title?: string
-  updatedAt: string
+  updatedAt?: string
   favorite: boolean
   authorId: string
   latestVersion?: {
@@ -85,6 +85,49 @@ export interface FileDetail {
 
 export interface FileSummary {
   object: 'file'
+  name: string
+}
+
+export type HookDetail = {
+  id: string
+  object: 'hook'
+  name: string
+  events: Array<
+    | 'chat.created'
+    | 'chat.updated'
+    | 'chat.deleted'
+    | 'message.created'
+    | 'message.updated'
+    | 'message.deleted'
+    | 'project.created'
+    | 'project.updated'
+    | 'project.deleted'
+  >
+  chatId?: string
+  projectId?: string
+  url: string
+}
+
+export type HookEventDetail = {
+  id: string
+  object: 'hookEvent'
+  event:
+    | 'chat.created'
+    | 'chat.updated'
+    | 'chat.deleted'
+    | 'message.created'
+    | 'message.updated'
+    | 'message.deleted'
+    | 'project.created'
+    | 'project.updated'
+    | 'project.deleted'
+  status?: 'pending' | 'success' | 'error'
+  createdAt: string
+}
+
+export interface HookSummary {
+  id: string
+  object: 'hook'
   name: string
 }
 
@@ -130,10 +173,27 @@ export type MessageSummary = {
   role: 'user' | 'assistant'
 }
 
-export interface ProjectDetail {
+export type ProjectDetail = {
   id: string
   object: 'project'
   name: string
+  chats: Array<{
+    id: string
+    object: 'chat'
+    shareable: boolean
+    privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+    name?: string
+    /** @deprecated */
+    title?: string
+    updatedAt?: string
+    favorite: boolean
+    authorId: string
+    latestVersion?: {
+      id: string
+      object: 'version'
+      status: 'pending' | 'completed' | 'failed'
+    }
+  }>
   vercelProjectId?: string
 }
 
@@ -224,17 +284,17 @@ export interface ChatsInitRequest {
 export type ChatsInitResponse = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: MessageSummary[]
   latestVersion?: VersionDetail
+  url: string
+  messages: MessageSummary[]
   files?: {
     lang: string
     meta: Record<string, any>
@@ -253,17 +313,17 @@ export interface ChatsDeleteResponse {
 export type ChatsGetByIdResponse = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: MessageSummary[]
   latestVersion?: VersionDetail
+  url: string
+  messages: MessageSummary[]
   files?: {
     lang: string
     meta: Record<string, any>
@@ -280,17 +340,17 @@ export interface ChatsUpdateRequest {
 export type ChatsUpdateResponse = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: MessageSummary[]
   latestVersion?: VersionDetail
+  url: string
+  messages: MessageSummary[]
   files?: {
     lang: string
     meta: Record<string, any>
@@ -317,17 +377,17 @@ export interface ChatsForkRequest {
 export type ChatsForkResponse = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: MessageSummary[]
   latestVersion?: VersionDetail
+  url: string
+  messages: MessageSummary[]
   files?: {
     lang: string
     meta: Record<string, any>
@@ -354,17 +414,17 @@ export interface ChatsSendMessageRequest {
 export type ChatsSendMessageResponse = {
   id: string
   object: 'chat'
-  url: string
   shareable: boolean
-  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
   name?: string
   /** @deprecated */
   title?: string
   updatedAt?: string
   favorite: boolean
   authorId: string
-  messages: MessageSummary[]
   latestVersion?: VersionDetail
+  url: string
+  messages: MessageSummary[]
   files?: {
     lang: string
     meta: Record<string, any>
@@ -410,6 +470,57 @@ export interface DeploymentsFindErrorsResponse {
   formattedError?: string
 }
 
+export interface HooksFindResponse {
+  object: 'list'
+  data: HookSummary[]
+}
+
+export interface HooksCreateRequest {
+  name: string
+  events: Array<
+    | 'chat.created'
+    | 'chat.updated'
+    | 'chat.deleted'
+    | 'message.created'
+    | 'message.updated'
+    | 'message.deleted'
+    | 'project.created'
+    | 'project.updated'
+    | 'project.deleted'
+  >
+  chatId?: string
+  projectId?: string
+  url: string
+}
+
+export type HooksCreateResponse = HookDetail
+
+export type HooksGetByIdResponse = HookDetail
+
+export interface HooksUpdateRequest {
+  name?: string
+  events?: Array<
+    | 'chat.created'
+    | 'chat.updated'
+    | 'chat.deleted'
+    | 'message.created'
+    | 'message.updated'
+    | 'message.deleted'
+    | 'project.created'
+    | 'project.updated'
+    | 'project.deleted'
+  >
+  url?: string
+}
+
+export type HooksUpdateResponse = HookDetail
+
+export interface HooksDeleteResponse {
+  id: string
+  object: 'hook'
+  deleted: true
+}
+
 export interface IntegrationsVercelProjectsFindResponse {
   object: 'list'
   data: VercelProjectDetail[]
@@ -424,7 +535,7 @@ export type IntegrationsVercelProjectsCreateResponse = VercelProjectDetail
 
 export interface ProjectsFindResponse {
   object: 'list'
-  data: ProjectDetail[]
+  data: ProjectSummary[]
 }
 
 export interface ProjectsCreateRequest {
@@ -439,6 +550,8 @@ export interface ProjectsCreateRequest {
 }
 
 export type ProjectsCreateResponse = ProjectDetail
+
+export type ProjectsGetByIdResponse = ProjectDetail
 
 export interface ProjectsAssignRequest {
   chatId: string
@@ -671,6 +784,15 @@ export function createClient(config: V0ClientConfig = {}) {
         return fetcher(`/projects`, 'POST', { body })
       },
 
+      async getById(params: {
+        projectId: string
+      }): Promise<ProjectsGetByIdResponse> {
+        const pathParams = { projectId: params.projectId }
+        return fetcher(`/projects/${pathParams.projectId}`, 'GET', {
+          pathParams,
+        })
+      },
+
       async assign(
         params: { projectId: string } & ProjectsAssignRequest,
       ): Promise<ProjectsAssignResponse> {
@@ -710,6 +832,48 @@ export function createClient(config: V0ClientConfig = {}) {
           'GET',
           { pathParams },
         )
+      },
+    },
+
+    hooks: {
+      async find(): Promise<HooksFindResponse> {
+        return fetcher(`/hooks`, 'GET', {})
+      },
+
+      async create(params: HooksCreateRequest): Promise<HooksCreateResponse> {
+        const body = {
+          name: params.name,
+          events: params.events,
+          chatId: params.chatId,
+          projectId: params.projectId,
+          url: params.url,
+        }
+        return fetcher(`/hooks`, 'POST', { body })
+      },
+
+      async getById(params: { hookId: string }): Promise<HooksGetByIdResponse> {
+        const pathParams = { hookId: params.hookId }
+        return fetcher(`/hooks/${pathParams.hookId}`, 'GET', { pathParams })
+      },
+
+      async update(
+        params: { hookId: string } & HooksUpdateRequest,
+      ): Promise<HooksUpdateResponse> {
+        const pathParams = { hookId: params.hookId }
+        const body = {
+          name: params.name,
+          events: params.events,
+          url: params.url,
+        }
+        return fetcher(`/hooks/${pathParams.hookId}`, 'PATCH', {
+          pathParams,
+          body,
+        })
+      },
+
+      async delete(params: { hookId: string }): Promise<HooksDeleteResponse> {
+        const pathParams = { hookId: params.hookId }
+        return fetcher(`/hooks/${pathParams.hookId}`, 'DELETE', { pathParams })
       },
     },
 
