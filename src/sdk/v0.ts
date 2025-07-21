@@ -43,6 +43,7 @@ export type ChatDetail = {
       | 'replace-src'
       | 'reverted-block'
       | 'fix-with-v0'
+      | 'auto-fix-with-v0'
       | 'sync-git'
     role: 'user' | 'assistant'
   }>
@@ -171,6 +172,7 @@ export type MessageSummary = {
     | 'replace-src'
     | 'reverted-block'
     | 'fix-with-v0'
+    | 'auto-fix-with-v0'
     | 'sync-git'
   role: 'user' | 'assistant'
 }
@@ -491,21 +493,6 @@ export type ChatsSendMessageResponse = {
   chatId: string
 }
 
-export interface ChatsGetMetadataResponse {
-  git: {
-    branch: string
-    commit: string
-  }
-  deployment: {
-    id: string
-  }
-  project: {
-    id: string
-    name: string
-    url: string
-  }
-}
-
 export type ChatsResumeResponse = MessageDetail
 
 export interface DeploymentsFindLogsResponse {
@@ -775,15 +762,6 @@ export function createClient(config: V0ClientConfig = {}) {
         return fetcher(`/chats/${pathParams.chatId}/messages`, 'POST', {
           pathParams,
           body,
-        })
-      },
-
-      async getMetadata(params: {
-        chatId: string
-      }): Promise<ChatsGetMetadataResponse> {
-        const pathParams = { chatId: params.chatId }
-        return fetcher(`/chats/${pathParams.chatId}/metadata`, 'GET', {
-          pathParams,
         })
       },
 

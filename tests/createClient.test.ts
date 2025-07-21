@@ -92,7 +92,6 @@ describe('createClient', () => {
       expect(client.chats.favorite).toBeTypeOf('function')
       expect(client.chats.fork).toBeTypeOf('function')
       expect(client.chats.sendMessage).toBeTypeOf('function')
-      expect(client.chats.getMetadata).toBeTypeOf('function')
       expect(client.chats.resume).toBeTypeOf('function')
     })
 
