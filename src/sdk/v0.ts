@@ -223,6 +223,14 @@ export interface ScopeSummary {
   name?: string
 }
 
+export type SearchResultItem = {
+  id: string
+  object: 'chat' | 'project'
+  name: string
+  apiUrl: string
+  webUrl: string
+}
+
 export interface UserDetail {
   id: string
   object: 'user'
@@ -267,6 +275,7 @@ export interface ChatsCreateRequest {
     imageGenerations?: boolean
     thinking?: boolean
   }
+  responseMode?: 'sync' | 'async'
 }
 
 export type ChatsCreateResponse = ChatDetail
@@ -461,6 +470,7 @@ export interface ChatsSendMessageRequest {
     imageGenerations?: boolean
     thinking?: boolean
   }
+  responseMode?: 'sync' | 'async'
 }
 
 export type ChatsSendMessageResponse = {
@@ -680,6 +690,7 @@ export function createClient(config: V0ClientConfig = {}) {
           chatPrivacy: params.chatPrivacy,
           projectId: params.projectId,
           modelConfiguration: params.modelConfiguration,
+          responseMode: params.responseMode,
         }
         return fetcher(`/chats`, 'POST', { body })
       },
@@ -758,6 +769,7 @@ export function createClient(config: V0ClientConfig = {}) {
           message: params.message,
           attachments: params.attachments,
           modelConfiguration: params.modelConfiguration,
+          responseMode: params.responseMode,
         }
         return fetcher(`/chats/${pathParams.chatId}/messages`, 'POST', {
           pathParams,

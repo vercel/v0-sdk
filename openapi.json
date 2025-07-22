@@ -96,6 +96,14 @@
                       "modelId"
                     ],
                     "additionalProperties": false
+                  },
+                  "responseMode": {
+                    "type": "string",
+                    "enum": [
+                      "sync",
+                      "async"
+                    ],
+                    "default": "sync"
                   }
                 },
                 "required": [
@@ -3542,6 +3550,14 @@
                       "modelId"
                     ],
                     "additionalProperties": false
+                  },
+                  "responseMode": {
+                    "type": "string",
+                    "enum": [
+                      "sync",
+                      "async"
+                    ],
+                    "default": "sync"
                   }
                 },
                 "required": [
@@ -10914,6 +10930,38 @@
         "required": [
           "id",
           "object"
+        ],
+        "additionalProperties": false
+      },
+      "SearchResultItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "chat",
+              "project"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "apiUrl": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "name",
+          "apiUrl",
+          "webUrl"
         ],
         "additionalProperties": false
       },
