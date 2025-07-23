@@ -393,6 +393,7 @@ export type ChatsGetByIdResponse = {
 }
 
 export interface ChatsUpdateRequest {
+  name?: string
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
 }
 
@@ -732,7 +733,7 @@ export function createClient(config: V0ClientConfig = {}) {
         params: { chatId: string } & ChatsUpdateRequest,
       ): Promise<ChatsUpdateResponse> {
         const pathParams = { chatId: params.chatId }
-        const body = { privacy: params.privacy }
+        const body = { name: params.name, privacy: params.privacy }
         return fetcher(`/chats/${pathParams.chatId}`, 'PATCH', {
           pathParams,
           body,
