@@ -1003,7 +1003,8 @@
                       }
                     },
                     "demo": {
-                      "type": "string"
+                      "type": "string",
+                      "deprecated": true
                     },
                     "text": {
                       "type": "string"
@@ -1710,7 +1711,8 @@
                       }
                     },
                     "demo": {
-                      "type": "string"
+                      "type": "string",
+                      "deprecated": true
                     },
                     "text": {
                       "type": "string"
@@ -2133,7 +2135,8 @@
                       }
                     },
                     "demo": {
-                      "type": "string"
+                      "type": "string",
+                      "deprecated": true
                     },
                     "text": {
                       "type": "string"
@@ -2888,7 +2891,8 @@
                       }
                     },
                     "demo": {
-                      "type": "string"
+                      "type": "string",
+                      "deprecated": true
                     },
                     "text": {
                       "type": "string"
@@ -3657,7 +3661,8 @@
                       }
                     },
                     "demo": {
-                      "type": "string"
+                      "type": "string",
+                      "deprecated": true
                     },
                     "text": {
                       "type": "string"
@@ -10214,6 +10219,9 @@
                   "failed"
                 ]
               },
+              "demoUrl": {
+                "type": "string"
+              },
               "files": {
                 "type": "array",
                 "items": {
@@ -10335,7 +10343,8 @@
             }
           },
           "demo": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "text": {
             "type": "string"
@@ -10439,6 +10448,9 @@
                   "completed",
                   "failed"
                 ]
+              },
+              "demoUrl": {
+                "type": "string"
               }
             },
             "required": [
@@ -10840,6 +10852,9 @@
                         "completed",
                         "failed"
                       ]
+                    },
+                    "demoUrl": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -11035,6 +11050,9 @@
               "failed"
             ]
           },
+          "demoUrl": {
+            "type": "string"
+          },
           "files": {
             "type": "array",
             "items": {
@@ -11085,6 +11103,9 @@
               "completed",
               "failed"
             ]
+          },
+          "demoUrl": {
+            "type": "string"
           }
         },
         "required": [

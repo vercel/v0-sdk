@@ -16,6 +16,7 @@ export type ChatDetail = {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
     files: {
       object: 'file'
       name: string
@@ -52,6 +53,7 @@ export type ChatDetail = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
   modelConfiguration: {
@@ -77,6 +79,7 @@ export type ChatSummary = {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
   }
 }
 
@@ -202,6 +205,7 @@ export type ProjectDetail = {
       id: string
       object: 'version'
       status: 'pending' | 'completed' | 'failed'
+      demoUrl?: string
     }
   }>
 }
@@ -249,6 +253,7 @@ export type VersionDetail = {
   id: string
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
+  demoUrl?: string
   files: {
     object: 'file'
     name: string
@@ -260,6 +265,7 @@ export type VersionSummary = {
   id: string
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
+  demoUrl?: string
 }
 
 export interface ChatsCreateRequest {
@@ -358,6 +364,7 @@ export type ChatsInitResponse = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
 }
@@ -388,6 +395,7 @@ export type ChatsGetByIdResponse = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
 }
@@ -417,6 +425,7 @@ export type ChatsUpdateResponse = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
 }
@@ -455,6 +464,7 @@ export type ChatsForkResponse = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
 }
@@ -494,6 +504,7 @@ export type ChatsSendMessageResponse = {
     meta: Record<string, any>
     source: string
   }[]
+  /** @deprecated */
   demo?: string
   text: string
   modelConfiguration: {
