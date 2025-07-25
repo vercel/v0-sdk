@@ -83,6 +83,28 @@ export type ChatSummary = {
   }
 }
 
+export interface DeploymentDetail {
+  id: string
+  object: 'deployment'
+  inspectorUrl: string
+  chatId: string
+  projectId: string
+  versionId: string
+  apiUrl: string
+  webUrl: string
+}
+
+export interface DeploymentSummary {
+  id: string
+  object: 'deployment'
+  inspectorUrl: string
+  chatId: string
+  projectId: string
+  versionId: string
+  apiUrl: string
+  webUrl: string
+}
+
 export interface FileDetail {
   object: 'file'
   name: string
@@ -356,7 +378,13 @@ export type ChatsInitResponse = {
   favorite: boolean
   authorId: string
   projectId?: string
-  latestVersion?: VersionDetail
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    files: FileDetail[]
+  }
   url: string
   messages: MessageSummary[]
   files?: {
@@ -387,7 +415,13 @@ export type ChatsGetByIdResponse = {
   favorite: boolean
   authorId: string
   projectId?: string
-  latestVersion?: VersionDetail
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    files: FileDetail[]
+  }
   url: string
   messages: MessageSummary[]
   files?: {
@@ -417,7 +451,13 @@ export type ChatsUpdateResponse = {
   favorite: boolean
   authorId: string
   projectId?: string
-  latestVersion?: VersionDetail
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    files: FileDetail[]
+  }
   url: string
   messages: MessageSummary[]
   files?: {
@@ -456,7 +496,13 @@ export type ChatsForkResponse = {
   favorite: boolean
   authorId: string
   projectId?: string
-  latestVersion?: VersionDetail
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    files: FileDetail[]
+  }
   url: string
   messages: MessageSummary[]
   files?: {
@@ -496,7 +542,13 @@ export type ChatsSendMessageResponse = {
   favorite: boolean
   authorId: string
   projectId?: string
-  latestVersion?: VersionDetail
+  latestVersion?: {
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    files: FileDetail[]
+  }
   url: string
   messages: MessageSummary[]
   files?: {
@@ -516,6 +568,27 @@ export type ChatsSendMessageResponse = {
 }
 
 export type ChatsResumeResponse = MessageDetail
+
+export interface DeploymentsFindResponse {
+  object: 'list'
+  data: DeploymentDetail[]
+}
+
+export interface DeploymentsCreateRequest {
+  projectId: string
+  chatId: string
+  versionId: string
+}
+
+export type DeploymentsCreateResponse = DeploymentDetail
+
+export type DeploymentsGetByIdResponse = DeploymentDetail
+
+export interface DeploymentsDeleteResponse {
+  id: string
+  object: 'deployment'
+  deleted: true
+}
 
 export interface DeploymentsFindLogsResponse {
   error?: string
@@ -854,6 +927,50 @@ export function createClient(config: V0ClientConfig = {}) {
     },
 
     deployments: {
+      async find(params: {
+        projectId: string
+        chatId: string
+        versionId: string
+      }): Promise<DeploymentsFindResponse> {
+        const query = Object.fromEntries(
+          Object.entries({
+            projectId: params.projectId,
+            chatId: params.chatId,
+            versionId: params.versionId,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        return fetcher(`/deployments`, 'GET', { query })
+      },
+
+      async create(
+        params: DeploymentsCreateRequest,
+      ): Promise<DeploymentsCreateResponse> {
+        const body = {
+          projectId: params.projectId,
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        return fetcher(`/deployments`, 'POST', { body })
+      },
+
+      async getById(params: {
+        deploymentId: string
+      }): Promise<DeploymentsGetByIdResponse> {
+        const pathParams = { deploymentId: params.deploymentId }
+        return fetcher(`/deployments/${pathParams.deploymentId}`, 'GET', {
+          pathParams,
+        })
+      },
+
+      async delete(params: {
+        deploymentId: string
+      }): Promise<DeploymentsDeleteResponse> {
+        const pathParams = { deploymentId: params.deploymentId }
+        return fetcher(`/deployments/${pathParams.deploymentId}`, 'DELETE', {
+          pathParams,
+        })
+      },
+
       async findLogs(params: {
         deploymentId: string
         since?: string

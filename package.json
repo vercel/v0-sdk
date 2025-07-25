@@ -2,6 +2,11 @@
   "name": "v0-sdk",
   "version": "0.4.2",
   "description": "TypeScript SDK for the v0 Platform API",
+  "homepage": "https://v0.dev/docs/api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vercel/v0-sdk.git"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -25,7 +25,7 @@
     "/chats": {
       "post": {
         "summary": "Create Chat",
-        "description": "Create a new chat",
+        "description": "Creates a new chat using a user message, optional system context, and model configuration. Useful for prompting the model within the scope of a specific project.",
         "operationId": "chats.create",
         "tags": [
           "chats"
@@ -38,7 +38,8 @@
                 "type": "object",
                 "properties": {
                   "message": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Creates a new chat using a user message, optional system context, and model configuration. Useful for prompting the model within the scope of a specific project."
                   },
                   "attachments": {
                     "type": "array",
@@ -53,10 +54,12 @@
                         "url"
                       ],
                       "additionalProperties": false
-                    }
+                    },
+                    "description": "A list of files or assets to be included in the conversation context. Useful when the chat or task requires referencing documents, images, or other resources."
                   },
                   "system": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Provides system-level context or background for the chat. This is typically used to specify frameworks, tools, or development environments relevant to the task."
                   },
                   "chatPrivacy": {
                     "type": "string",
@@ -67,10 +70,12 @@
                       "team",
                       "unlisted"
                     ],
-                    "default": "private"
+                    "default": "private",
+                    "description": "Determines the privacy setting of the chat. This can control whether the chat is visible only to the user, to team members, or is public."
                   },
                   "projectId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Associates the chat with a specific project in your workspace. Helps organize and group related chats under a common project context."
                   },
                   "modelConfiguration": {
                     "type": "object",
@@ -95,7 +100,8 @@
                     "required": [
                       "modelId"
                     ],
-                    "additionalProperties": false
+                    "additionalProperties": false,
+                    "description": "Settings that control how the model behaves in the chat."
                   },
                   "responseMode": {
                     "type": "string",
@@ -103,7 +109,8 @@
                       "sync",
                       "async"
                     ],
-                    "default": "sync"
+                    "default": "sync",
+                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output."
                   }
                 },
                 "required": [
@@ -398,7 +405,7 @@
       },
       "get": {
         "summary": "Find Chats",
-        "description": "Find all chats",
+        "description": "Retrieves a list of existing chats, with support for pagination and filtering by favorite status. Helps manage and navigate chat history.",
         "operationId": "chats.find",
         "tags": [
           "chats"
@@ -704,9 +711,10 @@
             "schema": {
               "type": "number",
               "maximum": 60,
-              "default": 60
+              "default": 60,
+              "description": "Specifies the maximum number of chat records to return in a single response. Useful for paginating results when there are many chats."
             },
-            "description": "Query parameter \"limit\""
+            "description": "Specifies the maximum number of chat records to return in a single response. Useful for paginating results when there are many chats."
           },
           {
             "name": "offset",
@@ -714,19 +722,24 @@
             "required": false,
             "schema": {
               "type": "number",
-              "default": 0
+              "default": 0,
+              "description": "Determines the starting point for pagination. Used in conjunction with limit to retrieve a specific page of chat results."
             },
-            "description": "Query parameter \"offset\""
+            "description": "Determines the starting point for pagination. Used in conjunction with limit to retrieve a specific page of chat results."
           },
           {
             "name": "isFavorite",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "boolean",
-              "description": "If true, only favorites will be returned. If false, unfavorited chats will be returned. If not provided, all chats will be returned."
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats."
             },
-            "description": "Query parameter \"isFavorite\""
+            "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats."
           }
         ],
         "security": [
@@ -739,7 +752,7 @@
     "/chats/init": {
       "post": {
         "summary": "Initialize Chat",
-        "description": "Initialize a new chat from files",
+        "description": "Initializes a new chat from source content such as files, repositories, registries, or zip archives. Enables context-rich conversations based on code or assets.",
         "operationId": "chats.init",
         "tags": [
           "chats"
@@ -754,7 +767,8 @@
                     "type": "object",
                     "properties": {
                       "name": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "A user-defined name for the chat. Helps identify or describe the purpose of the chat session in the UI or API responses."
                       },
                       "chatPrivacy": {
                         "type": "string",
@@ -765,10 +779,12 @@
                           "team",
                           "unlisted"
                         ],
-                        "default": "private"
+                        "default": "private",
+                        "description": "Controls the visibility of the chat. Defines whether the chat is private, shared with a team, or publicly accessible."
                       },
                       "projectId": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Associates the chat with a specific project. Useful for organizing and grouping chats in a workspace."
                       }
                     }
                   },
@@ -779,7 +795,8 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "files"
+                            "const": "files",
+                            "description": "Specifies the initialization method. For this endpoint, it defines the source of content being used to initialize the chat."
                           },
                           "files": {
                             "type": "array",
@@ -819,7 +836,8 @@
                                 }
                               ]
                             },
-                            "minItems": 1
+                            "minItems": 1,
+                            "description": "An array of inline file objects used to initialize the chat. Each object must contain a file `name` and its `content`."
                           }
                         },
                         "required": [
@@ -833,7 +851,8 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "repo"
+                            "const": "repo",
+                            "description": "Specifies the initialization method. For this endpoint, it defines the source of content being used to initialize the chat."
                           },
                           "repo": {
                             "type": "object",
@@ -848,7 +867,8 @@
                             "required": [
                               "url"
                             ],
-                            "additionalProperties": false
+                            "additionalProperties": false,
+                            "description": "Specifies a repository source for initialization. Should include relevant details like repository URL, branch, and authentication if needed."
                           }
                         },
                         "required": [
@@ -862,7 +882,8 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "registry"
+                            "const": "registry",
+                            "description": "Specifies the initialization method. For this endpoint, it defines the source of content being used to initialize the chat."
                           },
                           "registry": {
                             "type": "object",
@@ -874,7 +895,8 @@
                             "required": [
                               "url"
                             ],
-                            "additionalProperties": false
+                            "additionalProperties": false,
+                            "description": "Allows initialization from a predefined component or code registry. Includes the registry source and identifier for the desired component/module."
                           }
                         },
                         "required": [
@@ -888,7 +910,8 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "zip"
+                            "const": "zip",
+                            "description": "Specifies the initialization method. For this endpoint, it defines the source of content being used to initialize the chat."
                           },
                           "zip": {
                             "type": "object",
@@ -901,7 +924,8 @@
                             "required": [
                               "url"
                             ],
-                            "additionalProperties": false
+                            "additionalProperties": false,
+                            "description": "Provides a zipped bundle of files as the input source. Typically includes a base64-encoded archive or a remote URL reference."
                           }
                         },
                         "required": [
@@ -926,14 +950,17 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the chat."
                     },
                     "object": {
                       "type": "string",
-                      "const": "chat"
+                      "const": "chat",
+                      "description": "Fixed value identifying this object as a chat."
                     },
                     "shareable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat can be shared via public link."
                     },
                     "privacy": {
                       "type": "string",
@@ -943,38 +970,86 @@
                         "team",
                         "team-edit",
                         "unlisted"
-                      ]
+                      ],
+                      "description": "Defines the visibility of the chat—private, team-only, or public."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "An optional name assigned to the chat by the user."
                     },
                     "title": {
                       "type": "string",
+                      "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ISO timestamp of the last update to the chat."
                     },
                     "favorite": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat is marked as a favorite."
                     },
                     "authorId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ID of the user who created the chat."
                     },
                     "projectId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional ID of the v0 project associated with this chat."
                     },
                     "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "A unique identifier for the version."
+                        },
+                        "object": {
+                          "type": "string",
+                          "const": "version",
+                          "description": "Fixed value identifying this object as a version."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                          ],
+                          "description": "The current status of the version generation process."
+                        },
+                        "demoUrl": {
+                          "type": "string",
+                          "description": "Optional URL for previewing the generated output."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FileDetail"
+                          },
+                          "description": "A list of files that were generated or included in this version."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "object",
+                        "status",
+                        "files"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Full details of the most recent generated version, if available."
                     },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The canonical URL to access this chat."
                     },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
-                      }
+                      },
+                      "description": "All messages exchanged in the chat, including user and assistant entries."
                     },
                     "files": {
                       "type": "array",
@@ -982,16 +1057,19 @@
                         "type": "object",
                         "properties": {
                           "lang": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Programming language used in the file (e.g., JavaScript, Python)."
                           },
                           "meta": {
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                           },
                           "source": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The origin or identifier of the file source (e.g., path or upload label)."
                           }
                         },
                         "required": [
@@ -1000,14 +1078,17 @@
                           "source"
                         ],
                         "additionalProperties": false
-                      }
+                      },
+                      "description": "Optional array of files associated with the chat context."
                     },
                     "demo": {
                       "type": "string",
+                      "description": "Deprecated demo URL used for previewing the chat result.",
                       "deprecated": true
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The main user prompt or instruction that started the chat."
                     }
                   },
                   "required": [
@@ -1021,7 +1102,8 @@
                     "messages",
                     "text"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
                 }
               }
             }
@@ -1301,7 +1383,7 @@
     "/chats/{chatId}": {
       "delete": {
         "summary": "Delete Chat",
-        "description": "Delete a chat",
+        "description": "Deletes a specific chat based on the provided chatId. This operation is irreversible and permanently removes the chat and its contents.",
         "operationId": "chats.delete",
         "tags": [
           "chats"
@@ -1609,7 +1691,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to delete. This must be passed as a path parameter in the URL."
           }
         ],
         "security": [
@@ -1620,7 +1702,7 @@
       },
       "get": {
         "summary": "Get Chat",
-        "description": "Get a chat",
+        "description": "Retrieves the full details of a specific chat using its `chatId`. Includes messages, metadata, and associated configuration.",
         "operationId": "chats.getById",
         "tags": [
           "chats"
@@ -1634,14 +1716,17 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the chat."
                     },
                     "object": {
                       "type": "string",
-                      "const": "chat"
+                      "const": "chat",
+                      "description": "Fixed value identifying this object as a chat."
                     },
                     "shareable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat can be shared via public link."
                     },
                     "privacy": {
                       "type": "string",
@@ -1651,38 +1736,86 @@
                         "team",
                         "team-edit",
                         "unlisted"
-                      ]
+                      ],
+                      "description": "Defines the visibility of the chat—private, team-only, or public."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "An optional name assigned to the chat by the user."
                     },
                     "title": {
                       "type": "string",
+                      "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ISO timestamp of the last update to the chat."
                     },
                     "favorite": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat is marked as a favorite."
                     },
                     "authorId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ID of the user who created the chat."
                     },
                     "projectId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional ID of the v0 project associated with this chat."
                     },
                     "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "A unique identifier for the version."
+                        },
+                        "object": {
+                          "type": "string",
+                          "const": "version",
+                          "description": "Fixed value identifying this object as a version."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                          ],
+                          "description": "The current status of the version generation process."
+                        },
+                        "demoUrl": {
+                          "type": "string",
+                          "description": "Optional URL for previewing the generated output."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FileDetail"
+                          },
+                          "description": "A list of files that were generated or included in this version."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "object",
+                        "status",
+                        "files"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Full details of the most recent generated version, if available."
                     },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The canonical URL to access this chat."
                     },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
-                      }
+                      },
+                      "description": "All messages exchanged in the chat, including user and assistant entries."
                     },
                     "files": {
                       "type": "array",
@@ -1690,16 +1823,19 @@
                         "type": "object",
                         "properties": {
                           "lang": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Programming language used in the file (e.g., JavaScript, Python)."
                           },
                           "meta": {
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                           },
                           "source": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The origin or identifier of the file source (e.g., path or upload label)."
                           }
                         },
                         "required": [
@@ -1708,14 +1844,17 @@
                           "source"
                         ],
                         "additionalProperties": false
-                      }
+                      },
+                      "description": "Optional array of files associated with the chat context."
                     },
                     "demo": {
                       "type": "string",
+                      "description": "Deprecated demo URL used for previewing the chat result.",
                       "deprecated": true
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The main user prompt or instruction that started the chat."
                     }
                   },
                   "required": [
@@ -1729,7 +1868,8 @@
                     "messages",
                     "text"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
                 }
               }
             }
@@ -2007,7 +2147,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to retrieve. Must be provided as a path parameter."
           }
         ],
         "security": [
@@ -2018,7 +2158,7 @@
       },
       "patch": {
         "summary": "Update Chat",
-        "description": "Update a chat",
+        "description": "Updates the metadata of an existing chat using its `chatId`. Supports changes to the chat name and privacy setting.",
         "operationId": "chats.update",
         "tags": [
           "chats"
@@ -2031,7 +2171,8 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A new name to assign to the chat. Helps with identification and organization."
                   },
                   "privacy": {
                     "type": "string",
@@ -2041,7 +2182,8 @@
                       "team",
                       "team-edit",
                       "unlisted"
-                    ]
+                    ],
+                    "description": "Sets the privacy level of the chat."
                   }
                 },
                 "additionalProperties": false
@@ -2058,14 +2200,17 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the chat."
                     },
                     "object": {
                       "type": "string",
-                      "const": "chat"
+                      "const": "chat",
+                      "description": "Fixed value identifying this object as a chat."
                     },
                     "shareable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat can be shared via public link."
                     },
                     "privacy": {
                       "type": "string",
@@ -2075,38 +2220,86 @@
                         "team",
                         "team-edit",
                         "unlisted"
-                      ]
+                      ],
+                      "description": "Defines the visibility of the chat—private, team-only, or public."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "An optional name assigned to the chat by the user."
                     },
                     "title": {
                       "type": "string",
+                      "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ISO timestamp of the last update to the chat."
                     },
                     "favorite": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat is marked as a favorite."
                     },
                     "authorId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ID of the user who created the chat."
                     },
                     "projectId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional ID of the v0 project associated with this chat."
                     },
                     "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "A unique identifier for the version."
+                        },
+                        "object": {
+                          "type": "string",
+                          "const": "version",
+                          "description": "Fixed value identifying this object as a version."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                          ],
+                          "description": "The current status of the version generation process."
+                        },
+                        "demoUrl": {
+                          "type": "string",
+                          "description": "Optional URL for previewing the generated output."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FileDetail"
+                          },
+                          "description": "A list of files that were generated or included in this version."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "object",
+                        "status",
+                        "files"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Full details of the most recent generated version, if available."
                     },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The canonical URL to access this chat."
                     },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
-                      }
+                      },
+                      "description": "All messages exchanged in the chat, including user and assistant entries."
                     },
                     "files": {
                       "type": "array",
@@ -2114,16 +2307,19 @@
                         "type": "object",
                         "properties": {
                           "lang": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Programming language used in the file (e.g., JavaScript, Python)."
                           },
                           "meta": {
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                           },
                           "source": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The origin or identifier of the file source (e.g., path or upload label)."
                           }
                         },
                         "required": [
@@ -2132,14 +2328,17 @@
                           "source"
                         ],
                         "additionalProperties": false
-                      }
+                      },
+                      "description": "Optional array of files associated with the chat context."
                     },
                     "demo": {
                       "type": "string",
+                      "description": "Deprecated demo URL used for previewing the chat result.",
                       "deprecated": true
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The main user prompt or instruction that started the chat."
                     }
                   },
                   "required": [
@@ -2153,7 +2352,8 @@
                     "messages",
                     "text"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
                 }
               }
             }
@@ -2431,7 +2631,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to update. Provided as a path parameter."
           }
         ],
         "security": [
@@ -2444,7 +2644,7 @@
     "/chats/{chatId}/favorite": {
       "put": {
         "summary": "Favorite Chat",
-        "description": "Favorite a chat",
+        "description": "Marks or unmarks a chat as a favorite using its `chatId`. This helps with organizing and quickly accessing important chats.",
         "operationId": "chats.favorite",
         "tags": [
           "chats"
@@ -2457,7 +2657,8 @@
                 "type": "object",
                 "properties": {
                   "isFavorite": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Specifies whether the chat should be marked as a favorite.\n\n- `\"true\"`: mark as favorite\n- `\"false\"`: remove from favorites"
                   }
                 },
                 "required": [
@@ -2770,7 +2971,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to update. Provided as a path parameter."
           }
         ],
         "security": [
@@ -2783,7 +2984,7 @@
     "/chats/{chatId}/fork": {
       "post": {
         "summary": "Fork Chat",
-        "description": "Fork a version in a chat",
+        "description": "Creates a new chat fork from a specific version within an existing chat. Useful for branching off alternate directions without modifying the original conversation.",
         "operationId": "chats.fork",
         "tags": [
           "chats"
@@ -2797,7 +2998,8 @@
                 "properties": {
                   "versionId": {
                     "type": "string",
-                    "maxLength": 32
+                    "maxLength": 32,
+                    "description": "The identifier of the specific chat version to fork from. If omitted, the latest version will be used."
                   }
                 },
                 "additionalProperties": false
@@ -2814,14 +3016,17 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the chat."
                     },
                     "object": {
                       "type": "string",
-                      "const": "chat"
+                      "const": "chat",
+                      "description": "Fixed value identifying this object as a chat."
                     },
                     "shareable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat can be shared via public link."
                     },
                     "privacy": {
                       "type": "string",
@@ -2831,38 +3036,86 @@
                         "team",
                         "team-edit",
                         "unlisted"
-                      ]
+                      ],
+                      "description": "Defines the visibility of the chat—private, team-only, or public."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "An optional name assigned to the chat by the user."
                     },
                     "title": {
                       "type": "string",
+                      "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ISO timestamp of the last update to the chat."
                     },
                     "favorite": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat is marked as a favorite."
                     },
                     "authorId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ID of the user who created the chat."
                     },
                     "projectId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional ID of the v0 project associated with this chat."
                     },
                     "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "A unique identifier for the version."
+                        },
+                        "object": {
+                          "type": "string",
+                          "const": "version",
+                          "description": "Fixed value identifying this object as a version."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                          ],
+                          "description": "The current status of the version generation process."
+                        },
+                        "demoUrl": {
+                          "type": "string",
+                          "description": "Optional URL for previewing the generated output."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FileDetail"
+                          },
+                          "description": "A list of files that were generated or included in this version."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "object",
+                        "status",
+                        "files"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Full details of the most recent generated version, if available."
                     },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The canonical URL to access this chat."
                     },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
-                      }
+                      },
+                      "description": "All messages exchanged in the chat, including user and assistant entries."
                     },
                     "files": {
                       "type": "array",
@@ -2870,16 +3123,19 @@
                         "type": "object",
                         "properties": {
                           "lang": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Programming language used in the file (e.g., JavaScript, Python)."
                           },
                           "meta": {
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                           },
                           "source": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The origin or identifier of the file source (e.g., path or upload label)."
                           }
                         },
                         "required": [
@@ -2888,14 +3144,17 @@
                           "source"
                         ],
                         "additionalProperties": false
-                      }
+                      },
+                      "description": "Optional array of files associated with the chat context."
                     },
                     "demo": {
                       "type": "string",
+                      "description": "Deprecated demo URL used for previewing the chat result.",
                       "deprecated": true
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The main user prompt or instruction that started the chat."
                     }
                   },
                   "required": [
@@ -2909,7 +3168,8 @@
                     "messages",
                     "text"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
                 }
               }
             }
@@ -3187,7 +3447,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to fork. Provided as a path parameter."
           }
         ],
         "security": [
@@ -3200,7 +3460,7 @@
     "/chats/{chatId}/project": {
       "get": {
         "summary": "Get Project by Chat ID",
-        "description": "Get the project for a chat",
+        "description": "Retrieves the v0 project associated with a given chat. Useful for determining the context or scope of a chat session.",
         "operationId": "projects.getByChatId",
         "tags": [
           "projects"
@@ -3489,7 +3749,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The ID of the chat to retrieve the associated project for."
           }
         ],
         "security": [
@@ -3501,8 +3761,8 @@
     },
     "/chats/{chatId}/messages": {
       "post": {
-        "summary": "Create Message",
-        "description": "Create a new message in a chat",
+        "summary": "Send Message",
+        "description": "Creates a new message in an existing chat. Triggers a model response using the provided prompt, with optional attachments and configuration settings.",
         "operationId": "chats.sendMessage",
         "tags": [
           "chats"
@@ -3515,7 +3775,8 @@
                 "type": "object",
                 "properties": {
                   "message": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The prompt or instruction to send to the model as part of the chat."
                   },
                   "attachments": {
                     "type": "array",
@@ -3531,7 +3792,8 @@
                       ],
                       "additionalProperties": false
                     },
-                    "default": []
+                    "default": [],
+                    "description": "A list of files or assets to include with the message."
                   },
                   "modelConfiguration": {
                     "type": "object",
@@ -3556,7 +3818,8 @@
                     "required": [
                       "modelId"
                     ],
-                    "additionalProperties": false
+                    "additionalProperties": false,
+                    "description": "Overrides for the model behavior."
                   },
                   "responseMode": {
                     "type": "string",
@@ -3564,7 +3827,8 @@
                       "sync",
                       "async"
                     ],
-                    "default": "sync"
+                    "default": "sync",
+                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output."
                   }
                 },
                 "required": [
@@ -3584,14 +3848,17 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the chat."
                     },
                     "object": {
                       "type": "string",
-                      "const": "chat"
+                      "const": "chat",
+                      "description": "Fixed value identifying this object as a chat."
                     },
                     "shareable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat can be shared via public link."
                     },
                     "privacy": {
                       "type": "string",
@@ -3601,38 +3868,86 @@
                         "team",
                         "team-edit",
                         "unlisted"
-                      ]
+                      ],
+                      "description": "Defines the visibility of the chat—private, team-only, or public."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "An optional name assigned to the chat by the user."
                     },
                     "title": {
                       "type": "string",
+                      "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ISO timestamp of the last update to the chat."
                     },
                     "favorite": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "Indicates whether the chat is marked as a favorite."
                     },
                     "authorId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The ID of the user who created the chat."
                     },
                     "projectId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional ID of the v0 project associated with this chat."
                     },
                     "latestVersion": {
-                      "$ref": "#/components/schemas/VersionDetail"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "A unique identifier for the version."
+                        },
+                        "object": {
+                          "type": "string",
+                          "const": "version",
+                          "description": "Fixed value identifying this object as a version."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                          ],
+                          "description": "The current status of the version generation process."
+                        },
+                        "demoUrl": {
+                          "type": "string",
+                          "description": "Optional URL for previewing the generated output."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FileDetail"
+                          },
+                          "description": "A list of files that were generated or included in this version."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "object",
+                        "status",
+                        "files"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Full details of the most recent generated version, if available."
                     },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The canonical URL to access this chat."
                     },
                     "messages": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/MessageSummary"
-                      }
+                      },
+                      "description": "All messages exchanged in the chat, including user and assistant entries."
                     },
                     "files": {
                       "type": "array",
@@ -3640,16 +3955,19 @@
                         "type": "object",
                         "properties": {
                           "lang": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Programming language used in the file (e.g., JavaScript, Python)."
                           },
                           "meta": {
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                           },
                           "source": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The origin or identifier of the file source (e.g., path or upload label)."
                           }
                         },
                         "required": [
@@ -3658,14 +3976,17 @@
                           "source"
                         ],
                         "additionalProperties": false
-                      }
+                      },
+                      "description": "Optional array of files associated with the chat context."
                     },
                     "demo": {
                       "type": "string",
+                      "description": "Deprecated demo URL used for previewing the chat result.",
                       "deprecated": true
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The main user prompt or instruction that started the chat."
                     },
                     "modelConfiguration": {
                       "type": "object",
@@ -3690,7 +4011,8 @@
                       "required": [
                         "modelId"
                       ],
-                      "additionalProperties": false
+                      "additionalProperties": false,
+                      "description": "The configuration used to generate responses in this chat."
                     },
                     "chatId": {
                       "type": "string",
@@ -3711,7 +4033,8 @@
                     "modelConfiguration",
                     "chatId"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
                 }
               }
             }
@@ -3989,7 +4312,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat to send the message to. Provided as a path parameter."
           }
         ],
         "security": [
@@ -4001,8 +4324,8 @@
     },
     "/chats/{chatId}/messages/{messageId}/resume": {
       "post": {
-        "summary": "Resume Chat Message",
-        "description": "Resume a chat message",
+        "summary": "Resume Message",
+        "description": "Resumes processing of a previously interrupted or incomplete message in a chat. Useful for continuing generation when a message was paused or stopped.",
         "operationId": "chats.resume",
         "tags": [
           "chats"
@@ -4291,7 +4614,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"chatId\""
+            "description": "The unique identifier of the chat containing the message to resume. Provided as a path parameter."
           },
           {
             "name": "messageId",
@@ -4300,7 +4623,1284 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"messageId\""
+            "description": "The identifier of the specific message to resume. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/deployments": {
+      "get": {
+        "summary": "Find Deployments",
+        "description": "Find deployments by project and chat IDs. This will return a list of deployments for the given project and chat IDs.",
+        "operationId": "deployments.find",
+        "tags": [
+          "deployments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DeploymentDetail"
+                      }
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The ID of the project to find deployments for"
+            },
+            "description": "The ID of the project to find deployments for"
+          },
+          {
+            "name": "chatId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The ID of the chat to find deployments for"
+            },
+            "description": "The ID of the chat to find deployments for"
+          },
+          {
+            "name": "versionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The ID of the version to find deployments for"
+            },
+            "description": "The ID of the version to find deployments for"
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create Deployment",
+        "description": "Create a new deployment for a specific chat and version. This will trigger a deployment to Vercel.",
+        "operationId": "deployments.create",
+        "tags": [
+          "deployments"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "projectId": {
+                    "type": "string"
+                  },
+                  "chatId": {
+                    "type": "string"
+                  },
+                  "versionId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "projectId",
+                  "chatId",
+                  "versionId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/deployments/{deploymentId}": {
+      "get": {
+        "summary": "Get Deployment",
+        "description": "Get a deployment by ID. This will return the details of the deployment, including the inspector URL, chat ID, project ID, version ID, API URL, and web URL.",
+        "operationId": "deployments.getById",
+        "tags": [
+          "deployments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deploymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"deploymentId\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Deployment",
+        "description": "Delete a deployment by ID. This will delete the deployment from Vercel.",
+        "operationId": "deployments.delete",
+        "tags": [
+          "deployments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "const": "deployment"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "deleted"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deploymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Path parameter \"deploymentId\""
           }
         ],
         "security": [
@@ -4313,7 +5913,7 @@
     "/deployments/{deploymentId}/logs": {
       "get": {
         "summary": "Find Deployment Logs",
-        "description": "Find logs for a deployment",
+        "description": "Retrieves logs for a specific deployment. Supports filtering by timestamp to fetch only recent logs.",
         "operationId": "deployments.findLogs",
         "tags": [
           "deployments"
@@ -4620,16 +6220,17 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"deploymentId\""
+            "description": "The unique identifier of the deployment to retrieve logs for. Provided as a path parameter."
           },
           {
             "name": "since",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "number"
+              "type": "number",
+              "description": "A UNIX timestamp (in seconds) used to filter logs. Returns only log entries generated after the specified time."
             },
-            "description": "Query parameter \"since\""
+            "description": "A UNIX timestamp (in seconds) used to filter logs. Returns only log entries generated after the specified time."
           }
         ],
         "security": [
@@ -4642,7 +6243,7 @@
     "/deployments/{deploymentId}/errors": {
       "get": {
         "summary": "Find Deployment Errors",
-        "description": "Find errors for a deployment",
+        "description": "Retrieves a list of errors that occurred during a specific deployment. Useful for diagnosing and debugging deployment issues.",
         "operationId": "deployments.findErrors",
         "tags": [
           "deployments"
@@ -4946,7 +6547,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"deploymentId\""
+            "description": "The unique identifier of the deployment to inspect for errors. Provided as a path parameter."
           }
         ],
         "security": [
@@ -4958,6 +6559,8 @@
     },
     "/hooks": {
       "get": {
+        "summary": "Find Hooks",
+        "description": "Retrieves a list of existing hooks in your workspace. Useful for managing active webhooks tied to chat events or deployments.",
         "operationId": "hooks.find",
         "tags": [
           "hooks"
@@ -5262,6 +6865,8 @@
         ]
       },
       "post": {
+        "summary": "Create Hook",
+        "description": "Creates a new webhook that listens for specific events. Supports optional association with a chat or project.",
         "operationId": "hooks.create",
         "tags": [
           "hooks"
@@ -5274,7 +6879,8 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A human-readable name for the hook."
                   },
                   "events": {
                     "type": "array",
@@ -5291,16 +6897,20 @@
                         "project.updated",
                         "project.deleted"
                       ]
-                    }
+                    },
+                    "description": "List of event types the hook should subscribe to."
                   },
                   "chatId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ID of a chat to scope the hook to."
                   },
                   "projectId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ID of a project to scope the hook to."
                   },
                   "url": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The target URL to receive the webhook payloads."
                   }
                 },
                 "required": [
@@ -5598,6 +7208,8 @@
     },
     "/hooks/{hookId}": {
       "get": {
+        "summary": "Get Hook",
+        "description": "Retrieves the details of a specific webhook using its ID.",
         "operationId": "hooks.getById",
         "tags": [
           "hooks"
@@ -5886,7 +7498,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"hookId\""
+            "description": "The unique identifier of the hook to retrieve."
           }
         ],
         "security": [
@@ -5896,6 +7508,8 @@
         ]
       },
       "patch": {
+        "summary": "Update Hook",
+        "description": "Updates the configuration of an existing webhook, including its name, event subscriptions, or target URL.",
         "operationId": "hooks.update",
         "tags": [
           "hooks"
@@ -5908,7 +7522,8 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A new name for the hook."
                   },
                   "events": {
                     "type": "array",
@@ -5925,10 +7540,12 @@
                         "project.updated",
                         "project.deleted"
                       ]
-                    }
+                    },
+                    "description": "Updated list of event types to subscribe to."
                   },
                   "url": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A new URL to send webhook payloads to."
                   }
                 },
                 "additionalProperties": false
@@ -6220,7 +7837,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"hookId\""
+            "description": "The ID of the webhook to update. Provided as a path parameter."
           }
         ],
         "security": [
@@ -6230,6 +7847,8 @@
         ]
       },
       "delete": {
+        "summary": "Delete Hook",
+        "description": "Deletes a webhook based on its ID. This action is irreversible.",
         "operationId": "hooks.delete",
         "tags": [
           "hooks"
@@ -6537,7 +8156,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"hookId\""
+            "description": "The ID of the webhook to delete. Provided as a path parameter."
           }
         ],
         "security": [
@@ -6550,7 +8169,7 @@
     "/integrations/vercel/projects": {
       "get": {
         "summary": "Find Vercel Projects",
-        "description": "Find all Vercel projects",
+        "description": "Retrieves a list of Vercel projects linked to your integration. Useful for associating chats, deployments, or hooks with specific Vercel projects.",
         "operationId": "integrations.vercel.projects.find",
         "tags": [
           "integrations"
@@ -6856,7 +8475,7 @@
       },
       "post": {
         "summary": "Create Vercel Project",
-        "description": "Create a new Vercel project",
+        "description": "Links a Vercel project to an existing v0 project. Enables Vercel-related features and deployment integration within the v0 workspace.",
         "operationId": "integrations.vercel.projects.create",
         "tags": [
           "integrations"
@@ -6869,10 +8488,12 @@
                 "type": "object",
                 "properties": {
                   "projectId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ID of the v0 project to link to the new Vercel project."
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The name to assign to the new Vercel project."
                   }
                 },
                 "required": [
@@ -7170,7 +8791,7 @@
     "/projects": {
       "get": {
         "summary": "Find Projects",
-        "description": "Find all projects",
+        "description": "Returns a list of all v0 projects in your workspace. Useful for browsing or managing projects across different chats or use cases.",
         "operationId": "projects.find",
         "tags": [
           "projects"
@@ -7476,7 +9097,7 @@
       },
       "post": {
         "summary": "Create Project",
-        "description": "Create a new project",
+        "description": "Creates a new v0 project with an optional description, icon, environment variables, and instructions. Projects help organize chats and manage context.",
         "operationId": "projects.create",
         "tags": [
           "projects"
@@ -7490,15 +9111,18 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "description": "The name of the project."
                   },
                   "description": {
                     "type": "string",
-                    "maxLength": 1000
+                    "maxLength": 1000,
+                    "description": "A brief summary of the project’s purpose."
                   },
                   "icon": {
                     "type": "string",
-                    "default": "icon-wand-sparkles"
+                    "default": "icon-wand-sparkles",
+                    "description": "An icon identifier to visually represent the project."
                   },
                   "environmentVariables": {
                     "type": "array",
@@ -7519,11 +9143,13 @@
                         "value"
                       ],
                       "additionalProperties": false
-                    }
+                    },
+                    "description": "A list of key-value pairs used to define runtime variables for the project."
                   },
                   "instructions": {
                     "type": "string",
-                    "maxLength": 1000
+                    "maxLength": 1000,
+                    "description": "Guidance or goals that provide context for the model when working within the project."
                   }
                 },
                 "required": [
@@ -7820,7 +9446,7 @@
     "/projects/{projectId}": {
       "get": {
         "summary": "Get Project by ID",
-        "description": "Get the project for a project",
+        "description": "Retrieves the details of a specific v0 project by its ID.",
         "operationId": "projects.getById",
         "tags": [
           "projects"
@@ -8109,7 +9735,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"projectId\""
+            "description": "The unique identifier of the project to retrieve."
           }
         ],
         "security": [
@@ -8122,7 +9748,7 @@
     "/projects/{projectId}/assign": {
       "post": {
         "summary": "Assign Project to Chat",
-        "description": "Assign a project to a chat",
+        "description": "Links an existing v0 project to a specific chat. Helps group conversations under a shared project context.",
         "operationId": "projects.assign",
         "tags": [
           "projects"
@@ -8135,7 +9761,8 @@
                 "type": "object",
                 "properties": {
                   "chatId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ID of the chat to assign the project to."
                   }
                 },
                 "required": [
@@ -8449,7 +10076,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Path parameter \"projectId\""
+            "description": "The ID of the project to assign."
           }
         ],
         "security": [
@@ -8462,7 +10089,7 @@
     "/rate-limits": {
       "get": {
         "summary": "Find Rate Limit",
-        "description": "Find the rate limit for a scope",
+        "description": "Retrieves rate limit information for a given scope. Useful for monitoring usage limits and avoiding throttling.",
         "operationId": "rateLimits.find",
         "tags": [
           "rateLimits"
@@ -8764,9 +10391,10 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "The context or namespace to check rate limits for (e.g., a project slug or feature area)."
             },
-            "description": "Query parameter \"scope\""
+            "description": "The context or namespace to check rate limits for (e.g., a project slug or feature area)."
           }
         ],
         "security": [
@@ -8779,7 +10407,7 @@
     "/user": {
       "get": {
         "summary": "Get User",
-        "description": "Get the user",
+        "description": "Retrieves information about the authenticated user, including their ID, name, email, and account metadata.",
         "operationId": "user.get",
         "tags": [
           "user"
@@ -9070,7 +10698,7 @@
     "/user/billing": {
       "get": {
         "summary": "Get Billing",
-        "description": "Get the billing for the user",
+        "description": "Fetches billing usage and quota information for the authenticated user. Can be scoped to a specific context (e.g. project or namespace).",
         "operationId": "user.getBilling",
         "tags": [
           "user"
@@ -9497,9 +11125,10 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "Filters billing data by a specific scope, such as a project ID or slug."
             },
-            "description": "Query parameter \"scope\""
+            "description": "Filters billing data by a specific scope, such as a project ID or slug."
           }
         ],
         "security": [
@@ -9512,7 +11141,7 @@
     "/user/plan": {
       "get": {
         "summary": "Get Plan",
-        "description": "Get the plan for the user",
+        "description": "Returns the current subscription plan for the authenticated user, including tier details and feature limits.",
         "operationId": "user.getPlan",
         "tags": [
           "user"
@@ -9851,7 +11480,7 @@
     "/user/scopes": {
       "get": {
         "summary": "Get User Scopes",
-        "description": "Get all scopes for the user",
+        "description": "Retrieves all accessible scopes for the authenticated user, such as personal workspaces or shared teams.",
         "operationId": "user.getScopes",
         "tags": [
           "user"
@@ -10163,14 +11792,17 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the chat."
           },
           "object": {
             "type": "string",
-            "const": "chat"
+            "const": "chat",
+            "description": "Fixed value identifying this object as a chat."
           },
           "shareable": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the chat can be shared via public link."
           },
           "privacy": {
             "type": "string",
@@ -10180,36 +11812,45 @@
               "team",
               "team-edit",
               "unlisted"
-            ]
+            ],
+            "description": "Defines the visibility of the chat—private, team-only, or public."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "An optional name assigned to the chat by the user."
           },
           "title": {
             "type": "string",
+            "description": "Deprecated title field preserved for backward compatibility.",
             "deprecated": true
           },
           "updatedAt": {
-            "type": "string"
+            "type": "string",
+            "description": "The ISO timestamp of the last update to the chat."
           },
           "favorite": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the chat is marked as a favorite."
           },
           "authorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the user who created the chat."
           },
           "projectId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the v0 project associated with this chat."
           },
           "latestVersion": {
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "A unique identifier for the version."
               },
               "object": {
                 "type": "string",
-                "const": "version"
+                "const": "version",
+                "description": "Fixed value identifying this object as a version."
               },
               "status": {
                 "type": "string",
@@ -10217,10 +11858,12 @@
                   "pending",
                   "completed",
                   "failed"
-                ]
+                ],
+                "description": "The current status of the version generation process."
               },
               "demoUrl": {
-                "type": "string"
+                "type": "string",
+                "description": "Optional URL for previewing the generated output."
               },
               "files": {
                 "type": "array",
@@ -10229,13 +11872,16 @@
                   "properties": {
                     "object": {
                       "type": "string",
-                      "const": "file"
+                      "const": "file",
+                      "description": "Fixed value identifying this object as a file."
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The name of the file, including its extension."
                     },
                     "content": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The full contents of the file as a raw string."
                     }
                   },
                   "required": [
@@ -10243,8 +11889,10 @@
                     "name",
                     "content"
                   ],
-                  "additionalProperties": false
-                }
+                  "additionalProperties": false,
+                  "description": "Detailed representation of a file, including its content."
+                },
+                "description": "A list of files that were generated or included in this version."
               }
             },
             "required": [
@@ -10253,10 +11901,12 @@
               "status",
               "files"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Full details of the most recent generated version, if available."
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "description": "The canonical URL to access this chat."
           },
           "messages": {
             "type": "array",
@@ -10264,17 +11914,21 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "A unique identifier for the message."
                 },
                 "object": {
                   "type": "string",
-                  "const": "message"
+                  "const": "message",
+                  "description": "Fixed value identifying this object as a message."
                 },
                 "content": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The main text content of the message."
                 },
                 "createdAt": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The ISO timestamp representing when the message was created."
                 },
                 "type": {
                   "type": "string",
@@ -10295,14 +11949,16 @@
                     "fix-with-v0",
                     "auto-fix-with-v0",
                     "sync-git"
-                  ]
+                  ],
+                  "description": "Indicates the format or category of the message, such as plain text or code."
                 },
                 "role": {
                   "type": "string",
                   "enum": [
                     "user",
                     "assistant"
-                  ]
+                  ],
+                  "description": "Specifies whether the message was sent by the user or the assistant."
                 }
               },
               "required": [
@@ -10313,8 +11969,10 @@
                 "type",
                 "role"
               ],
-              "additionalProperties": false
-            }
+              "additionalProperties": false,
+              "description": "Summary of a single message within a chat, including role, content, type, and timestamp."
+            },
+            "description": "All messages exchanged in the chat, including user and assistant entries."
           },
           "files": {
             "type": "array",
@@ -10322,16 +11980,19 @@
               "type": "object",
               "properties": {
                 "lang": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Programming language used in the file (e.g., JavaScript, Python)."
                 },
                 "meta": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "string"
-                  }
+                  },
+                  "description": "A key-value map of metadata associated with the file (e.g., path, type)."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The origin or identifier of the file source (e.g., path or upload label)."
                 }
               },
               "required": [
@@ -10340,14 +12001,17 @@
                 "source"
               ],
               "additionalProperties": false
-            }
+            },
+            "description": "Optional array of files associated with the chat context."
           },
           "demo": {
             "type": "string",
+            "description": "Deprecated demo URL used for previewing the chat result.",
             "deprecated": true
           },
           "text": {
-            "type": "string"
+            "type": "string",
+            "description": "The main user prompt or instruction that started the chat."
           },
           "modelConfiguration": {
             "type": "object",
@@ -10372,7 +12036,8 @@
             "required": [
               "modelId"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "The configuration used to generate responses in this chat."
           }
         },
         "required": [
@@ -10387,20 +12052,24 @@
           "text",
           "modelConfiguration"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
       },
       "ChatSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the chat."
           },
           "object": {
             "type": "string",
-            "const": "chat"
+            "const": "chat",
+            "description": "Fixed value identifying this object as a chat."
           },
           "shareable": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the chat can be shared via public link."
           },
           "privacy": {
             "type": "string",
@@ -10410,36 +12079,45 @@
               "team",
               "team-edit",
               "unlisted"
-            ]
+            ],
+            "description": "Defines the visibility of the chat—private, team-only, or public."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "An optional name assigned to the chat by the user."
           },
           "title": {
             "type": "string",
+            "description": "Deprecated title field preserved for backward compatibility.",
             "deprecated": true
           },
           "updatedAt": {
-            "type": "string"
+            "type": "string",
+            "description": "The ISO timestamp of the last update to the chat."
           },
           "favorite": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the chat is marked as a favorite."
           },
           "authorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the user who created the chat."
           },
           "projectId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the v0 project associated with this chat."
           },
           "latestVersion": {
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "A unique identifier for the version."
               },
               "object": {
                 "type": "string",
-                "const": "version"
+                "const": "version",
+                "description": "Fixed value identifying this object as a version."
               },
               "status": {
                 "type": "string",
@@ -10447,10 +12125,12 @@
                   "pending",
                   "completed",
                   "failed"
-                ]
+                ],
+                "description": "The current status of the version generation process."
               },
               "demoUrl": {
-                "type": "string"
+                "type": "string",
+                "description": "Optional URL for previewing the generated output."
               }
             },
             "required": [
@@ -10458,7 +12138,8 @@
               "object",
               "status"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "The most recent generated version of the chat, if available."
           }
         },
         "required": [
@@ -10469,6 +12150,109 @@
           "favorite",
           "authorId"
         ],
+        "additionalProperties": false,
+        "description": "Summary of a chat, including metadata like privacy, author, and latest version."
+      },
+      "DeploymentDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the deployment."
+          },
+          "object": {
+            "type": "string",
+            "const": "deployment",
+            "description": "Fixed value identifying this object as a deployment."
+          },
+          "inspectorUrl": {
+            "type": "string",
+            "description": "URL to the deployment inspector."
+          },
+          "chatId": {
+            "type": "string",
+            "description": "The ID of the chat that this deployment is scoped to."
+          },
+          "projectId": {
+            "type": "string",
+            "description": "The ID of the project that this deployment is scoped to."
+          },
+          "versionId": {
+            "type": "string",
+            "description": "The ID of the version that this deployment is scoped to."
+          },
+          "apiUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The API endpoint URL for accessing this deployment programmatically."
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The web URL where the deployment can be viewed or managed."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "inspectorUrl",
+          "chatId",
+          "projectId",
+          "versionId",
+          "apiUrl",
+          "webUrl"
+        ],
+        "additionalProperties": false
+      },
+      "DeploymentSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the deployment."
+          },
+          "object": {
+            "type": "string",
+            "const": "deployment",
+            "description": "Fixed value identifying this object as a deployment."
+          },
+          "inspectorUrl": {
+            "type": "string",
+            "description": "URL to the deployment inspector."
+          },
+          "chatId": {
+            "type": "string",
+            "description": "The ID of the chat that this deployment is scoped to."
+          },
+          "projectId": {
+            "type": "string",
+            "description": "The ID of the project that this deployment is scoped to."
+          },
+          "versionId": {
+            "type": "string",
+            "description": "The ID of the version that this deployment is scoped to."
+          },
+          "apiUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The API endpoint URL for accessing this deployment programmatically."
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The web URL where the deployment can be viewed or managed."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "inspectorUrl",
+          "chatId",
+          "projectId",
+          "versionId",
+          "apiUrl",
+          "webUrl"
+        ],
         "additionalProperties": false
       },
       "FileDetail": {
@@ -10476,13 +12260,16 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "file"
+            "const": "file",
+            "description": "Fixed value identifying this object as a file."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the file, including its extension."
           },
           "content": {
-            "type": "string"
+            "type": "string",
+            "description": "The full contents of the file as a raw string."
           }
         },
         "required": [
@@ -10490,37 +12277,44 @@
           "name",
           "content"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Detailed representation of a file, including its content."
       },
       "FileSummary": {
         "type": "object",
         "properties": {
           "object": {
             "type": "string",
-            "const": "file"
+            "const": "file",
+            "description": "Fixed value identifying this object as a file."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the file, including its extension."
           }
         },
         "required": [
           "object",
           "name"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Basic metadata about a file, such as its type and name."
       },
       "HookDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the webhook."
           },
           "object": {
             "type": "string",
-            "const": "hook"
+            "const": "hook",
+            "description": "Fixed value identifying this object as a webhook."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "A user-defined name to label the webhook."
           },
           "events": {
             "type": "array",
@@ -10537,16 +12331,20 @@
                 "project.updated",
                 "project.deleted"
               ]
-            }
+            },
+            "description": "List of event types this webhook is subscribed to."
           },
           "chatId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the chat that this webhook is scoped to."
           },
           "projectId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the project that this webhook is scoped to."
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "description": "Target URL that receives event payloads for this webhook."
           }
         },
         "required": [
@@ -10556,17 +12354,20 @@
           "events",
           "url"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Full configuration details for a webhook, including its scope and subscription."
       },
       "HookEventDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the webhook event log entry."
           },
           "object": {
             "type": "string",
-            "const": "hookEvent"
+            "const": "hookEvent",
+            "description": "Fixed value identifying this object as a webhook event."
           },
           "event": {
             "type": "string",
@@ -10580,7 +12381,8 @@
               "project.created",
               "project.updated",
               "project.deleted"
-            ]
+            ],
+            "description": "The type of event that triggered the webhook."
           },
           "status": {
             "type": "string",
@@ -10589,11 +12391,13 @@
               "success",
               "error"
             ],
-            "default": "pending"
+            "default": "pending",
+            "description": "The delivery status of the webhook (e.g., delivered, failed)."
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp of when the webhook event was triggered."
           }
         },
         "required": [
@@ -10602,20 +12406,24 @@
           "event",
           "createdAt"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Detailed record of a webhook event, including its type, status, and timestamp."
       },
       "HookSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the webhook."
           },
           "object": {
             "type": "string",
-            "const": "hook"
+            "const": "hook",
+            "description": "Fixed value identifying this object as a webhook."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "A user-defined name to label the webhook."
           }
         },
         "required": [
@@ -10623,23 +12431,28 @@
           "object",
           "name"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Summary of a webhook, including its ID and display name."
       },
       "MessageDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the message."
           },
           "object": {
             "type": "string",
-            "const": "message"
+            "const": "message",
+            "description": "Fixed value identifying this object as a message."
           },
           "chatId": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the chat to which this message belongs."
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "description": "URL to access or view this message."
           },
           "files": {
             "type": "array",
@@ -10648,24 +12461,30 @@
               "properties": {
                 "object": {
                   "type": "string",
-                  "const": "file"
+                  "const": "file",
+                  "description": "Fixed value identifying this object as a file."
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the file, including its extension."
                 }
               },
               "required": [
                 "object",
                 "name"
               ],
-              "additionalProperties": false
-            }
+              "additionalProperties": false,
+              "description": "Basic metadata about a file, such as its type and name."
+            },
+            "description": "List of files attached to or referenced by this message."
           },
           "demo": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional preview URL for the output generated by this message."
           },
           "text": {
-            "type": "string"
+            "type": "string",
+            "description": "The main prompt or text content submitted by the user."
           },
           "modelConfiguration": {
             "type": "object",
@@ -10690,7 +12509,8 @@
             "required": [
               "modelId"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Model settings used to process and generate the message."
           }
         },
         "required": [
@@ -10702,23 +12522,28 @@
           "text",
           "modelConfiguration"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Detailed message object containing content, metadata, and model configuration."
       },
       "MessageSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the message."
           },
           "object": {
             "type": "string",
-            "const": "message"
+            "const": "message",
+            "description": "Fixed value identifying this object as a message."
           },
           "content": {
-            "type": "string"
+            "type": "string",
+            "description": "The main text content of the message."
           },
           "createdAt": {
-            "type": "string"
+            "type": "string",
+            "description": "The ISO timestamp representing when the message was created."
           },
           "type": {
             "type": "string",
@@ -10739,14 +12564,16 @@
               "fix-with-v0",
               "auto-fix-with-v0",
               "sync-git"
-            ]
+            ],
+            "description": "Indicates the format or category of the message, such as plain text or code."
           },
           "role": {
             "type": "string",
             "enum": [
               "user",
               "assistant"
-            ]
+            ],
+            "description": "Specifies whether the message was sent by the user or the assistant."
           }
         },
         "required": [
@@ -10757,39 +12584,48 @@
           "type",
           "role"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Summary of a single message within a chat, including role, content, type, and timestamp."
       },
       "ProjectDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the project."
           },
           "object": {
             "type": "string",
-            "const": "project"
+            "const": "project",
+            "description": "Fixed value identifying this object as a project."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the project as defined by the user."
           },
           "vercelProjectId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the linked Vercel project, if connected."
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the project was created."
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The ISO timestamp of the most recent update, if available."
           },
           "apiUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "The API endpoint URL for accessing this project programmatically."
           },
           "webUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "The web URL where the project can be viewed or managed."
           },
           "chats": {
             "type": "array",
@@ -10797,14 +12633,17 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "A unique identifier for the chat."
                 },
                 "object": {
                   "type": "string",
-                  "const": "chat"
+                  "const": "chat",
+                  "description": "Fixed value identifying this object as a chat."
                 },
                 "shareable": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Indicates whether the chat can be shared via public link."
                 },
                 "privacy": {
                   "type": "string",
@@ -10814,36 +12653,45 @@
                     "team",
                     "team-edit",
                     "unlisted"
-                  ]
+                  ],
+                  "description": "Defines the visibility of the chat—private, team-only, or public."
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "An optional name assigned to the chat by the user."
                 },
                 "title": {
                   "type": "string",
+                  "description": "Deprecated title field preserved for backward compatibility.",
                   "deprecated": true
                 },
                 "updatedAt": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The ISO timestamp of the last update to the chat."
                 },
                 "favorite": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Indicates whether the chat is marked as a favorite."
                 },
                 "authorId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The ID of the user who created the chat."
                 },
                 "projectId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Optional ID of the v0 project associated with this chat."
                 },
                 "latestVersion": {
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "A unique identifier for the version."
                     },
                     "object": {
                       "type": "string",
-                      "const": "version"
+                      "const": "version",
+                      "description": "Fixed value identifying this object as a version."
                     },
                     "status": {
                       "type": "string",
@@ -10851,10 +12699,12 @@
                         "pending",
                         "completed",
                         "failed"
-                      ]
+                      ],
+                      "description": "The current status of the version generation process."
                     },
                     "demoUrl": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Optional URL for previewing the generated output."
                     }
                   },
                   "required": [
@@ -10862,7 +12712,8 @@
                     "object",
                     "status"
                   ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "The most recent generated version of the chat, if available."
                 }
               },
               "required": [
@@ -10873,8 +12724,10 @@
                 "favorite",
                 "authorId"
               ],
-              "additionalProperties": false
-            }
+              "additionalProperties": false,
+              "description": "Summary of a chat, including metadata like privacy, author, and latest version."
+            },
+            "description": "List of all chats that are associated with this project."
           }
         },
         "required": [
@@ -10886,39 +12739,48 @@
           "webUrl",
           "chats"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Full representation of a project, including its associated chats."
       },
       "ProjectSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the project."
           },
           "object": {
             "type": "string",
-            "const": "project"
+            "const": "project",
+            "description": "Fixed value identifying this object as a project."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the project as defined by the user."
           },
           "vercelProjectId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional ID of the linked Vercel project, if connected."
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the project was created."
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The ISO timestamp of the most recent update, if available."
           },
           "apiUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "The API endpoint URL for accessing this project programmatically."
           },
           "webUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "The web URL where the project can be viewed or managed."
           }
         },
         "required": [
@@ -10929,49 +12791,59 @@
           "apiUrl",
           "webUrl"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Summary of a project, including metadata, timestamps, and optional Vercel linkage."
       },
       "ScopeSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the scope (e.g., user or team workspace)."
           },
           "object": {
             "type": "string",
-            "const": "scope"
+            "const": "scope",
+            "description": "Fixed value identifying this object as a scope."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "An optional human-readable name for the scope."
           }
         },
         "required": [
           "id",
           "object"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Basic information about a workspace or identity context for projects and chats."
       },
       "SearchResultItem": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "The unique ID of the item returned in the search result."
           },
           "object": {
             "type": "string",
             "enum": [
               "chat",
               "project"
-            ]
+            ],
+            "description": "Type of item returned, either 'chat' or 'project'."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The display name of the item."
           },
           "apiUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "API endpoint for accessing the item programmatically."
           },
           "webUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Web URL for viewing the item in the interface."
           }
         },
         "required": [
@@ -10981,26 +12853,32 @@
           "apiUrl",
           "webUrl"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Generic result returned from a search query, representing either a chat or a project."
       },
       "UserDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the user."
           },
           "object": {
             "type": "string",
-            "const": "user"
+            "const": "user",
+            "description": "Fixed value identifying this object as a user."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional full name of the user."
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "description": "The user’s email address."
           },
           "avatar": {
-            "type": "string"
+            "type": "string",
+            "description": "URL to the user’s avatar image."
           }
         },
         "required": [
@@ -11009,20 +12887,24 @@
           "email",
           "avatar"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Details of the authenticated user, including profile and contact information."
       },
       "VercelProjectDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the linked Vercel project."
           },
           "object": {
             "type": "string",
-            "const": "vercel_project"
+            "const": "vercel_project",
+            "description": "Fixed value identifying this object as a Vercel project."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the Vercel project."
           }
         },
         "required": [
@@ -11030,17 +12912,20 @@
           "object",
           "name"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Basic metadata about a Vercel project connected to a v0 project."
       },
       "VersionDetail": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the version."
           },
           "object": {
             "type": "string",
-            "const": "version"
+            "const": "version",
+            "description": "Fixed value identifying this object as a version."
           },
           "status": {
             "type": "string",
@@ -11048,10 +12933,12 @@
               "pending",
               "completed",
               "failed"
-            ]
+            ],
+            "description": "The current status of the version generation process."
           },
           "demoUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional URL for previewing the generated output."
           },
           "files": {
             "type": "array",
@@ -11060,13 +12947,16 @@
               "properties": {
                 "object": {
                   "type": "string",
-                  "const": "file"
+                  "const": "file",
+                  "description": "Fixed value identifying this object as a file."
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the file, including its extension."
                 },
                 "content": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The full contents of the file as a raw string."
                 }
               },
               "required": [
@@ -11074,8 +12964,10 @@
                 "name",
                 "content"
               ],
-              "additionalProperties": false
-            }
+              "additionalProperties": false,
+              "description": "Detailed representation of a file, including its content."
+            },
+            "description": "A list of files that were generated or included in this version."
           }
         },
         "required": [
@@ -11084,17 +12976,20 @@
           "status",
           "files"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Detailed version data including file contents."
       },
       "VersionSummary": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "A unique identifier for the version."
           },
           "object": {
             "type": "string",
-            "const": "version"
+            "const": "version",
+            "description": "Fixed value identifying this object as a version."
           },
           "status": {
             "type": "string",
@@ -11102,10 +12997,12 @@
               "pending",
               "completed",
               "failed"
-            ]
+            ],
+            "description": "The current status of the version generation process."
           },
           "demoUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional URL for previewing the generated output."
           }
         },
         "required": [
@@ -11113,7 +13010,8 @@
           "object",
           "status"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Summary of a generated version of a chat, including its status and optional demo link."
       }
     },
     "securitySchemes": {
