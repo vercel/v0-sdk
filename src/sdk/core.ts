@@ -3,7 +3,7 @@ export interface ClientConfig {
   baseUrl?: string
 }
 
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | (string & {})
+export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | (string & {})
 
 export function createFetcher(config: ClientConfig = {}) {
   const baseUrl = config.baseUrl || 'https://api.v0.dev/v1'
