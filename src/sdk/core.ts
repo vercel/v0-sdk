@@ -5,13 +5,6 @@ export interface ClientConfig {
 
 export function createFetcher(config: ClientConfig = {}) {
   const baseUrl = config.baseUrl || 'https://api.v0.dev/v1'
-  const apiKey = config.apiKey || process.env.V0_API_KEY
-
-  if (!apiKey) {
-    throw new Error(
-      'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
-    )
-  }
 
   return async function fetcher(
     url: string,
@@ -23,6 +16,14 @@ export function createFetcher(config: ClientConfig = {}) {
       headers?: Record<string, string>
     } = {},
   ): Promise<any> {
+    const apiKey = config.apiKey || process.env.V0_API_KEY
+
+    if (!apiKey) {
+      throw new Error(
+        'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
+      )
+    }
+
     const queryString = params.query
       ? '?' + new URLSearchParams(params.query).toString()
       : ''

@@ -65,18 +65,22 @@ describe('createFetcher', () => {
       )
     })
 
-    it('should throw error when no API key is provided', () => {
-      expect(() => createFetcher({})).toThrow(
+    it('should throw error when no API key is provided and fetcher is called', async () => {
+      const fetcher = createFetcher({})
+      
+      await expect(fetcher('/test', 'GET')).rejects.toThrow(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
     })
 
-    it('should throw error when API key is undefined in config and env', () => {
+    it('should throw error when API key is undefined in config and env and fetcher is called', async () => {
       const config: ClientConfig = {
         apiKey: undefined,
       }
 
-      expect(() => createFetcher(config)).toThrow(
+      const fetcher = createFetcher(config)
+      
+      await expect(fetcher('/test', 'GET')).rejects.toThrow(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
     })
