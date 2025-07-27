@@ -3,12 +3,14 @@ export interface ClientConfig {
   baseUrl?: string
 }
 
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | (string & {})
+
 export function createFetcher(config: ClientConfig = {}) {
   const baseUrl = config.baseUrl || 'https://api.v0.dev/v1'
 
   return async function fetcher(
     url: string,
-    method: string,
+    method: Method,
     params: {
       body?: any
       query?: Record<string, string>

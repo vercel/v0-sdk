@@ -161,7 +161,7 @@ function buildNestedStructure(operations: Operation[]): any {
 
 function generateNestedObject(
   obj: any,
-  name: string,
+  _:string,
   depth: number = 0,
   isRoot: boolean = false,
 ): string {
