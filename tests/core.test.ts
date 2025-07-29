@@ -236,9 +236,10 @@ describe('createFetcher', () => {
       const fetcher = createFetcher()
 
       await expect(fetcher('/test', 'GET')).rejects.toThrow(
-        'HTTP 400: Bad Request',
+        'HTTP 400: The request was invalid or malformed.',
       )
     })
+
 
     it('should throw error for network failure', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'))
@@ -249,7 +250,14 @@ describe('createFetcher', () => {
     })
 
     it('should handle different HTTP status codes', async () => {
-      const statusCodes = [401, 403, 404, 500]
+      const statusCodes = [401, 403, 404, 500, -1] // -1 simulates an unexpected status code
+      const messages = [
+        'Authentication required or session expired.',
+        'You do not have permission to access this resource - possibly due to exceeded quotas or insufficient credits.',
+        'The requested resource was not found.',
+        'Internal server error. Please try again later.',
+        'An unexpected error occurred. Please try again later.'
+      ]
 
       for (const status of statusCodes) {
         mockFetch.mockResolvedValue({
@@ -260,9 +268,10 @@ describe('createFetcher', () => {
         })
 
         const fetcher = createFetcher()
+        const message = messages[statusCodes.indexOf(status)]
 
         await expect(fetcher('/test', 'GET')).rejects.toThrow(
-          `HTTP ${status}: Error ${status}`,
+          `HTTP ${status}: ${message}`,
         )
       }
     })
