@@ -1,3 +1,5 @@
+import { handleHttpStatus } from "./errors"
+
 export interface ClientConfig {
   apiKey?: string
   baseUrl?: string
@@ -60,33 +62,8 @@ export function createFetcher(config: ClientConfig = {}) {
 
     if (!res.ok) {
       const { status } = res;
+      handleHttpStatus(status)
 
-      switch (status) {
-        case 400:
-          throw new Error(`HTTP ${status}: The request was invalid or malformed.`);
-        case 402:
-          throw new Error(`HTTP ${status}: Payment required - please check your account credits.`);
-        case 401:
-          throw new Error(`HTTP ${status}: Authentication required or session expired.`);
-        case 403:
-          throw new Error(`HTTP ${status}: You do not have permission to access this resource - possibly due to exceeded quotas or insufficient credits.`);
-        case 404:
-          throw new Error(`HTTP ${status}: The requested resource was not found.`);
-        case 408:
-          throw new Error(`HTTP ${status}: Request timeout. Please try again.`);
-        case 429:
-          throw new Error(`HTTP ${status}: Too many requests - please slow down or check quota limits.`);
-        case 500:
-          throw new Error(`HTTP ${status}: Internal server error. Please try again later.`);
-        case 502:
-          throw new Error(`HTTP ${status}: Bad gateway. Try again later.`);
-        case 503:
-          throw new Error(`HTTP ${status}: Service unavailable. Please try again later.`);
-        case 504:
-          throw new Error(`HTTP ${status}: Gateway timeout. Please try again later.`);
-        default:
-          throw new Error(`HTTP ${status}: An unexpected error occurred. Please try again later.`);
-      }
     }
 
     return res.json()
