@@ -268,11 +268,11 @@ describe('createFetcher', () => {
         })
 
         const fetcher = createFetcher()
-        const message = messages[statusCodes.indexOf(status)]
+        const index = statusCodes.indexOf(status)
+        const message = messages[index]
+        const error = `${index !== messages.length-1 ? `HTTP ${status}: ` : "" }${message}`
 
-        await expect(fetcher('/test', 'GET')).rejects.toThrow(
-          `HTTP ${status}: ${message}`,
-        )
+        await expect(fetcher('/test', 'GET')).rejects.toThrow(error)
       }
     })
   })

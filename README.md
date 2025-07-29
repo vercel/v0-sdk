@@ -205,16 +205,29 @@ const v0 = createClient(config)
 The SDK provides detailed error information:
 
 ```typescript
+import { collectionErrors as E } from 'v0-sdk'
+
 try {
   const chat = await v0.chats.create({
-    message: 'Create a component',
+    message: "Create a landing page",
   })
+  console.log(chat)
 } catch (error) {
-  if (error.status === 403) {
-    console.error('Authentication error:', error.message)
-  } else if (error.status === 429) {
-    console.error('Rate limit exceeded:', error.message)
+
+  if(error instanceof E.AuthenticationError){
+    console.log(error.message, error.status_code)
   }
+
+  else if(error instanceof E.InternalServerError){
+    console.log(error.message, error.status_code)
+  }
+
+  else if(error instanceof E.UnexpectedError){
+    console.log(error.message)
+  }
+
+  else { console.log(error.message) }
+
 }
 ```
 
