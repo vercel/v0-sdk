@@ -33,6 +33,7 @@ export function createFetcher(config: ClientConfig = {}) {
     const hasBody = method !== 'GET' && params.body
     const headers: Record<string, string> = {
       Authorization: `Bearer ${apiKey}`,
+      'x-session-cache': '1',
       ...params.headers,
     }
 

@@ -67,7 +67,7 @@ describe('createFetcher', () => {
 
     it('should throw error when no API key is provided and fetcher is called', async () => {
       const fetcher = createFetcher({})
-      
+
       await expect(fetcher('/test', 'GET')).rejects.toThrow(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
@@ -79,7 +79,7 @@ describe('createFetcher', () => {
       }
 
       const fetcher = createFetcher(config)
-      
+
       await expect(fetcher('/test', 'GET')).rejects.toThrow(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
