@@ -106,7 +106,6 @@ describe('createFetcher', () => {
         method: 'GET',
         headers: {
           Authorization: 'Bearer test-api-key',
-          'x-session-cache': '1',
         },
         body: undefined,
       })
@@ -130,7 +129,6 @@ describe('createFetcher', () => {
         headers: {
           Authorization: 'Bearer test-api-key',
           'Content-Type': 'application/json',
-          'x-session-cache': '1',
         },
         body: JSON.stringify(body),
       })
@@ -193,7 +191,6 @@ describe('createFetcher', () => {
         headers: {
           Authorization: 'Bearer test-api-key',
           'X-Custom-Header': 'custom-value',
-          'x-session-cache': '1',
         },
         body: undefined,
       })
