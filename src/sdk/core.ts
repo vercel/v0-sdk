@@ -5,6 +5,7 @@ export interface ClientConfig {
 
 export function createFetcher(config: ClientConfig = {}) {
   const baseUrl = config.baseUrl || 'https://api.v0.dev/v1'
+  let sessionToken: string | null = null
 
   return async function fetcher(
     url: string,
@@ -18,7 +19,7 @@ export function createFetcher(config: ClientConfig = {}) {
   ): Promise<any> {
     const apiKey = config.apiKey || process.env.V0_API_KEY
 
-    if (!apiKey) {
+    if (!apiKey && !sessionToken) {
       throw new Error(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
@@ -32,7 +33,9 @@ export function createFetcher(config: ClientConfig = {}) {
 
     const hasBody = method !== 'GET' && params.body
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: sessionToken
+        ? `Bearer ${sessionToken}`
+        : `Bearer ${apiKey}`,
       'x-session-cache': '1',
       ...params.headers,
     }
@@ -46,6 +49,12 @@ export function createFetcher(config: ClientConfig = {}) {
       headers,
       body: hasBody ? JSON.stringify(params.body) : undefined,
     })
+
+    // Check for session token in response headers
+    const newSessionToken = res.headers.get('x-session-token')
+    if (newSessionToken) {
+      sessionToken = newSessionToken
+    }
 
     if (!res.ok) {
       const text = await res.text()
