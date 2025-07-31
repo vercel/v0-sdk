@@ -318,7 +318,7 @@ describe('createFetcher', () => {
       // First request
       await fetcher('/test1', 'GET')
 
-      // Second request should use session token
+      // Second request should include both API key and session token
       await fetcher('/test2', 'GET')
 
       expect(mockFetch).toHaveBeenNthCalledWith(
@@ -336,7 +336,8 @@ describe('createFetcher', () => {
         'https://api.v0.dev/v1/test2',
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${sessionToken}`,
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
           }),
         }),
       )
@@ -388,7 +389,8 @@ describe('createFetcher', () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${firstSessionToken}`,
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': firstSessionToken,
           }),
         }),
       )
@@ -398,13 +400,14 @@ describe('createFetcher', () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${secondSessionToken}`,
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': secondSessionToken,
           }),
         }),
       )
     })
 
-    it('should work without API key if session token is already available', async () => {
+    it('should include both API key and session token in subsequent requests', async () => {
       const sessionToken = 'session-token-123'
 
       // First request with API key returns session token
@@ -414,7 +417,7 @@ describe('createFetcher', () => {
         headers: new Headers({ 'x-session-token': sessionToken }),
       })
 
-      // Second request without API key should still work with session token
+      // Second request should include both API key and session token
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ success: true }),
@@ -426,10 +429,7 @@ describe('createFetcher', () => {
       // First request to get session token
       await fetcher('/test1', 'GET')
 
-      // Simulate API key being removed/expired
-      delete process.env.V0_API_KEY
-
-      // Second request should still work with session token
+      // Second request should include both headers for fallback support
       const result = await fetcher('/test2', 'GET')
 
       expect(result).toEqual({ success: true })
@@ -438,7 +438,8 @@ describe('createFetcher', () => {
         'https://api.v0.dev/v1/test2',
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${sessionToken}`,
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
           }),
         }),
       )
@@ -473,7 +474,8 @@ describe('createFetcher', () => {
         'https://api.v0.dev/v1/test2',
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${sessionToken}`,
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
           }),
         }),
       )

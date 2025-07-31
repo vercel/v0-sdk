@@ -33,11 +33,14 @@ export function createFetcher(config: ClientConfig = {}) {
 
     const hasBody = method !== 'GET' && params.body
     const headers: Record<string, string> = {
-      Authorization: sessionToken
-        ? `Bearer ${sessionToken}`
-        : `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'x-session-cache': '1',
       ...params.headers,
+    }
+
+    // Include session token in headers if available
+    if (sessionToken) {
+      headers['x-session-token'] = sessionToken
     }
 
     if (hasBody) {
