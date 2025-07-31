@@ -50,6 +50,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher(config)
@@ -95,6 +96,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ data: 'test' }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -104,7 +106,6 @@ describe('createFetcher', () => {
         method: 'GET',
         headers: {
           Authorization: 'Bearer test-api-key',
-          'x-session-cache': '1',
         },
         body: undefined,
       })
@@ -115,6 +116,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -127,7 +129,6 @@ describe('createFetcher', () => {
         headers: {
           Authorization: 'Bearer test-api-key',
           'Content-Type': 'application/json',
-          'x-session-cache': '1',
         },
         body: JSON.stringify(body),
       })
@@ -137,6 +138,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ data: [] }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -156,6 +158,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ id: 'chat-123' }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -175,6 +178,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -187,7 +191,6 @@ describe('createFetcher', () => {
         headers: {
           Authorization: 'Bearer test-api-key',
           'X-Custom-Header': 'custom-value',
-          'x-session-cache': '1',
         },
         body: undefined,
       })
@@ -197,6 +200,7 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
       })
 
       const config: ClientConfig = {
@@ -226,6 +230,7 @@ describe('createFetcher', () => {
         ok: false,
         status: 400,
         text: () => Promise.resolve('Bad Request'),
+        headers: new Headers(),
       })
 
       const fetcher = createFetcher()
@@ -251,6 +256,7 @@ describe('createFetcher', () => {
           ok: false,
           status,
           text: () => Promise.resolve(`Error ${status}`),
+          headers: new Headers(),
         })
 
         const fetcher = createFetcher()
@@ -262,12 +268,224 @@ describe('createFetcher', () => {
     })
   })
 
+  describe('session token handling', () => {
+    beforeEach(() => {
+      process.env.V0_API_KEY = 'test-api-key'
+    })
+
+    it('should initially use API key for authorization', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
+      })
+
+      const fetcher = createFetcher()
+      await fetcher('/test', 'GET')
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.v0.dev/v1/test',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+          }),
+        }),
+      )
+    })
+
+    it('should use session token when received from server', async () => {
+      const sessionToken = 'session-token-123'
+
+      // First request returns session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers({ 'x-session-token': sessionToken }),
+      })
+
+      // Second request should use session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
+      })
+
+      const fetcher = createFetcher()
+
+      // First request
+      await fetcher('/test1', 'GET')
+
+      // Second request should include both API key and session token
+      await fetcher('/test2', 'GET')
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        'https://api.v0.dev/v1/test1',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+          }),
+        }),
+      )
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://api.v0.dev/v1/test2',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
+          }),
+        }),
+      )
+    })
+
+    it('should update session token when server provides a new one', async () => {
+      const firstSessionToken = 'session-token-123'
+      const secondSessionToken = 'session-token-456'
+
+      // First request returns first session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers({ 'x-session-token': firstSessionToken }),
+      })
+
+      // Second request returns second session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers({ 'x-session-token': secondSessionToken }),
+      })
+
+      // Third request should use the latest session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
+      })
+
+      const fetcher = createFetcher()
+
+      await fetcher('/test1', 'GET')
+      await fetcher('/test2', 'GET')
+      await fetcher('/test3', 'GET')
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+          }),
+        }),
+      )
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': firstSessionToken,
+          }),
+        }),
+      )
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        3,
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': secondSessionToken,
+          }),
+        }),
+      )
+    })
+
+    it('should include both API key and session token in subsequent requests', async () => {
+      const sessionToken = 'session-token-123'
+
+      // First request with API key returns session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers({ 'x-session-token': sessionToken }),
+      })
+
+      // Second request should include both API key and session token
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
+      })
+
+      const fetcher = createFetcher({ apiKey: 'test-api-key' })
+
+      // First request to get session token
+      await fetcher('/test1', 'GET')
+
+      // Second request should include both headers for fallback support
+      const result = await fetcher('/test2', 'GET')
+
+      expect(result).toEqual({ success: true })
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://api.v0.dev/v1/test2',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
+          }),
+        }),
+      )
+    })
+
+    it('should handle session token with error responses', async () => {
+      const sessionToken = 'session-token-123'
+
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve('Bad Request'),
+        headers: new Headers({ 'x-session-token': sessionToken }),
+      })
+
+      const fetcher = createFetcher()
+
+      await expect(fetcher('/test', 'GET')).rejects.toThrow(
+        'HTTP 400: Bad Request',
+      )
+
+      // Should still store the session token for future requests
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
+      })
+
+      await fetcher('/test2', 'GET')
+
+      expect(mockFetch).toHaveBeenLastCalledWith(
+        'https://api.v0.dev/v1/test2',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-api-key',
+            'x-session-token': sessionToken,
+          }),
+        }),
+      )
+    })
+  })
+
   describe('request methods', () => {
     beforeEach(() => {
       process.env.V0_API_KEY = 'test-api-key'
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
+        headers: new Headers(),
       })
     })
 
