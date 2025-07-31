@@ -19,7 +19,7 @@ export function createFetcher(config: ClientConfig = {}) {
   ): Promise<any> {
     const apiKey = config.apiKey || process.env.V0_API_KEY
 
-    if (!apiKey && !sessionToken) {
+    if (!apiKey) {
       throw new Error(
         'API key is required. Provide it via config.apiKey or V0_API_KEY environment variable',
       )
