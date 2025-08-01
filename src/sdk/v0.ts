@@ -386,6 +386,83 @@ export type AssistantMessageContentRichPart =
       error?: error
       id: id
       llmContent?: llmContent
+      type: 'task-read-file-v1'
+      parts: Array<
+        | {
+            type: 'starting-search-in-file'
+            query: string
+            pattern?: never
+            chunks?: never
+            numMatches?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+          }
+        | {
+            type: 'grepping-file'
+            pattern: string
+            query?: never
+            chunks?: never
+            numMatches?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+          }
+        | {
+            type: 'selected-chunks'
+            chunks: {
+              filePath: string
+              offset: number
+              limit: number
+            }[]
+            query?: never
+            pattern?: never
+            numMatches?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+          }
+        | {
+            type: 'grep-results'
+            numMatches: number
+            pattern: string
+            query?: never
+            chunks?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+          }
+        | {
+            type: 'reading-file'
+            filePath: string
+            offset?: number | null
+            limit?: number | null
+            query?: never
+            pattern?: never
+            chunks?: never
+            numMatches?: never
+          }
+        | {
+            type: 'parse-error'
+            query?: never
+            pattern?: never
+            chunks?: never
+            numMatches?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+          }
+      >
+    }
+  | {
+      createdAt: createdAt
+      finishedAt: finishedAt
+      lastPartSentAt: lastPartSentAt
+      taskNameActive?: taskNameActive
+      taskNameComplete?: taskNameComplete
+      error?: error
+      id: id
+      llmContent?: llmContent
       type: 'task-search-repo-v1'
       parts: Array<
         | {
@@ -396,6 +473,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -410,6 +488,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -424,6 +503,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -438,6 +518,7 @@ export type AssistantMessageContentRichPart =
             query?: never
             numFiles?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -452,6 +533,22 @@ export type AssistantMessageContentRichPart =
             path?: never
             numFiles?: never
             globPattern?: never
+            numFileMatches?: never
+            filePaths?: never
+            filePath?: never
+            offset?: never
+            limit?: never
+            result?: never
+          }
+        | {
+            type: 'grep-file-results'
+            numFileMatches: number
+            query?: never
+            path?: never
+            numFiles?: never
+            pattern?: never
+            globPattern?: never
+            numMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -467,6 +564,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePath?: never
             offset?: never
             limit?: never
@@ -483,6 +581,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             result?: never
           }
@@ -495,6 +594,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -508,6 +608,7 @@ export type AssistantMessageContentRichPart =
             pattern?: never
             globPattern?: never
             numMatches?: never
+            numFileMatches?: never
             filePaths?: never
             filePath?: never
             offset?: never
@@ -650,27 +751,35 @@ export type ChatDetail = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: {
       object: 'file'
       name: string
       content: string
+      locked: boolean
     }[]
   }
+  /** @deprecated */
   url: string
   messages: Array<{
     id: string
     object: 'message'
     content: string
     createdAt: string
+    updatedAt?: string
     type:
       | 'message'
       | 'forked-block'
@@ -689,6 +798,7 @@ export type ChatDetail = {
       | 'auto-fix-with-v0'
       | 'sync-git'
     role: 'user' | 'assistant'
+    apiUrl: string
   }>
   files?: {
     lang: string
@@ -713,15 +823,20 @@ export type ChatSummary = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
   }
 }
 
@@ -751,6 +866,7 @@ export interface FileDetail {
   object: 'file'
   name: string
   content: string
+  locked: boolean
 }
 
 export interface FileSummary {
@@ -804,26 +920,9 @@ export interface HookSummary {
 export type MessageDetail = {
   id: string
   object: 'message'
-  chatId: string
-  url: string
-  files: {
-    object: 'file'
-    name: string
-  }[]
-  demo?: string
-  text: string
-  modelConfiguration: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
-    imageGenerations?: boolean
-    thinking?: boolean
-  }
-}
-
-export type MessageSummary = {
-  id: string
-  object: 'message'
   content: string
   createdAt: string
+  updatedAt?: string
   type:
     | 'message'
     | 'forked-block'
@@ -842,6 +941,70 @@ export type MessageSummary = {
     | 'auto-fix-with-v0'
     | 'sync-git'
   role: 'user' | 'assistant'
+  apiUrl: string
+  chatId: string
+}
+
+export type MessageSummary = {
+  id: string
+  object: 'message'
+  content: string
+  createdAt: string
+  updatedAt?: string
+  type:
+    | 'message'
+    | 'forked-block'
+    | 'forked-chat'
+    | 'open-in-v0'
+    | 'refinement'
+    | 'added-environment-variables'
+    | 'added-integration'
+    | 'deleted-file'
+    | 'moved-file'
+    | 'renamed-file'
+    | 'edited-file'
+    | 'replace-src'
+    | 'reverted-block'
+    | 'fix-with-v0'
+    | 'auto-fix-with-v0'
+    | 'sync-git'
+  role: 'user' | 'assistant'
+  apiUrl: string
+}
+
+export type MessageSummaryList = {
+  object: 'list'
+  data: Array<{
+    id: string
+    object: 'message'
+    content: string
+    createdAt: string
+    updatedAt?: string
+    type:
+      | 'message'
+      | 'forked-block'
+      | 'forked-chat'
+      | 'open-in-v0'
+      | 'refinement'
+      | 'added-environment-variables'
+      | 'added-integration'
+      | 'deleted-file'
+      | 'moved-file'
+      | 'renamed-file'
+      | 'edited-file'
+      | 'replace-src'
+      | 'reverted-block'
+      | 'fix-with-v0'
+      | 'auto-fix-with-v0'
+      | 'sync-git'
+    role: 'user' | 'assistant'
+    apiUrl: string
+  }>
+  pagination: {
+    hasMore: boolean
+    nextCursor?: string
+    nextUrl?: string
+  }
 }
 
 export type ProjectDetail = {
@@ -853,6 +1016,8 @@ export type ProjectDetail = {
   updatedAt?: string
   apiUrl: string
   webUrl: string
+  description?: string
+  instructions?: string
   chats: Array<{
     id: string
     object: 'chat'
@@ -861,15 +1026,20 @@ export type ProjectDetail = {
     name?: string
     /** @deprecated */
     title?: string
+    createdAt: string
     updatedAt?: string
     favorite: boolean
     authorId: string
     projectId?: string
+    webUrl: string
+    apiUrl: string
     latestVersion?: {
       id: string
       object: 'version'
       status: 'pending' | 'completed' | 'failed'
       demoUrl?: string
+      createdAt: string
+      updatedAt?: string
     }
   }>
 }
@@ -926,10 +1096,13 @@ export type VersionDetail = {
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
   demoUrl?: string
+  createdAt: string
+  updatedAt?: string
   files: {
     object: 'file'
     name: string
     content: string
+    locked: boolean
   }[]
 }
 
@@ -938,6 +1111,25 @@ export type VersionSummary = {
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
   demoUrl?: string
+  createdAt: string
+  updatedAt?: string
+}
+
+export type VersionSummaryList = {
+  object: 'list'
+  data: Array<{
+    id: string
+    object: 'version'
+    status: 'pending' | 'completed' | 'failed'
+    demoUrl?: string
+    createdAt: string
+    updatedAt?: string
+  }>
+  pagination: {
+    hasMore: boolean
+    nextCursor?: string
+    nextUrl?: string
+  }
 }
 
 export interface ChatsCreateRequest {
@@ -974,15 +1166,18 @@ export type ChatsInitRequest = {
         | {
             name: string
             url: string
+            locked?: boolean
             content?: never
           }
         | {
             name: string
             content: string
+            locked?: boolean
             url?: never
           }
       >
       repo?: never
+      lockAllFiles?: never
       registry?: never
       zip?: never
     }
@@ -992,6 +1187,7 @@ export type ChatsInitRequest = {
         url: string
         branch?: string
       }
+      lockAllFiles?: boolean
       files?: never
       registry?: never
       zip?: never
@@ -1001,6 +1197,7 @@ export type ChatsInitRequest = {
       registry: {
         url: string
       }
+      lockAllFiles?: boolean
       files?: never
       repo?: never
       zip?: never
@@ -1010,6 +1207,7 @@ export type ChatsInitRequest = {
       zip: {
         url: string
       }
+      lockAllFiles?: boolean
       files?: never
       repo?: never
       registry?: never
@@ -1024,17 +1222,23 @@ export type ChatsInitResponse = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: FileDetail[]
   }
+  /** @deprecated */
   url: string
   messages: MessageSummary[]
   files?: {
@@ -1061,17 +1265,23 @@ export type ChatsGetByIdResponse = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: FileDetail[]
   }
+  /** @deprecated */
   url: string
   messages: MessageSummary[]
   files?: {
@@ -1097,17 +1307,23 @@ export type ChatsUpdateResponse = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: FileDetail[]
   }
+  /** @deprecated */
   url: string
   messages: MessageSummary[]
   files?: {
@@ -1142,17 +1358,23 @@ export type ChatsForkResponse = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: FileDetail[]
   }
+  /** @deprecated */
   url: string
   messages: MessageSummary[]
   files?: {
@@ -1166,6 +1388,16 @@ export type ChatsForkResponse = {
 }
 
 export type ProjectsGetByChatIdResponse = ProjectDetail
+
+export interface ChatsFindMessagesResponse {
+  object: 'list'
+  data: MessageSummary[]
+  pagination: {
+    hasMore: boolean
+    nextCursor?: string
+    nextUrl?: string
+  }
+}
 
 export interface ChatsSendMessageRequest {
   message: string
@@ -1188,17 +1420,23 @@ export type ChatsSendMessageResponse = {
   name?: string
   /** @deprecated */
   title?: string
+  createdAt: string
   updatedAt?: string
   favorite: boolean
   authorId: string
   projectId?: string
+  webUrl: string
+  apiUrl: string
   latestVersion?: {
     id: string
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    createdAt: string
+    updatedAt?: string
     files: FileDetail[]
   }
+  /** @deprecated */
   url: string
   messages: MessageSummary[]
   files?: {
@@ -1216,6 +1454,30 @@ export type ChatsSendMessageResponse = {
   }
   chatId: string
 }
+
+export type ChatsGetMessageResponse = MessageDetail
+
+export interface ChatsFindVersionsResponse {
+  object: 'list'
+  data: VersionSummary[]
+  pagination: {
+    hasMore: boolean
+    nextCursor?: string
+    nextUrl?: string
+  }
+}
+
+export type ChatsGetVersionResponse = VersionDetail
+
+export interface ChatsUpdateVersionRequest {
+  files: {
+    name: string
+    content: string
+    locked?: boolean
+  }[]
+}
+
+export type ChatsUpdateVersionResponse = VersionDetail
 
 export type ChatsResumeResponse = MessageDetail
 
@@ -1335,6 +1597,14 @@ export interface ProjectsCreateRequest {
 export type ProjectsCreateResponse = ProjectDetail
 
 export type ProjectsGetByIdResponse = ProjectDetail
+
+export interface ProjectsUpdateRequest {
+  name?: string
+  description?: string
+  instructions?: string
+}
+
+export type ProjectsUpdateResponse = ProjectDetail
 
 export interface ProjectsAssignRequest {
   chatId: string
@@ -1496,6 +1766,25 @@ export function createClient(config: V0ClientConfig = {}) {
         })
       },
 
+      async findMessages(params: {
+        chatId: string
+        limit?: string
+        cursor?: string
+      }): Promise<ChatsFindMessagesResponse> {
+        const pathParams = { chatId: params.chatId }
+        const query = Object.fromEntries(
+          Object.entries({
+            limit: params.limit,
+            cursor: params.cursor,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/chats/${pathParams.chatId}/messages`, 'GET', {
+          pathParams,
+          ...(hasQuery ? { query } : {}),
+        })
+      },
+
       async sendMessage(
         params: { chatId: string } & ChatsSendMessageRequest,
       ): Promise<ChatsSendMessageResponse> {
@@ -1510,6 +1799,73 @@ export function createClient(config: V0ClientConfig = {}) {
           pathParams,
           body,
         })
+      },
+
+      async getMessage(params: {
+        chatId: string
+        messageId: string
+      }): Promise<ChatsGetMessageResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          messageId: params.messageId,
+        }
+        return fetcher(
+          `/chats/${pathParams.chatId}/messages/${pathParams.messageId}`,
+          'GET',
+          { pathParams },
+        )
+      },
+
+      async findVersions(params: {
+        chatId: string
+        limit?: string
+        cursor?: string
+      }): Promise<ChatsFindVersionsResponse> {
+        const pathParams = { chatId: params.chatId }
+        const query = Object.fromEntries(
+          Object.entries({
+            limit: params.limit,
+            cursor: params.cursor,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/chats/${pathParams.chatId}/versions`, 'GET', {
+          pathParams,
+          ...(hasQuery ? { query } : {}),
+        })
+      },
+
+      async getVersion(params: {
+        chatId: string
+        versionId: string
+      }): Promise<ChatsGetVersionResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
+          'GET',
+          { pathParams },
+        )
+      },
+
+      async updateVersion(
+        params: {
+          chatId: string
+          versionId: string
+        } & ChatsUpdateVersionRequest,
+      ): Promise<ChatsUpdateVersionResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        const body = { files: params.files }
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
+          'PATCH',
+          { pathParams, body },
+        )
       },
 
       async resume(params: {
@@ -1561,6 +1917,21 @@ export function createClient(config: V0ClientConfig = {}) {
         const pathParams = { projectId: params.projectId }
         return fetcher(`/projects/${pathParams.projectId}`, 'GET', {
           pathParams,
+        })
+      },
+
+      async update(
+        params: { projectId: string } & ProjectsUpdateRequest,
+      ): Promise<ProjectsUpdateResponse> {
+        const pathParams = { projectId: params.projectId }
+        const body = {
+          name: params.name,
+          description: params.description,
+          instructions: params.instructions,
+        }
+        return fetcher(`/projects/${pathParams.projectId}`, 'PATCH', {
+          pathParams,
+          body,
         })
       },
 

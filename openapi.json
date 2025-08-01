@@ -810,6 +810,10 @@
                                     },
                                     "url": {
                                       "type": "string"
+                                    },
+                                    "locked": {
+                                      "type": "boolean",
+                                      "description": "Whether to lock this file to prevent AI from overwriting it during generation"
                                     }
                                   },
                                   "required": [
@@ -826,6 +830,10 @@
                                     },
                                     "content": {
                                       "type": "string"
+                                    },
+                                    "locked": {
+                                      "type": "boolean",
+                                      "description": "Whether to lock this file to prevent AI from overwriting it during generation"
                                     }
                                   },
                                   "required": [
@@ -869,6 +877,10 @@
                             ],
                             "additionalProperties": false,
                             "description": "Specifies a repository source for initialization. Should include relevant details like repository URL, branch, and authentication if needed."
+                          },
+                          "lockAllFiles": {
+                            "type": "boolean",
+                            "description": "Whether to lock all files in the repository to prevent AI from overwriting them during generation"
                           }
                         },
                         "required": [
@@ -897,6 +909,10 @@
                             ],
                             "additionalProperties": false,
                             "description": "Allows initialization from a predefined component or code registry. Includes the registry source and identifier for the desired component/module."
+                          },
+                          "lockAllFiles": {
+                            "type": "boolean",
+                            "description": "Whether to lock all files from the registry to prevent AI from overwriting them during generation"
                           }
                         },
                         "required": [
@@ -926,6 +942,10 @@
                             ],
                             "additionalProperties": false,
                             "description": "Provides a zipped bundle of files as the input source. Typically includes a base64-encoded archive or a remote URL reference."
+                          },
+                          "lockAllFiles": {
+                            "type": "boolean",
+                            "description": "Whether to lock all files from the zip archive to prevent AI from overwriting them during generation"
                           }
                         },
                         "required": [
@@ -982,6 +1002,11 @@
                       "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO timestamp representing when the chat was created."
+                    },
                     "updatedAt": {
                       "type": "string",
                       "description": "The ISO timestamp of the last update to the chat."
@@ -997,6 +1022,14 @@
                     "projectId": {
                       "type": "string",
                       "description": "Optional ID of the v0 project associated with this chat."
+                    },
+                    "webUrl": {
+                      "type": "string",
+                      "description": "Web URL to view this chat in the browser."
+                    },
+                    "apiUrl": {
+                      "type": "string",
+                      "description": "API URL to access this chat via the API."
                     },
                     "latestVersion": {
                       "type": "object",
@@ -1023,6 +1056,16 @@
                           "type": "string",
                           "description": "Optional URL for previewing the generated output."
                         },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was created, in ISO 8601 format."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was last updated, in ISO 8601 format."
+                        },
                         "files": {
                           "type": "array",
                           "items": {
@@ -1035,6 +1078,7 @@
                         "id",
                         "object",
                         "status",
+                        "createdAt",
                         "files"
                       ],
                       "additionalProperties": false,
@@ -1042,7 +1086,8 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "The canonical URL to access this chat."
+                      "description": "The canonical URL to access this chat.",
+                      "deprecated": true
                     },
                     "messages": {
                       "type": "array",
@@ -1096,8 +1141,11 @@
                     "object",
                     "shareable",
                     "privacy",
+                    "createdAt",
                     "favorite",
                     "authorId",
+                    "webUrl",
+                    "apiUrl",
                     "url",
                     "messages",
                     "text"
@@ -1748,6 +1796,11 @@
                       "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO timestamp representing when the chat was created."
+                    },
                     "updatedAt": {
                       "type": "string",
                       "description": "The ISO timestamp of the last update to the chat."
@@ -1763,6 +1816,14 @@
                     "projectId": {
                       "type": "string",
                       "description": "Optional ID of the v0 project associated with this chat."
+                    },
+                    "webUrl": {
+                      "type": "string",
+                      "description": "Web URL to view this chat in the browser."
+                    },
+                    "apiUrl": {
+                      "type": "string",
+                      "description": "API URL to access this chat via the API."
                     },
                     "latestVersion": {
                       "type": "object",
@@ -1789,6 +1850,16 @@
                           "type": "string",
                           "description": "Optional URL for previewing the generated output."
                         },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was created, in ISO 8601 format."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was last updated, in ISO 8601 format."
+                        },
                         "files": {
                           "type": "array",
                           "items": {
@@ -1801,6 +1872,7 @@
                         "id",
                         "object",
                         "status",
+                        "createdAt",
                         "files"
                       ],
                       "additionalProperties": false,
@@ -1808,7 +1880,8 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "The canonical URL to access this chat."
+                      "description": "The canonical URL to access this chat.",
+                      "deprecated": true
                     },
                     "messages": {
                       "type": "array",
@@ -1862,8 +1935,11 @@
                     "object",
                     "shareable",
                     "privacy",
+                    "createdAt",
                     "favorite",
                     "authorId",
+                    "webUrl",
+                    "apiUrl",
                     "url",
                     "messages",
                     "text"
@@ -2232,6 +2308,11 @@
                       "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO timestamp representing when the chat was created."
+                    },
                     "updatedAt": {
                       "type": "string",
                       "description": "The ISO timestamp of the last update to the chat."
@@ -2247,6 +2328,14 @@
                     "projectId": {
                       "type": "string",
                       "description": "Optional ID of the v0 project associated with this chat."
+                    },
+                    "webUrl": {
+                      "type": "string",
+                      "description": "Web URL to view this chat in the browser."
+                    },
+                    "apiUrl": {
+                      "type": "string",
+                      "description": "API URL to access this chat via the API."
                     },
                     "latestVersion": {
                       "type": "object",
@@ -2273,6 +2362,16 @@
                           "type": "string",
                           "description": "Optional URL for previewing the generated output."
                         },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was created, in ISO 8601 format."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was last updated, in ISO 8601 format."
+                        },
                         "files": {
                           "type": "array",
                           "items": {
@@ -2285,6 +2384,7 @@
                         "id",
                         "object",
                         "status",
+                        "createdAt",
                         "files"
                       ],
                       "additionalProperties": false,
@@ -2292,7 +2392,8 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "The canonical URL to access this chat."
+                      "description": "The canonical URL to access this chat.",
+                      "deprecated": true
                     },
                     "messages": {
                       "type": "array",
@@ -2346,8 +2447,11 @@
                     "object",
                     "shareable",
                     "privacy",
+                    "createdAt",
                     "favorite",
                     "authorId",
+                    "webUrl",
+                    "apiUrl",
                     "url",
                     "messages",
                     "text"
@@ -3048,6 +3152,11 @@
                       "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO timestamp representing when the chat was created."
+                    },
                     "updatedAt": {
                       "type": "string",
                       "description": "The ISO timestamp of the last update to the chat."
@@ -3063,6 +3172,14 @@
                     "projectId": {
                       "type": "string",
                       "description": "Optional ID of the v0 project associated with this chat."
+                    },
+                    "webUrl": {
+                      "type": "string",
+                      "description": "Web URL to view this chat in the browser."
+                    },
+                    "apiUrl": {
+                      "type": "string",
+                      "description": "API URL to access this chat via the API."
                     },
                     "latestVersion": {
                       "type": "object",
@@ -3089,6 +3206,16 @@
                           "type": "string",
                           "description": "Optional URL for previewing the generated output."
                         },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was created, in ISO 8601 format."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was last updated, in ISO 8601 format."
+                        },
                         "files": {
                           "type": "array",
                           "items": {
@@ -3101,6 +3228,7 @@
                         "id",
                         "object",
                         "status",
+                        "createdAt",
                         "files"
                       ],
                       "additionalProperties": false,
@@ -3108,7 +3236,8 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "The canonical URL to access this chat."
+                      "description": "The canonical URL to access this chat.",
+                      "deprecated": true
                     },
                     "messages": {
                       "type": "array",
@@ -3162,8 +3291,11 @@
                     "object",
                     "shareable",
                     "privacy",
+                    "createdAt",
                     "favorite",
                     "authorId",
+                    "webUrl",
+                    "apiUrl",
                     "url",
                     "messages",
                     "text"
@@ -3760,6 +3892,365 @@
       }
     },
     "/chats/{chatId}/messages": {
+      "get": {
+        "summary": "Find Chat Messages",
+        "description": "Retrieves a list of all messages for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes message content, role, and type information.",
+        "operationId": "chats.findMessages",
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MessageSummary"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "nextCursor": {
+                          "type": "string"
+                        },
+                        "nextUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "hasMore"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data",
+                    "pagination"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat to retrieve messages for. Provided as a path parameter."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 150,
+              "default": 20,
+              "description": "Specifies the maximum number of message records to return in a single response. Useful for paginating results when there are many messages."
+            },
+            "description": "Specifies the maximum number of message records to return in a single response. Useful for paginating results when there are many messages."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Base64 encoded cursor containing pagination data"
+            },
+            "description": "Base64 encoded cursor containing pagination data"
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
       "post": {
         "summary": "Send Message",
         "description": "Creates a new message in an existing chat. Triggers a model response using the provided prompt, with optional attachments and configuration settings.",
@@ -3880,6 +4371,11 @@
                       "description": "Deprecated title field preserved for backward compatibility.",
                       "deprecated": true
                     },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO timestamp representing when the chat was created."
+                    },
                     "updatedAt": {
                       "type": "string",
                       "description": "The ISO timestamp of the last update to the chat."
@@ -3895,6 +4391,14 @@
                     "projectId": {
                       "type": "string",
                       "description": "Optional ID of the v0 project associated with this chat."
+                    },
+                    "webUrl": {
+                      "type": "string",
+                      "description": "Web URL to view this chat in the browser."
+                    },
+                    "apiUrl": {
+                      "type": "string",
+                      "description": "API URL to access this chat via the API."
                     },
                     "latestVersion": {
                       "type": "object",
@@ -3921,6 +4425,16 @@
                           "type": "string",
                           "description": "Optional URL for previewing the generated output."
                         },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was created, in ISO 8601 format."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The date and time when the version was last updated, in ISO 8601 format."
+                        },
                         "files": {
                           "type": "array",
                           "items": {
@@ -3933,6 +4447,7 @@
                         "id",
                         "object",
                         "status",
+                        "createdAt",
                         "files"
                       ],
                       "additionalProperties": false,
@@ -3940,7 +4455,8 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "The canonical URL to access this chat."
+                      "description": "The canonical URL to access this chat.",
+                      "deprecated": true
                     },
                     "messages": {
                       "type": "array",
@@ -4025,8 +4541,11 @@
                     "object",
                     "shareable",
                     "privacy",
+                    "createdAt",
                     "favorite",
                     "authorId",
+                    "webUrl",
+                    "apiUrl",
                     "url",
                     "messages",
                     "text",
@@ -4313,6 +4832,1341 @@
               "type": "string"
             },
             "description": "The unique identifier of the chat to send the message to. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "get": {
+        "summary": "Get Chat Message",
+        "description": "Retrieves detailed information about a specific message within a chat, including content, files, model configuration, and demo URLs.",
+        "operationId": "chats.getMessage",
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the message. Provided as a path parameter."
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the message to retrieve. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/versions": {
+      "get": {
+        "summary": "Find Chat Versions",
+        "description": "Retrieves a list of all versions (iterations) for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes version status and demo URLs.",
+        "operationId": "chats.findVersions",
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VersionSummary"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "nextCursor": {
+                          "type": "string"
+                        },
+                        "nextUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "hasMore"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data",
+                    "pagination"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat to retrieve versions for. Provided as a path parameter."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 150,
+              "default": 20,
+              "description": "Specifies the maximum number of version records to return in a single response. Useful for paginating results when there are many versions."
+            },
+            "description": "Specifies the maximum number of version records to return in a single response. Useful for paginating results when there are many versions."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Base64 encoded cursor containing pagination data"
+            },
+            "description": "Base64 encoded cursor containing pagination data"
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/versions/{versionId}": {
+      "get": {
+        "summary": "Get Chat Version",
+        "description": "Retrieves detailed information about a specific version of a chat, including all files with their content and lock status.",
+        "operationId": "chats.getVersion",
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the version. Provided as a path parameter."
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the version to retrieve. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update Chat Version Files",
+        "description": "Updates the source files of a specific chat version (block) manually. This allows editing generated files directly through the API.",
+        "operationId": "chats.updateVersion",
+        "tags": [
+          "chats"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The full file path including extension (e.g., \"components/test.tsx\")"
+                        },
+                        "content": {
+                          "type": "string",
+                          "description": "The new content for the file"
+                        },
+                        "locked": {
+                          "type": "boolean",
+                          "description": "Whether to lock or unlock the file to prevent AI from overwriting it during generation"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "description": "Array of files to update with their new content"
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the version to update. Provided as a path parameter."
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the version (block) to update. Provided as a path parameter."
           }
         ],
         "security": [
@@ -9743,6 +11597,331 @@
             "apiKey": []
           }
         ]
+      },
+      "patch": {
+        "summary": "Update Project",
+        "description": "Updates the metadata of an existing project using its `projectId`. Supports changes to the project name and privacy setting.",
+        "operationId": "projects.update",
+        "tags": [
+          "projects"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A new name to assign to the project. Helps with identification and organization."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A new description to assign to the project. Helps with identification and organization."
+                  },
+                  "instructions": {
+                    "type": "string",
+                    "description": "Guidance or goals that provide context for the model when working within the project."
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the project to update. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/projects/{projectId}/assign": {
@@ -13099,6 +15278,189 @@
               },
               "type": {
                 "type": "string",
+                "const": "task-read-file-v1"
+              },
+              "parts": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "starting-search-in-file"
+                        },
+                        "query": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "query"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "grepping-file"
+                        },
+                        "pattern": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "pattern"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "selected-chunks"
+                        },
+                        "chunks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "filePath": {
+                                "type": "string"
+                              },
+                              "offset": {
+                                "type": "number"
+                              },
+                              "limit": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "filePath",
+                              "offset",
+                              "limit"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "chunks"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "grep-results"
+                        },
+                        "numMatches": {
+                          "type": "number"
+                        },
+                        "pattern": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "numMatches",
+                        "pattern"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "reading-file"
+                        },
+                        "filePath": {
+                          "type": "string"
+                        },
+                        "offset": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "limit": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "filePath"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "parse-error"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "createdAt",
+              "finishedAt",
+              "lastPartSentAt",
+              "id",
+              "type",
+              "parts"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "$ref": "#/anyOf/0/properties/createdAt"
+              },
+              "finishedAt": {
+                "$ref": "#/anyOf/0/properties/finishedAt"
+              },
+              "lastPartSentAt": {
+                "$ref": "#/anyOf/0/properties/lastPartSentAt"
+              },
+              "taskNameActive": {
+                "$ref": "#/anyOf/0/properties/taskNameActive"
+              },
+              "taskNameComplete": {
+                "$ref": "#/anyOf/0/properties/taskNameComplete"
+              },
+              "error": {
+                "$ref": "#/anyOf/0/properties/error"
+              },
+              "id": {
+                "$ref": "#/anyOf/0/properties/id"
+              },
+              "llmContent": {
+                "$ref": "#/anyOf/0/properties/llmContent"
+              },
+              "type": {
+                "type": "string",
                 "const": "task-search-repo-v1"
               },
               "parts": {
@@ -13196,6 +15558,23 @@
                         "type",
                         "numMatches",
                         "pattern"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "grep-file-results"
+                        },
+                        "numFileMatches": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "numFileMatches"
                       ],
                       "additionalProperties": false
                     },
@@ -13789,6 +16168,11 @@
             "description": "Deprecated title field preserved for backward compatibility.",
             "deprecated": true
           },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the chat was created."
+          },
           "updatedAt": {
             "type": "string",
             "description": "The ISO timestamp of the last update to the chat."
@@ -13804,6 +16188,14 @@
           "projectId": {
             "type": "string",
             "description": "Optional ID of the v0 project associated with this chat."
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "Web URL to view this chat in the browser."
+          },
+          "apiUrl": {
+            "type": "string",
+            "description": "API URL to access this chat via the API."
           },
           "latestVersion": {
             "type": "object",
@@ -13830,6 +16222,16 @@
                 "type": "string",
                 "description": "Optional URL for previewing the generated output."
               },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date and time when the version was created, in ISO 8601 format."
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date and time when the version was last updated, in ISO 8601 format."
+              },
               "files": {
                 "type": "array",
                 "items": {
@@ -13847,15 +16249,20 @@
                     "content": {
                       "type": "string",
                       "description": "The full contents of the file as a raw string."
+                    },
+                    "locked": {
+                      "type": "boolean",
+                      "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
                     }
                   },
                   "required": [
                     "object",
                     "name",
-                    "content"
+                    "content",
+                    "locked"
                   ],
                   "additionalProperties": false,
-                  "description": "Detailed representation of a file, including its content."
+                  "description": "Detailed representation of a file, including its content and lock status."
                 },
                 "description": "A list of files that were generated or included in this version."
               }
@@ -13864,6 +16271,7 @@
               "id",
               "object",
               "status",
+              "createdAt",
               "files"
             ],
             "additionalProperties": false,
@@ -13871,7 +16279,8 @@
           },
           "url": {
             "type": "string",
-            "description": "The canonical URL to access this chat."
+            "description": "The canonical URL to access this chat.",
+            "deprecated": true
           },
           "messages": {
             "type": "array",
@@ -13894,6 +16303,11 @@
                 "createdAt": {
                   "type": "string",
                   "description": "The ISO timestamp representing when the message was created."
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The ISO timestamp representing when the message was last updated."
                 },
                 "type": {
                   "type": "string",
@@ -13924,6 +16338,10 @@
                     "assistant"
                   ],
                   "description": "Specifies whether the message was sent by the user or the assistant."
+                },
+                "apiUrl": {
+                  "type": "string",
+                  "description": "API URL to access this message via the API."
                 }
               },
               "required": [
@@ -13932,10 +16350,11 @@
                 "content",
                 "createdAt",
                 "type",
-                "role"
+                "role",
+                "apiUrl"
               ],
               "additionalProperties": false,
-              "description": "Summary of a single message within a chat, including role, content, type, and timestamp."
+              "description": "Summary of a single message within a chat, including role, content, type, timestamp, and API URL."
             },
             "description": "All messages exchanged in the chat, including user and assistant entries."
           },
@@ -14010,8 +16429,11 @@
           "object",
           "shareable",
           "privacy",
+          "createdAt",
           "favorite",
           "authorId",
+          "webUrl",
+          "apiUrl",
           "url",
           "messages",
           "text",
@@ -14056,6 +16478,11 @@
             "description": "Deprecated title field preserved for backward compatibility.",
             "deprecated": true
           },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the chat was created."
+          },
           "updatedAt": {
             "type": "string",
             "description": "The ISO timestamp of the last update to the chat."
@@ -14071,6 +16498,14 @@
           "projectId": {
             "type": "string",
             "description": "Optional ID of the v0 project associated with this chat."
+          },
+          "webUrl": {
+            "type": "string",
+            "description": "Web URL to view this chat in the browser."
+          },
+          "apiUrl": {
+            "type": "string",
+            "description": "API URL to access this chat via the API."
           },
           "latestVersion": {
             "type": "object",
@@ -14096,12 +16531,23 @@
               "demoUrl": {
                 "type": "string",
                 "description": "Optional URL for previewing the generated output."
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date and time when the version was created, in ISO 8601 format."
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date and time when the version was last updated, in ISO 8601 format."
               }
             },
             "required": [
               "id",
               "object",
-              "status"
+              "status",
+              "createdAt"
             ],
             "additionalProperties": false,
             "description": "The most recent generated version of the chat, if available."
@@ -14112,11 +16558,14 @@
           "object",
           "shareable",
           "privacy",
+          "createdAt",
           "favorite",
-          "authorId"
+          "authorId",
+          "webUrl",
+          "apiUrl"
         ],
         "additionalProperties": false,
-        "description": "Summary of a chat, including metadata like privacy, author, and latest version."
+        "description": "Summary of a chat, including metadata like privacy, author, latest version, and URLs."
       },
       "DeploymentDetail": {
         "type": "object",
@@ -14235,15 +16684,20 @@
           "content": {
             "type": "string",
             "description": "The full contents of the file as a raw string."
+          },
+          "locked": {
+            "type": "boolean",
+            "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
           }
         },
         "required": [
           "object",
           "name",
-          "content"
+          "content",
+          "locked"
         ],
         "additionalProperties": false,
-        "description": "Detailed representation of a file, including its content."
+        "description": "Detailed representation of a file, including its content and lock status."
       },
       "FileSummary": {
         "type": "object",
@@ -14411,97 +16865,6 @@
             "const": "message",
             "description": "Fixed value identifying this object as a message."
           },
-          "chatId": {
-            "type": "string",
-            "description": "The ID of the chat to which this message belongs."
-          },
-          "url": {
-            "type": "string",
-            "description": "URL to access or view this message."
-          },
-          "files": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "object": {
-                  "type": "string",
-                  "const": "file",
-                  "description": "Fixed value identifying this object as a file."
-                },
-                "name": {
-                  "type": "string",
-                  "description": "The name of the file, including its extension."
-                }
-              },
-              "required": [
-                "object",
-                "name"
-              ],
-              "additionalProperties": false,
-              "description": "Basic metadata about a file, such as its type and name."
-            },
-            "description": "List of files attached to or referenced by this message."
-          },
-          "demo": {
-            "type": "string",
-            "description": "Optional preview URL for the output generated by this message."
-          },
-          "text": {
-            "type": "string",
-            "description": "The main prompt or text content submitted by the user."
-          },
-          "modelConfiguration": {
-            "type": "object",
-            "properties": {
-              "modelId": {
-                "type": "string",
-                "enum": [
-                  "v0-1.5-sm",
-                  "v0-1.5-md",
-                  "v0-1.5-lg"
-                ]
-              },
-              "imageGenerations": {
-                "type": "boolean",
-                "default": false
-              },
-              "thinking": {
-                "type": "boolean",
-                "default": false
-              }
-            },
-            "required": [
-              "modelId"
-            ],
-            "additionalProperties": false,
-            "description": "Model settings used to process and generate the message."
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "chatId",
-          "url",
-          "files",
-          "text",
-          "modelConfiguration"
-        ],
-        "additionalProperties": false,
-        "description": "Detailed message object containing content, metadata, and model configuration."
-      },
-      "MessageSummary": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A unique identifier for the message."
-          },
-          "object": {
-            "type": "string",
-            "const": "message",
-            "description": "Fixed value identifying this object as a message."
-          },
           "content": {
             "type": "string",
             "description": "The main text content of the message."
@@ -14509,6 +16872,11 @@
           "createdAt": {
             "type": "string",
             "description": "The ISO timestamp representing when the message was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the message was last updated."
           },
           "type": {
             "type": "string",
@@ -14539,6 +16907,14 @@
               "assistant"
             ],
             "description": "Specifies whether the message was sent by the user or the assistant."
+          },
+          "apiUrl": {
+            "type": "string",
+            "description": "API URL to access this message via the API."
+          },
+          "chatId": {
+            "type": "string",
+            "description": "The ID of the chat to which this message belongs."
           }
         },
         "required": [
@@ -14547,10 +16923,193 @@
           "content",
           "createdAt",
           "type",
-          "role"
+          "role",
+          "apiUrl",
+          "chatId"
         ],
         "additionalProperties": false,
-        "description": "Summary of a single message within a chat, including role, content, type, and timestamp."
+        "description": "Detailed message object extending MessageSummary with chat metadata."
+      },
+      "MessageSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the message."
+          },
+          "object": {
+            "type": "string",
+            "const": "message",
+            "description": "Fixed value identifying this object as a message."
+          },
+          "content": {
+            "type": "string",
+            "description": "The main text content of the message."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The ISO timestamp representing when the message was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The ISO timestamp representing when the message was last updated."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "message",
+              "forked-block",
+              "forked-chat",
+              "open-in-v0",
+              "refinement",
+              "added-environment-variables",
+              "added-integration",
+              "deleted-file",
+              "moved-file",
+              "renamed-file",
+              "edited-file",
+              "replace-src",
+              "reverted-block",
+              "fix-with-v0",
+              "auto-fix-with-v0",
+              "sync-git"
+            ],
+            "description": "Indicates the format or category of the message, such as plain text or code."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "description": "Specifies whether the message was sent by the user or the assistant."
+          },
+          "apiUrl": {
+            "type": "string",
+            "description": "API URL to access this message via the API."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "content",
+          "createdAt",
+          "type",
+          "role",
+          "apiUrl"
+        ],
+        "additionalProperties": false,
+        "description": "Summary of a single message within a chat, including role, content, type, timestamp, and API URL."
+      },
+      "MessageSummaryList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "A unique identifier for the message."
+                },
+                "object": {
+                  "type": "string",
+                  "const": "message",
+                  "description": "Fixed value identifying this object as a message."
+                },
+                "content": {
+                  "type": "string",
+                  "description": "The main text content of the message."
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "The ISO timestamp representing when the message was created."
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The ISO timestamp representing when the message was last updated."
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "message",
+                    "forked-block",
+                    "forked-chat",
+                    "open-in-v0",
+                    "refinement",
+                    "added-environment-variables",
+                    "added-integration",
+                    "deleted-file",
+                    "moved-file",
+                    "renamed-file",
+                    "edited-file",
+                    "replace-src",
+                    "reverted-block",
+                    "fix-with-v0",
+                    "auto-fix-with-v0",
+                    "sync-git"
+                  ],
+                  "description": "Indicates the format or category of the message, such as plain text or code."
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ],
+                  "description": "Specifies whether the message was sent by the user or the assistant."
+                },
+                "apiUrl": {
+                  "type": "string",
+                  "description": "API URL to access this message via the API."
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "content",
+                "createdAt",
+                "type",
+                "role",
+                "apiUrl"
+              ],
+              "additionalProperties": false,
+              "description": "Summary of a single message within a chat, including role, content, type, timestamp, and API URL."
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "hasMore": {
+                "type": "boolean"
+              },
+              "nextCursor": {
+                "type": "string"
+              },
+              "nextUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "hasMore"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "object",
+          "data",
+          "pagination"
+        ],
+        "additionalProperties": false,
+        "description": "List response containing multiple message summaries with cursor-based pagination."
       },
       "ProjectDetail": {
         "type": "object",
@@ -14592,6 +17151,14 @@
             "format": "uri",
             "description": "The web URL where the project can be viewed or managed."
           },
+          "description": {
+            "type": "string",
+            "description": "The description of the project."
+          },
+          "instructions": {
+            "type": "string",
+            "description": "The instructions for the project."
+          },
           "chats": {
             "type": "array",
             "items": {
@@ -14630,6 +17197,11 @@
                   "description": "Deprecated title field preserved for backward compatibility.",
                   "deprecated": true
                 },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The ISO timestamp representing when the chat was created."
+                },
                 "updatedAt": {
                   "type": "string",
                   "description": "The ISO timestamp of the last update to the chat."
@@ -14645,6 +17217,14 @@
                 "projectId": {
                   "type": "string",
                   "description": "Optional ID of the v0 project associated with this chat."
+                },
+                "webUrl": {
+                  "type": "string",
+                  "description": "Web URL to view this chat in the browser."
+                },
+                "apiUrl": {
+                  "type": "string",
+                  "description": "API URL to access this chat via the API."
                 },
                 "latestVersion": {
                   "type": "object",
@@ -14670,12 +17250,23 @@
                     "demoUrl": {
                       "type": "string",
                       "description": "Optional URL for previewing the generated output."
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date and time when the version was created, in ISO 8601 format."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date and time when the version was last updated, in ISO 8601 format."
                     }
                   },
                   "required": [
                     "id",
                     "object",
-                    "status"
+                    "status",
+                    "createdAt"
                   ],
                   "additionalProperties": false,
                   "description": "The most recent generated version of the chat, if available."
@@ -14686,11 +17277,14 @@
                 "object",
                 "shareable",
                 "privacy",
+                "createdAt",
                 "favorite",
-                "authorId"
+                "authorId",
+                "webUrl",
+                "apiUrl"
               ],
               "additionalProperties": false,
-              "description": "Summary of a chat, including metadata like privacy, author, and latest version."
+              "description": "Summary of a chat, including metadata like privacy, author, latest version, and URLs."
             },
             "description": "List of all chats that are associated with this project."
           }
@@ -14941,6 +17535,16 @@
             "type": "string",
             "description": "Optional URL for previewing the generated output."
           },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the version was created, in ISO 8601 format."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the version was last updated, in ISO 8601 format."
+          },
           "files": {
             "type": "array",
             "items": {
@@ -14958,15 +17562,20 @@
                 "content": {
                   "type": "string",
                   "description": "The full contents of the file as a raw string."
+                },
+                "locked": {
+                  "type": "boolean",
+                  "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
                 }
               },
               "required": [
                 "object",
                 "name",
-                "content"
+                "content",
+                "locked"
               ],
               "additionalProperties": false,
-              "description": "Detailed representation of a file, including its content."
+              "description": "Detailed representation of a file, including its content and lock status."
             },
             "description": "A list of files that were generated or included in this version."
           }
@@ -14975,6 +17584,7 @@
           "id",
           "object",
           "status",
+          "createdAt",
           "files"
         ],
         "additionalProperties": false,
@@ -15004,15 +17614,108 @@
           "demoUrl": {
             "type": "string",
             "description": "Optional URL for previewing the generated output."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the version was created, in ISO 8601 format."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the version was last updated, in ISO 8601 format."
           }
         },
         "required": [
           "id",
           "object",
-          "status"
+          "status",
+          "createdAt"
         ],
         "additionalProperties": false,
         "description": "Summary of a generated version of a chat, including its status and optional demo link."
+      },
+      "VersionSummaryList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "A unique identifier for the version."
+                },
+                "object": {
+                  "type": "string",
+                  "const": "version",
+                  "description": "Fixed value identifying this object as a version."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "completed",
+                    "failed"
+                  ],
+                  "description": "The current status of the version generation process."
+                },
+                "demoUrl": {
+                  "type": "string",
+                  "description": "Optional URL for previewing the generated output."
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The date and time when the version was created, in ISO 8601 format."
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The date and time when the version was last updated, in ISO 8601 format."
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "status",
+                "createdAt"
+              ],
+              "additionalProperties": false,
+              "description": "Summary of a generated version of a chat, including its status and optional demo link."
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "hasMore": {
+                "type": "boolean"
+              },
+              "nextCursor": {
+                "type": "string"
+              },
+              "nextUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "hasMore"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "object",
+          "data",
+          "pagination"
+        ],
+        "additionalProperties": false,
+        "description": "List response containing multiple version summaries with cursor-based pagination."
       }
     },
     "securitySchemes": {
