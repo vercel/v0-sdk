@@ -125,6 +125,13 @@ export const v0 = createClient();`
 
   fs.writeFileSync(path.join(outputPath, 'v0.ts'), sdk)
   console.log(`SDK written to ${outputPath}/v0.ts`)
+
+  // Generate index.ts with all exports
+  generateIndexFile(
+    operations,
+    openApiSpec.components?.schemas || {},
+    outputPath,
+  )
 }
 
 function buildNestedStructure(operations: Operation[]): any {
@@ -719,6 +726,94 @@ function toPascalCase(str: string): string {
         .join('')
     })
     .join('')
+}
+
+function generateIndexFile(
+  operations: Operation[],
+  schemas: any,
+  outputPath: string,
+) {
+  // Collect all exported type names
+  const exportedTypes = new Set<string>()
+
+  // Add schema types (except AssistantMessageContentRichPart)
+  if (schemas) {
+    for (const schemaName of Object.keys(schemas)) {
+      if (schemaName !== 'AssistantMessageContentRichPart') {
+        exportedTypes.add(schemaName)
+      }
+    }
+  }
+
+  // Add request and response types
+  for (const operation of operations) {
+    if (operation.bodyProps.length > 0 || operation.requestBodySchema) {
+      exportedTypes.add(`${toPascalCase(operation.operationId)}Request`)
+    }
+    if (operation.responseSchema) {
+      exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+    }
+  }
+
+  // Sort types alphabetically
+  const sortedTypes = Array.from(exportedTypes).sort()
+
+  // Group types by category for better organization
+  const coreEntityTypes: string[] = []
+  const requestTypes: string[] = []
+  const responseTypes: string[] = []
+  const otherTypes: string[] = []
+
+  for (const type of sortedTypes) {
+    if (type.endsWith('Request')) {
+      requestTypes.push(type)
+    } else if (type.endsWith('Response')) {
+      responseTypes.push(type)
+    } else if (
+      type.includes('Detail') ||
+      type.includes('Summary') ||
+      type.includes('List') ||
+      [
+        'UserDetail',
+        'ScopeSummary',
+        'SearchResultItem',
+        'FileDetail',
+        'FileSummary',
+      ].includes(type)
+    ) {
+      coreEntityTypes.push(type)
+    } else {
+      otherTypes.push(type)
+    }
+  }
+
+  // Generate the index.ts content
+  const indexContent = `export { v0, createClient, type V0ClientConfig } from './sdk/v0'
+
+// Export all schema types
+export type {
+  // Core entity types
+${coreEntityTypes.map((type) => `  ${type},`).join('\n')}
+
+  // Request types
+${requestTypes.map((type) => `  ${type},`).join('\n')}
+
+  // Response types
+${responseTypes.map((type) => `  ${type},`).join('\n')}${
+    otherTypes.length > 0
+      ? `
+
+  // Other types
+${otherTypes.map((type) => `  ${type},`).join('\n')}`
+      : ''
+  }
+} from './sdk/v0'
+`
+
+  // Write to src/index.ts (go up one level from outputPath)
+  const indexPath = path.join(path.dirname(outputPath), 'index.ts')
+  fs.writeFileSync(indexPath, indexContent)
+  console.log(`Index file written to ${indexPath}`)
 }
 
 // Main execution

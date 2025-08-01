@@ -65,7 +65,7 @@ export type ChatDetail = {
   /** @deprecated */
   demo?: string
   text: string
-  modelConfiguration: {
+  modelConfiguration?: {
     modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
     imageGenerations?: boolean
     thinking?: boolean
@@ -471,42 +471,7 @@ export type ChatsInitRequest = {
     }
 )
 
-export type ChatsInitResponse = {
-  id: string
-  object: 'chat'
-  shareable: boolean
-  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
-  name?: string
-  /** @deprecated */
-  title?: string
-  createdAt: string
-  updatedAt?: string
-  favorite: boolean
-  authorId: string
-  projectId?: string
-  webUrl: string
-  apiUrl: string
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    demoUrl?: string
-    createdAt: string
-    updatedAt?: string
-    files: FileDetail[]
-  }
-  /** @deprecated */
-  url: string
-  messages: MessageSummary[]
-  files?: {
-    lang: string
-    meta: Record<string, any>
-    source: string
-  }[]
-  /** @deprecated */
-  demo?: string
-  text: string
-}
+export type ChatsInitResponse = ChatDetail
 
 export interface ChatsDeleteResponse {
   id: string
@@ -514,84 +479,14 @@ export interface ChatsDeleteResponse {
   deleted: true
 }
 
-export type ChatsGetByIdResponse = {
-  id: string
-  object: 'chat'
-  shareable: boolean
-  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
-  name?: string
-  /** @deprecated */
-  title?: string
-  createdAt: string
-  updatedAt?: string
-  favorite: boolean
-  authorId: string
-  projectId?: string
-  webUrl: string
-  apiUrl: string
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    demoUrl?: string
-    createdAt: string
-    updatedAt?: string
-    files: FileDetail[]
-  }
-  /** @deprecated */
-  url: string
-  messages: MessageSummary[]
-  files?: {
-    lang: string
-    meta: Record<string, any>
-    source: string
-  }[]
-  /** @deprecated */
-  demo?: string
-  text: string
-}
+export type ChatsGetByIdResponse = ChatDetail
 
 export interface ChatsUpdateRequest {
   name?: string
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
 }
 
-export type ChatsUpdateResponse = {
-  id: string
-  object: 'chat'
-  shareable: boolean
-  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
-  name?: string
-  /** @deprecated */
-  title?: string
-  createdAt: string
-  updatedAt?: string
-  favorite: boolean
-  authorId: string
-  projectId?: string
-  webUrl: string
-  apiUrl: string
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    demoUrl?: string
-    createdAt: string
-    updatedAt?: string
-    files: FileDetail[]
-  }
-  /** @deprecated */
-  url: string
-  messages: MessageSummary[]
-  files?: {
-    lang: string
-    meta: Record<string, any>
-    source: string
-  }[]
-  /** @deprecated */
-  demo?: string
-  text: string
-}
+export type ChatsUpdateResponse = ChatDetail
 
 export interface ChatsFavoriteRequest {
   isFavorite: boolean
@@ -607,42 +502,7 @@ export interface ChatsForkRequest {
   versionId?: string
 }
 
-export type ChatsForkResponse = {
-  id: string
-  object: 'chat'
-  shareable: boolean
-  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
-  name?: string
-  /** @deprecated */
-  title?: string
-  createdAt: string
-  updatedAt?: string
-  favorite: boolean
-  authorId: string
-  projectId?: string
-  webUrl: string
-  apiUrl: string
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    demoUrl?: string
-    createdAt: string
-    updatedAt?: string
-    files: FileDetail[]
-  }
-  /** @deprecated */
-  url: string
-  messages: MessageSummary[]
-  files?: {
-    lang: string
-    meta: Record<string, any>
-    source: string
-  }[]
-  /** @deprecated */
-  demo?: string
-  text: string
-}
+export type ChatsForkResponse = ChatDetail
 
 export type ProjectsGetByChatIdResponse = ProjectDetail
 
@@ -669,48 +529,7 @@ export interface ChatsSendMessageRequest {
   responseMode?: 'sync' | 'async'
 }
 
-export type ChatsSendMessageResponse = {
-  id: string
-  object: 'chat'
-  shareable: boolean
-  privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
-  name?: string
-  /** @deprecated */
-  title?: string
-  createdAt: string
-  updatedAt?: string
-  favorite: boolean
-  authorId: string
-  projectId?: string
-  webUrl: string
-  apiUrl: string
-  latestVersion?: {
-    id: string
-    object: 'version'
-    status: 'pending' | 'completed' | 'failed'
-    demoUrl?: string
-    createdAt: string
-    updatedAt?: string
-    files: FileDetail[]
-  }
-  /** @deprecated */
-  url: string
-  messages: MessageSummary[]
-  files?: {
-    lang: string
-    meta: Record<string, any>
-    source: string
-  }[]
-  /** @deprecated */
-  demo?: string
-  text: string
-  modelConfiguration: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
-    imageGenerations?: boolean
-    thinking?: boolean
-  }
-  chatId: string
-}
+export type ChatsSendMessageResponse = ChatDetail
 
 export type ChatsGetMessageResponse = MessageDetail
 
