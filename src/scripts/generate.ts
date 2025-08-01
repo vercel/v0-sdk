@@ -277,6 +277,11 @@ function generateInterfaces(operations: Operation[], schemas: any): string {
   // Generate interfaces from components.schemas first
   if (schemas) {
     for (const [schemaName, schemaDefinition] of Object.entries(schemas)) {
+      // Skip AssistantMessageContentRichPart from the output
+      if (schemaName === 'AssistantMessageContentRichPart') {
+        continue
+      }
+
       if (!generatedTypes.has(schemaName)) {
         const tsType = schemaToTypeScript(schemaDefinition, schemas)
         if (tsType !== 'any') {
