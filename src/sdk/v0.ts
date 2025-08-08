@@ -119,6 +119,39 @@ export interface DeploymentSummary {
   webUrl: string
 }
 
+export interface EnvironmentVariableDetailSchema {
+  id: string
+  object: 'environment_variable'
+  key: string
+  value: string
+  decrypted: boolean
+  createdAt: number
+  updatedAt?: number
+}
+
+export interface EnvironmentVariableSummarySchema {
+  id: string
+  object: 'environment_variable'
+  key: string
+  value: string
+  decrypted: boolean
+  createdAt: number
+  updatedAt?: number
+}
+
+export interface EnvironmentVariablesListSchema {
+  object: 'list'
+  data: {
+    id: string
+    object: 'environment_variable'
+    key: string
+    value: string
+    decrypted: boolean
+    createdAt: number
+    updatedAt?: number
+  }[]
+}
+
 export interface FileDetail {
   object: 'file'
   name: string
@@ -692,6 +725,53 @@ export interface ProjectsAssignResponse {
   assigned: true
 }
 
+export interface ProjectsFindEnvVarsResponse {
+  object: 'list'
+  data: EnvironmentVariableSummarySchema[]
+}
+
+export interface ProjectsCreateEnvVarsRequest {
+  environmentVariables: {
+    key: string
+    value: string
+  }[]
+}
+
+export interface ProjectsCreateEnvVarsResponse {
+  object: 'list'
+  data: EnvironmentVariableSummarySchema[]
+}
+
+export interface ProjectsUpdateEnvVarsRequest {
+  environmentVariables: {
+    id: string
+    value: string
+  }[]
+}
+
+export interface ProjectsUpdateEnvVarsResponse {
+  object: 'list'
+  data: EnvironmentVariableSummarySchema[]
+}
+
+export interface ProjectsDeleteEnvVarsRequest {
+  environmentVariableIds: string[]
+}
+
+export interface ProjectsDeleteEnvVarsResponse {
+  object: 'list'
+  data: {
+    id: string
+    object: 'environment_variable'
+    deleted: true
+  }[]
+}
+
+export interface ProjectsGetEnvVarResponse {
+  object: 'environment_variable'
+  data: EnvironmentVariableDetailSchema
+}
+
 export interface RateLimitsFindResponse {
   remaining?: number
   reset?: number
@@ -1020,6 +1100,99 @@ export function createClient(config: V0ClientConfig = {}) {
           pathParams,
           body,
         })
+      },
+
+      async findEnvVars(params: {
+        projectId: string
+        decrypted?: string
+      }): Promise<ProjectsFindEnvVarsResponse> {
+        const pathParams = { projectId: params.projectId }
+        const query = Object.fromEntries(
+          Object.entries({
+            decrypted: params.decrypted,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/projects/${pathParams.projectId}/env-vars`, 'GET', {
+          pathParams,
+          ...(hasQuery ? { query } : {}),
+        })
+      },
+
+      async createEnvVars(
+        params: {
+          projectId: string
+          decrypted?: string
+        } & ProjectsCreateEnvVarsRequest,
+      ): Promise<ProjectsCreateEnvVarsResponse> {
+        const pathParams = { projectId: params.projectId }
+        const query = Object.fromEntries(
+          Object.entries({
+            decrypted: params.decrypted,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const body = { environmentVariables: params.environmentVariables }
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/projects/${pathParams.projectId}/env-vars`, 'POST', {
+          pathParams,
+          ...(hasQuery ? { query } : {}),
+          body,
+        })
+      },
+
+      async updateEnvVars(
+        params: {
+          projectId: string
+          decrypted?: string
+        } & ProjectsUpdateEnvVarsRequest,
+      ): Promise<ProjectsUpdateEnvVarsResponse> {
+        const pathParams = { projectId: params.projectId }
+        const query = Object.fromEntries(
+          Object.entries({
+            decrypted: params.decrypted,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const body = { environmentVariables: params.environmentVariables }
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/projects/${pathParams.projectId}/env-vars`, 'PATCH', {
+          pathParams,
+          ...(hasQuery ? { query } : {}),
+          body,
+        })
+      },
+
+      async deleteEnvVars(
+        params: { projectId: string } & ProjectsDeleteEnvVarsRequest,
+      ): Promise<ProjectsDeleteEnvVarsResponse> {
+        const pathParams = { projectId: params.projectId }
+        const body = { environmentVariableIds: params.environmentVariableIds }
+        return fetcher(
+          `/projects/${pathParams.projectId}/env-vars/delete`,
+          'POST',
+          { pathParams, body },
+        )
+      },
+
+      async getEnvVar(params: {
+        projectId: string
+        environmentVariableId: string
+        decrypted?: string
+      }): Promise<ProjectsGetEnvVarResponse> {
+        const pathParams = {
+          projectId: params.projectId,
+          environmentVariableId: params.environmentVariableId,
+        }
+        const query = Object.fromEntries(
+          Object.entries({
+            decrypted: params.decrypted,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(
+          `/projects/${pathParams.projectId}/env-vars/${pathParams.environmentVariableId}`,
+          'GET',
+          { pathParams, ...(hasQuery ? { query } : {}) },
+        )
       },
     },
 
