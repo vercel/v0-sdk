@@ -66,7 +66,7 @@ export type ChatDetail = {
   demo?: string
   text: string
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
+    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -153,7 +153,7 @@ export type HookDetail = {
 
 export type HookEventDetail = {
   id: string
-  object: 'hookEvent'
+  object: 'hook_event'
   event:
     | 'chat.created'
     | 'chat.updated'
@@ -398,7 +398,7 @@ export interface ChatsCreateRequest {
   chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
   projectId?: string
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
+    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -522,7 +522,7 @@ export interface ChatsSendMessageRequest {
     url: string
   }[]
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg'
+    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
   }
