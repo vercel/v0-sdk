@@ -301,6 +301,7 @@ export type ProjectDetail = {
   id: string
   object: 'project'
   name: string
+  privacy: 'private' | 'team'
   vercelProjectId?: string
   createdAt: string
   updatedAt?: string
@@ -334,10 +335,11 @@ export type ProjectDetail = {
   }>
 }
 
-export interface ProjectSummary {
+export type ProjectSummary = {
   id: string
   object: 'project'
   name: string
+  privacy: 'private' | 'team'
   vercelProjectId?: string
   createdAt: string
   updatedAt?: string
@@ -701,6 +703,8 @@ export interface ProjectsCreateRequest {
     value: string
   }[]
   instructions?: string
+  vercelProjectId?: string
+  privacy?: 'private' | 'team'
 }
 
 export type ProjectsCreateResponse = ProjectDetail
@@ -711,6 +715,7 @@ export interface ProjectsUpdateRequest {
   name?: string
   description?: string
   instructions?: string
+  privacy?: 'private' | 'team'
 }
 
 export type ProjectsUpdateResponse = ProjectDetail
@@ -735,6 +740,7 @@ export interface ProjectsCreateEnvVarsRequest {
     key: string
     value: string
   }[]
+  upsert?: boolean
 }
 
 export interface ProjectsCreateEnvVarsResponse {
@@ -1063,6 +1069,8 @@ export function createClient(config: V0ClientConfig = {}) {
           icon: params.icon,
           environmentVariables: params.environmentVariables,
           instructions: params.instructions,
+          vercelProjectId: params.vercelProjectId,
+          privacy: params.privacy,
         }
         return fetcher(`/projects`, 'POST', { body })
       },
@@ -1084,6 +1092,7 @@ export function createClient(config: V0ClientConfig = {}) {
           name: params.name,
           description: params.description,
           instructions: params.instructions,
+          privacy: params.privacy,
         }
         return fetcher(`/projects/${pathParams.projectId}`, 'PATCH', {
           pathParams,
@@ -1131,7 +1140,10 @@ export function createClient(config: V0ClientConfig = {}) {
             decrypted: params.decrypted,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
-        const body = { environmentVariables: params.environmentVariables }
+        const body = {
+          environmentVariables: params.environmentVariables,
+          upsert: params.upsert,
+        }
         const hasQuery = Object.keys(query).length > 0
         return fetcher(`/projects/${pathParams.projectId}/env-vars`, 'POST', {
           pathParams,

@@ -27,9 +27,7 @@ interface Operation {
 
 async function fetchOpenApiSpec(): Promise<any> {
   console.log('Fetching latest OpenAPI spec from local server...')
-  const response = await fetch(
-    'http://localhost:3002/api-proxy/v1/openapi.json',
-  )
+  const response = await fetch('https://api.v0.dev/v1/openapi.json')
 
   if (!response.ok) {
     throw new Error(

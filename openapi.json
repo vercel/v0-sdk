@@ -10053,6 +10053,18 @@
                     "type": "string",
                     "maxLength": 1000,
                     "description": "Guidance or goals that provide context for the model when working within the project."
+                  },
+                  "vercelProjectId": {
+                    "type": "string",
+                    "description": "The ID of an existing Vercel project to link to. If not provided, a new Vercel project will be created."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "enum": [
+                      "private",
+                      "team"
+                    ],
+                    "description": "The privacy setting for the project. For user accounts, this is always \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\"."
                   }
                 },
                 "required": [
@@ -10672,6 +10684,14 @@
                   "instructions": {
                     "type": "string",
                     "description": "Guidance or goals that provide context for the model when working within the project."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "enum": [
+                      "private",
+                      "team"
+                    ],
+                    "description": "The privacy setting for the project. For user accounts, this must be \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\"."
                   }
                 },
                 "additionalProperties": false
@@ -11648,7 +11668,7 @@
       },
       "post": {
         "summary": "Create Environment Variables",
-        "description": "Creates new environment variables for a given project. This endpoint will fail if any of the specified environment variable keys already exist.",
+        "description": "Creates new environment variables for a given project. This endpoint will fail if any of the specified environment variable keys already exist, unless upsert is set to true.",
         "operationId": "projects.createEnvVars",
         "tags": [
           "projects"
@@ -11683,6 +11703,10 @@
                     },
                     "minItems": 1,
                     "description": "An array of environment variables to create with key and value fields."
+                  },
+                  "upsert": {
+                    "type": "boolean",
+                    "description": "Whether to overwrite existing environment variables with the same keys. Defaults to false."
                   }
                 },
                 "required": [
@@ -15422,7 +15446,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -15469,7 +15494,8 @@
               ],
               "additionalProperties": false,
               "description": "Detailed information for an environment variable including its value."
-            }
+            },
+            "description": "Array of environment variable details."
           }
         },
         "required": [
@@ -15817,7 +15843,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -15892,25 +15919,30 @@
               ],
               "additionalProperties": false,
               "description": "Summary of a single message within a chat, including role, content, type, timestamp, and API URL."
-            }
+            },
+            "description": "Array of message summaries in this page of results."
           },
           "pagination": {
             "type": "object",
             "properties": {
               "hasMore": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "Indicates if there are more results available beyond this page."
               },
               "nextCursor": {
-                "type": "string"
+                "type": "string",
+                "description": "Cursor for fetching the next page of results."
               },
               "nextUrl": {
-                "type": "string"
+                "type": "string",
+                "description": "API URL for retrieving the next page of results."
               }
             },
             "required": [
               "hasMore"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Pagination metadata for navigating through multiple pages of results."
           }
         },
         "required": [
@@ -15936,6 +15968,14 @@
           "name": {
             "type": "string",
             "description": "The name of the project as defined by the user."
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "private",
+              "team"
+            ],
+            "description": "The privacy setting for the project - either private or team."
           },
           "vercelProjectId": {
             "type": "string",
@@ -16103,6 +16143,7 @@
           "id",
           "object",
           "name",
+          "privacy",
           "createdAt",
           "apiUrl",
           "webUrl",
@@ -16126,6 +16167,14 @@
           "name": {
             "type": "string",
             "description": "The name of the project as defined by the user."
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "private",
+              "team"
+            ],
+            "description": "The privacy setting for the project - either private or team."
           },
           "vercelProjectId": {
             "type": "string",
@@ -16156,6 +16205,7 @@
           "id",
           "object",
           "name",
+          "privacy",
           "createdAt",
           "apiUrl",
           "webUrl"
@@ -16450,7 +16500,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -16498,25 +16549,30 @@
               ],
               "additionalProperties": false,
               "description": "Summary of a generated version of a chat, including its status and optional demo link."
-            }
+            },
+            "description": "Array of version summaries in this page of results."
           },
           "pagination": {
             "type": "object",
             "properties": {
               "hasMore": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "Indicates if there are more results available beyond this page."
               },
               "nextCursor": {
-                "type": "string"
+                "type": "string",
+                "description": "Cursor for fetching the next page of results."
               },
               "nextUrl": {
-                "type": "string"
+                "type": "string",
+                "description": "API URL for retrieving the next page of results."
               }
             },
             "required": [
               "hasMore"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Pagination metadata for navigating through multiple pages of results."
           }
         },
         "required": [
@@ -16533,7 +16589,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "Your v0 API key. Get one at https://v0.dev/chat/settings/keys"
+        "description": "Your v0 API key. Get one at https://v0.app/chat/settings/keys"
       }
     }
   }
