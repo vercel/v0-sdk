@@ -397,10 +397,7 @@ export interface ProductDetailSchema {
   name: string
   description: string
   iconUrl: string
-  tags: string[]
-  private: boolean
   iconBackgroundColor?: string
-  shortBillingPlansDescription: string
 }
 
 export interface ProductListSchema {
@@ -412,10 +409,6 @@ export interface ProductListSchema {
     name: string
     description: string
     iconUrl: string
-    tags: string[]
-    private: boolean
-    iconBackgroundColor?: string
-    shortBillingPlansDescription: string
   }[]
 }
 
@@ -426,8 +419,6 @@ export interface ProductSummarySchema {
   name: string
   description: string
   iconUrl: string
-  tags: string[]
-  private: boolean
 }
 
 export type ProjectDetail = {
@@ -668,6 +659,7 @@ export interface ChatsFavoriteResponse {
 
 export interface ChatsForkRequest {
   versionId?: string
+  privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
 }
 
 export type ChatsForkResponse = ChatDetail
@@ -1047,7 +1039,7 @@ export function createClient(config: V0ClientConfig = {}) {
         params: { chatId: string } & ChatsForkRequest,
       ): Promise<ChatsForkResponse> {
         const pathParams = { chatId: params.chatId }
-        const body = { versionId: params.versionId }
+        const body = { versionId: params.versionId, privacy: params.privacy }
         return fetcher(`/chats/${pathParams.chatId}/fork`, 'POST', {
           pathParams,
           body,

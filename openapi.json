@@ -2553,6 +2553,18 @@
                     "type": "string",
                     "maxLength": 32,
                     "description": "The identifier of the specific chat version to fork from. If omitted, the latest version will be used."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ],
+                    "default": "private",
+                    "description": "Determines the privacy setting of the forked chat. This can control whether the chat is visible only to the user, to team members, or is public."
                   }
                 },
                 "additionalProperties": false
@@ -16334,24 +16346,9 @@
             "type": "string",
             "description": "URL to the product icon."
           },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Tags associated with the product."
-          },
-          "private": {
-            "type": "boolean",
-            "description": "Whether this is a private product."
-          },
           "iconBackgroundColor": {
             "type": "string",
             "description": "Background color for the product icon."
-          },
-          "shortBillingPlansDescription": {
-            "type": "string",
-            "description": "Short description of billing plans."
           }
         },
         "required": [
@@ -16360,10 +16357,7 @@
           "slug",
           "name",
           "description",
-          "iconUrl",
-          "tags",
-          "private",
-          "shortBillingPlansDescription"
+          "iconUrl"
         ],
         "additionalProperties": false,
         "description": "Detailed information about a marketplace or store product."
@@ -16404,25 +16398,6 @@
                 "iconUrl": {
                   "type": "string",
                   "description": "URL to the product icon."
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Tags associated with the product."
-                },
-                "private": {
-                  "type": "boolean",
-                  "description": "Whether this is a private product."
-                },
-                "iconBackgroundColor": {
-                  "type": "string",
-                  "description": "Background color for the product icon."
-                },
-                "shortBillingPlansDescription": {
-                  "type": "string",
-                  "description": "Short description of billing plans."
                 }
               },
               "required": [
@@ -16431,13 +16406,10 @@
                 "slug",
                 "name",
                 "description",
-                "iconUrl",
-                "tags",
-                "private",
-                "shortBillingPlansDescription"
+                "iconUrl"
               ],
               "additionalProperties": false,
-              "description": "Detailed information about a marketplace or store product."
+              "description": "Summary information about a marketplace or store product."
             }
           }
         },
@@ -16475,17 +16447,6 @@
           "iconUrl": {
             "type": "string",
             "description": "URL to the product icon."
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Tags associated with the product."
-          },
-          "private": {
-            "type": "boolean",
-            "description": "Whether this is a private product."
           }
         },
         "required": [
@@ -16494,9 +16455,7 @@
           "slug",
           "name",
           "description",
-          "iconUrl",
-          "tags",
-          "private"
+          "iconUrl"
         ],
         "additionalProperties": false,
         "description": "Summary information about a marketplace or store product."
