@@ -25,18 +25,16 @@ describe('v0.hooks.create', () => {
       object: 'hook',
       name: 'New Deployment Hook',
       url: 'https://example.com/webhook',
-      events: ['deployment.created', 'deployment.completed'],
+      events: ['chat.created', 'chat.updated'],
       chatId: 'chat-123',
-      projectId: 'project-123',
       createdAt: '2023-01-01T00:00:00Z',
     }
 
     const createParams = {
       name: 'New Deployment Hook',
       url: 'https://example.com/webhook',
-      events: ['deployment.created', 'deployment.completed'],
+      events: ['chat.created', 'chat.updated'],
       chatId: 'chat-123',
-      projectId: 'project-123',
     }
 
     mockFetcher.mockResolvedValue(mockResponse)
@@ -46,9 +44,8 @@ describe('v0.hooks.create', () => {
     expect(mockFetcher).toHaveBeenCalledWith('/hooks', 'POST', {
       body: {
         name: 'New Deployment Hook',
-        events: ['deployment.created', 'deployment.completed'],
+        events: ['chat.created', 'chat.updated'],
         chatId: 'chat-123',
-        projectId: 'project-123',
         url: 'https://example.com/webhook',
       },
     })
@@ -70,9 +67,8 @@ describe('v0.hooks.create', () => {
     const createParams = {
       name: 'Chat Hook',
       url: 'https://example.com/chat-webhook',
-      events: ['chat.message.created'],
+      events: ['message.created'],
       chatId: 'chat-456',
-      projectId: undefined,
     }
 
     mockFetcher.mockResolvedValue(mockResponse)
@@ -82,9 +78,8 @@ describe('v0.hooks.create', () => {
     expect(mockFetcher).toHaveBeenCalledWith('/hooks', 'POST', {
       body: {
         name: 'Chat Hook',
-        events: ['chat.message.created'],
+        events: ['message.created'],
         chatId: 'chat-456',
-        projectId: undefined,
         url: 'https://example.com/chat-webhook',
       },
     })
@@ -92,23 +87,20 @@ describe('v0.hooks.create', () => {
     expect(result).toEqual(mockResponse)
   })
 
-  it('should create a hook with project only', async () => {
+  it('should create a hook without chatId', async () => {
     const mockResponse = {
       id: 'hook-789',
       object: 'hook',
-      name: 'Project Hook',
-      url: 'https://api.example.com/hooks/project',
-      events: ['project.created', 'project.updated'],
-      projectId: 'project-789',
+      name: 'General Hook',
+      url: 'https://api.example.com/hooks/general',
+      events: ['chat.created', 'chat.deleted'],
       createdAt: '2023-01-03T00:00:00Z',
     }
 
     const createParams = {
-      name: 'Project Hook',
-      url: 'https://api.example.com/hooks/project',
-      events: ['project.created', 'project.updated'],
-      chatId: undefined,
-      projectId: 'project-789',
+      name: 'General Hook',
+      url: 'https://api.example.com/hooks/general',
+      events: ['chat.created', 'chat.deleted'],
     }
 
     mockFetcher.mockResolvedValue(mockResponse)
@@ -117,11 +109,9 @@ describe('v0.hooks.create', () => {
 
     expect(mockFetcher).toHaveBeenCalledWith('/hooks', 'POST', {
       body: {
-        name: 'Project Hook',
-        events: ['project.created', 'project.updated'],
-        chatId: undefined,
-        projectId: 'project-789',
-        url: 'https://api.example.com/hooks/project',
+        name: 'General Hook',
+        events: ['chat.created', 'chat.deleted'],
+        url: 'https://api.example.com/hooks/general',
       },
     })
 
@@ -134,17 +124,14 @@ describe('v0.hooks.create', () => {
       object: 'hook',
       name: 'Single Event Hook',
       url: 'https://api.example.com/single',
-      events: ['deployment.failed'],
-      projectId: 'project-single',
+      events: ['message.deleted'],
       createdAt: '2023-01-04T00:00:00Z',
     }
 
     const createParams = {
       name: 'Single Event Hook',
       url: 'https://api.example.com/single',
-      events: ['deployment.failed'],
-      chatId: undefined,
-      projectId: 'project-single',
+      events: ['message.deleted'],
     }
 
     mockFetcher.mockResolvedValue(mockResponse)
@@ -154,9 +141,7 @@ describe('v0.hooks.create', () => {
     expect(mockFetcher).toHaveBeenCalledWith('/hooks', 'POST', {
       body: {
         name: 'Single Event Hook',
-        events: ['deployment.failed'],
-        chatId: undefined,
-        projectId: 'project-single',
+        events: ['message.deleted'],
         url: 'https://api.example.com/single',
       },
     })

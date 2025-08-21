@@ -7769,7 +7769,7 @@
       },
       "post": {
         "summary": "Create Hook",
-        "description": "Creates a new webhook that listens for specific events. Supports optional association with a chat or project.",
+        "description": "Creates a new webhook that listens for specific events. Supports optional association with a chat.",
         "operationId": "hooks.create",
         "tags": [
           "hooks"
@@ -7795,10 +7795,7 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted",
-                        "project.created",
-                        "project.updated",
-                        "project.deleted"
+                        "message.deleted"
                       ]
                     },
                     "description": "List of event types the hook should subscribe to."
@@ -7807,12 +7804,9 @@
                     "type": "string",
                     "description": "The ID of a chat to scope the hook to."
                   },
-                  "projectId": {
-                    "type": "string",
-                    "description": "The ID of a project to scope the hook to."
-                  },
                   "url": {
                     "type": "string",
+                    "format": "uri",
                     "description": "The target URL to receive the webhook payloads."
                   }
                 },
@@ -8438,16 +8432,14 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted",
-                        "project.created",
-                        "project.updated",
-                        "project.deleted"
+                        "message.deleted"
                       ]
                     },
                     "description": "Updated list of event types to subscribe to."
                   },
                   "url": {
                     "type": "string",
+                    "format": "uri",
                     "description": "A new URL to send webhook payloads to."
                   }
                 },
@@ -15023,6 +15015,19 @@
                   ],
                   "description": "Specifies whether the message was sent by the user or the assistant."
                 },
+                "finishReason": {
+                  "type": "string",
+                  "enum": [
+                    "stop",
+                    "length",
+                    "content-filter",
+                    "tool-calls",
+                    "error",
+                    "other",
+                    "unknown"
+                  ],
+                  "description": "The reason why the message generation finished."
+                },
                 "apiUrl": {
                   "type": "string",
                   "description": "API URL to access this message via the API."
@@ -15581,10 +15586,7 @@
                 "chat.deleted",
                 "message.created",
                 "message.updated",
-                "message.deleted",
-                "project.created",
-                "project.updated",
-                "project.deleted"
+                "message.deleted"
               ]
             },
             "description": "List of event types this webhook is subscribed to."
@@ -15592,10 +15594,6 @@
           "chatId": {
             "type": "string",
             "description": "Optional ID of the chat that this webhook is scoped to."
-          },
-          "projectId": {
-            "type": "string",
-            "description": "Optional ID of the project that this webhook is scoped to."
           },
           "url": {
             "type": "string",
@@ -15632,10 +15630,7 @@
               "chat.deleted",
               "message.created",
               "message.updated",
-              "message.deleted",
-              "project.created",
-              "project.updated",
-              "project.deleted"
+              "message.deleted"
             ],
             "description": "The type of event that triggered the webhook."
           },
@@ -15688,6 +15683,325 @@
         ],
         "additionalProperties": false,
         "description": "Summary of a webhook, including its ID and display name."
+      },
+      "IntegrationConnectionDetailSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "integration_connection",
+            "description": "The object type."
+          },
+          "id": {
+            "type": "string",
+            "description": "The unique ID of the integration connection (format: {projectId}_{integrationId})."
+          },
+          "connected": {
+            "type": "boolean",
+            "description": "Whether the integration is connected to the project."
+          },
+          "integration": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the integration."
+              },
+              "object": {
+                "type": "string",
+                "const": "integration",
+                "description": "The object type."
+              },
+              "slug": {
+                "type": "string",
+                "description": "The slug of the integration."
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the integration."
+              }
+            },
+            "required": [
+              "id",
+              "object",
+              "slug",
+              "name"
+            ],
+            "additionalProperties": false,
+            "description": "Information about the connected integration."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Additional metadata about the integration connection."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "connected",
+          "integration"
+        ],
+        "additionalProperties": false,
+        "description": "Detailed information about an integration connection to a project."
+      },
+      "IntegrationConnectionListSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "object": {
+                  "type": "string",
+                  "const": "integration_connection",
+                  "description": "The object type."
+                },
+                "id": {
+                  "type": "string",
+                  "description": "The unique ID of the integration connection (format: {projectId}_{integrationId})."
+                },
+                "connected": {
+                  "type": "boolean",
+                  "description": "Whether the integration is connected to the project."
+                },
+                "integration": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the integration."
+                    },
+                    "object": {
+                      "type": "string",
+                      "const": "integration",
+                      "description": "The object type."
+                    },
+                    "slug": {
+                      "type": "string",
+                      "description": "The slug of the integration."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the integration."
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "slug",
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Information about the connected integration."
+                }
+              },
+              "required": [
+                "object",
+                "id",
+                "connected",
+                "integration"
+              ],
+              "additionalProperties": false,
+              "description": "Summary information about an integration connection to a project."
+            }
+          }
+        },
+        "required": [
+          "object",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "List response containing integration connections."
+      },
+      "IntegrationConnectionSummarySchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "integration_connection",
+            "description": "The object type."
+          },
+          "id": {
+            "type": "string",
+            "description": "The unique ID of the integration connection (format: {projectId}_{integrationId})."
+          },
+          "connected": {
+            "type": "boolean",
+            "description": "Whether the integration is connected to the project."
+          },
+          "integration": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the integration."
+              },
+              "object": {
+                "type": "string",
+                "const": "integration",
+                "description": "The object type."
+              },
+              "slug": {
+                "type": "string",
+                "description": "The slug of the integration."
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the integration."
+              }
+            },
+            "required": [
+              "id",
+              "object",
+              "slug",
+              "name"
+            ],
+            "additionalProperties": false,
+            "description": "Information about the connected integration."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "connected",
+          "integration"
+        ],
+        "additionalProperties": false,
+        "description": "Summary information about an integration connection to a project."
+      },
+      "IntegrationDetailSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the integration."
+          },
+          "object": {
+            "type": "string",
+            "const": "integration",
+            "description": "The object type."
+          },
+          "slug": {
+            "type": "string",
+            "description": "The slug of the integration."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the integration."
+          },
+          "description": {
+            "type": "string",
+            "description": "A short description of the integration."
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "URL to the integration icon."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "slug",
+          "name",
+          "description",
+          "iconUrl"
+        ],
+        "additionalProperties": false,
+        "description": "Detailed information about an integration."
+      },
+      "IntegrationListSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the integration."
+                },
+                "object": {
+                  "type": "string",
+                  "const": "integration",
+                  "description": "The object type."
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "The slug of the integration."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the integration."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A short description of the integration."
+                },
+                "iconUrl": {
+                  "type": "string",
+                  "description": "URL to the integration icon."
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "slug",
+                "name",
+                "description",
+                "iconUrl"
+              ],
+              "additionalProperties": false,
+              "description": "Detailed information about an integration."
+            }
+          }
+        },
+        "required": [
+          "object",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "List of available integrations."
+      },
+      "IntegrationSummarySchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the integration."
+          },
+          "object": {
+            "type": "string",
+            "const": "integration",
+            "description": "The object type."
+          },
+          "slug": {
+            "type": "string",
+            "description": "The slug of the integration."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the integration."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "slug",
+          "name"
+        ],
+        "additionalProperties": false,
+        "description": "Basic information about an integration."
       },
       "MessageDetail": {
         "type": "object",
@@ -15743,6 +16057,19 @@
               "assistant"
             ],
             "description": "Specifies whether the message was sent by the user or the assistant."
+          },
+          "finishReason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "content-filter",
+              "tool-calls",
+              "error",
+              "other",
+              "unknown"
+            ],
+            "description": "The reason why the message generation finished."
           },
           "apiUrl": {
             "type": "string",
@@ -15820,6 +16147,19 @@
               "assistant"
             ],
             "description": "Specifies whether the message was sent by the user or the assistant."
+          },
+          "finishReason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "content-filter",
+              "tool-calls",
+              "error",
+              "other",
+              "unknown"
+            ],
+            "description": "The reason why the message generation finished."
           },
           "apiUrl": {
             "type": "string",
@@ -15903,6 +16243,19 @@
                   ],
                   "description": "Specifies whether the message was sent by the user or the assistant."
                 },
+                "finishReason": {
+                  "type": "string",
+                  "enum": [
+                    "stop",
+                    "length",
+                    "content-filter",
+                    "tool-calls",
+                    "error",
+                    "other",
+                    "unknown"
+                  ],
+                  "description": "The reason why the message generation finished."
+                },
                 "apiUrl": {
                   "type": "string",
                   "description": "API URL to access this message via the API."
@@ -15952,6 +16305,201 @@
         ],
         "additionalProperties": false,
         "description": "List response containing multiple message summaries with cursor-based pagination."
+      },
+      "ProductDetailSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "product",
+            "description": "The object type."
+          },
+          "id": {
+            "type": "string",
+            "description": "The unique ID of the product."
+          },
+          "slug": {
+            "type": "string",
+            "description": "The URL-friendly slug of the product."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the product."
+          },
+          "description": {
+            "type": "string",
+            "description": "A short description of the product."
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "URL to the product icon."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags associated with the product."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether this is a private product."
+          },
+          "iconBackgroundColor": {
+            "type": "string",
+            "description": "Background color for the product icon."
+          },
+          "shortBillingPlansDescription": {
+            "type": "string",
+            "description": "Short description of billing plans."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "slug",
+          "name",
+          "description",
+          "iconUrl",
+          "tags",
+          "private",
+          "shortBillingPlansDescription"
+        ],
+        "additionalProperties": false,
+        "description": "Detailed information about a marketplace or store product."
+      },
+      "ProductListSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "object": {
+                  "type": "string",
+                  "const": "product",
+                  "description": "The object type."
+                },
+                "id": {
+                  "type": "string",
+                  "description": "The unique ID of the product."
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "The URL-friendly slug of the product."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the product."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A short description of the product."
+                },
+                "iconUrl": {
+                  "type": "string",
+                  "description": "URL to the product icon."
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Tags associated with the product."
+                },
+                "private": {
+                  "type": "boolean",
+                  "description": "Whether this is a private product."
+                },
+                "iconBackgroundColor": {
+                  "type": "string",
+                  "description": "Background color for the product icon."
+                },
+                "shortBillingPlansDescription": {
+                  "type": "string",
+                  "description": "Short description of billing plans."
+                }
+              },
+              "required": [
+                "object",
+                "id",
+                "slug",
+                "name",
+                "description",
+                "iconUrl",
+                "tags",
+                "private",
+                "shortBillingPlansDescription"
+              ],
+              "additionalProperties": false,
+              "description": "Detailed information about a marketplace or store product."
+            }
+          }
+        },
+        "required": [
+          "object",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "List of available marketplace and store products."
+      },
+      "ProductSummarySchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "product",
+            "description": "The object type."
+          },
+          "id": {
+            "type": "string",
+            "description": "The unique ID of the product."
+          },
+          "slug": {
+            "type": "string",
+            "description": "The URL-friendly slug of the product."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the product."
+          },
+          "description": {
+            "type": "string",
+            "description": "A short description of the product."
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "URL to the product icon."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags associated with the product."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether this is a private product."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "slug",
+          "name",
+          "description",
+          "iconUrl",
+          "tags",
+          "private"
+        ],
+        "additionalProperties": false,
+        "description": "Summary information about a marketplace or store product."
       },
       "ProjectDetail": {
         "type": "object",

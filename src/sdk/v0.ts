@@ -55,6 +55,14 @@ export type ChatDetail = {
       | 'auto-fix-with-v0'
       | 'sync-git'
     role: 'user' | 'assistant'
+    finishReason?:
+      | 'stop'
+      | 'length'
+      | 'content-filter'
+      | 'tool-calls'
+      | 'error'
+      | 'other'
+      | 'unknown'
     apiUrl: string
   }>
   files?: {
@@ -175,12 +183,8 @@ export type HookDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
-    | 'project.created'
-    | 'project.updated'
-    | 'project.deleted'
   >
   chatId?: string
-  projectId?: string
   url: string
 }
 
@@ -194,9 +198,6 @@ export type HookEventDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
-    | 'project.created'
-    | 'project.updated'
-    | 'project.deleted'
   status?: 'pending' | 'success' | 'error'
   createdAt: string
 }
@@ -204,6 +205,74 @@ export type HookEventDetail = {
 export interface HookSummary {
   id: string
   object: 'hook'
+  name: string
+}
+
+export interface IntegrationConnectionDetailSchema {
+  object: 'integration_connection'
+  id: string
+  connected: boolean
+  integration: {
+    id: string
+    object: 'integration'
+    slug: string
+    name: string
+  }
+  metadata?: Record<string, any>
+}
+
+export interface IntegrationConnectionListSchema {
+  object: 'list'
+  data: {
+    object: 'integration_connection'
+    id: string
+    connected: boolean
+    integration: {
+      id: string
+      object: 'integration'
+      slug: string
+      name: string
+    }
+  }[]
+}
+
+export interface IntegrationConnectionSummarySchema {
+  object: 'integration_connection'
+  id: string
+  connected: boolean
+  integration: {
+    id: string
+    object: 'integration'
+    slug: string
+    name: string
+  }
+}
+
+export interface IntegrationDetailSchema {
+  id: string
+  object: 'integration'
+  slug: string
+  name: string
+  description: string
+  iconUrl: string
+}
+
+export interface IntegrationListSchema {
+  object: 'list'
+  data: {
+    id: string
+    object: 'integration'
+    slug: string
+    name: string
+    description: string
+    iconUrl: string
+  }[]
+}
+
+export interface IntegrationSummarySchema {
+  id: string
+  object: 'integration'
+  slug: string
   name: string
 }
 
@@ -231,6 +300,14 @@ export type MessageDetail = {
     | 'auto-fix-with-v0'
     | 'sync-git'
   role: 'user' | 'assistant'
+  finishReason?:
+    | 'stop'
+    | 'length'
+    | 'content-filter'
+    | 'tool-calls'
+    | 'error'
+    | 'other'
+    | 'unknown'
   apiUrl: string
   chatId: string
 }
@@ -259,6 +336,14 @@ export type MessageSummary = {
     | 'auto-fix-with-v0'
     | 'sync-git'
   role: 'user' | 'assistant'
+  finishReason?:
+    | 'stop'
+    | 'length'
+    | 'content-filter'
+    | 'tool-calls'
+    | 'error'
+    | 'other'
+    | 'unknown'
   apiUrl: string
 }
 
@@ -288,6 +373,14 @@ export type MessageSummaryList = {
       | 'auto-fix-with-v0'
       | 'sync-git'
     role: 'user' | 'assistant'
+    finishReason?:
+      | 'stop'
+      | 'length'
+      | 'content-filter'
+      | 'tool-calls'
+      | 'error'
+      | 'other'
+      | 'unknown'
     apiUrl: string
   }>
   pagination: {
@@ -295,6 +388,46 @@ export type MessageSummaryList = {
     nextCursor?: string
     nextUrl?: string
   }
+}
+
+export interface ProductDetailSchema {
+  object: 'product'
+  id: string
+  slug: string
+  name: string
+  description: string
+  iconUrl: string
+  tags: string[]
+  private: boolean
+  iconBackgroundColor?: string
+  shortBillingPlansDescription: string
+}
+
+export interface ProductListSchema {
+  object: 'list'
+  data: {
+    object: 'product'
+    id: string
+    slug: string
+    name: string
+    description: string
+    iconUrl: string
+    tags: string[]
+    private: boolean
+    iconBackgroundColor?: string
+    shortBillingPlansDescription: string
+  }[]
+}
+
+export interface ProductSummarySchema {
+  object: 'product'
+  id: string
+  slug: string
+  name: string
+  description: string
+  iconUrl: string
+  tags: string[]
+  private: boolean
 }
 
 export type ProjectDetail = {
@@ -640,12 +773,8 @@ export interface HooksCreateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
-    | 'project.created'
-    | 'project.updated'
-    | 'project.deleted'
   >
   chatId?: string
-  projectId?: string
   url: string
 }
 
@@ -662,9 +791,6 @@ export interface HooksUpdateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
-    | 'project.created'
-    | 'project.updated'
-    | 'project.deleted'
   >
   url?: string
 }
@@ -1292,7 +1418,6 @@ export function createClient(config: V0ClientConfig = {}) {
           name: params.name,
           events: params.events,
           chatId: params.chatId,
-          projectId: params.projectId,
           url: params.url,
         }
         return fetcher(`/hooks`, 'POST', { body })
