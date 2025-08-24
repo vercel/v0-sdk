@@ -119,7 +119,6 @@ The project includes GitHub Actions workflows:
   - Runs type checking
   - Runs tests
   - Checks code formatting
-  - Automatically publishes releases on main branch
 
 - **SDK Generation** (`generate-sdk.yml`):
   - Runs daily to check for OpenAPI spec updates

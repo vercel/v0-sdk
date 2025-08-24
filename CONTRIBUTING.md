@@ -176,12 +176,12 @@ Our CI pipeline runs on every push and pull request:
 
 ## Release Process
 
-Releases are automated using [Changesets](https://github.com/changesets/changesets):
+Releases use [Changesets](https://github.com/changesets/changesets) for version management:
 
 1. Contributors create changesets describing their changes
 2. Changesets are merged with PRs
-3. A release PR is automatically created when changesets accumulate
-4. Merging the release PR publishes new versions to npm
+3. When ready to release, run `pnpm version-packages` to update versions
+4. Manually run `pnpm release` to build and publish to npm
 
 ## Getting Help
 
