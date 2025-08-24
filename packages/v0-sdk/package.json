@@ -1,0 +1,54 @@
+{
+  "name": "@v0/sdk",
+  "version": "0.8.0",
+  "description": "TypeScript SDK for the v0 Platform API",
+  "homepage": "https://v0.dev/docs/api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vercel/v0-sdk.git"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:go": "tsgo --noEmit",
+    "build": "bunchee",
+    "sdk:generate": "tsx src/scripts/generate.ts && pnpm format",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "v0",
+    "vercel",
+    "ai",
+    "chat",
+    "sdk"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.12.0",
+    "@typescript/native-preview": "7.0.0-dev.20250613.1",
+    "bunchee": "^6.5.2",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "5.7.3",
+    "vitest": "^3.2.4"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
+}

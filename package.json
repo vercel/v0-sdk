@@ -1,49 +1,32 @@
 {
-  "name": "v0-sdk",
+  "name": "v0-sdk-monorepo",
   "version": "0.8.0",
-  "description": "TypeScript SDK for the v0 Platform API",
+  "private": true,
+  "description": "Monorepo for v0 Platform SDKs",
   "homepage": "https://v0.dev/docs/api",
   "repository": {
     "type": "git",
     "url": "https://github.com/vercel/v0-sdk.git"
   },
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": [
-    "dist"
-  ],
+
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "type-check:go": "tsgo --noEmit",
-    "build": "bunchee",
-    "generate": "tsx src/scripts/generate.ts && pnpm format",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "vitest"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "type-check": "turbo type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "sdk:generate": "turbo run sdk:generate"
   },
-  "keywords": [
-    "v0",
-    "vercel",
-    "ai",
-    "chat",
-    "sdk"
-  ],
-  "license": "MIT",
   "devDependencies": {
-    "@types/node": "22.5.5",
-    "@typescript/native-preview": "7.0.0-dev.20250613.1",
-    "bunchee": "^6.5.2",
     "prettier": "^3.3.3",
-    "tsx": "^4.19.2",
-    "typescript": "5.7.3",
-    "vitest": "^3.2.4"
+    "turbo": "^2.3.3",
+    "typescript": "5.7.3"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
   },
   "prettier": {
     "semi": false,
