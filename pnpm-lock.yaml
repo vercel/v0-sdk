@@ -121,9 +121,6 @@ importers:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.1.1(react@19.1.1)
     devDependencies:
-      '@types/prismjs':
-        specifier: ^1.26.0
-        version: 1.26.5
       '@types/react':
         specifier: ^18.2.0
         version: 18.3.24
