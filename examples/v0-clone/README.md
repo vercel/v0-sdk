@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# v0 clone
+
+An example of how to use the AI Elements to build a v0 clone.
+
+## Setup
+
+First, create a `.env.local` file in the root directory and add your v0 API key:
+
+```bash
+# Get your API key from https://v0.dev/chat/settings/keys
+V0_API_KEY=your_v0_api_key_here
+```
 
 ## Getting Started
 
-First, run the development server:
+Then, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This v0 clone includes:
 
-## Learn More
+- **AI Elements Integration**: Uses AI Elements components for a polished UI
+- **v0 SDK Integration**: Connects to the v0 Platform API for generating apps
+- **Real-time Preview**: Split-screen interface with chat and preview panels
+- **Conversation History**: Maintains chat history throughout the session
+- **Suggestion System**: Provides helpful prompts to get users started
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Add your v0 API key to `.env.local`
+2. Start the development server with `pnpm dev`
+3. Enter a prompt describing the app you want to build
+4. Watch as v0 generates your app in real-time in the preview panel
+5. Continue the conversation to iterate and improve your app
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Architecture
 
-## Deploy on Vercel
+- `app/page.tsx` - Main UI with chat interface and preview panel
+- `app/api/chat/route.ts` - API route handling v0 SDK integration
+- `components/ai-elements/` - AI Elements components for the UI
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+You now have a working v0 clone you can build off of! Feel free to explore the [v0 Platform API](https://v0.dev/docs/api/platform) and extend your app with additional features.

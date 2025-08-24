@@ -49,9 +49,9 @@ export default function ElegantPage() {
                       components={{
                         CodeBlock,
                         MathPart,
-                        ThinkingSection,
-                        TaskSection,
-                        CodeProjectPart,
+                        ThinkingSection: ThinkingSection as any,
+                        TaskSection: TaskSection as any,
+                        CodeProjectPart: CodeProjectPart as any,
 
                         // Elegant HTML styling
                         p: {
