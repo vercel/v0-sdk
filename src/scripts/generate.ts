@@ -668,6 +668,14 @@ function schemaToTypeScript(schema: any, schemas: any): string {
 
   // Handle arrays
   if (schema.type === 'array') {
+    // Handle tuple types (when items is an array)
+    if (Array.isArray(schema.items)) {
+      const tupleTypes = schema.items.map((itemSchema: any) =>
+        schemaToTypeScript(itemSchema, schemas),
+      )
+      return `[${tupleTypes.join(', ')}]`
+    }
+
     const itemType = schemaToTypeScript(schema.items, schemas)
     // If item type contains union (|), wrap in Array<> syntax for better readability
     if (itemType.includes(' | ')) {
@@ -688,6 +696,15 @@ function schemaToTypeScript(schema: any, schemas: any): string {
           return `${deprecatedComment}  ${key}${isRequired ? '' : '?'}: ${propType}`
         })
         .join('\n')
+
+      // Handle additionalProperties
+      if (schema.additionalProperties === true) {
+        const additionalProps = properties
+          ? '\n  [key: string]: any'
+          : '  [key: string]: any'
+        return `{\n${properties}${additionalProps}\n}`
+      }
+
       return `{\n${properties}\n}`
     }
     return 'Record<string, any>'
