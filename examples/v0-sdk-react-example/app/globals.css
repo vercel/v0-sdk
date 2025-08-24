@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme syntax highlighting for Prism.js */
+@import 'prismjs/themes/prism-dark.css';
+
+:root {
+  --background: 33 5% 13%; /* #212121 - Dark background like ChatGPT */
+  --foreground: 0 0% 90%; /* Light text */
+  --card: 33 5% 16%; /* Slightly lighter dark */
+  --card-foreground: 0 0% 90%;
+  --popover: 33 5% 13%;
+  --popover-foreground: 0 0% 90%;
+  --primary: 33 5% 16%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 18%; /* #2D2D2D */
+  --secondary-foreground: 0 0% 90%;
+  --muted: 0 0% 18%;
+  --muted-foreground: 0 0% 65%;
+  --accent: 0 0% 18%;
+  --accent-foreground: 0 0% 90%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 0 0% 25%; /* Dark border */
+  --input: 0 0% 18%;
+  --ring: 263 85% 70%; /* Purple accent */
+  --radius: 0.5rem;
+}
+
+/* Keep light theme variables for compatibility but default to dark */
+.light {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+/* Improved prose styling for dark theme */
+@layer components {
+  .prose-dark {
+    --tw-prose-body: theme(colors.gray.100);
+    --tw-prose-headings: theme(colors.white);
+    --tw-prose-lead: theme(colors.gray.300);
+    --tw-prose-links: theme(colors.cyan.400);
+    --tw-prose-bold: theme(colors.white);
+    --tw-prose-counters: theme(colors.gray.400);
+    --tw-prose-bullets: theme(colors.gray.600);
+    --tw-prose-hr: theme(colors.gray.700);
+    --tw-prose-quotes: theme(colors.gray.100);
+    --tw-prose-quote-borders: theme(colors.gray.700);
+    --tw-prose-captions: theme(colors.gray.400);
+    --tw-prose-code: theme(colors.cyan.300);
+    --tw-prose-pre-code: theme(colors.gray.200);
+    --tw-prose-pre-bg: theme(colors.gray.800);
+    --tw-prose-th-borders: theme(colors.gray.600);
+    --tw-prose-td-borders: theme(colors.gray.700);
+  }
+}

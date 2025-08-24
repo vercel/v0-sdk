@@ -1,1 +1,21 @@
+
+
+# Install dependencies
+echo "🔧 Installing dependencies..."
+pnpm i
+
+# Build all packages
+echo "🏗️  Building packages..."
+pnpm build
+
+# Type check
+echo "🔍 Type checking..."
+pnpm type-check
+
+# Run tests
+echo "🧪 Running tests..."
+pnpm test
+
+# Format and lint staged files
+echo "✨ Formatting staged files..."
 pnpm lint-staged
