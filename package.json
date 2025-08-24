@@ -20,10 +20,13 @@
     "sdk:generate": "turbo run sdk:generate",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo build && changeset publish"
+    "release": "turbo build && changeset publish",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
     "prettier": "^3.3.3",
     "turbo": "^2.3.3",
     "typescript": "5.7.3"
@@ -32,6 +35,11 @@
   "engines": {
     "node": ">=22",
     "pnpm": ">=9"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write"
+    ]
   },
   "prettier": {
     "semi": false,

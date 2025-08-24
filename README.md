@@ -95,6 +95,13 @@ pnpm test
 - `pnpm format` - Format code across all packages
 - `pnpm sdk:generate` - Generate SDK from OpenAPI spec
 
+### Code Quality
+
+The project includes automated code quality checks:
+
+- **Pre-commit hooks**: Automatically format code before commits using Husky and lint-staged
+- **CI formatting check**: Ensures all code is properly formatted in pull requests
+
 ### Release Management
 
 This project uses [Changesets](https://github.com/changesets/changesets) for version management and publishing:

@@ -79,6 +79,9 @@ jspm_packages/
 # Turbo
 .turbo
 
+# Husky
+.husky/_
+
 # IDE
 .vscode/
 .idea/
