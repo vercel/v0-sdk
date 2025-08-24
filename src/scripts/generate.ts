@@ -289,7 +289,7 @@ function generateInterfaces(operations: Operation[], schemas: any): string {
 
       if (!generatedTypes.has(schemaName)) {
         const tsType = schemaToTypeScript(schemaDefinition, schemas)
-        if (tsType !== 'any') {
+        if (tsType !== 'unknown') {
           if (tsType.includes(' | ')) {
             // It's a union type, use 'type' instead of 'interface'
             interfaces.push(`export type ${schemaName} = ${tsType}`)
@@ -330,7 +330,7 @@ ${properties}
             operation.requestBodySchema,
             schemas,
           )
-          if (tsType !== 'any') {
+          if (tsType !== 'unknown') {
             if (tsType.includes(' | ')) {
               // It's a union type, use 'type' instead of 'interface'
               interfaces.push(`export type ${interfaceName} = ${tsType}`)
@@ -352,7 +352,7 @@ ${properties}
       const interfaceName = `${toPascalCase(operation.operationId)}Response`
       if (!generatedTypes.has(interfaceName)) {
         const tsType = schemaToTypeScript(operation.responseSchema, schemas)
-        if (tsType !== 'any') {
+        if (tsType !== 'unknown') {
           if (tsType.includes(' | ')) {
             // It's a union type, use 'type' instead of 'interface'
             interfaces.push(`export type ${interfaceName} = ${tsType}`)
@@ -526,12 +526,12 @@ function transformPath(route: string): string {
 }
 
 function schemaToTypeScript(schema: any, schemas: any): string {
-  if (!schema) return 'any'
+  if (!schema) return 'unknown'
 
   // Handle references
   if (schema.$ref) {
     const refName = schema.$ref.split('/').pop()
-    return refName || 'any'
+    return refName || 'unknown'
   }
 
   // Handle const values (literal types)
@@ -660,8 +660,8 @@ function schemaToTypeScript(schema: any, schemas: any): string {
       if (type === 'number' || type === 'integer') return 'number'
       if (type === 'boolean') return 'boolean'
       if (type === 'object') return 'object'
-      if (type === 'array') return 'any[]'
-      return 'any'
+      if (type === 'array') return 'unknown[]'
+      return 'unknown'
     })
     return unionTypes.join(' | ')
   }
@@ -700,14 +700,14 @@ function schemaToTypeScript(schema: any, schemas: any): string {
       // Handle additionalProperties
       if (schema.additionalProperties === true) {
         const additionalProps = properties
-          ? '\n  [key: string]: any'
-          : '  [key: string]: any'
+          ? '\n  [key: string]: unknown'
+          : '  [key: string]: unknown'
         return `{\n${properties}${additionalProps}\n}`
       }
 
       return `{\n${properties}\n}`
     }
-    return 'Record<string, any>'
+    return 'Record<string, unknown>'
   }
 
   // Handle enums
@@ -725,7 +725,7 @@ function schemaToTypeScript(schema: any, schemas: any): string {
     case 'boolean':
       return 'boolean'
     default:
-      return 'any'
+      return 'unknown'
   }
 }
 
