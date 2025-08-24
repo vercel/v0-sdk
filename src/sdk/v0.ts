@@ -35,6 +35,16 @@ export type ChatDetail = {
     id: string
     object: 'message'
     content: string
+    experimental_content?: Array<
+      | [0, unknown[]]
+      | [
+          1,
+          {
+            title?: string
+            [key: string]: unknown
+          },
+        ]
+    >
     createdAt: string
     updatedAt?: string
     type:
@@ -280,6 +290,16 @@ export type MessageDetail = {
   id: string
   object: 'message'
   content: string
+  experimental_content?: Array<
+    | [0, unknown[]]
+    | [
+        1,
+        {
+          title?: string
+          [key: string]: unknown
+        },
+      ]
+  >
   createdAt: string
   updatedAt?: string
   type:
@@ -316,6 +336,16 @@ export type MessageSummary = {
   id: string
   object: 'message'
   content: string
+  experimental_content?: Array<
+    | [0, unknown[]]
+    | [
+        1,
+        {
+          title?: string
+          [key: string]: unknown
+        },
+      ]
+  >
   createdAt: string
   updatedAt?: string
   type:
@@ -353,6 +383,16 @@ export type MessageSummaryList = {
     id: string
     object: 'message'
     content: string
+    experimental_content?: Array<
+      | [0, unknown[]]
+      | [
+          1,
+          {
+            title?: string
+            [key: string]: unknown
+          },
+        ]
+    >
     createdAt: string
     updatedAt?: string
     type:
@@ -562,6 +602,7 @@ export interface ChatsCreateRequest {
     thinking?: boolean
   }
   responseMode?: 'sync' | 'async'
+  designSystemId?: string | null
 }
 
 export type ChatsCreateResponse = ChatDetail
@@ -976,6 +1017,7 @@ export function createClient(config: V0ClientConfig = {}) {
           projectId: params.projectId,
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
+          designSystemId: params.designSystemId,
         }
         return fetcher(`/chats`, 'POST', { body })
       },

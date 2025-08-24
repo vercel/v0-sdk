@@ -112,6 +112,13 @@
                     ],
                     "default": "sync",
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output."
+                  },
+                  "designSystemId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "The ID of a design system to apply to this chat. Design systems provide consistent styling and components for generated UI."
                   }
                 },
                 "required": [
@@ -14988,6 +14995,51 @@
                   "type": "string",
                   "description": "The main text content of the message."
                 },
+                "experimental_content": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number",
+                            "const": 0
+                          },
+                          {
+                            "type": "array",
+                            "items": {}
+                          }
+                        ],
+                        "description": "AST content section containing parsed markdown/MDX nodes"
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number",
+                            "const": 1
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              }
+                            },
+                            "additionalProperties": true
+                          }
+                        ],
+                        "description": "Metadata section containing title and other properties"
+                      }
+                    ]
+                  },
+                  "description": "The parsed content of the message as an array structure containing AST nodes. This is an experimental field that may change."
+                },
                 "createdAt": {
                   "type": "string",
                   "description": "The ISO timestamp representing when the message was created."
@@ -16031,6 +16083,51 @@
             "type": "string",
             "description": "The main text content of the message."
           },
+          "experimental_content": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number",
+                      "const": 0
+                    },
+                    {
+                      "type": "array",
+                      "items": {}
+                    }
+                  ],
+                  "description": "AST content section containing parsed markdown/MDX nodes"
+                },
+                {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number",
+                      "const": 1
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  ],
+                  "description": "Metadata section containing title and other properties"
+                }
+              ]
+            },
+            "description": "The parsed content of the message as an array structure containing AST nodes. This is an experimental field that may change."
+          },
           "createdAt": {
             "type": "string",
             "description": "The ISO timestamp representing when the message was created."
@@ -16120,6 +16217,51 @@
           "content": {
             "type": "string",
             "description": "The main text content of the message."
+          },
+          "experimental_content": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number",
+                      "const": 0
+                    },
+                    {
+                      "type": "array",
+                      "items": {}
+                    }
+                  ],
+                  "description": "AST content section containing parsed markdown/MDX nodes"
+                },
+                {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number",
+                      "const": 1
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  ],
+                  "description": "Metadata section containing title and other properties"
+                }
+              ]
+            },
+            "description": "The parsed content of the message as an array structure containing AST nodes. This is an experimental field that may change."
           },
           "createdAt": {
             "type": "string",
@@ -16215,6 +16357,51 @@
                 "content": {
                   "type": "string",
                   "description": "The main text content of the message."
+                },
+                "experimental_content": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number",
+                            "const": 0
+                          },
+                          {
+                            "type": "array",
+                            "items": {}
+                          }
+                        ],
+                        "description": "AST content section containing parsed markdown/MDX nodes"
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number",
+                            "const": 1
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              }
+                            },
+                            "additionalProperties": true
+                          }
+                        ],
+                        "description": "Metadata section containing title and other properties"
+                      }
+                    ]
+                  },
+                  "description": "The parsed content of the message as an array structure containing AST nodes. This is an experimental field that may change."
                 },
                 "createdAt": {
                   "type": "string",
