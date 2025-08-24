@@ -8,7 +8,6 @@
     "type": "git",
     "url": "https://github.com/vercel/v0-sdk.git"
   },
-
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -17,16 +16,22 @@
     "test:watch": "turbo test:watch",
     "type-check": "turbo type-check",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "sdk:generate": "turbo run sdk:generate"
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "sdk:generate": "turbo run sdk:generate",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.9",
     "prettier": "^3.3.3",
     "turbo": "^2.3.3",
     "typescript": "5.7.3"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.15.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=22",
+    "pnpm": ">=9"
   },
   "prettier": {
     "semi": false,

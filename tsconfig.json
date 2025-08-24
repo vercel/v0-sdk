@@ -23,13 +23,6 @@
       "@v0/sdk": ["./packages/v0-sdk/src"]
     }
   },
-  "include": [
-    "packages/*/src/**/*",
-    "packages/*/tests/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build"
-  ]
+  "include": ["packages/*/src/**/*", "packages/*/tests/**/*"],
+  "exclude": ["node_modules", "dist", "build"]
 }

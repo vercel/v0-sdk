@@ -46,6 +46,10 @@
     "typescript": "5.7.3",
     "vitest": "^3.2.4"
   },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
   "prettier": {
     "semi": false,
     "singleQuote": true,

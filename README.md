@@ -43,7 +43,7 @@ This monorepo uses [Turborepo](https://turbo.build/) for build orchestration and
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - pnpm 9+
 
 ### Setup
@@ -94,6 +94,30 @@ pnpm test
 - `pnpm lint` - Lint all packages
 - `pnpm format` - Format code across all packages
 - `pnpm sdk:generate` - Generate SDK from OpenAPI spec
+
+### Release Management
+
+This project uses [Changesets](https://github.com/changesets/changesets) for version management and publishing:
+
+- `pnpm changeset` - Create a new changeset (describes changes for release)
+- `pnpm version-packages` - Update package versions based on changesets
+- `pnpm release` - Build and publish packages to npm
+
+### CI/CD
+
+The project includes GitHub Actions workflows:
+
+- **CI Pipeline** (`ci.yml`): Runs on every push and PR to main
+  - Builds all packages
+  - Runs type checking
+  - Runs tests
+  - Checks code formatting
+  - Automatically publishes releases on main branch
+
+- **SDK Generation** (`generate-sdk.yml`):
+  - Runs daily to check for OpenAPI spec updates
+  - Can be triggered manually
+  - Creates PRs when the SDK needs updates
 
 ## Resources
 
