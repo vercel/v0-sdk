@@ -30,6 +30,7 @@ Thank you for your interest in contributing to the v0 SDK! This guide will help 
 ### Making Changes
 
 1. Create a new branch for your changes:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -37,16 +38,19 @@ Thank you for your interest in contributing to the v0 SDK! This guide will help 
 2. Make your changes in the appropriate package (`packages/v0-sdk/`)
 
 3. Run tests to ensure your changes work:
+
    ```bash
    pnpm test
    ```
 
 4. Check code formatting:
+
    ```bash
    pnpm format:check
    ```
 
 5. Fix formatting if needed:
+
    ```bash
    pnpm format
    ```
@@ -75,6 +79,7 @@ pnpm changeset
 ```
 
 Follow the prompts to:
+
 - Select which packages are affected
 - Choose the type of change (patch, minor, major)
 - Write a summary of your changes
@@ -84,12 +89,14 @@ This helps with automatic version management and changelog generation.
 ### Submitting Changes
 
 1. Commit your changes with a descriptive message:
+
    ```bash
    git add .
    git commit -m "feat: add new feature"
    ```
 
 2. Push your branch:
+
    ```bash
    git push origin feature/your-feature-name
    ```
