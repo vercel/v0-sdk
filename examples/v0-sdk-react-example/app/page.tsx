@@ -1,25 +1,18 @@
 'use client'
 
-import { MessageContent } from '@v0-sdk/react'
-import { sampleMessages } from '@/lib/sampleData'
-import 'katex/dist/katex.min.css'
+import React from 'react'
+import { Message } from '@v0-sdk/react'
+import { sampleMessages } from '@/lib/sample-data'
+import { CodeBlock } from '@/components/code-block'
+import { MathPart } from '@/components/math-part'
+import { ThinkingSection } from '@/components/thinking-section'
+import { TaskSection } from '@/components/task-section'
+import { CodeProjectPart } from '@/components/code-project-part'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#212121]">
-      <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            @v0-sdk/react Example
-          </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            This example demonstrates how to use the @v0-sdk/react package to
-            render content from the v0 Platform API. The messages below show
-            various content types including markdown, code blocks, and
-            mathematical expressions.
-          </p>
-        </header>
-
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-1">
           {sampleMessages.map((message, index) => (
             <div key={message.id}>
@@ -33,40 +26,64 @@ export default function Home() {
                     {message.role === 'user' ? 'U' : 'A'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-white mb-2 capitalize">
-                      {message.role}
-                    </div>
-                    <MessageContent
+                    <Message
                       content={message.content}
                       messageId={message.id}
                       role={message.role}
-                      className="prose prose-sm max-w-none prose-invert"
-                      styles={{
-                        elements: {
-                          p: 'mb-4 text-gray-100 leading-relaxed',
-                          h1: 'mb-4 text-2xl font-bold text-white',
-                          h2: 'mb-4 text-xl font-semibold text-white',
-                          h3: 'mb-4 text-lg font-medium text-white',
-                          h4: 'mb-4 text-base font-medium text-white',
-                          h5: 'mb-4 text-sm font-medium text-white',
-                          h6: 'mb-4 text-xs font-medium text-white',
-                          ul: 'mb-4 space-y-1 text-gray-100',
-                          ol: 'mb-4 space-y-1 text-gray-100',
-                          li: 'mb-1 text-gray-100',
-                          blockquote:
-                            'mb-4 border-l-4 border-gray-600 pl-4 italic text-gray-300',
-                          hr: 'my-6 border-gray-600',
-                          code: 'bg-[#2D2D2D] text-[#E5E5E5] px-1.5 py-0.5 rounded text-sm',
-                          a: 'text-[#00D4FF] hover:text-[#00B8E6] underline',
-                          strong: 'font-semibold text-white',
-                          em: 'italic text-gray-200',
+                      className="space-y-4"
+                      components={{
+                        CodeBlock,
+                        MathPart,
+                        ThinkingSection,
+                        TaskSection,
+                        CodeProjectPart,
+
+                        // HTML element styling using simple className objects
+                        p: { className: 'mb-4 text-gray-100 leading-relaxed' },
+                        h1: { className: 'mb-4 text-2xl font-bold text-white' },
+                        h2: {
+                          className: 'mb-4 text-xl font-semibold text-white',
                         },
-                        markdownContainer: 'space-y-3',
-                        codeBlockContainer: 'mb-2',
-                        mathContainer: 'mb-2',
-                        thinkingContainer: 'mb-2',
-                        taskContainer: 'mb-2',
-                        codeProjectContainer: 'mb-16',
+                        h3: {
+                          className: 'mb-4 text-lg font-medium text-white',
+                        },
+                        h4: {
+                          className: 'mb-4 text-base font-medium text-white',
+                        },
+                        h5: {
+                          className: 'mb-4 text-sm font-medium text-white',
+                        },
+                        h6: {
+                          className: 'mb-4 text-xs font-medium text-white',
+                        },
+                        ul: {
+                          className:
+                            'mb-4 space-y-1 text-gray-100 list-disc list-inside',
+                        },
+                        ol: {
+                          className:
+                            'mb-4 space-y-1 text-gray-100 list-decimal list-inside',
+                        },
+                        li: { className: 'mb-1 text-gray-100' },
+                        blockquote: {
+                          className:
+                            'mb-4 border-l-4 border-gray-600 pl-4 italic text-gray-300',
+                        },
+                        code: {
+                          className:
+                            'bg-[#2D2D2D] text-[#E5E5E5] px-1.5 py-0.5 rounded text-sm',
+                        },
+                        pre: {
+                          className:
+                            'mb-4 bg-[#1E1E1E] text-[#E5E5E5] p-4 rounded-lg overflow-x-auto',
+                        },
+                        a: {
+                          className:
+                            'text-[#00D4FF] hover:text-[#00B8E6] underline',
+                        },
+                        strong: { className: 'font-semibold text-white' },
+                        em: { className: 'italic text-gray-200' },
+                        hr: { className: 'my-6 border-gray-600' },
                       }}
                     />
                   </div>
@@ -80,8 +97,8 @@ export default function Home() {
           <p>
             Built with{' '}
             <a
-              href="https://github.com/vercel/v0"
-              className="text-[#00D4FF] hover:text-[#00B8E6] hover:underline"
+              href="https://github.com/vercel/v0-sdk"
+              className="text-blue-600 dark:text-white hover:text-blue-800 dark:hover:text-gray-300 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -90,7 +107,7 @@ export default function Home() {
             and{' '}
             <a
               href="https://nextjs.org"
-              className="text-[#00D4FF] hover:text-[#00B8E6] hover:underline"
+              className="text-blue-600 dark:text-white hover:text-blue-800 dark:hover:text-gray-300 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >

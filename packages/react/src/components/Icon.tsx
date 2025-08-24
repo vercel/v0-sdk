@@ -1,16 +1,9 @@
-import React from 'react'
-import {
-  ChevronRight,
-  ChevronDown,
-  Search,
-  Folder,
-  Settings,
-  FileText,
-  Brain,
-  Wrench,
-} from 'lucide-react'
+import React, { createContext, useContext } from 'react'
 
-interface IconProps {
+// Context for providing custom icon implementation
+const IconContext = createContext<React.ComponentType<IconProps> | null>(null)
+
+export interface IconProps {
   name:
     | 'chevron-right'
     | 'chevron-down'
@@ -23,25 +16,57 @@ interface IconProps {
   className?: string
 }
 
-export function Icon({ name, className }: IconProps) {
-  switch (name) {
-    case 'chevron-right':
-      return <ChevronRight className={className} suppressHydrationWarning />
-    case 'chevron-down':
-      return <ChevronDown className={className} suppressHydrationWarning />
-    case 'search':
-      return <Search className={className} suppressHydrationWarning />
-    case 'folder':
-      return <Folder className={className} suppressHydrationWarning />
-    case 'settings':
-      return <Settings className={className} suppressHydrationWarning />
-    case 'file-text':
-      return <FileText className={className} suppressHydrationWarning />
-    case 'brain':
-      return <Brain className={className} suppressHydrationWarning />
-    case 'wrench':
-      return <Wrench className={className} suppressHydrationWarning />
-    default:
-      return null
+/**
+ * Generic icon component that can be customized by consumers.
+ * By default, renders a simple fallback. Consumers should provide
+ * their own icon implementation via context or props.
+ */
+export function Icon(props: IconProps) {
+  const CustomIcon = useContext(IconContext)
+
+  // Use custom icon implementation if provided via context
+  if (CustomIcon) {
+    return <CustomIcon {...props} />
   }
+
+  // Fallback implementation - consumers should override this
+  return (
+    <span
+      className={props.className}
+      data-icon={props.name}
+      suppressHydrationWarning
+      aria-label={props.name.replace('-', ' ')}
+    >
+      {getIconFallback(props.name)}
+    </span>
+  )
+}
+
+/**
+ * Provider for custom icon implementation
+ */
+export function IconProvider({
+  children,
+  component,
+}: {
+  children: React.ReactNode
+  component: React.ComponentType<IconProps>
+}) {
+  return (
+    <IconContext.Provider value={component}>{children}</IconContext.Provider>
+  )
+}
+
+function getIconFallback(name: string): string {
+  const iconMap: Record<string, string> = {
+    'chevron-right': '▶',
+    'chevron-down': '▼',
+    search: '🔍',
+    folder: '📁',
+    settings: '⚙️',
+    'file-text': '📄',
+    brain: '🧠',
+    wrench: '🔧',
+  }
+  return iconMap[name] || '•'
 }

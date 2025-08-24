@@ -56,12 +56,18 @@ importers:
       next:
         specifier: 15.5.0
         version: 15.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prismjs:
+        specifier: ^1.29.0
+        version: 1.30.0
       react:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      react-katex:
+        specifier: ^3.0.1
+        version: 3.1.0(prop-types@15.8.1)(react@18.3.1)
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.6.0
@@ -72,12 +78,18 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.11
+      '@types/prismjs':
+        specifier: ^1.26.0
+        version: 1.26.5
       '@types/react':
         specifier: ^18.2.0
         version: 18.3.24
       '@types/react-dom':
         specifier: ^18.2.0
         version: 18.3.7(@types/react@18.3.24)
+      '@types/react-katex':
+        specifier: ^3.0.4
+        version: 3.0.4
       autoprefixer:
         specifier: ^10.4.0
         version: 10.4.21(postcss@8.5.6)
@@ -102,24 +114,12 @@ importers:
 
   packages/react:
     dependencies:
-      katex:
-        specifier: ^0.16.8
-        version: 0.16.22
-      lucide-react:
-        specifier: ^0.540.0
-        version: 0.540.0(react@19.1.1)
-      prismjs:
-        specifier: ^1.29.0
-        version: 1.30.0
       react:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.1.1
       react-dom:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.1.1(react@19.1.1)
-      react-katex:
-        specifier: ^3.0.1
-        version: 3.1.0(prop-types@15.8.1)(react@19.1.1)
     devDependencies:
       '@types/prismjs':
         specifier: ^1.26.0
@@ -1225,6 +1225,9 @@ packages:
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
     peerDependencies:
       '@types/react': ^18.0.0
+
+  '@types/react-katex@3.0.4':
+    resolution: {integrity: sha512-aLkykKzSKLpXI6REJ3uClao6P47HAFfR1gcHOZwDeTuALsyjgMhz+oynLV4gX0kiJVnvHrBKF/TLXqyNTpHDUg==}
 
   '@types/react@18.3.24':
     resolution: {integrity: sha512-0dLEBsA1kI3OezMBF8nSsb7Nk19ZnsyE1LLhB8r27KbgU5H4pvuqZLdtE+aUkJVoXgTVuA+iLIwmZ0TuK4tx6A==}
@@ -4508,6 +4511,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.24
 
+  '@types/react-katex@3.0.4':
+    dependencies:
+      '@types/react': 18.3.24
+
   '@types/react@18.3.24':
     dependencies:
       '@types/prop-types': 15.7.15
@@ -6043,10 +6050,6 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  lucide-react@0.540.0(react@19.1.1):
-    dependencies:
-      react: 19.1.1
-
   magic-string@0.30.18:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -6361,11 +6364,11 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-katex@3.1.0(prop-types@15.8.1)(react@19.1.1):
+  react-katex@3.1.0(prop-types@15.8.1)(react@18.3.1):
     dependencies:
       katex: 0.16.22
       prop-types: 15.8.1
-      react: 19.1.1
+      react: 18.3.1
 
   react-remove-scroll-bar@2.3.8(@types/react@18.3.24)(react@18.3.1):
     dependencies:
