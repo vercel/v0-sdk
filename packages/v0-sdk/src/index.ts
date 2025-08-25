@@ -10,6 +10,7 @@ export {
   V0InternalServerError,
   V0ServiceUnavailableError,
   V0GatewayTimeoutError,
+  type V0Error,
 } from './sdk/errors'
 
 // Export all schema types
