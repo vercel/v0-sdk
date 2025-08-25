@@ -91,3 +91,17 @@ export const V0HttpErrorMap = new Map([
   [503, V0ServiceUnavailableError],
   [504, V0GatewayTimeoutError],
 ])
+
+export type V0Error =
+  | InstanceType<typeof V0BadRequestError>
+  | InstanceType<typeof V0AuthError>
+  | InstanceType<typeof V0PaymentRequiredError>
+  | InstanceType<typeof V0ForbiddenError>
+  | InstanceType<typeof V0NotFoundError>
+  | InstanceType<typeof V0TimeoutError>
+  | InstanceType<typeof V0UnprocessableEntityError>
+  | InstanceType<typeof V0RateLimitError>
+  | InstanceType<typeof V0InternalServerError>
+  | InstanceType<typeof V0ServiceUnavailableError>
+  | InstanceType<typeof V0GatewayTimeoutError>
+  | InstanceType<typeof V0UnknownError>
