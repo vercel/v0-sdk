@@ -10,6 +10,11 @@ export function UniversalNav() {
     { name: 'Minimal', path: '/minimal', description: 'Clean & simple' },
     { name: 'Terminal', path: '/terminal', description: 'Hacker aesthetic' },
     { name: 'Elegant', path: '/elegant', description: 'Beautiful & refined' },
+    {
+      name: 'Neobrutalism',
+      path: '/neobrutalism',
+      description: 'Bold & unapologetic',
+    },
   ]
 
   return (

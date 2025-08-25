@@ -5,6 +5,7 @@ export interface CodeBlockProps {
   code: string
   className?: string
   children?: React.ReactNode
+  filename?: string
 }
 
 /**

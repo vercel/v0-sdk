@@ -56,6 +56,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.1.11)(react@19.1.0)
+      '@v0-sdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       ai:
         specifier: ^5.0.22
         version: 5.0.22(zod@4.1.1)

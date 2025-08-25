@@ -162,6 +162,38 @@ export function TaskSection({
     return <>{children}</>
   }
 
+  // Count meaningful parts (parts that would render something)
+  const meaningfulParts = parts.filter((part) => {
+    // Check if the part would render meaningful content
+    if (part.type === 'search-web') {
+      return (
+        part.status === 'searching' ||
+        part.status === 'analyzing' ||
+        (part.status === 'complete' && part.answer)
+      )
+    }
+    if (part.type === 'starting-repo-search' && part.query) return true
+    if (part.type === 'select-files' && part.filePaths?.length > 0) return true
+    if (part.type === 'starting-web-search' && part.query) return true
+    if (part.type === 'got-results' && part.count) return true
+    if (part.type === 'finished-web-search' && part.answer) return true
+    if (part.type === 'diagnostics-passed') return true
+    if (part.type === 'fetching-diagnostics') return true
+    // Add more meaningful part types as needed
+    return false
+  })
+
+  // If there's only one meaningful part, show just the content without the collapsible wrapper
+  if (meaningfulParts.length === 1) {
+    return (
+      <div className={className} data-component="task-section-inline">
+        <div data-part>
+          {renderTaskPart(meaningfulParts[0], 0, iconRenderer)}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={className} data-component="task-section">
       <button onClick={handleCollapse} data-expanded={!collapsed} data-button>

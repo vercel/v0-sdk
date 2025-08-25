@@ -20,10 +20,17 @@ import {
 } from '@/components/ai-elements/web-preview'
 import { Loader } from '@/components/ai-elements/loader'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
+import { MessageRenderer } from '@/components/message-renderer'
 
 interface Chat {
   id: string
   demo: string
+  messages?: Array<{
+    id: string
+    role: 'user' | 'assistant'
+    content: string
+    experimental_content?: any // The structured content from v0 API
+  }>
 }
 
 export default function Home() {
@@ -33,7 +40,7 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<
     Array<{
       type: 'user' | 'assistant'
-      content: string
+      content: string | any // Can be string or MessageBinaryFormat
     }>
   >([])
 
@@ -66,13 +73,25 @@ export default function Home() {
       const chat: Chat = await response.json()
       setCurrentChat(chat)
 
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          type: 'assistant',
-          content: 'Generated new app preview. Check the preview panel!',
-        },
-      ])
+      // Update chat history with structured content from v0 API
+      if (chat.messages) {
+        setChatHistory(
+          chat.messages.map((msg) => ({
+            type: msg.role,
+            // Use experimental_content if available, otherwise fall back to plain content
+            content: msg.experimental_content || msg.content,
+          })),
+        )
+      } else {
+        // Final fallback
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            type: 'assistant',
+            content: 'Generated new app preview. Check the preview panel!',
+          },
+        ])
+      }
     } catch (error) {
       console.error('Error:', error)
       setChatHistory((prev) => [
@@ -108,7 +127,11 @@ export default function Home() {
                 <ConversationContent>
                   {chatHistory.map((msg, index) => (
                     <Message from={msg.type} key={index}>
-                      <MessageContent>{msg.content}</MessageContent>
+                      <MessageRenderer
+                        content={msg.content}
+                        role={msg.type}
+                        messageId={`msg-${index}`}
+                      />
                     </Message>
                   ))}
                 </ConversationContent>

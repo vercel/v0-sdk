@@ -5,6 +5,7 @@ export interface MathPartProps {
   inline?: boolean
   className?: string
   children?: React.ReactNode
+  displayMode?: boolean
 }
 
 /**

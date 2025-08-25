@@ -30,6 +30,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       id: chat.id,
       demo: chat.demo,
+      messages: chat.messages?.map((msg) => ({
+        ...msg,
+        experimental_content: (msg as any).experimental_content,
+      })),
     })
   } catch (error) {
     console.error('V0 API Error:', error)
