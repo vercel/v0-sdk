@@ -1,4 +1,16 @@
 export { v0, createClient, type V0ClientConfig } from './sdk/v0'
+export {
+  V0BadRequestError,
+  V0AuthError,
+  V0PaymentRequiredError,
+  V0ForbiddenError,
+  V0NotFoundError,
+  V0UnprocessableEntityError,
+  V0RateLimitError,
+  V0InternalServerError,
+  V0ServiceUnavailableError,
+  V0GatewayTimeoutError,
+} from './sdk/errors'
 
 // Export all schema types
 export type {
