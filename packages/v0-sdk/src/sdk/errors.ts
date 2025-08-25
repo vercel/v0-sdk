@@ -40,6 +40,11 @@ export const V0NotFoundError = createHttpError(
   'V0NotFoundError',
   404,
 )
+export const V0TimeoutError = createHttpError(
+  'Resource not found',
+  'V0NotFoundError',
+  408,
+)
 export const V0UnprocessableEntityError = createHttpError(
   'Unprocessable entity - validation failed',
   'V0UnprocessableEntityError',
@@ -68,7 +73,7 @@ export const V0GatewayTimeoutError = createHttpError(
   504,
 )
 
-export const UnknownError = createHttpError(
+export const V0UnknownError = createHttpError(
   'An unexpected error occurred',
   'UnknownError',
   0,
