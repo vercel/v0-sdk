@@ -139,4 +139,4 @@ The project includes GitHub Actions workflows:
 
 ## License
 
-MIT
+Apache 2.0

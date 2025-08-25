@@ -1,0 +1,30 @@
+{
+  "name": "ai-tools-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Example usage of @v0-sdk/ai-tools with AI SDK",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/simple-example.ts",
+    "dev:full": "tsx src/index.ts",
+    "dev:chat": "tsx src/chat-example.ts",
+    "dev:project": "tsx src/project-example.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@v0-sdk/ai-tools": "workspace:*",
+    "ai": "^5.0.22",
+    "@ai-sdk/openai": "^2.0.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.12.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "@v0/sdk",
-  "version": "0.8.0",
-  "description": "TypeScript SDK for the v0 Platform API",
+  "name": "@v0-sdk/ai-tools",
+  "version": "0.1.0",
+  "description": "AI SDK tools for the v0 Platform API",
   "homepage": "https://v0.dev/docs/api",
   "repository": {
     "type": "git",
@@ -22,9 +22,7 @@
   ],
   "scripts": {
     "type-check": "tsc --noEmit",
-    "type-check:go": "tsgo --noEmit",
     "build": "bunchee",
-    "sdk:generate": "tsx src/scripts/generate.ts && pnpm format",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -33,18 +31,25 @@
     "v0",
     "vercel",
     "ai",
+    "ai-sdk",
+    "tools",
     "chat",
     "sdk"
   ],
   "license": "Apache-2.0",
+  "dependencies": {
+    "@v0/sdk": "workspace:*",
+    "zod": "^3.23.8"
+  },
   "devDependencies": {
     "@types/node": "^22.12.0",
-    "@typescript/native-preview": "7.0.0-dev.20250613.1",
     "bunchee": "^6.5.2",
     "prettier": "^3.3.3",
-    "tsx": "^4.19.2",
     "typescript": "5.7.3",
     "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "ai": "^5.0.0"
   },
   "engines": {
     "node": ">=22",
