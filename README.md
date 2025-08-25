@@ -7,6 +7,12 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 ## Packages
 
 - [`@v0/sdk`](./packages/v0-sdk) - TypeScript SDK for the v0 Platform API
+- [`@v0-sdk/react`](./packages/react) - React components for rendering v0 Platform API content
+
+## Examples
+
+- [`v0-clone`](./examples/v0-clone) - Example v0 clone using AI Elements
+- [`v0-sdk-react-example`](./examples/v0-sdk-react-example) - Next.js example demonstrating @v0-sdk/react usage
 
 ## Quick Start
 
