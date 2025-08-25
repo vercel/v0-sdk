@@ -204,19 +204,42 @@ const v0 = createClient(config)
 
 The SDK provides detailed error information:
 
-```typescript
+```ts
+import { createClient, V0AuthError } from '@v0/sdk'
+
+const v0 = createClient({
+  apiKey: 'v1:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+})
+
 try {
   const chat = await v0.chats.create({
-    message: 'Create a component',
+    message: 'test',
+    system: 'test',
   })
+
+  console.log(chat)
 } catch (error) {
-  if (error.status === 403) {
-    console.error('Authentication error:', error.message)
-  } else if (error.status === 429) {
-    console.error('Rate limit exceeded:', error.message)
+  if (error instanceof V0AuthError) {
+    console.log(error.message)
+    console.log(error.status_code)
   }
 }
 ```
+
+| Code | Class                        | Description                                |
+| :--: | ---------------------------- | ------------------------------------------ |
+| 400  | `V0BadRequestError `         | Invalid or malformed request               |
+| 401  | `V0AuthError`                | Authentication required or session expired |
+| 402  | `V0PaymentRequiredError`     | Payment required (insufficient credits)    |
+| 403  | `V0ForbiddenError`           | Permission denied or quota exceeded        |
+| 404  | `V0NotFoundError`            | Resource not found                         |
+| 408  | `V0TimeoutError`             | Request took too long                      |
+| 422  | `V0UnprocessableEntityError` | Unprocessable entity - validation failed   |
+| 429  | `V0RateLimitError`           | Rate limit exceeded                        |
+| 500  | `V0InternalServerError`      | Server‑side error                          |
+| 503  | `V0ServiceUnavailableError`  | Service temporarily unavailable            |
+| 504  | `V0GatewayTimeoutError`      | Gateway timeout                            |
+|  —   | `V0UnknownError`             | Fallback for any other status              |
 
 ## Testing
 

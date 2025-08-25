@@ -229,14 +229,17 @@ describe('createFetcher', () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 400,
-        text: () => Promise.resolve('Bad Request'),
+        text: () =>
+          Promise.resolve(
+            'Bad request - invalid parameters or malformed request',
+          ),
         headers: new Headers(),
       })
 
       const fetcher = createFetcher()
 
       await expect(fetcher('/test', 'GET')).rejects.toThrow(
-        'HTTP 400: Bad Request',
+        'Bad request - invalid parameters or malformed request',
       )
     })
 
@@ -250,8 +253,16 @@ describe('createFetcher', () => {
 
     it('should handle different HTTP status codes', async () => {
       const statusCodes = [401, 403, 404, 500]
+      const messages = [
+        'Authentication failed',
+        'Forbidden - access denied to this resource',
+        'Resource not found',
+        'Internal server error - unexpected server condition',
+      ]
 
       for (const status of statusCodes) {
+        const index = statusCodes.indexOf(status)
+        const msg = messages[index]
         mockFetch.mockResolvedValue({
           ok: false,
           status,
@@ -261,9 +272,7 @@ describe('createFetcher', () => {
 
         const fetcher = createFetcher()
 
-        await expect(fetcher('/test', 'GET')).rejects.toThrow(
-          `HTTP ${status}: Error ${status}`,
-        )
+        await expect(fetcher('/test', 'GET')).rejects.toThrow(msg)
       }
     })
   })
@@ -455,7 +464,7 @@ describe('createFetcher', () => {
       const fetcher = createFetcher()
 
       await expect(fetcher('/test', 'GET')).rejects.toThrow(
-        'HTTP 400: Bad Request',
+        'Bad request - invalid parameters or malformed request',
       )
 
       // Should still store the session token for future requests
