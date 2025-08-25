@@ -43,6 +43,9 @@ pnpm dev:chat
 
 # Project management example
 pnpm dev:project
+
+# Advanced agent patterns example
+pnpm dev:agent
 ```
 
 **Note**: The full AI integration examples require compatible versions of AI SDK and may have type compatibility issues. Start with the simple example first.
@@ -88,10 +91,44 @@ const result = await generateText({
 - **`tools.user`** - Get user information and billing details
 - **`tools.hook`** - Manage webhooks for events
 
+## Agent Patterns
+
+The `dev:agent` example demonstrates advanced AI agent patterns:
+
+### 1. Multi-Step Agent with `stopWhen`
+
+- Autonomous agents that can plan and execute complex workflows
+- Uses `stepCountIs()` to control execution length
+- Structured answers with answer tools
+
+### 2. Sequential Processing (Chains)
+
+- Step-by-step workflows where each step builds on the previous
+- Quality checks and iterative improvement
+- Requirements analysis → Project creation → Validation
+
+### 3. Routing Agent
+
+- Intelligent request classification and routing
+- Dynamic model selection based on complexity
+- Context-aware tool selection
+
+### 4. Parallel Processing
+
+- Independent tasks executed simultaneously
+- Efficient resource utilization
+- Result synthesis from multiple analyses
+
+### 5. Evaluator-Optimizer
+
+- Feedback loops for continuous improvement
+- Quality assessment and iterative refinement
+- Self-improving workflows
+
 ## Tips
 
 1. **Start with selective tools** - Only include the categories you need to reduce context size
-2. **Use `maxSteps`** - Limit the number of tool calls to prevent infinite loops
+2. **Use `stopWhen`** - Control agent execution with conditions like `stepCountIs(n)`
 3. **Handle errors** - Wrap AI calls in try-catch blocks
 4. **Monitor usage** - Check your API usage on both v0 and OpenAI platforms
 

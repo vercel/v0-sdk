@@ -9,6 +9,7 @@
     "dev:full": "tsx src/index.ts",
     "dev:chat": "tsx src/chat-example.ts",
     "dev:project": "tsx src/project-example.ts",
+    "dev:agent": "tsx src/agent-example.ts",
     "build": "tsc",
     "type-check": "tsc --noEmit"
   },
