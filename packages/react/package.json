@@ -47,6 +47,9 @@
   ],
   "author": "Vercel",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "prettier": {
     "semi": false,
     "singleQuote": true,

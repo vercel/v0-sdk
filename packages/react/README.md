@@ -17,14 +17,14 @@ pnpm add @v0-sdk/react
 ### Basic Usage
 
 ```tsx
-import { V0MessageRenderer } from '@v0-sdk/react'
+import { Message } from '@v0-sdk/react'
 
 function ChatMessage({ apiResponse }) {
   // Parse the content from the API response
   const content = JSON.parse(apiResponse.content)
 
   return (
-    <V0MessageRenderer
+    <Message
       content={content}
       messageId={apiResponse.id}
       role={apiResponse.role}
@@ -36,13 +36,13 @@ function ChatMessage({ apiResponse }) {
 ### With Streaming
 
 ```tsx
-import { V0MessageRenderer } from '@v0-sdk/react'
+import { Message } from '@v0-sdk/react'
 
 function StreamingMessage({ apiResponse, isStreaming }) {
   const content = JSON.parse(apiResponse.content)
 
   return (
-    <V0MessageRenderer
+    <Message
       content={content}
       messageId={apiResponse.id}
       role={apiResponse.role}
@@ -53,19 +53,55 @@ function StreamingMessage({ apiResponse, isStreaming }) {
 }
 ```
 
-### Custom Styling
+### Custom Component Styling
+
+The `Message` component supports custom component renderers for complete control over styling and behavior:
 
 ```tsx
-import { V0MessageRenderer } from '@v0-sdk/react'
+import { Message, CodeBlock, MathPart } from '@v0-sdk/react'
+
+// Custom code block with syntax highlighting
+function CustomCodeBlock({ language, code, className }) {
+  return (
+    <div className="my-code-block">
+      <div className="code-header">{language}</div>
+      <pre className={className}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+}
+
+// Custom math renderer
+function CustomMathPart({ content, inline, className }) {
+  return (
+    <span className={`my-math ${inline ? 'inline' : 'block'} ${className}`}>
+      {content}
+    </span>
+  )
+}
 
 function StyledMessage({ apiResponse }) {
   const content = JSON.parse(apiResponse.content)
 
   return (
-    <V0MessageRenderer
+    <Message
       content={content}
       messageId={apiResponse.id}
       role={apiResponse.role}
+      components={{
+        CodeBlock: CustomCodeBlock,
+        MathPart: CustomMathPart,
+        // Style HTML elements with simple className objects
+        p: { className: 'my-paragraph-styles' },
+        h1: { className: 'my-heading-styles' },
+        // Or use custom components for full control
+        blockquote: ({ children, ...props }) => (
+          <div className="my-custom-blockquote" {...props}>
+            {children}
+          </div>
+        ),
+      }}
       className="my-custom-message-styles"
     />
   )
@@ -74,7 +110,7 @@ function StyledMessage({ apiResponse }) {
 
 ## API Reference
 
-### V0MessageRenderer
+### Message
 
 The main component for rendering v0 Platform API message content.
 
@@ -87,7 +123,69 @@ The main component for rendering v0 Platform API message content.
 | `role`          | `'user' \| 'assistant' \| 'system' \| 'tool'` | `'assistant'` | Role of the message sender                                                   |
 | `streaming`     | `boolean`                                     | `false`       | Whether the message is currently being streamed                              |
 | `isLastMessage` | `boolean`                                     | `false`       | Whether this is the last message in the conversation                         |
-| `className`     | `string`                                      | `undefined`   | Custom className for styling                                                 |
+| `className`     | `string`                                      | `undefined`   | Custom className for styling the root container                              |
+| `components`    | `ComponentOverrides`                          | `undefined`   | Custom component renderers (see Custom Components section)                   |
+
+### Individual Components
+
+You can also use individual components directly:
+
+```tsx
+import {
+  CodeBlock,
+  MathPart,
+  ThinkingSection,
+  TaskSection,
+  CodeProjectPart
+} from '@v0-sdk/react'
+
+// Use components directly
+<CodeBlock language="javascript" code="console.log('Hello')" />
+<MathPart content="E = mc^2" inline />
+<ThinkingSection title="Planning" thought="Let me think about this..." />
+```
+
+#### CodeBlock
+
+| Prop        | Type              | Default      | Description                                  |
+| ----------- | ----------------- | ------------ | -------------------------------------------- |
+| `language`  | `string`          | **required** | Programming language for syntax highlighting |
+| `code`      | `string`          | **required** | The code content to display                  |
+| `filename`  | `string`          | `undefined`  | Optional filename to display                 |
+| `className` | `string`          | `undefined`  | Custom styling                               |
+| `children`  | `React.ReactNode` | `undefined`  | Custom content (overrides code prop)         |
+
+#### MathPart
+
+| Prop          | Type              | Default      | Description                             |
+| ------------- | ----------------- | ------------ | --------------------------------------- |
+| `content`     | `string`          | **required** | The mathematical expression             |
+| `inline`      | `boolean`         | `false`      | Whether to render inline or as block    |
+| `displayMode` | `boolean`         | `undefined`  | Alternative to inline for display mode  |
+| `className`   | `string`          | `undefined`  | Custom styling                          |
+| `children`    | `React.ReactNode` | `undefined`  | Custom content (overrides content prop) |
+
+#### ThinkingSection
+
+| Prop         | Type         | Default     | Description                  |
+| ------------ | ------------ | ----------- | ---------------------------- |
+| `title`      | `string`     | `undefined` | Section title                |
+| `thought`    | `string`     | `undefined` | The thinking content         |
+| `duration`   | `number`     | `undefined` | Duration in milliseconds     |
+| `collapsed`  | `boolean`    | `false`     | Whether section is collapsed |
+| `onCollapse` | `() => void` | `undefined` | Collapse toggle handler      |
+| `className`  | `string`     | `undefined` | Custom styling               |
+
+#### TaskSection
+
+| Prop         | Type         | Default     | Description                  |
+| ------------ | ------------ | ----------- | ---------------------------- |
+| `title`      | `string`     | `undefined` | Section title                |
+| `type`       | `string`     | `undefined` | Task type                    |
+| `parts`      | `any[]`      | `undefined` | Task content parts           |
+| `collapsed`  | `boolean`    | `false`     | Whether section is collapsed |
+| `onCollapse` | `() => void` | `undefined` | Collapse toggle handler      |
+| `className`  | `string`     | `undefined` | Custom styling               |
 
 ### Types
 
@@ -99,16 +197,17 @@ type MessageBinaryFormat = [number, ...any[]][]
 
 The binary format for message content as returned by the v0 Platform API. Each row is a tuple where the first element is the type and the rest are data.
 
-#### V0MessageRendererProps
+#### MessageProps
 
 ```typescript
-interface V0MessageRendererProps {
+interface MessageProps {
   content: MessageBinaryFormat
   messageId?: string
   role?: 'user' | 'assistant' | 'system' | 'tool'
   streaming?: boolean
   isLastMessage?: boolean
   className?: string
+  components?: ComponentOverrides
 }
 ```
 
@@ -117,50 +216,61 @@ interface V0MessageRendererProps {
 ### Supported Content Types
 
 - **Markdown/Text Content**: Paragraphs, headings, lists, links, emphasis, code spans, etc.
-- **Code Blocks**: Syntax-highlighted code blocks with support for 25+ programming languages
-- **Mathematical Expressions**: Inline and block math using KaTeX
-- **Extensible**: Easy to extend with additional content types
+- **Code Blocks**: Syntax-highlighted code blocks with filename support
+- **Mathematical Expressions**: Inline and block math expressions
+- **Thinking Sections**: Collapsible reasoning/thinking content
+- **Task Sections**: Structured task and workflow content
+- **Code Projects**: Multi-file code project display
+- **Rich Components**: Full component customization support
 
-### Syntax Highlighting
+### Component Customization
 
-Code blocks are automatically syntax-highlighted using Prism.js with support for:
+The `components` prop allows you to override any part of the rendering:
 
-- JavaScript/TypeScript
-- Python, Java, C/C++, C#
-- PHP, Ruby, Go, Rust
-- Swift, Kotlin, Scala
-- SQL, JSON, YAML
-- Markdown, CSS/SCSS
-- Bash/Shell scripts
-- And many more...
+```tsx
+// Simple className-based styling
+<Message
+  content={content}
+  components={{
+    p: { className: 'my-paragraph' },
+    h1: { className: 'text-2xl font-bold' }
+  }}
+/>
 
-### Math Rendering
-
-Mathematical expressions are rendered using KaTeX:
-
-- Inline math: `$E = mc^2$`
-- Block math: `$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$`
-
-## CSS Styling
-
-The component uses Tailwind CSS classes by default. You can:
-
-1. **Use Tailwind CSS**: The component works out of the box with Tailwind
-2. **Custom CSS**: Override styles using the `className` prop
-3. **CSS Modules**: Import your own styles and pass via `className`
-
-### Required CSS
-
-Make sure to include KaTeX CSS for math rendering:
-
-```css
-@import 'katex/dist/katex.min.css';
+// Full component replacement
+<Message
+  content={content}
+  components={{
+    CodeBlock: MyCustomCodeBlock,
+    MathPart: MyCustomMathRenderer,
+    ThinkingSection: MyCustomThinking
+  }}
+/>
 ```
 
-Or import it in your JavaScript:
+### Default Styling
 
-```javascript
-import 'katex/dist/katex.min.css'
+The components use Tailwind CSS classes by default but can work with any CSS framework:
+
+1. **Tailwind CSS**: Works out of the box
+2. **Custom CSS**: Use the `className` prop and `components` overrides
+3. **CSS Modules**: Pass CSS module classes via `className` and `components`
+4. **Styled Components**: Wrap components with styled-components
+
+## Backward Compatibility
+
+The package maintains backward compatibility with previous versions:
+
+```tsx
+// These all work and refer to the same component
+import { Message } from '@v0-sdk/react'
+import { MessageRenderer } from '@v0-sdk/react'
+import { V0MessageRenderer } from '@v0-sdk/react'
+
+// These are all equivalent
+<Message content={content} />
+<MessageRenderer content={content} />
+<V0MessageRenderer content={content} />
 ```
 
 ## Examples
@@ -168,8 +278,7 @@ import 'katex/dist/katex.min.css'
 ### Complete Chat Interface
 
 ```tsx
-import { V0MessageRenderer } from '@v0-sdk/react'
-import 'katex/dist/katex.min.css'
+import { Message } from '@v0-sdk/react'
 
 function ChatInterface({ messages }) {
   return (
@@ -184,7 +293,7 @@ function ChatInterface({ messages }) {
               <span className="role">{message.role}</span>
               <span className="timestamp">{message.createdAt}</span>
             </div>
-            <V0MessageRenderer
+            <Message
               content={content}
               messageId={message.id}
               role={message.role}
@@ -199,17 +308,75 @@ function ChatInterface({ messages }) {
 }
 ```
 
+### Custom Theme Example
+
+```tsx
+import { Message, CodeBlock, MathPart } from '@v0-sdk/react'
+
+// Dark theme code block
+function DarkCodeBlock({ language, code, filename }) {
+  return (
+    <div className="bg-gray-900 rounded-lg overflow-hidden">
+      {filename && (
+        <div className="bg-gray-800 px-4 py-2 text-gray-300 text-sm">
+          {filename}
+        </div>
+      )}
+      <div className="bg-gray-700 px-2 py-1 text-xs text-gray-400">
+        {language}
+      </div>
+      <pre className="p-4 text-green-400 overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+}
+
+// Elegant math renderer
+function ElegantMath({ content, inline }) {
+  return (
+    <span
+      className={`
+      ${inline ? 'mx-1' : 'block text-center my-4'}
+      font-serif text-blue-600
+    `}
+    >
+      {content}
+    </span>
+  )
+}
+
+function ThemedChat({ apiResponse }) {
+  const content = JSON.parse(apiResponse.content)
+
+  return (
+    <Message
+      content={content}
+      components={{
+        CodeBlock: DarkCodeBlock,
+        MathPart: ElegantMath,
+        h1: { className: 'text-3xl font-bold text-gray-800 mb-4' },
+        h2: { className: 'text-2xl font-semibold text-gray-700 mb-3' },
+        p: { className: 'text-gray-600 leading-relaxed mb-4' },
+        blockquote: { className: 'border-l-4 border-blue-500 pl-4 italic' },
+      }}
+      className="max-w-4xl mx-auto p-6"
+    />
+  )
+}
+```
+
 ### Error Handling
 
 ```tsx
-import { V0MessageRenderer } from '@v0-sdk/react'
+import { Message } from '@v0-sdk/react'
 
 function SafeMessageRenderer({ apiResponse }) {
   try {
     const content = JSON.parse(apiResponse.content)
 
     return (
-      <V0MessageRenderer
+      <Message
         content={content}
         messageId={apiResponse.id}
         role={apiResponse.role}
@@ -217,9 +384,35 @@ function SafeMessageRenderer({ apiResponse }) {
     )
   } catch (error) {
     console.error('Failed to parse message content:', error)
-
-    return <div className="error-message">Failed to render message content</div>
+    return (
+      <div className="error-message p-4 bg-red-50 border border-red-200 rounded">
+        <p className="text-red-700">Failed to render message content</p>
+        <pre className="text-xs text-red-600 mt-2 overflow-x-auto">
+          {error.message}
+        </pre>
+      </div>
+    )
   }
+}
+```
+
+## TypeScript
+
+The package is written in TypeScript and includes comprehensive type definitions. All components and props are fully typed for the best development experience.
+
+```tsx
+import type {
+  MessageProps,
+  CodeBlockProps,
+  MathPartProps,
+  MessageBinaryFormat,
+} from '@v0-sdk/react'
+
+// Type-safe usage
+const myMessage: MessageProps = {
+  content: parsedContent,
+  role: 'assistant',
+  streaming: false,
 }
 ```
 
@@ -227,6 +420,7 @@ function SafeMessageRenderer({ apiResponse }) {
 
 - React 18+ or React 19+
 - Modern browser with ES2020+ support
+- TypeScript 4.5+ (if using TypeScript)
 
 ## License
 
