@@ -1,5 +1,7 @@
 # @v0-sdk/react Example
 
+> **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
+
 This is a Next.js example application demonstrating how to use the `@v0-sdk/react` package to render content from the v0 Platform API.
 
 ## Features Demonstrated

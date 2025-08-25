@@ -1,5 +1,7 @@
 # @v0-sdk/react
 
+> **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
+
 React components for rendering content from the v0 Platform API.
 
 ## Installation

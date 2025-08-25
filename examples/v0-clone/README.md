@@ -1,5 +1,7 @@
 # v0 clone
 
+> **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
+
 An example of how to use the AI Elements to build a v0 clone.
 
 ## Setup
