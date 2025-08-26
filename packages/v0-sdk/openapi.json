@@ -833,6 +833,22 @@
                         },
                         "required": ["type", "zip"],
                         "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "template",
+                            "description": "Specifies the initialization method. For this endpoint, it defines the source of content being used to initialize the chat."
+                          },
+                          "templateId": {
+                            "type": "string",
+                            "description": "The ID of the template to initialize the chat from. This should be a valid template ID from the v0 template system."
+                          }
+                        },
+                        "required": ["type", "templateId"],
+                        "additionalProperties": false
                       }
                     ]
                   }
