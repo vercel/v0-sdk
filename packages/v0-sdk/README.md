@@ -1,4 +1,4 @@
-# @v0/sdk
+# v0-sdk
 
 > **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
 
@@ -7,11 +7,11 @@ A TypeScript SDK for interacting with the v0 Platform API to create and manage A
 ## Installation
 
 ```bash
-npm install @v0/sdk
+npm install v0-sdk
 # or
-yarn add @v0/sdk
+yarn add v0-sdk
 # or
-pnpm add @v0/sdk
+pnpm add v0-sdk
 ```
 
 ## Quick Start
@@ -23,7 +23,7 @@ Set `V0_API_KEY` environment variable.
 ### Create Chat and Generate Code
 
 ```typescript
-import { v0 } from '@v0/sdk'
+import { v0 } from 'v0-sdk'
 
 // Create a new chat
 const chat = await v0.chats.create({
@@ -59,7 +59,7 @@ The SDK supports two ways to create a client:
 Use the default client with environment variables:
 
 ```typescript
-import { v0 } from '@v0/sdk'
+import { v0 } from 'v0-sdk'
 
 // Uses V0_API_KEY environment variable
 const chat = await v0.chats.create({
@@ -72,7 +72,7 @@ const chat = await v0.chats.create({
 Create a custom client with specific configuration:
 
 ```typescript
-import { createClient } from '@v0/sdk'
+import { createClient } from 'v0-sdk'
 
 // Create client with custom API key
 const v0 = createClient({
@@ -189,7 +189,7 @@ import type {
   UserDetail,
   ProjectDetail,
   V0ClientConfig,
-} from '@v0/sdk'
+} from 'v0-sdk'
 
 // Type-safe client configuration
 const config: V0ClientConfig = {

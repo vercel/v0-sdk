@@ -143,10 +143,10 @@ You can also run commands for specific packages:
 
 ```bash
 # Run tests for just the SDK package
-pnpm --filter @v0/sdk test
+pnpm --filter v0-sdk test
 
 # Build just the SDK package
-pnpm --filter @v0/sdk build
+pnpm --filter v0-sdk build
 ```
 
 ## Testing

@@ -1,6 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-import { createClient, type V0ClientConfig } from '@v0/sdk'
+import { createClient, type V0ClientConfig } from 'v0-sdk'
 
 /**
  * Creates chat-related AI SDK tools

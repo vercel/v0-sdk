@@ -6,5 +6,5 @@ export default defineBuildConfig({
   clean: true,
   format: ['esm', 'cjs'],
   target: 'es2022',
-  external: ['ai', '@v0/sdk', 'zod'],
+  external: ['ai', 'v0-sdk', 'zod'],
 })

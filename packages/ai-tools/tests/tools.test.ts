@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { v0Tools, v0ToolsByCategory } from '../src/index'
 
 // Mock the v0 SDK
-vi.mock('@v0/sdk', () => ({
+vi.mock('v0-sdk', () => ({
   createClient: vi.fn(() => ({
     chats: {
       create: vi.fn(),

@@ -20,7 +20,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@v0/sdk": ["./packages/v0-sdk/src"]
+      "v0-sdk": ["./packages/v0-sdk/src"]
     }
   },
   "include": ["packages/*/src/**/*", "packages/*/tests/**/*"],

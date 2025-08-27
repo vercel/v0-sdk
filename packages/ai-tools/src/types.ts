@@ -1,4 +1,4 @@
-import type { V0ClientConfig } from '@v0/sdk'
+import type { V0ClientConfig } from 'v0-sdk'
 
 export interface V0ToolsConfig extends V0ClientConfig {
   /**

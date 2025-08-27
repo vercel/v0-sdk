@@ -6,7 +6,7 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 
 ## Packages
 
-- [`@v0/sdk`](./packages/v0-sdk) - TypeScript SDK for the v0 Platform API
+- [`v0-sdk`](./packages/v0-sdk) - TypeScript SDK for the v0 Platform API
 - [`@v0-sdk/react`](./packages/react) - React components for rendering v0 Platform API content
 
 ## Examples
@@ -19,11 +19,11 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 ### Installation
 
 ```bash
-npm install @v0/sdk
+npm install v0-sdk
 # or
-yarn add @v0/sdk
+yarn add v0-sdk
 # or
-pnpm add @v0/sdk
+pnpm add v0-sdk
 ```
 
 ### Usage
@@ -33,7 +33,7 @@ Get your API key from [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/k
 Set `V0_API_KEY` environment variable.
 
 ```typescript
-import { v0 } from '@v0/sdk'
+import { v0 } from 'v0-sdk'
 
 // Create a new chat
 const chat = await v0.chats.create({
@@ -75,9 +75,9 @@ pnpm format
 
 ```bash
 # Run commands in specific package
-pnpm --filter @v0/sdk build
-pnpm --filter @v0/sdk test
-pnpm --filter @v0/sdk generate
+pnpm --filter v0-sdk build
+pnpm --filter v0-sdk test
+pnpm --filter v0-sdk generate
 
 # Run commands in all packages
 pnpm build
@@ -87,7 +87,7 @@ pnpm test
 ### Adding new packages
 
 1. Create a new directory in `packages/`
-2. Add a `package.json` with the appropriate `@v0/` scope
+2. Add a `package.json` with the appropriate `@v0-sdk/` scope
 3. Update the root `tsconfig.json` paths if needed
 4. Add any necessary scripts to `turbo.json`
 

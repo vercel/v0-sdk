@@ -38,7 +38,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@v0/sdk": "workspace:*",
+    "v0-sdk": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
