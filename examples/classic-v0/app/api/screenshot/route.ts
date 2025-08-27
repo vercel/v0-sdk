@@ -42,12 +42,11 @@ export async function GET(request: NextRequest) {
       actualDemoUrl.includes('placeholder'),
     )
 
-    // Check if this is a real v0 demo URL (not placeholder)
+    // Temporarily disable Playwright to test fallback
     if (
-      actualDemoUrl &&
-      (actualDemoUrl.includes('v0.dev') ||
-        actualDemoUrl.includes('vusercontent.net')) &&
-      !actualDemoUrl.includes('placeholder')
+      (actualDemoUrl!.includes('v0.dev') ||
+        actualDemoUrl!.includes('vusercontent.net')) &&
+      !actualDemoUrl!.includes('placeholder')
     ) {
       // Take real screenshots using Playwright
       try {
@@ -66,7 +65,7 @@ export async function GET(request: NextRequest) {
         })
 
         const context = await browser.newContext({
-          viewport: { width: 1920, height: 1080 },
+          viewport: { width: 1200, height: 800 }, // Smaller viewport for better performance
           deviceScaleFactor: 1,
           ignoreHTTPSErrors: true,
         })
@@ -78,32 +77,50 @@ export async function GET(request: NextRequest) {
 
         // Navigate to the URL
         console.log('Navigating to URL:', actualDemoUrl)
-        const response = await page.goto(actualDemoUrl, {
-          waitUntil: 'domcontentloaded',
-          timeout: 8000,
+        const response = await page.goto(actualDemoUrl!, {
+          waitUntil: 'networkidle',
+          timeout: 10000,
         })
 
         console.log('Navigation response status:', response?.status())
 
-        if (!response || response.status() >= 400) {
+        if (!response || response!.status() >= 400) {
           throw new Error(`Failed to load page: ${response?.status()}`)
         }
 
-        // Wait for animations and dynamic content to complete
-        await page.waitForTimeout(2000)
+        // Wait for React/content to render and animations to complete
+        try {
+          // Wait for any React root or common content indicators
+          await page.waitForSelector('body', { timeout: 3000 })
+          await page.waitForTimeout(3000) // Increased wait time for content
+        } catch (e) {
+          console.log(
+            'Timeout waiting for content selectors, proceeding with screenshot',
+          )
+        }
 
-        // Take screenshot - crop from full desktop viewport to thumbnail size
+        // Take screenshot
         const screenshot = await page.screenshot({
           type: 'png',
           fullPage: false,
-          clip: { x: 0, y: 0, width: 400, height: 300 },
+          // Remove clipping to see if that's causing the white image
         })
 
         // Clean up
         await context.close()
         await browser.close()
 
-        console.log('Screenshot taken successfully')
+        console.log(
+          'Screenshot taken successfully, size:',
+          screenshot.length,
+          'bytes',
+        )
+
+        // If screenshot is too small (likely blank/white), fall back to enhanced mockup
+        if (screenshot.length < 1000) {
+          console.log('Screenshot too small, falling back to mockup')
+          throw new Error('Screenshot appears to be blank')
+        }
 
         return new NextResponse(screenshot, {
           headers: {
@@ -125,7 +142,7 @@ export async function GET(request: NextRequest) {
 
         if (chatId) {
           // Use chatId to determine visual characteristics
-          const chatHash = chatId
+          const chatHash = chatId!
             .split('')
             .reduce((a, b) => a + b.charCodeAt(0), 0)
           colorIndex = chatHash % 6

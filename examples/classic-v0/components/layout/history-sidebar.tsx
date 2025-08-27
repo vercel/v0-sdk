@@ -44,7 +44,7 @@ export function HistorySidebar({
               <div className="p-2">
                 <p className="text-xs text-gray-600 truncate">{item.prompt}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {item.timestamp.toLocaleTimeString()}
+                  {new Date(item.timestamp).toLocaleTimeString()}
                 </p>
               </div>
             </div>

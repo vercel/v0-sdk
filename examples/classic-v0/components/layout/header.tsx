@@ -11,6 +11,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -106,7 +111,6 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
         <div className="flex items-center gap-4">
           <UserAvatar />
           <span className="text-gray-900 font-medium">{prompt}</span>
-          <span className="text-gray-500 text-sm">about 1 second</span>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/">
@@ -115,7 +119,8 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
             </Button>
           </Link>
 
-          {projectId && generations && (
+          {/* Duplicate Button - always show but disabled if no project */}
+          {projectId && generations ? (
             <Dialog
               open={showDuplicateDialog}
               onOpenChange={setShowDuplicateDialog}
@@ -148,6 +153,22 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-gray-700"
+                  disabled
+                >
+                  Duplicate
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save project first to enable duplication</p>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

@@ -8,6 +8,7 @@ import { User, CornerDownLeft } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Preview } from '@/components/layout/preview'
 import { Thumbnails } from '@/components/layout/thumbnails'
+import { GenerationsView } from '@/components/shared/generations-view'
 
 interface Generation {
   id: string

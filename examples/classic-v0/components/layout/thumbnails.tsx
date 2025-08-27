@@ -1,6 +1,8 @@
 'use client'
 
-import { RefreshCw } from 'lucide-react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { RefreshCw, ExternalLink } from 'lucide-react'
 
 interface Generation {
   id: string
@@ -13,6 +15,7 @@ interface ThumbnailsProps {
   selectedGenerationIndex: number
   onSelectGeneration: (index: number) => void
   onRegenerate?: () => void
+  projectId?: string
 }
 
 // Modern loading spinner component
@@ -28,7 +31,53 @@ export function Thumbnails({
   selectedGenerationIndex,
   onSelectGeneration,
   onRegenerate,
+  projectId,
 }: ThumbnailsProps) {
+  const router = useRouter()
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [refreshingIndex, setRefreshingIndex] = useState<number | null>(null)
+
+  const handleRefreshThumbnail = async (
+    index: number,
+    generation: Generation,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation() // Prevent thumbnail selection
+    setRefreshingIndex(index)
+
+    try {
+      // Force refresh by adding a cache-busting timestamp
+      const timestamp = Date.now()
+      const img = document.querySelector(
+        `[data-thumbnail-index="${index}"] img`,
+      ) as HTMLImageElement
+      if (img) {
+        const baseUrl = `/api/screenshot?chatId=${generation.id}&url=${encodeURIComponent(generation.demoUrl)}`
+        img.src = `${baseUrl}&t=${timestamp}`
+      }
+    } catch (error) {
+      console.error('Error refreshing thumbnail:', error)
+    } finally {
+      // Clear refreshing state after a short delay to show the refresh happened
+      setTimeout(() => setRefreshingIndex(null), 500)
+    }
+  }
+
+  const handleNavigateToChat = (
+    generation: Generation,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation() // Prevent thumbnail selection
+
+    if (!projectId) {
+      console.warn('No projectId available for navigation')
+      return
+    }
+
+    // Navigate to the chat page for this generation
+    router.push(`/projects/${projectId}/chats/${generation.id}`)
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Four items: 3 Generation Thumbnails + 1 Regenerate */}
@@ -37,12 +86,15 @@ export function Thumbnails({
         {generations.map((generation, index) => (
           <div
             key={generation.id}
+            data-thumbnail-index={index}
             className={`relative aspect-video border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
               selectedGenerationIndex === index
                 ? 'border-blue-500'
                 : 'border-gray-300 hover:border-gray-400'
             }`}
             onClick={() => onSelectGeneration(index)}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
           >
             {/* Use screenshot API for thumbnails */}
             {generation.demoUrl !== 'about:blank' ? (
@@ -78,6 +130,33 @@ export function Thumbnails({
             >
               {generation.label}
             </div>
+
+            {/* Action icons - only show on hover and when not loading */}
+            {hoveredIndex === index && generation.demoUrl !== 'about:blank' && (
+              <>
+                {/* Refresh icon */}
+                <div
+                  className="absolute top-2 right-12 w-8 h-8 flex items-center justify-center cursor-pointer transition-all"
+                  onClick={(e) => handleRefreshThumbnail(index, generation, e)}
+                  title="Refresh screenshot"
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 text-black ${
+                      refreshingIndex === index ? 'animate-spin' : ''
+                    }`}
+                  />
+                </div>
+
+                {/* Navigate to chat icon */}
+                <div
+                  className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer transition-all"
+                  onClick={(e) => handleNavigateToChat(generation, e)}
+                  title="Open chat page"
+                >
+                  <ExternalLink className="h-4 w-4 text-black" />
+                </div>
+              </>
+            )}
           </div>
         ))}
 
