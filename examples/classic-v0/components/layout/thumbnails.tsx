@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { RefreshCw, ExternalLink } from 'lucide-react'
 
 interface Generation {
@@ -34,7 +34,6 @@ export function Thumbnails({
   onRegenerate,
   projectId,
 }: ThumbnailsProps) {
-  const router = useRouter()
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [refreshingIndex, setRefreshingIndex] = useState<number | null>(null)
 
@@ -62,33 +61,6 @@ export function Thumbnails({
       // Clear refreshing state after a short delay to show the refresh happened
       setTimeout(() => setRefreshingIndex(null), 500)
     }
-  }
-
-  const handleNavigateToChat = (
-    generation: Generation,
-    e: React.MouseEvent,
-  ) => {
-    e.stopPropagation() // Prevent thumbnail selection
-
-    console.log('Navigation clicked:', {
-      projectId,
-      generationProjectId: generation.projectId,
-      generationId: generation.id,
-    })
-
-    // Use projectId from props or fallback to generation's projectId
-    const useProjectId = projectId || generation.projectId
-
-    if (!useProjectId) {
-      console.warn('No projectId available for navigation')
-      return
-    }
-
-    const targetUrl = `/projects/${useProjectId}/chats/${generation.id}`
-    console.log('Navigating to:', targetUrl)
-
-    // Navigate to the chat page for this generation
-    router.push(targetUrl)
   }
 
   return (
@@ -135,7 +107,7 @@ export function Thumbnails({
               </div>
             )}
             <div
-              className={`absolute bottom-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium text-white ${
+              className={`absolute bottom-1 left-1 text-white text-xs px-2 py-1 rounded ${
                 selectedGenerationIndex === index
                   ? 'bg-blue-500'
                   : 'bg-gray-500'
@@ -161,13 +133,14 @@ export function Thumbnails({
                 </div>
 
                 {/* Navigate to chat icon */}
-                <div
+                <Link
+                  href={`/projects/${projectId || generation.projectId}/chats/${generation.id}`}
                   className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer transition-all"
-                  onClick={(e) => handleNavigateToChat(generation, e)}
                   title="Open chat page"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink className="h-4 w-4 text-black" />
-                </div>
+                </Link>
               </>
             )}
           </div>

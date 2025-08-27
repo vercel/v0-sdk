@@ -55,6 +55,7 @@ export default function ChatPage() {
   const [chat, setChat] = useState<Chat | null>(null)
   const [followUpPrompt, setFollowUpPrompt] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedVersionIndex, setSelectedVersionIndex] = useState(0)
 
   // Helper function to get user initials for avatar fallback
   const getUserInitials = (name: string) => {
@@ -100,6 +101,12 @@ export default function ChatPage() {
         if (response.ok) {
           const chatData = await response.json()
           setChat(chatData)
+
+          // Auto-select the latest version (last in the history array)
+          if (chatData.history && chatData.history.length > 0) {
+            const latestIndex = chatData.history.length - 1
+            setSelectedVersionIndex(latestIndex)
+          }
         } else {
           console.error('Failed to fetch chat:', response.statusText)
         }
@@ -120,6 +127,30 @@ export default function ChatPage() {
     setIsLoading(true)
     setFollowUpPrompt('')
 
+    // Immediately add a placeholder version to show loading state
+    const tempId = 'temp-' + Date.now()
+    const newHistoryItem: HistoryItem = {
+      id: tempId,
+      prompt: userPrompt,
+      demoUrl: 'about:blank', // This will show the loader
+      timestamp: new Date(),
+    }
+
+    // Update chat with the new loading version and select it
+    const updatedHistory = [...chat.history, newHistoryItem]
+    setChat({
+      ...chat,
+      generation: {
+        id: tempId,
+        demoUrl: 'about:blank',
+        label: chat.generation.label,
+      },
+      history: updatedHistory,
+    })
+
+    // Set the new version as selected (it will be the last one)
+    setSelectedVersionIndex(updatedHistory.length - 1)
+
     try {
       // Use sendMessage to continue working on the selected generation
       const response = await fetch('/api/chat', {
@@ -137,24 +168,40 @@ export default function ChatPage() {
 
       const updatedChat = await response.json()
 
-      // Add to history
-      const newHistoryItem: HistoryItem = {
-        id: updatedChat.id + '-' + Date.now(),
+      // Update the placeholder with real data
+      const finalHistoryItem: HistoryItem = {
+        id: updatedChat.id,
         prompt: userPrompt,
-        demoUrl: updatedChat.demo,
+        demoUrl: updatedChat.demo || 'about:blank',
         timestamp: new Date(),
       }
+
+      // Replace the placeholder in history with real data
+      const finalHistory = [...chat.history, finalHistoryItem]
 
       setChat({
         ...chat,
         generation: {
-          ...chat.generation,
-          demoUrl: updatedChat.demo,
+          id: updatedChat.id,
+          demoUrl: updatedChat.demo || 'about:blank',
+          label: chat.generation.label,
         },
-        history: [...chat.history, newHistoryItem],
+        history: finalHistory,
       })
+
+      // Navigate to the new chat while staying on the same project
+      router.push(`/projects/${projectId}/chats/${updatedChat.id}`)
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error sending follow-up message:', error)
+
+      // Remove the placeholder on error
+      setChat({
+        ...chat,
+        history: chat.history, // Revert to original history
+      })
+
+      // Reset selection to previous version
+      setSelectedVersionIndex(chat.history.length - 1)
     } finally {
       setIsLoading(false)
     }
@@ -202,13 +249,16 @@ export default function ChatPage() {
         {/* Main Content Area */}
         <div className="flex-1 flex items-center justify-center overflow-hidden">
           {/* Main Preview Container */}
-          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
-            <div className="flex-1 w-full flex items-center justify-center min-h-[600px]">
+          <div className="flex-1 flex flex-col items-center justify-center px-8 h-full">
+            <div className="flex-1 w-full flex items-center justify-center min-h-[50px]">
               <div className="w-full max-w-7xl mx-auto flex items-center justify-center gap-6 h-full">
                 {/* History Sidebar - positioned to the left of preview */}
                 <HistorySidebar
                   chatId={chatId}
+                  selectedVersionIndex={selectedVersionIndex}
+                  history={chat.history}
                   onSelectVersion={(version, index) => {
+                    setSelectedVersionIndex(index)
                     // Update the current generation with the selected version
                     setChat({
                       ...chat,

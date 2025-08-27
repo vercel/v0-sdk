@@ -193,8 +193,10 @@ export default function ProjectPage() {
         throw new Error('Failed to send message')
       }
 
-      // Navigate to the chat page for this specific generation
-      router.push(`/projects/${projectId}/chats/${selectedGeneration.id}`)
+      const updatedChat = await response.json()
+
+      // Navigate to the chat page for the NEW chat (not the old one)
+      router.push(`/projects/${projectId}/chats/${updatedChat.id}`)
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -237,9 +239,9 @@ export default function ProjectPage() {
         {/* Main Content Area */}
         <div className="flex-1 flex items-center justify-center overflow-hidden">
           {/* Main Preview and Thumbnails Container */}
-          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
+          <div className="flex-1 flex flex-col items-center justify-center px-8 h-full">
             {/* Main Preview */}
-            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[600px]">
+            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[50px]">
               <div className="w-full max-w-7xl mx-auto flex items-center justify-center h-full">
                 <div className="flex-1 h-full">
                   <Preview
@@ -257,6 +259,7 @@ export default function ProjectPage() {
                 selectedGenerationIndex={selectedGenerationIndex}
                 onSelectGeneration={handleSelectGeneration}
                 onRegenerate={handleRegenerate}
+                projectId={projectId}
               />
             </div>
           </div>

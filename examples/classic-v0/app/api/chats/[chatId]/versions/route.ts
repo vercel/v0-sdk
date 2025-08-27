@@ -12,12 +12,15 @@ export async function GET(
     const response = await v0.chats.findVersions({ chatId })
 
     // Transform the data to match our HistoryItem interface
-    const historyItems = response.data.map((version: any, index: number) => ({
-      id: version.id,
-      prompt: version.messages?.[0]?.content || `Version ${index}`,
-      demoUrl: version.demo || 'about:blank',
-      timestamp: new Date(version.createdAt || Date.now()),
-    }))
+    const historyItems = response.data
+      .map((version: any, index: number) => ({
+        id: version.id,
+        prompt: version.messages?.[0]?.content || `Version ${index}`,
+        demoUrl: version.demoUrl || 'about:blank',
+        timestamp: new Date(version.createdAt || Date.now()),
+      }))
+      // Sort by timestamp (oldest to newest) to ensure v0, v1, v2... order
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
     return NextResponse.json(historyItems)
   } catch (error) {

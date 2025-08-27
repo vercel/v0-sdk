@@ -22,14 +22,17 @@ export async function GET(
     const initialMessage = chat.messages?.[0]
     const prompt = initialMessage?.content || 'Unknown prompt'
 
-    // Build history from messages (each message represents an iteration)
-    const history =
-      chat.messages?.map((message, index) => ({
-        id: `msg-${index}`,
-        prompt: message.content,
-        demoUrl: chat.demo, // Each message might have different demo URLs in real implementation
-        timestamp: new Date(message.createdAt || Date.now()),
-      })) || []
+    // Get actual chat versions for history (same as /api/chats/[chatId]/versions)
+    const versionsResponse = await v0.chats.findVersions({ chatId })
+    const history = versionsResponse.data
+      .map((version: any, index: number) => ({
+        id: version.id,
+        prompt: version.messages?.[0]?.content || `Version ${index}`,
+        demoUrl: version.demoUrl || 'about:blank',
+        timestamp: new Date(version.createdAt || Date.now()),
+      }))
+      // Sort by timestamp (oldest to newest) to ensure v0, v1, v2... order
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
     return NextResponse.json({
       id: chat.id,

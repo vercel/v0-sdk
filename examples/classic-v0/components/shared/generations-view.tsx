@@ -41,6 +41,7 @@ interface GenerationsViewProps {
   isSubmitting: boolean
   showHistory?: boolean
   history?: HistoryItem[]
+  selectedHistoryIndex?: number
   onSelectVersion?: (index: number) => void
   projectId?: string
   chatId?: string
@@ -65,6 +66,7 @@ export function GenerationsView({
   isSubmitting,
   showHistory = false,
   history = [],
+  selectedHistoryIndex = 0,
   onSelectVersion,
   projectId,
   chatId,
@@ -118,14 +120,15 @@ export function GenerationsView({
         {/* Main Content Area */}
         <div className="flex-1 flex items-center justify-center overflow-hidden">
           {/* Main Preview and Thumbnails Container */}
-          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
+          <div className="flex-1 flex flex-col items-center justify-center px-8 h-full">
             {/* Main Preview with History Sidebar */}
-            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[600px]">
+            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[50px]">
               <div className="w-full max-w-7xl mx-auto flex items-center justify-center gap-6 h-full">
                 {/* History Sidebar - positioned to the left of preview */}
                 {showHistory && chatId && (
                   <HistorySidebar
                     chatId={chatId}
+                    selectedVersionIndex={selectedHistoryIndex}
                     onSelectVersion={(version, index) => {
                       onSelectVersion?.(index)
                     }}

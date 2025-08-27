@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { User } from 'lucide-react'
+import { User, Copy } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
@@ -110,7 +110,9 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
           <UserAvatar />
-          <span className="text-gray-900 font-medium">{prompt}</span>
+          <div className="bg-gray-100 text-gray-900 font-medium px-4 py-2 rounded-full shadow-lg">
+            {prompt}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/">
@@ -128,6 +130,7 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="text-gray-700">
                   Duplicate
+                  <Copy className="h-4 w-4 ml-2" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -163,6 +166,7 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
                   disabled
                 >
                   Duplicate
+                  <Copy className="h-4 w-4 ml-2" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
