@@ -86,10 +86,9 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                 )}
               </AvatarFallback>
             </Avatar>
-
             {/* Divider */}
-            <div className="w-px h-6 bg-gray-600 mr-3 flex-shrink-0"></div>
-
+            <div className="absolute left-14 top-1/2 transform -translate-y-1/2 w-px h-12 bg-gray-800"></div>
+            <div className="w-3 flex-shrink-0"></div> {/* Spacer for divider */}
             {/* Input */}
             <input
               ref={ref}
@@ -102,7 +101,6 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
               autoFocus={autoFocus}
               onKeyDown={handleKeyDown}
             />
-
             {/* Send Button */}
             <button
               type="submit"
