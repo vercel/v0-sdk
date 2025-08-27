@@ -63,7 +63,7 @@ export function Thumbnails({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-6">
       {/* Four items: 3 Generation Thumbnails + 1 Regenerate */}
       <div className="grid grid-cols-4 gap-6">
         {/* Three Generation Thumbnails */}
