@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const userResponse = await v0.user.get()
 
-    console.log('User response from v0 API:', userResponse) // Debug log
-
     return NextResponse.json({
       id: userResponse.id,
       name: userResponse.name || userResponse.email || 'User',

@@ -64,9 +64,7 @@ export default function ProjectPage() {
           const userData = await response.json()
           setUser(userData)
         }
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-      }
+      } catch (error) {}
     }
     fetchUser()
   }, [])
@@ -80,10 +78,8 @@ export default function ProjectPage() {
           const projectData = await response.json()
           setProject(projectData)
         } else {
-          console.error('Failed to fetch project:', response.statusText)
         }
       } catch (error) {
-        console.error('Failed to fetch project:', error)
       } finally {
         setIsLoading(false)
       }
@@ -135,7 +131,6 @@ export default function ProjectPage() {
         })
       }
     } catch (error) {
-      console.error('Error regenerating:', error)
     } finally {
       setIsRegenerating(false)
     }
@@ -198,7 +193,6 @@ export default function ProjectPage() {
       // Navigate to the chat page for the NEW chat (not the old one)
       router.push(`/projects/${projectId}/chats/${updatedChat.id}`)
     } catch (error) {
-      console.error('Error:', error)
     } finally {
       setIsSubmitting(false)
     }

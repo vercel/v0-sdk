@@ -98,7 +98,6 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
       // Navigate to the new project
       router.push(`/projects/${newProjectId}`)
     } catch (error) {
-      console.error('Error duplicating project:', error)
       // Handle error - could show a toast
     } finally {
       setIsDuplicating(false)

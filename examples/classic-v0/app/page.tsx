@@ -127,20 +127,10 @@ export default function Home() {
 
   // Component for user avatar
   const UserAvatar = ({ className = 'h-8 w-8' }: { className?: string }) => {
-    console.log('UserAvatar rendering with user:', user) // Debug log
     return (
       <Avatar className={className}>
         {user?.avatarUrl && (
-          <AvatarImage
-            src={user.avatarUrl}
-            alt={user.name}
-            onError={(e) =>
-              console.log('Avatar image failed to load:', user.avatarUrl)
-            }
-            onLoad={() =>
-              console.log('Avatar image loaded successfully:', user.avatarUrl)
-            }
-          />
+          <AvatarImage src={user.avatarUrl} alt={user.name} />
         )}
         <AvatarFallback className="bg-gray-600 text-white">
           {user ? userInitials : <User className="h-4 w-4" />}
@@ -225,7 +215,6 @@ export default function Home() {
         }
       })
     } catch (error) {
-      console.error('Error regenerating:', error)
     } finally {
       setIsRegenerating(false)
     }

@@ -56,7 +56,6 @@ export function Thumbnails({
         img.src = `${baseUrl}&t=${timestamp}`
       }
     } catch (error) {
-      console.error('Error refreshing thumbnail:', error)
     } finally {
       // Clear refreshing state after a short delay to show the refresh happened
       setTimeout(() => setRefreshingIndex(null), 500)

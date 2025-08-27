@@ -237,7 +237,6 @@ export const submitInitialPromptAtom = atom(
             }
           })
         } catch (error) {
-          console.error(`Error creating chat ${index}:`, error)
           // Could optionally update the specific generation with an error state
         }
       })

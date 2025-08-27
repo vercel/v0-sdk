@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
         const chat = await v0.chats.getById({ chatId })
         actualDemoUrl = chat.demo || null
       } catch (error) {
-        console.error('Failed to get chat demo URL:', error)
         // Fall back to using the provided URL
       }
     }
@@ -35,13 +34,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log('Screenshot API - actualDemoUrl:', actualDemoUrl)
-    console.log('URL includes v0.dev:', actualDemoUrl.includes('v0.dev'))
-    console.log(
-      'URL includes placeholder:',
-      actualDemoUrl.includes('placeholder'),
-    )
-
     // Temporarily disable Playwright to test fallback
     if (
       (actualDemoUrl!.includes('v0.dev') ||
@@ -50,8 +42,6 @@ export async function GET(request: NextRequest) {
     ) {
       // Take real screenshots using Playwright
       try {
-        console.log('Taking screenshot with Playwright for:', actualDemoUrl)
-
         // Launch browser with faster settings
         const browser = await chromium.launch({
           headless: true,
@@ -76,13 +66,11 @@ export async function GET(request: NextRequest) {
         page.setDefaultTimeout(8000)
 
         // Navigate to the URL
-        console.log('Navigating to URL:', actualDemoUrl)
+
         const response = await page.goto(actualDemoUrl!, {
           waitUntil: 'networkidle',
           timeout: 10000,
         })
-
-        console.log('Navigation response status:', response?.status())
 
         if (!response || response!.status() >= 400) {
           throw new Error(`Failed to load page: ${response?.status()}`)
@@ -93,11 +81,7 @@ export async function GET(request: NextRequest) {
           // Wait for any React root or common content indicators
           await page.waitForSelector('body', { timeout: 3000 })
           await page.waitForTimeout(3000) // Increased wait time for content
-        } catch (e) {
-          console.log(
-            'Timeout waiting for content selectors, proceeding with screenshot',
-          )
-        }
+        } catch (e) {}
 
         // Take screenshot
         const screenshot = await page.screenshot({
@@ -110,15 +94,8 @@ export async function GET(request: NextRequest) {
         await context.close()
         await browser.close()
 
-        console.log(
-          'Screenshot taken successfully, size:',
-          screenshot.length,
-          'bytes',
-        )
-
         // If screenshot is too small (likely blank/white), fall back to enhanced mockup
         if (screenshot.length < 1000) {
-          console.log('Screenshot too small, falling back to mockup')
           throw new Error('Screenshot appears to be blank')
         }
 

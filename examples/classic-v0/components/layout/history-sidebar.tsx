@@ -67,7 +67,6 @@ export function HistorySidebar({
             }
           }
         } catch (error) {
-          console.error('Failed to fetch chat versions:', error)
         } finally {
           setLoading(false)
         }

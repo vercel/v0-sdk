@@ -18,20 +18,13 @@ export async function GET(
     // Get project data from v0
     const project = await v0.projects.getById({ projectId })
 
-    console.log('Project data from v0:', JSON.stringify(project, null, 2))
-
     // Check if project has chats property
     let chats = project.chats || []
-    console.log('Chats found in project:', chats.length)
 
     // If no chats in project directly, try to find chats and filter by project
     if (chats.length === 0) {
       try {
-        console.log(
-          'No chats in project object, trying to find chats separately...',
-        )
         const allChats = await v0.chats.find()
-        console.log('All chats response:', JSON.stringify(allChats, null, 2))
 
         // Filter chats by projectId if the data structure supports it
         // This depends on how v0.chats.find() returns the data
@@ -42,7 +35,6 @@ export async function GET(
               chat.projectId === projectId ||
               (chat.project && chat.project.id === projectId),
           )
-          console.log('Filtered chats for project:', chats.length)
         }
       } catch (error) {
         console.error('Error fetching chats:', error)
@@ -62,10 +54,6 @@ export async function GET(
         })
         .slice(0, 3) // Only take first 3
 
-      console.log(
-        `Showing ${sortedChats.length} most recent chats out of ${chats.length} total`,
-      )
-
       // Get full chat details for each chat to get demo URLs
       const chatDetailsPromises = sortedChats.map((chat: any) =>
         v0.chats.getById({ chatId: chat.id || chat.chatId }),
@@ -78,7 +66,6 @@ export async function GET(
           demoUrl: chat.demo,
           label: String.fromCharCode(65 + index), // A, B, C for the 3 most recent
         }))
-        console.log('Generated generations (3 most recent):', generations)
       } catch (error) {
         console.error('Error fetching chat details:', error)
         // Fallback to using what we have
@@ -90,7 +77,7 @@ export async function GET(
       }
     } else {
       // If still no chats found, create mock data for now
-      console.log('No chats found for project, using mock data')
+
       generations = [
         {
           id: 'mock-a',

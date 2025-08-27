@@ -86,9 +86,7 @@ export default function ChatPage() {
           const userData = await response.json()
           setUser(userData)
         }
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-      }
+      } catch (error) {}
     }
     fetchUser()
   }, [])
@@ -108,10 +106,8 @@ export default function ChatPage() {
             setSelectedVersionIndex(latestIndex)
           }
         } else {
-          console.error('Failed to fetch chat:', response.statusText)
         }
       } catch (error) {
-        console.error('Failed to fetch chat:', error)
       } finally {
         setIsLoading(false)
       }
@@ -192,8 +188,6 @@ export default function ChatPage() {
       // Navigate to the new chat while staying on the same project
       router.push(`/projects/${projectId}/chats/${updatedChat.id}`)
     } catch (error) {
-      console.error('Error sending follow-up message:', error)
-
       // Remove the placeholder on error
       setChat({
         ...chat,
