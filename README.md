@@ -11,6 +11,7 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 
 ## Examples
 
+- [`classic-v0`](./examples/classic-v0) - Classic v0 interface clone with clean, minimalist design
 - [`v0-clone`](./examples/v0-clone) - Example v0 clone using AI Elements
 - [`v0-sdk-react-example`](./examples/v0-sdk-react-example) - Next.js example demonstrating @v0-sdk/react usage
 
