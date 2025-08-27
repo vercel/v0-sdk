@@ -110,7 +110,7 @@ export function Header({ user, prompt, projectId, generations }: HeaderProps) {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
           <UserAvatar />
-          <div className="bg-gray-100 text-gray-900 font-medium px-4 py-2 rounded-full shadow-lg">
+          <div className="bg-gray-100 text-gray-900 font-medium px-4 py-2 rounded-full">
             {prompt}
           </div>
         </div>

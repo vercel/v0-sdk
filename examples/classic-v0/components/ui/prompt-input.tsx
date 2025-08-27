@@ -66,7 +66,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
     return (
       <div className={`max-w-2xl mx-auto ${className}`}>
         <form onSubmit={onSubmit} className="relative">
-          <div className="flex items-center bg-black rounded-full pl-4 pr-4 py-2">
+          <div
+            className="flex items-center bg-black rounded-full pl-4 pr-4 py-2"
+            style={{
+              boxShadow:
+                '0 15px 20px -4px rgba(0, 0, 0, 0.4), 0 6px 8px -3px rgba(0, 0, 0, 0.3)',
+            }}
+          >
             {/* Avatar */}
             <Avatar className="h-8 w-8 mr-3 flex-shrink-0">
               {user?.avatarUrl && (

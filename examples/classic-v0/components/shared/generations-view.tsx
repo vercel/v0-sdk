@@ -122,7 +122,7 @@ export function GenerationsView({
           {/* Main Preview and Thumbnails Container */}
           <div className="flex-1 flex flex-col items-center justify-center px-8 h-full">
             {/* Main Preview with History Sidebar */}
-            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[50px]">
+            <div className="flex-1 w-full flex items-center justify-center min-h-[50px]">
               <div className="w-full max-w-7xl mx-auto flex items-center justify-center gap-6 h-full">
                 {/* History Sidebar - positioned to the left of preview */}
                 {showHistory && chatId && (
