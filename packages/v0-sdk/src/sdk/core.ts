@@ -1,3 +1,5 @@
+import { V0HttpErrorMap, V0UnknownError } from './errors'
+
 export interface ClientConfig {
   apiKey?: string
   baseUrl?: string
@@ -59,8 +61,8 @@ export function createFetcher(config: ClientConfig = {}) {
     }
 
     if (!res.ok) {
-      const text = await res.text()
-      throw new Error(`HTTP ${res.status}: ${text}`)
+      const ErrorClass = V0HttpErrorMap.get(res.status)
+      throw new (ErrorClass || V0UnknownError)()
     }
 
     return res.json()
