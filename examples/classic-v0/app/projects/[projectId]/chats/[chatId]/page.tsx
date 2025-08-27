@@ -200,20 +200,34 @@ export default function ChatPage() {
         />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex">
-          {/* History Sidebar */}
-          <HistorySidebar
-            history={chat.history}
-            onSelectVersion={handleSelectVersion}
-          />
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
+          {/* Main Preview Container */}
+          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
+            <div className="flex-1 w-full flex items-center justify-center min-h-[600px]">
+              <div className="w-full max-w-7xl mx-auto flex items-center justify-center gap-6 h-full">
+                {/* History Sidebar - positioned to the left of preview */}
+                <HistorySidebar
+                  chatId={chatId}
+                  onSelectVersion={(version, index) => {
+                    // Update the current generation with the selected version
+                    setChat({
+                      ...chat,
+                      generation: {
+                        ...chat.generation,
+                        id: version.id,
+                        demoUrl: version.demoUrl,
+                      },
+                    })
+                  }}
+                />
 
-          {/* Main Preview */}
-          <div className="flex-1 flex flex-col p-8">
-            <div className="flex-1">
-              <Preview
-                generations={[chat.generation]}
-                selectedGenerationIndex={0}
-              />
+                <div className="flex-1 h-full">
+                  <Preview
+                    generations={[chat.generation]}
+                    selectedGenerationIndex={0}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -225,7 +239,7 @@ export default function ChatPage() {
               <div className="flex items-center bg-black rounded-full pl-4 pr-4 py-2">
                 <UserAvatar className="h-8 w-8 mr-3 flex-shrink-0" />
 
-                <div className="w-px h-5 bg-gray-600 mr-3 flex-shrink-0"></div>
+                <div className="w-px h-6 bg-gray-600 mr-3 flex-shrink-0"></div>
 
                 <input
                   type="text"

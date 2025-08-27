@@ -43,6 +43,7 @@ interface GenerationsViewProps {
   history?: HistoryItem[]
   onSelectVersion?: (index: number) => void
   projectId?: string
+  chatId?: string
 }
 
 // Modern loading spinner component
@@ -66,6 +67,7 @@ export function GenerationsView({
   history = [],
   onSelectVersion,
   projectId,
+  chatId,
 }: GenerationsViewProps) {
   const [followUpPrompt, setFollowUpPrompt] = useState('')
 
@@ -114,34 +116,42 @@ export function GenerationsView({
         />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex">
-          {/* History Sidebar - only show when requested */}
-          {showHistory && (
-            <HistorySidebar
-              history={history}
-              onSelectVersion={onSelectVersion}
-            />
-          )}
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
+          {/* Main Preview and Thumbnails Container */}
+          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
+            {/* Main Preview with History Sidebar */}
+            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[600px]">
+              <div className="w-full max-w-7xl mx-auto flex items-center justify-center gap-6 h-full">
+                {/* History Sidebar - positioned to the left of preview */}
+                {showHistory && chatId && (
+                  <HistorySidebar
+                    chatId={chatId}
+                    onSelectVersion={(version, index) => {
+                      onSelectVersion?.(index)
+                    }}
+                  />
+                )}
 
-          {/* Main Preview and Thumbnails */}
-          <div className="flex-1 flex flex-col p-8">
-            {/* Main Preview */}
-            <div className="flex-1 mb-6">
-              <Preview
-                generations={generations}
-                selectedGenerationIndex={selectedGenerationIndex}
-              />
+                <div className="flex-1 h-full">
+                  <Preview
+                    generations={generations}
+                    selectedGenerationIndex={selectedGenerationIndex}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Thumbnails - hide when showing history */}
             {!showHistory && (
-              <Thumbnails
-                generations={generations}
-                selectedGenerationIndex={selectedGenerationIndex}
-                onSelectGeneration={onSelectGeneration}
-                onRegenerate={onRegenerate}
-                projectId={projectId}
-              />
+              <div className="w-full max-w-7xl mx-auto">
+                <Thumbnails
+                  generations={generations}
+                  selectedGenerationIndex={selectedGenerationIndex}
+                  onSelectGeneration={onSelectGeneration}
+                  onRegenerate={onRegenerate}
+                  projectId={projectId}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -153,7 +163,7 @@ export function GenerationsView({
               <div className="flex items-center bg-black rounded-full pl-4 pr-4 py-2">
                 <UserAvatar className="h-8 w-8 mr-3 flex-shrink-0" />
 
-                <div className="w-px h-5 bg-gray-600 mr-3 flex-shrink-0"></div>
+                <div className="w-px h-6 bg-gray-600 mr-3 flex-shrink-0"></div>
 
                 <input
                   type="text"

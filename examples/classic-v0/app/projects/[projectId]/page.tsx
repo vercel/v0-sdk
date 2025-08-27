@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { User, CornerDownLeft } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Preview } from '@/components/layout/preview'
@@ -41,6 +50,10 @@ export default function ProjectPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [followUpPrompt, setFollowUpPrompt] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Regenerate dialog state
+  const [showRegenerateDialog, setShowRegenerateDialog] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
   // Fetch user data
   useEffect(() => {
@@ -84,8 +97,48 @@ export default function ProjectPage() {
   }
 
   const handleRegenerate = () => {
-    // TODO: Implement regeneration
-    console.log('Regenerate clicked')
+    setShowRegenerateDialog(true)
+  }
+
+  const confirmRegenerate = async () => {
+    if (!project) return
+
+    setIsRegenerating(true)
+    setShowRegenerateDialog(false)
+
+    try {
+      // Get the current selected generation
+      const selectedGeneration = project.generations[selectedGenerationIndex]
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: project.name, // Use project name as the prompt
+          projectId: projectId,
+        }),
+      })
+
+      if (response.ok) {
+        const newChat = await response.json()
+
+        // Update the project with the new generation
+        const updatedGenerations = [...project.generations]
+        updatedGenerations[selectedGenerationIndex] = {
+          id: newChat.id,
+          demoUrl: newChat.demo,
+          label: selectedGeneration.label,
+        }
+
+        setProject({
+          ...project,
+          generations: updatedGenerations,
+        })
+      }
+    } catch (error) {
+      console.error('Error regenerating:', error)
+    } finally {
+      setIsRegenerating(false)
+    }
   }
 
   // Helper function to get user initials for avatar fallback
@@ -182,22 +235,31 @@ export default function ProjectPage() {
         />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col p-8">
-          {/* Main Preview */}
-          <div className="flex-1 mb-6">
-            <Preview
-              generations={project.generations}
-              selectedGenerationIndex={selectedGenerationIndex}
-            />
-          </div>
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
+          {/* Main Preview and Thumbnails Container */}
+          <div className="flex-1 flex flex-col items-center justify-center p-8 h-full">
+            {/* Main Preview */}
+            <div className="flex-1 w-full mb-6 flex items-center justify-center min-h-[600px]">
+              <div className="w-full max-w-7xl mx-auto flex items-center justify-center h-full">
+                <div className="flex-1 h-full">
+                  <Preview
+                    generations={project.generations}
+                    selectedGenerationIndex={selectedGenerationIndex}
+                  />
+                </div>
+              </div>
+            </div>
 
-          {/* Thumbnails */}
-          <Thumbnails
-            generations={project.generations}
-            selectedGenerationIndex={selectedGenerationIndex}
-            onSelectGeneration={handleSelectGeneration}
-            onRegenerate={handleRegenerate}
-          />
+            {/* Thumbnails */}
+            <div className="w-full max-w-7xl mx-auto">
+              <Thumbnails
+                generations={project.generations}
+                selectedGenerationIndex={selectedGenerationIndex}
+                onSelectGeneration={handleSelectGeneration}
+                onRegenerate={handleRegenerate}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Bottom Prompt Bar */}
@@ -207,7 +269,7 @@ export default function ProjectPage() {
               <div className="flex items-center bg-black rounded-full pl-4 pr-4 py-2">
                 <UserAvatar className="h-8 w-8 mr-3 flex-shrink-0" />
 
-                <div className="w-px h-5 bg-gray-600 mr-3 flex-shrink-0"></div>
+                <div className="w-px h-6 bg-gray-600 mr-3 flex-shrink-0"></div>
 
                 <input
                   type="text"
@@ -239,6 +301,37 @@ export default function ProjectPage() {
             </form>
           </div>
         </div>
+
+        {/* Regenerate Confirmation Dialog */}
+        <Dialog
+          open={showRegenerateDialog}
+          onOpenChange={setShowRegenerateDialog}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Regenerate {String.fromCharCode(65 + selectedGenerationIndex)}
+              </DialogTitle>
+              <DialogDescription>
+                This will create a new version of generation{' '}
+                {String.fromCharCode(65 + selectedGenerationIndex)} and replace
+                the current one. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowRegenerateDialog(false)}
+                disabled={isRegenerating}
+              >
+                Cancel
+              </Button>
+              <Button onClick={confirmRegenerate} disabled={isRegenerating}>
+                {isRegenerating ? 'Regenerating...' : 'Regenerate'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   )

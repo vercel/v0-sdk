@@ -125,15 +125,36 @@ export const submitInitialPromptAtom = atom(
     set(currentPromptAtom, prompt)
 
     // Immediately show UI with placeholder data
+    const tempProjectId = 'temp-' + Date.now()
     const placeholderChat: Chat = {
-      id: 'temp-' + Date.now(),
+      id: tempProjectId,
       prompt,
       generations: [
-        { id: 'temp-a', demoUrl: 'about:blank', label: 'A' },
-        { id: 'temp-b', demoUrl: 'about:blank', label: 'B' },
-        { id: 'temp-c', demoUrl: 'about:blank', label: 'C' },
+        {
+          id: 'temp-a',
+          demoUrl: 'about:blank',
+          label: 'A',
+          projectId: tempProjectId,
+        },
+        {
+          id: 'temp-b',
+          demoUrl: 'about:blank',
+          label: 'B',
+          projectId: tempProjectId,
+        },
+        {
+          id: 'temp-c',
+          demoUrl: 'about:blank',
+          label: 'C',
+          projectId: tempProjectId,
+        },
       ],
-      selectedGeneration: { id: 'temp-a', demoUrl: 'about:blank', label: 'A' },
+      selectedGeneration: {
+        id: 'temp-a',
+        demoUrl: 'about:blank',
+        label: 'A',
+        projectId: tempProjectId,
+      },
       history: [],
       isIterating: false,
     }

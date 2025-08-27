@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { PromptInput } from '@/components/ui/prompt-input'
 import { User, CornerDownLeft } from 'lucide-react'
 import { GenerationsView } from '@/components/shared/generations-view'
 import {
@@ -153,46 +154,17 @@ export default function Home() {
     return (
       <TooltipProvider>
         <div className="h-screen bg-white flex items-center justify-center">
-          <div className="w-full max-w-2xl px-8">
-            <form onSubmit={handleSubmitPrompt} className="relative">
-              <div className="flex items-center bg-black rounded-full pl-4 pr-4 py-2">
-                {/* Avatar */}
-                <UserAvatar className="h-8 w-8 mr-3 flex-shrink-0" />
-
-                {/* Divider */}
-                <div className="w-px h-5 bg-gray-600 mr-3 flex-shrink-0"></div>
-
-                {/* Input */}
-                <input
-                  type="text"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="A hero for an email client app"
-                  className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none text-sm"
-                  disabled={isLoading}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      handleSubmitPrompt(e as any)
-                    }
-                  }}
-                />
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={!prompt.trim() || isLoading}
-                  className="ml-3 flex-shrink-0 p-1 text-white hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <ModernSpinner className="h-4 w-4 text-white" />
-                  ) : (
-                    <CornerDownLeft className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </form>
+          <div className="w-full px-8">
+            <PromptInput
+              value={prompt}
+              onChange={setPrompt}
+              onSubmit={handleSubmitPrompt}
+              placeholder="A hero for an email client app"
+              disabled={isLoading}
+              loading={isLoading}
+              user={user}
+              autoFocus
+            />
           </div>
         </div>
       </TooltipProvider>
@@ -282,6 +254,7 @@ export default function Home() {
         showHistory={currentChat.isIterating}
         history={currentChat.history}
         projectId={currentChat.id}
+        chatId={currentChat.generations[selectedGenerationIndex]?.id}
       />
 
       {/* Regenerate Confirmation Dialog */}

@@ -16,7 +16,7 @@ export function Preview({
   selectedGenerationIndex,
 }: PreviewProps) {
   return (
-    <div className="flex-1 relative min-h-[600px] max-w-7xl mx-auto">
+    <div className="w-full h-full relative">
       {generations.map((generation, index) => (
         <div
           key={generation.id}

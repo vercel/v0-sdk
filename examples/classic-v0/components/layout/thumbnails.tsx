@@ -8,6 +8,7 @@ interface Generation {
   id: string
   demoUrl: string
   label: string
+  projectId?: string
 }
 
 interface ThumbnailsProps {
@@ -69,17 +70,29 @@ export function Thumbnails({
   ) => {
     e.stopPropagation() // Prevent thumbnail selection
 
-    if (!projectId) {
+    console.log('Navigation clicked:', {
+      projectId,
+      generationProjectId: generation.projectId,
+      generationId: generation.id,
+    })
+
+    // Use projectId from props or fallback to generation's projectId
+    const useProjectId = projectId || generation.projectId
+
+    if (!useProjectId) {
       console.warn('No projectId available for navigation')
       return
     }
 
+    const targetUrl = `/projects/${useProjectId}/chats/${generation.id}`
+    console.log('Navigating to:', targetUrl)
+
     // Navigate to the chat page for this generation
-    router.push(`/projects/${projectId}/chats/${generation.id}`)
+    router.push(targetUrl)
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full">
       {/* Four items: 3 Generation Thumbnails + 1 Regenerate */}
       <div className="grid grid-cols-4 gap-6">
         {/* Three Generation Thumbnails */}
@@ -87,7 +100,7 @@ export function Thumbnails({
           <div
             key={generation.id}
             data-thumbnail-index={index}
-            className={`relative aspect-video border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
+            className={`relative aspect-[16/9] border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
               selectedGenerationIndex === index
                 ? 'border-blue-500'
                 : 'border-gray-300 hover:border-gray-400'
@@ -162,7 +175,7 @@ export function Thumbnails({
 
         {/* Regenerate Box */}
         <div
-          className="aspect-video border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
+          className="aspect-[16/9] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
           onClick={onRegenerate}
         >
           <RefreshCw className="h-8 w-8 text-gray-400 mb-2" />
