@@ -6,42 +6,7 @@ import { CodeProjectPart } from './code-project-part'
 import { ContentPartRenderer } from './content-part-renderer'
 import { cn } from '../utils/cn'
 
-// Helper function to render HTML elements with component or className config
-function renderHtmlElement(
-  tagName: string,
-  key: string,
-  props: any,
-  children: any[],
-  className: string | undefined,
-  componentOrConfig: any,
-  components: MessageProps['components'],
-): React.ReactNode {
-  if (typeof componentOrConfig === 'function') {
-    const Component = componentOrConfig
-    return (
-      <Component key={key} {...props} className={className}>
-        {renderChildren(children, key, components)}
-      </Component>
-    )
-  } else if (componentOrConfig && typeof componentOrConfig === 'object') {
-    const mergedClassName = cn(className, componentOrConfig.className)
-    return React.createElement(
-      tagName,
-      { key, ...props, className: mergedClassName },
-      renderChildren(children, key, components),
-    )
-  } else {
-    return React.createElement(
-      tagName,
-      { key, ...props, className },
-      renderChildren(children, key, components),
-    )
-  }
-}
-
-/**
- * Core renderer component for v0 Platform API message content
- */
+// Simplified renderer that matches v0's exact approach
 function MessageImpl({
   content,
   messageId = 'unknown',
@@ -69,393 +34,146 @@ function MessageImpl({
     ...(renderers?.Icon && { Icon: renderers.Icon }),
   }
 
-  const elements = content.map(([type, ...data], index) => {
+  // Process content exactly like v0's Renderer component
+  const elements = content.map(([type, data], index) => {
     const key = `${messageId}-${index}`
 
-    // Markdown/text content (type 0)
+    // Markdown data (type 0) - this is the main content
     if (type === 0) {
-      const markdownData = data[0]
-      if (!Array.isArray(markdownData)) {
-        return null
-      }
-
-      return (
-        <div key={key}>
-          {markdownData.map((item: any, mdIndex: number) => {
-            const mdKey = `${key}-md-${mdIndex}`
-            return renderMarkdownElement(item, mdKey, mergedComponents)
-          })}
-        </div>
-      )
+      return <Elements key={key} data={data} components={mergedComponents} />
     }
 
-    // Code block (type 1)
+    // Metadata (type 1) - extract context but don't render
     if (type === 1) {
-      const [language, code] = data
-      const CodeBlockComponent = mergedComponents?.CodeBlock || CodeBlock
-      return (
-        <CodeBlockComponent
-          key={key}
-          language={language || 'text'}
-          code={code || ''}
-        />
-      )
+      // In the future, we could extract sources/context here like v0 does
+      // For now, just return null like v0's renderer
+      return null
     }
 
-    // Math (type 2 for inline, type 3 for block)
-    if (type === 2 || type === 3) {
-      const mathContent = data[0] || ''
-      const MathPartComponent = mergedComponents?.MathPart || MathPart
-      return (
-        <MathPartComponent
-          key={key}
-          content={mathContent}
-          inline={type === 2}
-        />
-      )
-    }
-
-    // Unknown type - render as text for debugging
-    return <div key={key}>[Unknown content type: {type}]</div>
+    // Other types - v0 doesn't handle these in the main renderer
+    return null
   })
 
   return <div className={className}>{elements}</div>
 }
 
-function renderMarkdownElement(
-  item: any,
+// This component handles the markdown data array (equivalent to v0's Elements component)
+function Elements({
+  data,
+  components,
+}: {
+  data: any
+  components?: MessageProps['components']
+}) {
+  // Handle case where data might not be an array due to streaming/patching
+  if (!Array.isArray(data)) {
+    return null
+  }
+
+  const renderedElements = data
+    .map((item, index) => {
+      const key = `element-${index}`
+      return renderElement(item, key, components)
+    })
+    .filter(Boolean) // Filter out null/undefined elements
+
+  return <>{renderedElements}</>
+}
+
+// Render individual elements (equivalent to v0's element rendering logic)
+function renderElement(
+  element: any,
   key: string,
   components?: MessageProps['components'],
 ): React.ReactNode {
-  if (typeof item === 'string') {
-    return <span key={key}>{item}</span>
+  if (typeof element === 'string') {
+    return <span key={key}>{element}</span>
   }
 
-  if (Array.isArray(item)) {
-    const [tagName, props, ...children] = item
-
-    // Handle special v0 Platform API elements
-    if (tagName === 'AssistantMessageContentPart') {
-      return (
-        <ContentPartRenderer
-          key={key}
-          part={props.part}
-          iconRenderer={components?.Icon}
-          thinkingSectionRenderer={components?.ThinkingSection}
-          taskSectionRenderer={components?.TaskSection}
-        />
-      )
-    }
-
-    if (tagName === 'Codeblock') {
-      const CustomCodeProjectPart = components?.CodeProjectPart
-      const CodeProjectComponent = CustomCodeProjectPart || CodeProjectPart
-      return (
-        <CodeProjectComponent
-          key={key}
-          language={props.lang}
-          code={children[0]}
-          iconRenderer={components?.Icon}
-        />
-      )
-    }
-
-    if (tagName === 'text') {
-      return <span key={key}>{children[0]}</span>
-    }
-
-    // Handle standard markdown elements
-    const className = props?.className
-
-    switch (tagName) {
-      case 'p': {
-        const componentOrConfig = components?.p
-        if (typeof componentOrConfig === 'function') {
-          const Component = componentOrConfig
-          return (
-            <Component key={key} {...props} className={className}>
-              {renderChildren(children, key, components)}
-            </Component>
-          )
-        } else if (componentOrConfig && typeof componentOrConfig === 'object') {
-          const mergedClassName = cn(className, componentOrConfig.className)
-          return (
-            <p key={key} {...props} className={mergedClassName}>
-              {renderChildren(children, key, components)}
-            </p>
-          )
-        } else {
-          return (
-            <p key={key} {...props} className={className}>
-              {renderChildren(children, key, components)}
-            </p>
-          )
-        }
-      }
-      case 'h1':
-        return renderHtmlElement(
-          'h1',
-          key,
-          props,
-          children,
-          className,
-          components?.h1,
-          components,
-        )
-      case 'h2':
-        return renderHtmlElement(
-          'h2',
-          key,
-          props,
-          children,
-          className,
-          components?.h2,
-          components,
-        )
-      case 'h3':
-        return renderHtmlElement(
-          'h3',
-          key,
-          props,
-          children,
-          className,
-          components?.h3,
-          components,
-        )
-      case 'h4':
-        return renderHtmlElement(
-          'h4',
-          key,
-          props,
-          children,
-          className,
-          components?.h4,
-          components,
-        )
-      case 'h5':
-        return renderHtmlElement(
-          'h5',
-          key,
-          props,
-          children,
-          className,
-          components?.h5,
-          components,
-        )
-      case 'h6':
-        return renderHtmlElement(
-          'h6',
-          key,
-          props,
-          children,
-          className,
-          components?.h6,
-          components,
-        )
-      case 'ul':
-        return renderHtmlElement(
-          'ul',
-          key,
-          props,
-          children,
-          className,
-          components?.ul,
-          components,
-        )
-      case 'ol':
-        return renderHtmlElement(
-          'ol',
-          key,
-          props,
-          children,
-          className,
-          components?.ol,
-          components,
-        )
-      case 'li':
-        return renderHtmlElement(
-          'li',
-          key,
-          props,
-          children,
-          className,
-          components?.li,
-          components,
-        )
-      case 'blockquote':
-        return renderHtmlElement(
-          'blockquote',
-          key,
-          props,
-          children,
-          className,
-          components?.blockquote,
-          components,
-        )
-      case 'code':
-        return renderHtmlElement(
-          'code',
-          key,
-          props,
-          children,
-          className,
-          components?.code,
-          components,
-        )
-      case 'pre':
-        return renderHtmlElement(
-          'pre',
-          key,
-          props,
-          children,
-          className,
-          components?.pre,
-          components,
-        )
-      case 'strong':
-        return renderHtmlElement(
-          'strong',
-          key,
-          props,
-          children,
-          className,
-          components?.strong,
-          components,
-        )
-      case 'em':
-        return renderHtmlElement(
-          'em',
-          key,
-          props,
-          children,
-          className,
-          components?.em,
-          components,
-        )
-      case 'a': {
-        const componentOrConfig = components?.a
-        if (typeof componentOrConfig === 'function') {
-          const Component = componentOrConfig
-          return (
-            <Component
-              key={key}
-              {...props}
-              className={className}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {renderChildren(children, key, components)}
-            </Component>
-          )
-        } else if (componentOrConfig && typeof componentOrConfig === 'object') {
-          const mergedClassName = cn(className, componentOrConfig.className)
-          return (
-            <a
-              key={key}
-              {...props}
-              className={mergedClassName}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {renderChildren(children, key, components)}
-            </a>
-          )
-        } else {
-          return (
-            <a
-              key={key}
-              {...props}
-              className={className}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {renderChildren(children, key, components)}
-            </a>
-          )
-        }
-      }
-      case 'br':
-        return <br key={key} />
-      case 'hr': {
-        const componentOrConfig = components?.hr
-        if (typeof componentOrConfig === 'function') {
-          const Component = componentOrConfig
-          return <Component key={key} {...props} className={className} />
-        } else if (componentOrConfig && typeof componentOrConfig === 'object') {
-          const mergedClassName = cn(className, componentOrConfig.className)
-          return <hr key={key} {...props} className={mergedClassName} />
-        } else {
-          return <hr key={key} {...props} className={className} />
-        }
-      }
-      case 'div':
-        return renderHtmlElement(
-          'div',
-          key,
-          props,
-          children,
-          className,
-          components?.div,
-          components,
-        )
-      case 'span':
-        return renderHtmlElement(
-          'span',
-          key,
-          props,
-          children,
-          className,
-          components?.span,
-          components,
-        )
-      default:
-        return (
-          <span key={key}>{renderChildren(children, key, components)}</span>
-        )
-    }
+  if (!Array.isArray(element)) {
+    return null
   }
 
-  return null
-}
+  const [tagName, props, ...children] = element
 
-function renderChildren(
-  children: any[],
-  parentKey: string,
-  components?: MessageProps['components'],
-): React.ReactNode[] {
-  return children
-    .map((child, index) => {
-      const key = `${parentKey}-child-${index}`
-      return renderMarkdownElement(child, key, components)
+  if (!tagName) {
+    return null
+  }
+
+  // Handle special v0 Platform API elements
+  if (tagName === 'AssistantMessageContentPart') {
+    return (
+      <ContentPartRenderer
+        key={key}
+        part={props.part}
+        iconRenderer={components?.Icon}
+        thinkingSectionRenderer={components?.ThinkingSection}
+        taskSectionRenderer={components?.TaskSection}
+      />
+    )
+  }
+
+  if (tagName === 'Codeblock') {
+    const CustomCodeProjectPart = components?.CodeProjectPart
+    const CodeProjectComponent = CustomCodeProjectPart || CodeProjectPart
+    return (
+      <CodeProjectComponent
+        key={key}
+        language={props.lang}
+        code={children[0]}
+        iconRenderer={components?.Icon}
+      />
+    )
+  }
+
+  if (tagName === 'text') {
+    return <span key={key}>{children[0] || ''}</span>
+  }
+
+  // Render children
+  const renderedChildren = children
+    .map((child, childIndex) => {
+      const childKey = `${key}-child-${childIndex}`
+      return renderElement(child, childKey, components)
     })
     .filter(Boolean)
+
+  // Handle standard HTML elements
+  const className = props?.className
+  const componentOrConfig = components?.[tagName as keyof typeof components]
+
+  if (typeof componentOrConfig === 'function') {
+    const Component = componentOrConfig
+    return (
+      <Component key={key} {...props} className={className}>
+        {renderedChildren}
+      </Component>
+    )
+  } else if (componentOrConfig && typeof componentOrConfig === 'object') {
+    const mergedClassName = cn(className, componentOrConfig.className)
+    return React.createElement(
+      tagName,
+      { key, ...props, className: mergedClassName },
+      renderedChildren,
+    )
+  } else {
+    // Default HTML element rendering
+    const elementProps: Record<string, any> = { key, ...props }
+    if (className) {
+      elementProps.className = className
+    }
+
+    // Special handling for links
+    if (tagName === 'a') {
+      elementProps.target = '_blank'
+      elementProps.rel = 'noopener noreferrer'
+    }
+
+    return React.createElement(tagName, elementProps, renderedChildren)
+  }
 }
 
 /**
  * Main component for rendering v0 Platform API message content
- *
- * @example
- * ```tsx
- * import { Message } from '@v0-sdk/react'
- *
- * function MyComponent({ apiResponse }) {
- *   const content = JSON.parse(apiResponse.content)
- *
- *   return (
- *     <Message
- *       content={content}
- *       messageId={apiResponse.id}
- *       role={apiResponse.role}
- *       className="space-y-4"
- *       components={{
- *         p: ({ children, ...props }) => <p className="mb-4" {...props}>{children}</p>,
- *         h1: ({ children, ...props }) => <h1 className="mb-4 text-2xl font-bold" {...props}>{children}</h1>,
- *         CodeBlock: MyCustomCodeBlock,
- *         MathPart: MyCustomMathRenderer,
- *       }}
- *     />
- *   )
- * }
- * ```
  */
 export const Message = React.memo(MessageImpl)

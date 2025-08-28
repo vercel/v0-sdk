@@ -54,5 +54,8 @@
     "semi": false,
     "singleQuote": true,
     "trailingComma": "all"
+  },
+  "dependencies": {
+    "jsondiffpatch": "^0.7.3"
   }
 }

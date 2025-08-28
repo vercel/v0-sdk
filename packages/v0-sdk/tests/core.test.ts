@@ -106,6 +106,7 @@ describe('createFetcher', () => {
         method: 'GET',
         headers: {
           Authorization: 'Bearer test-api-key',
+          'User-Agent': 'v0-sdk/0.1.0',
         },
         body: undefined,
       })
@@ -129,6 +130,7 @@ describe('createFetcher', () => {
         headers: {
           Authorization: 'Bearer test-api-key',
           'Content-Type': 'application/json',
+          'User-Agent': 'v0-sdk/0.1.0',
         },
         body: JSON.stringify(body),
       })
@@ -190,6 +192,7 @@ describe('createFetcher', () => {
         method: 'GET',
         headers: {
           Authorization: 'Bearer test-api-key',
+          'User-Agent': 'v0-sdk/0.1.0',
           'X-Custom-Header': 'custom-value',
         },
         body: undefined,

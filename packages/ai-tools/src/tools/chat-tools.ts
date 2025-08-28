@@ -66,6 +66,20 @@ export function createChatTools(config: V0ClientConfig = {}) {
         responseMode,
       })
 
+      // Handle streaming vs non-streaming responses
+      if (result instanceof ReadableStream) {
+        return {
+          chatId: 'streaming-chat',
+          webUrl: 'N/A (streaming response)',
+          apiUrl: 'N/A (streaming response)',
+          privacy: 'N/A (streaming response)',
+          name: 'N/A (streaming response)',
+          favorite: false,
+          latestVersion: 'N/A (streaming response)',
+          createdAt: 'N/A (streaming response)',
+        }
+      }
+
       return {
         chatId: result.id,
         webUrl: result.webUrl,
@@ -124,6 +138,16 @@ export function createChatTools(config: V0ClientConfig = {}) {
         modelConfiguration,
         responseMode,
       })
+
+      // Handle streaming vs non-streaming responses
+      if (result instanceof ReadableStream) {
+        return {
+          chatId: 'streaming-chat',
+          webUrl: 'N/A (streaming response)',
+          latestVersion: 'N/A (streaming response)',
+          updatedAt: 'N/A (streaming response)',
+        }
+      }
 
       return {
         chatId: result.id,

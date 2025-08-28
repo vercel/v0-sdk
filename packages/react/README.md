@@ -37,20 +37,68 @@ function ChatMessage({ apiResponse }) {
 
 ### With Streaming
 
-```tsx
-import { Message } from '@v0-sdk/react'
+The package provides built-in support for streaming responses from v0 API:
 
-function StreamingMessage({ apiResponse, isStreaming }) {
-  const content = JSON.parse(apiResponse.content)
+```tsx
+import { StreamingMessage } from '@v0-sdk/react'
+import { createClient } from 'v0-sdk'
+
+const v0 = createClient()
+
+function ChatDemo() {
+  const [stream, setStream] = useState<ReadableStream<Uint8Array> | null>(null)
+
+  const handleSendMessage = async (message: string) => {
+    const response = await v0.chats.create({
+      message,
+      responseMode: 'experimental_stream',
+    })
+    setStream(response)
+  }
 
   return (
-    <Message
-      content={content}
-      messageId={apiResponse.id}
-      role={apiResponse.role}
-      streaming={isStreaming}
-      isLastMessage={true}
-    />
+    <div>
+      {stream && (
+        <StreamingMessage
+          stream={stream}
+          messageId="demo-message"
+          role="assistant"
+          onComplete={(content) => console.log('Stream complete:', content)}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+### Using the Streaming Hook
+
+For more control, use the `useStreamingMessage` hook directly:
+
+```tsx
+import { useStreamingMessage, Message } from '@v0-sdk/react'
+
+function CustomStreamingComponent({
+  stream,
+}: {
+  stream: ReadableStream<Uint8Array>
+}) {
+  const { content, isStreaming, error, isComplete } =
+    useStreamingMessage(stream)
+
+  if (error) return <div>Error: {error}</div>
+
+  return (
+    <div>
+      <div>Status: {isStreaming ? 'Streaming...' : 'Complete'}</div>
+      <Message
+        content={content}
+        streaming={isStreaming}
+        isLastMessage={true}
+        messageId="custom-streaming"
+        role="assistant"
+      />
+    </div>
   )
 }
 ```

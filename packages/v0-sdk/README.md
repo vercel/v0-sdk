@@ -106,6 +106,26 @@ const result = await v0.chats.create({
 })
 ```
 
+#### Streaming Chat Creation
+
+Create a chat with streaming response for real-time output:
+
+```typescript
+import { parseStreamingResponse } from 'v0-sdk'
+
+const stream = await v0.chats.create({
+  message: 'Create a React button component',
+  responseMode: 'experimental_stream',
+})
+
+// Parse the streaming response
+for await (const event of parseStreamingResponse(stream)) {
+  if (event.event === 'message') {
+    console.log('Received chunk:', event.data)
+  }
+}
+```
+
 #### Get Chat by ID
 
 ```typescript

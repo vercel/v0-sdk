@@ -203,8 +203,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(react@19.1.0)
       v0-sdk:
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: workspace:*
+        version: link:../../packages/v0-sdk
       zod:
         specifier: ^4.1.1
         version: 4.1.1
@@ -349,6 +349,9 @@ importers:
 
   packages/react:
     dependencies:
+      jsondiffpatch:
+        specifier: ^0.7.3
+        version: 0.7.3
       react:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.1.1
@@ -500,6 +503,9 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
+
+  '@dmsnell/diff-match-patch@1.1.0':
+    resolution: {integrity: sha512-yejLPmM5pjsGvxS9gXablUSbInW7H976c/FJ4iQxWIm7/38xBySRemTPDe34lhg1gVLbJntX0+sH0jYfU+PN9A==}
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -3275,6 +3281,11 @@ packages:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
 
+  jsondiffpatch@0.7.3:
+    resolution: {integrity: sha512-zd4dqFiXSYyant2WgSXAZ9+yYqilNVvragVNkNRn2IFZKgjyULNrKRznqN4Zon0MkLueCg+3QaPVCnDAVP20OQ==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
 
@@ -4644,9 +4655,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  v0-sdk@0.8.0:
-    resolution: {integrity: sha512-TsvRn1gvbzWjTdZs0BzF0o3AyElnpWbTpuahwy0pzY4eUs0QUBDLrYjraUg4AAVbtONhUQfcqWnGZBnGAPImEQ==}
-
   vfile-location@5.0.3:
     resolution: {integrity: sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg==}
 
@@ -5027,6 +5035,8 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.1.1
       prettier: 2.8.8
+
+  '@dmsnell/diff-match-patch@1.1.0': {}
 
   '@emnapi/core@1.4.5':
     dependencies:
@@ -7783,6 +7793,10 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
+  jsondiffpatch@0.7.3:
+    dependencies:
+      '@dmsnell/diff-match-patch': 1.1.0
+
   jsonfile@4.0.0:
     optionalDependencies:
       graceful-fs: 4.2.11
@@ -9557,8 +9571,6 @@ snapshots:
       react: 19.1.0
 
   util-deprecate@1.0.2: {}
-
-  v0-sdk@0.8.0: {}
 
   vfile-location@5.0.3:
     dependencies:

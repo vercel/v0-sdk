@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { v0 } from 'v0-sdk'
+import { v0, ChatDetail } from 'v0-sdk'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       // create new chat
       const chatOptions: any = {
         message: message,
+        responseMode: 'sync', // Explicitly use sync mode
         modelConfiguration: {
           modelId: 'v0-1.5-md',
         },
@@ -37,10 +38,17 @@ export async function POST(request: NextRequest) {
       chat = await v0.chats.create(chatOptions)
     }
 
+    // Type guard to ensure we have a ChatDetail and not a stream
+    if (chat instanceof ReadableStream) {
+      throw new Error('Unexpected streaming response')
+    }
+
+    const chatDetail = chat as ChatDetail
+
     return NextResponse.json({
-      id: chat.id,
-      demo: chat.demo,
-      messages: chat.messages?.map((msg) => ({
+      id: chatDetail.id,
+      demo: chatDetail.demo,
+      messages: chatDetail.messages?.map((msg) => ({
         ...msg,
         experimental_content: (msg as any).experimental_content,
       })),

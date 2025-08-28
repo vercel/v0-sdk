@@ -129,6 +129,48 @@ export function ContentPartRenderer({
       )
     }
 
+    case 'task-read-file-v1': {
+      const TaskComponent = taskSectionRenderer || TaskSection
+      const [collapsed, setCollapsed] = useState(true)
+
+      return (
+        <TaskComponent
+          title={
+            metadata.taskNameComplete ||
+            metadata.taskNameActive ||
+            'Reading file'
+          }
+          type={type}
+          parts={parts}
+          collapsed={collapsed}
+          onCollapse={() => setCollapsed(!collapsed)}
+          taskIcon={folderIcon}
+          chevronRightIcon={chevronRightIcon}
+          chevronDownIcon={chevronDownIcon}
+        />
+      )
+    }
+
+    case 'task-coding-v1': {
+      const TaskComponent = taskSectionRenderer || TaskSection
+      const [collapsed, setCollapsed] = useState(true)
+
+      return (
+        <TaskComponent
+          title={
+            metadata.taskNameComplete || metadata.taskNameActive || 'Coding'
+          }
+          type={type}
+          parts={parts}
+          collapsed={collapsed}
+          onCollapse={() => setCollapsed(!collapsed)}
+          taskIcon={wrenchIcon}
+          chevronRightIcon={chevronRightIcon}
+          chevronDownIcon={chevronDownIcon}
+        />
+      )
+    }
+
     case 'task-start-v1':
       // Usually just indicates task start - can be hidden or show as status
       return null

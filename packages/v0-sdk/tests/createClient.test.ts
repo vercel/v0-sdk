@@ -5,6 +5,7 @@ import * as core from '../src/sdk/core'
 // Mock the createFetcher function
 vi.mock('../src/sdk/core', () => ({
   createFetcher: vi.fn(),
+  createStreamingFetcher: vi.fn(),
   fetcher: vi.fn(), // Keep the original fetcher mock for backward compatibility
 }))
 

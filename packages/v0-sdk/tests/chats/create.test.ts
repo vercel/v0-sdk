@@ -4,7 +4,8 @@ import * as core from '../../src/sdk/core'
 
 // Mock the core module
 vi.mock('../../src/sdk/core', () => ({
-  createFetcher: vi.fn(() => vi.fn()),
+  createFetcher: vi.fn(),
+  createStreamingFetcher: vi.fn(),
 }))
 
 const mockCreateFetcher = vi.mocked(core.createFetcher)

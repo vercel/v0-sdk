@@ -30,7 +30,7 @@
     "streamdown": "^1.0.12",
     "tailwind-merge": "^2.5.5",
     "use-stick-to-bottom": "^1.1.1",
-    "v0-sdk": "^0.8.0",
+    "v0-sdk": "workspace:*",
     "zod": "^4.1.1"
   },
   "devDependencies": {
