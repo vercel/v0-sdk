@@ -103,23 +103,27 @@ function generateSdk(openApiSpec: any, outputPath: string) {
   const nestedStructure = buildNestedStructure(operations)
 
   // Generate the SDK code with createClient function
-  const sdk = `import { createFetcher } from "./core";
+  const sdk = `import { createFetcher, createStreamingFetcher } from './core'
+
+// Re-export streaming utilities from core
+export { parseStreamingResponse, type StreamEvent } from './core'
 
 ${interfaces}
 
 export interface V0ClientConfig {
-  apiKey?: string;
-  baseUrl?: string;
+  apiKey?: string
+  baseUrl?: string
 }
 
 export function createClient(config: V0ClientConfig = {}) {
-  const fetcher = createFetcher(config);
+  const fetcher = createFetcher(config)
+  const streamingFetcher = createStreamingFetcher(config)
   
   return ${generateNestedObject(nestedStructure, '', 1, true)};
 }
 
 // Default client for backward compatibility
-export const v0 = createClient();`
+export const v0 = createClient()`
 
   fs.writeFileSync(path.join(outputPath, 'v0.ts'), sdk)
   console.log(`SDK written to ${outputPath}/v0.ts`)
@@ -186,6 +190,7 @@ function generateNestedObject(
       const returnType = generateReturnType(
         operation.responseSchema,
         operation.operationId,
+        operation,
       )
       const functionBody = generateFunctionBody(
         operation.route,
@@ -193,6 +198,7 @@ function generateNestedObject(
         operation.params,
         operation.bodyProps,
         operation.requestBodySchema,
+        operation,
       )
 
       entries.push(`${indent}  async ${key}(${paramInterface}): Promise<${returnType}> {
@@ -366,6 +372,23 @@ ${properties}
         }
         generatedTypes.add(interfaceName)
       }
+
+      // Check if this operation supports streaming (has responseMode with experimental_stream)
+      const supportsStreaming = operation.bodyProps.some(
+        (prop) =>
+          prop.name === 'responseMode' &&
+          prop.schema?.enum?.includes('experimental_stream'),
+      )
+
+      if (supportsStreaming) {
+        const streamResponseName = `${toPascalCase(operation.operationId)}StreamResponse`
+        if (!generatedTypes.has(streamResponseName)) {
+          interfaces.push(
+            `export type ${streamResponseName} = ReadableStream<Uint8Array>`,
+          )
+          generatedTypes.add(streamResponseName)
+        }
+      }
     }
   }
 
@@ -415,12 +438,29 @@ function generateParameterInterface(
   }
 }
 
-function generateReturnType(responseSchema: any, operationId: string): string {
+function generateReturnType(
+  responseSchema: any,
+  operationId: string,
+  operation: Operation,
+): string {
   if (!responseSchema) {
     return 'any'
   }
 
   const responseTypeName = `${toPascalCase(operationId)}Response`
+
+  // Check if this operation supports streaming
+  const supportsStreaming = operation.bodyProps.some(
+    (prop) =>
+      prop.name === 'responseMode' &&
+      prop.schema?.enum?.includes('experimental_stream'),
+  )
+
+  if (supportsStreaming) {
+    const streamResponseName = `${toPascalCase(operationId)}StreamResponse`
+    return `${responseTypeName} | ${streamResponseName}`
+  }
+
   return responseTypeName
 }
 
@@ -430,6 +470,7 @@ function generateFunctionBody(
   params: Parameter[],
   bodyProps: RequestBodyProperty[],
   requestBodySchema?: any,
+  operation?: Operation,
 ): string {
   const pathParams = params.filter((p) => p.in === 'path')
   const queryParams = params.filter((p) => p.in === 'query')
@@ -513,6 +554,24 @@ function generateFunctionBody(
 
   const fetcherParamsObj =
     fetcherParams.length > 0 ? `{ ${fetcherParams.join(', ')} }` : '{}'
+
+  // Check if this operation supports streaming
+  const supportsStreaming = operation?.bodyProps.some(
+    (prop) =>
+      prop.name === 'responseMode' &&
+      prop.schema?.enum?.includes('experimental_stream'),
+  )
+
+  if (supportsStreaming) {
+    // Add streaming logic
+    lines.push('')
+    lines.push(`if (params.responseMode === 'experimental_stream') {`)
+    lines.push(
+      `  return await streamingFetcher(\`${transformPath(route)}\`, "${method}", ${fetcherParamsObj})`,
+    )
+    lines.push(`}`)
+    lines.push('')
+  }
 
   lines.push(
     `return fetcher(\`${transformPath(route)}\`, "${method}", ${fetcherParamsObj})`,

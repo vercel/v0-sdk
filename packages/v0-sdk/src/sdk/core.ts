@@ -68,6 +68,58 @@ export function createFetcher(config: ClientConfig = {}) {
   }
 }
 
+// Streaming response types
+export interface StreamEvent {
+  event?: string
+  data: string
+}
+
+// Utility function to parse streaming events
+export async function* parseStreamingResponse(
+  stream: ReadableStream<Uint8Array>,
+): AsyncGenerator<StreamEvent, void, unknown> {
+  const reader = stream.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || '' // Keep the last incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.trim() === '') continue
+
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          if (data === '[DONE]') return
+
+          try {
+            yield {
+              event: 'message',
+              data: data,
+            }
+          } catch (e) {
+            console.warn('Failed to parse streaming data:', e)
+          }
+        } else if (line.startsWith('event: ')) {
+          const event = line.slice(7)
+          yield {
+            event: event,
+            data: '',
+          }
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock()
+  }
+}
+
 export function createStreamingFetcher(config: ClientConfig = {}) {
   const baseUrl = config.baseUrl || 'https://api.v0.dev/v1'
   let sessionToken: string | null = null

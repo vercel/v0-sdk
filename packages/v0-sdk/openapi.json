@@ -100,9 +100,9 @@
                   },
                   "responseMode": {
                     "type": "string",
-                    "enum": ["sync", "async"],
+                    "enum": ["sync", "async", "experimental_stream"],
                     "default": "sync",
-                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output."
+                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming."
                   },
                   "designSystemId": {
                     "type": ["string", "null"],
@@ -3131,9 +3131,9 @@
                   },
                   "responseMode": {
                     "type": "string",
-                    "enum": ["sync", "async"],
+                    "enum": ["sync", "async", "experimental_stream"],
                     "default": "sync",
-                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output."
+                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming."
                   }
                 },
                 "required": ["message"],

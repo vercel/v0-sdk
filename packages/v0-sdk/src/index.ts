@@ -1,4 +1,10 @@
-export { v0, createClient, type V0ClientConfig } from './sdk/v0'
+export {
+  v0,
+  createClient,
+  type V0ClientConfig,
+  parseStreamingResponse,
+  type StreamEvent,
+} from './sdk/v0'
 
 // Export all schema types
 export type {
@@ -59,6 +65,7 @@ export type {
 
   // Response types
   ChatsCreateResponse,
+  ChatsCreateStreamResponse,
   ChatsDeleteResponse,
   ChatsFavoriteResponse,
   ChatsFindMessagesResponse,
@@ -71,6 +78,7 @@ export type {
   ChatsInitResponse,
   ChatsResumeResponse,
   ChatsSendMessageResponse,
+  ChatsSendMessageStreamResponse,
   ChatsUpdateResponse,
   ChatsUpdateVersionResponse,
   DeploymentsCreateResponse,

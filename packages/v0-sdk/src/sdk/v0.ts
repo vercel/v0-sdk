@@ -1,5 +1,8 @@
 import { createFetcher, createStreamingFetcher } from './core'
 
+// Re-export streaming utilities from core
+export { parseStreamingResponse, type StreamEvent } from './core'
+
 export type ChatDetail = {
   id: string
   object: 'chat'
@@ -607,59 +610,7 @@ export interface ChatsCreateRequest {
 
 export type ChatsCreateResponse = ChatDetail
 
-// Streaming response types
-export interface StreamEvent {
-  event?: string
-  data: string
-}
-
 export type ChatsCreateStreamResponse = ReadableStream<Uint8Array>
-
-// Utility function to parse streaming events
-export async function* parseStreamingResponse(
-  stream: ReadableStream<Uint8Array>,
-): AsyncGenerator<StreamEvent, void, unknown> {
-  const reader = stream.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || '' // Keep the last incomplete line in buffer
-
-      for (const line of lines) {
-        if (line.trim() === '') continue
-
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6)
-          if (data === '[DONE]') return
-
-          try {
-            yield {
-              event: 'message',
-              data: data,
-            }
-          } catch (e) {
-            console.warn('Failed to parse streaming data:', e)
-          }
-        } else if (line.startsWith('event: ')) {
-          const event = line.slice(7)
-          yield {
-            event: event,
-            data: '',
-          }
-        }
-      }
-    }
-  } finally {
-    reader.releaseLock()
-  }
-}
 
 export interface ChatsFindResponse {
   object: 'list'
@@ -798,6 +749,7 @@ export interface ChatsSendMessageRequest {
 }
 
 export type ChatsSendMessageResponse = ChatDetail
+
 export type ChatsSendMessageStreamResponse = ReadableStream<Uint8Array>
 
 export type ChatsGetMessageResponse = MessageDetail
@@ -1092,12 +1044,10 @@ export function createClient(config: V0ClientConfig = {}) {
         }
 
         if (params.responseMode === 'experimental_stream') {
-          return await streamingFetcher(`/chats`, 'POST', {
-            body,
-          })
+          return await streamingFetcher(`/chats`, 'POST', { body })
         }
 
-        return await fetcher(`/chats`, 'POST', { body })
+        return fetcher(`/chats`, 'POST', { body })
       },
 
       async find(params?: {
@@ -1200,10 +1150,7 @@ export function createClient(config: V0ClientConfig = {}) {
           return await streamingFetcher(
             `/chats/${pathParams.chatId}/messages`,
             'POST',
-            {
-              pathParams,
-              body,
-            },
+            { pathParams, body },
           )
         }
 
