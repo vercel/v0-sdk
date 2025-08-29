@@ -16,7 +16,6 @@
   "dependencies": {
     "@v0-sdk/ai-tools": "workspace:*",
     "ai": "^5.0.22",
-    "@ai-sdk/openai": "^2.0.0",
     "dotenv": "^16.4.5",
     "zod": "^3.25.76"
   },
