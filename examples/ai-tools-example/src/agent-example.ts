@@ -12,7 +12,6 @@
 
 import 'dotenv/config'
 import { generateText, generateObject, tool, stepCountIs } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 import { z } from 'zod'
 
@@ -29,7 +28,7 @@ async function projectCreationAgent() {
   console.log('🤖 Example 1: Multi-Step Project Creation Agent\n')
 
   const { text, steps } = await generateText({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     tools: {
       ...tools.project,
       ...tools.chat,
@@ -85,7 +84,7 @@ async function sequentialWorkflowAgent() {
 
   // Step 1: Analyze requirements
   const { object: analysis } = await generateObject({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     schema: z.object({
       projectType: z.string(),
       complexity: z.enum(['simple', 'medium', 'complex']),
@@ -101,7 +100,7 @@ async function sequentialWorkflowAgent() {
 
   // Step 2: Create project based on analysis
   const { text: projectResult } = await generateText({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     tools: {
       ...tools.project,
     },
@@ -120,7 +119,7 @@ async function sequentialWorkflowAgent() {
 
   // Step 3: Quality check
   const { object: qualityCheck } = await generateObject({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     schema: z.object({
       completeness: z.number().min(1).max(10),
       alignment: z.number().min(1).max(10),
@@ -147,7 +146,7 @@ async function routingAgent(userRequest: string) {
 
   // Step 1: Classify the request
   const { object: classification } = await generateObject({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     schema: z.object({
       category: z.enum([
         'project_management',
@@ -188,7 +187,7 @@ async function routingAgent(userRequest: string) {
   }
 
   const { text: response } = await generateText({
-    model: openai(modelChoice),
+    model: `openai/${modelChoice}`,
     tools: toolSet,
     system: systemPrompts[classification.category],
     stopWhen: stepCountIs(classification.complexity === 'simple' ? 3 : 6),
@@ -212,7 +211,7 @@ async function parallelProcessingAgent() {
     [
       // Analyze projects
       generateText({
-        model: openai('gpt-4o-mini'),
+        model: 'openai/gpt-4o-mini',
         tools: { ...tools.project },
         stopWhen: stepCountIs(2),
         system:
@@ -223,7 +222,7 @@ async function parallelProcessingAgent() {
 
       // Analyze user account
       generateText({
-        model: openai('gpt-4o-mini'),
+        model: 'openai/gpt-4o-mini',
         tools: { ...tools.user },
         stopWhen: stepCountIs(2),
         system:
@@ -233,7 +232,7 @@ async function parallelProcessingAgent() {
 
       // Analyze deployments
       generateText({
-        model: openai('gpt-4o-mini'),
+        model: 'openai/gpt-4o-mini',
         tools: { ...tools.deployment },
         stopWhen: stepCountIs(2),
         system:
@@ -250,7 +249,7 @@ async function parallelProcessingAgent() {
 
   // Synthesize results
   const { text: synthesis } = await generateText({
-    model: openai('gpt-4o'),
+    model: 'openai/gpt-4o',
     system:
       'You are a senior analyst synthesizing multiple reports into actionable insights.',
     prompt: `Synthesize these three analyses into key insights and recommendations:
@@ -279,7 +278,7 @@ async function evaluatorOptimizerAgent() {
 
   // Initial project creation
   const { text: initialProject } = await generateText({
-    model: openai('gpt-4o-mini'),
+    model: 'openai/gpt-4o-mini',
     tools: { ...tools.project },
     stopWhen: stepCountIs(2),
     system: 'Create a v0 project based on the given idea.',
@@ -292,7 +291,7 @@ async function evaluatorOptimizerAgent() {
   while (iterations < MAX_ITERATIONS) {
     // Evaluate current result
     const { object: evaluation } = await generateObject({
-      model: openai('gpt-4o'),
+      model: 'openai/gpt-4o',
       schema: z.object({
         completeness: z.number().min(1).max(10),
         clarity: z.number().min(1).max(10),
@@ -322,7 +321,7 @@ async function evaluatorOptimizerAgent() {
 
     // Improve based on feedback
     const { text: improvedResult } = await generateText({
-      model: openai('gpt-4o'),
+      model: 'openai/gpt-4o',
       tools: { ...tools.project },
       stopWhen: stepCountIs(3),
       system: 'Improve the project setup based on the evaluation feedback.',

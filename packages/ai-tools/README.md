@@ -20,11 +20,10 @@ npm install @v0-sdk/ai-tools ai zod@^3.23.8
 
 ```typescript
 import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0Tools } from '@v0-sdk/ai-tools'
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: 'Create a new React component for a todo list',
   tools: v0Tools({
     apiKey: process.env.V0_API_KEY,
@@ -44,7 +43,7 @@ import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 const tools = v0ToolsByCategory({ apiKey: process.env.V0_API_KEY })
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: 'Help me manage my v0 projects',
   tools: {
     // Only include specific categories you need
@@ -62,7 +61,7 @@ const result = await generateText({
 import { v0Tools } from '@v0-sdk/ai-tools'
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: 'Complete workflow: create project, chat, and deploy',
   tools: v0Tools({ apiKey: process.env.V0_API_KEY }), // All tools available
 })
@@ -76,7 +75,7 @@ import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 const tools = v0ToolsByCategory({ apiKey: process.env.V0_API_KEY })
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: 'Help me manage my v0 projects',
   tools: {
     // Only include specific categories
@@ -95,7 +94,7 @@ const chatTools = createChatTools({ apiKey: process.env.V0_API_KEY })
 const projectTools = createProjectTools({ apiKey: process.env.V0_API_KEY })
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: 'Create a chat in my existing project',
   tools: {
     // Pick specific tools
@@ -195,11 +194,10 @@ const tools = v0Tools({
 
 ```typescript
 import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0Tools } from '@v0-sdk/ai-tools'
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt: `Help me with a complete v0 workflow:
   1. Create a new project for an e-commerce site
   2. Create a chat in that project to design a product catalog
@@ -218,13 +216,12 @@ console.log(result.text)
 
 ```typescript
 import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 
 const tools = v0ToolsByCategory({ apiKey: process.env.V0_API_KEY })
 
 const result = await generateText({
-  model: openai('gpt-4'),
+  model: 'openai/gpt-4',
   prompt:
     'Create a new project called "My Portfolio" with environment variables for API keys',
   tools: {
@@ -256,7 +253,7 @@ All tools include proper error handling and will throw descriptive errors if the
 ```typescript
 try {
   const result = await generateText({
-    model: openai('gpt-4'),
+    model: 'openai/gpt-4',
     prompt: 'Create a chat',
     tools: v0Tools({ apiKey: 'invalid-key' }),
   })
