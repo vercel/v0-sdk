@@ -85,7 +85,6 @@ class StreamStateManager {
   ): Promise<void> => {
     // Prevent processing the same stream multiple times
     if (this.processedStreams.has(stream)) {
-      console.log('Stream already processed, skipping')
       return
     }
 
@@ -152,12 +151,10 @@ class StreamStateManager {
       while (true) {
         const { done, value } = await reader.read()
         if (done) {
-          console.log('Stream reading completed')
           break
         }
 
         const chunk = decoder.decode(value, { stream: true })
-        console.log('Received raw chunk:', chunk)
         buffer += chunk
         const lines = buffer.split('\n')
         buffer = lines.pop() || ''
@@ -167,14 +164,11 @@ class StreamStateManager {
             continue
           }
 
-          console.log('Processing line:', line)
-
           // Handle SSE format (data: ...)
           let jsonData: string
           if (line.startsWith('data: ')) {
             jsonData = line.slice(6) // Remove "data: " prefix
             if (jsonData === '[DONE]') {
-              console.log('Stream marked as done via SSE')
               this.setComplete(true)
               options.onComplete?.(currentContent)
               return
@@ -187,37 +181,24 @@ class StreamStateManager {
           try {
             // Parse the JSON data
             const parsedData = JSON.parse(jsonData)
-            console.log('Parsed data:', JSON.stringify(parsedData, null, 2))
 
             // Handle v0 streaming format
             if (parsedData.type === 'connected') {
-              console.log('Stream connected')
               continue
             } else if (parsedData.type === 'done') {
-              console.log('Stream marked as done')
               this.setComplete(true)
               options.onComplete?.(currentContent)
               return
             } else if (parsedData.object === 'chat' && parsedData.id) {
               // Handle the initial chat data message
-              console.log('Received chat data:', parsedData.id)
               options.onChatData?.(parsedData)
               continue
             } else if (parsedData.delta) {
               // Apply the delta using jsondiffpatch
-              console.log(
-                'Applying delta to content:',
-                JSON.stringify(currentContent, null, 2),
-              )
-              console.log('Delta:', JSON.stringify(parsedData.delta, null, 2))
               const patchedContent = patch(currentContent, parsedData.delta)
               currentContent = Array.isArray(patchedContent)
                 ? (patchedContent as MessageBinaryFormat)
                 : []
-              console.log(
-                'Patched content result:',
-                JSON.stringify(currentContent, null, 2),
-              )
 
               this.updateContent(currentContent)
               options.onChunk?.(currentContent)
@@ -264,7 +245,6 @@ export function useStreamingMessage(
   if (stream !== lastStreamRef.current) {
     lastStreamRef.current = stream
     if (stream) {
-      console.log('New stream detected, starting processing')
       manager.processStream(stream, options)
     }
   }

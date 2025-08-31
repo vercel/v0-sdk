@@ -63,7 +63,7 @@ function ChatDemo() {
           stream={stream}
           messageId="demo-message"
           role="assistant"
-          onComplete={(content) => console.log('Stream complete:', content)}
+          onComplete={(content) => handleCompletion(content)}
         />
       )}
     </div>

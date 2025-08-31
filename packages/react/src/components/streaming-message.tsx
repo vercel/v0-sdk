@@ -57,8 +57,8 @@ export interface StreamingMessageProps
  *           stream={stream}
  *           messageId="demo-message"
  *           role="assistant"
- *           onComplete={(content) => console.log('Stream complete:', content)}
- *           onChatData={(chatData) => console.log('Chat created:', chatData.id)}
+ *           onComplete={(content) => handleCompletion(content)}
+ *           onChatData={(chatData) => handleChatData(chatData)}
  *         />
  *       )}
  *     </div>
