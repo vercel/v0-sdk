@@ -117,7 +117,9 @@ export function ThinkingSection({
         'div',
         { 'data-icon-container': true },
         collapsed
-          ? [
+          ? React.createElement(
+              React.Fragment,
+              {},
               brainIcon ||
                 (iconRenderer
                   ? React.createElement(iconRenderer, { name: 'brain' })
@@ -126,7 +128,7 @@ export function ThinkingSection({
                 (iconRenderer
                   ? React.createElement(iconRenderer, { name: 'chevron-right' })
                   : React.createElement(Icon, { name: 'chevron-right' })),
-            ]
+            )
           : chevronDownIcon ||
               (iconRenderer
                 ? React.createElement(iconRenderer, { name: 'chevron-down' })
