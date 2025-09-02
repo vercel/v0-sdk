@@ -1,8 +1,9 @@
 import React from 'react'
-import { Message } from './message'
+import { Message, useMessage, MessageData } from './message'
 import {
   useStreamingMessage,
   UseStreamingMessageOptions,
+  StreamingMessageState,
 } from '../hooks/use-streaming-message'
 import { MessageProps } from '../types'
 
@@ -30,8 +31,56 @@ export interface StreamingMessageProps
   errorComponent?: (error: string) => React.ReactNode
 }
 
+// Headless streaming message data
+export interface StreamingMessageData extends StreamingMessageState {
+  messageData: MessageData | null
+}
+
+// Headless hook for streaming message
+export function useStreamingMessageData({
+  stream,
+  messageId = 'unknown',
+  role = 'assistant',
+  components,
+  renderers,
+  onChunk,
+  onComplete,
+  onError,
+  onChatData,
+}: Omit<
+  StreamingMessageProps,
+  'className' | 'showLoadingIndicator' | 'loadingComponent' | 'errorComponent'
+>): StreamingMessageData {
+  const streamingState = useStreamingMessage(stream, {
+    onChunk,
+    onComplete,
+    onError,
+    onChatData,
+  })
+
+  const messageData =
+    streamingState.content.length > 0
+      ? useMessage({
+          content: streamingState.content,
+          messageId,
+          role,
+          streaming: streamingState.isStreaming,
+          isLastMessage: true,
+          components,
+          renderers,
+        })
+      : null
+
+  return {
+    ...streamingState,
+    messageData,
+  }
+}
+
 /**
  * Component for rendering streaming message content from v0 API
+ *
+ * For headless usage, use the useStreamingMessageData hook instead.
  *
  * @example
  * ```tsx
@@ -75,40 +124,73 @@ export function StreamingMessage({
   onComplete,
   onError,
   onChatData,
+  className,
   ...messageProps
 }: StreamingMessageProps) {
-  const { content, isStreaming, error, isComplete } = useStreamingMessage(
+  const streamingData = useStreamingMessageData({
     stream,
-    {
-      onChunk,
-      onComplete,
-      onError,
-      onChatData,
-    },
-  )
+    onChunk,
+    onComplete,
+    onError,
+    onChatData,
+    ...messageProps,
+  })
 
   // Handle error state
-  if (error) {
+  if (streamingData.error) {
     if (errorComponent) {
-      return <>{errorComponent(error)}</>
+      return <>{errorComponent(streamingData.error)}</>
     }
-    return (
-      <div className="text-red-500 p-4 border border-red-200 rounded">
-        Error: {error}
-      </div>
+    // Fallback error component using React.createElement for compatibility
+    return React.createElement(
+      'div',
+      {
+        className: 'text-red-500 p-4 border border-red-200 rounded',
+        style: {
+          color: 'red',
+          padding: '1rem',
+          border: '1px solid #fecaca',
+          borderRadius: '0.375rem',
+        },
+      },
+      `Error: ${streamingData.error}`,
     )
   }
 
   // Handle loading state
-  if (showLoadingIndicator && isStreaming && content.length === 0) {
+  if (
+    showLoadingIndicator &&
+    streamingData.isStreaming &&
+    streamingData.content.length === 0
+  ) {
     if (loadingComponent) {
       return <>{loadingComponent}</>
     }
-    return (
-      <div className="flex items-center space-x-2 text-gray-500">
-        <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
-        <span>Loading...</span>
-      </div>
+    // Fallback loading component using React.createElement for compatibility
+    return React.createElement(
+      'div',
+      {
+        className: 'flex items-center space-x-2 text-gray-500',
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          color: '#6b7280',
+        },
+      },
+      React.createElement('div', {
+        className:
+          'animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full',
+        style: {
+          animation: 'spin 1s linear infinite',
+          height: '1rem',
+          width: '1rem',
+          border: '2px solid #d1d5db',
+          borderTopColor: '#4b5563',
+          borderRadius: '50%',
+        },
+      }),
+      React.createElement('span', {}, 'Loading...'),
     )
   }
 
@@ -116,9 +198,10 @@ export function StreamingMessage({
   return (
     <Message
       {...messageProps}
-      content={content}
-      streaming={isStreaming}
+      content={streamingData.content}
+      streaming={streamingData.isStreaming}
       isLastMessage={true}
+      className={className}
     />
   )
 }

@@ -2,7 +2,16 @@
 
 > **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
 
-React components for rendering content from the v0 Platform API.
+Headless React components and hooks for rendering content from the v0 Platform API.
+
+## Features
+
+- **Headless by design** - Works with React Native, TUIs, and any React renderer
+- **Flexible rendering** - Use provided JSX components or build your own with headless hooks
+- **Customizable** - Override any component or styling
+- **Zero DOM dependencies** - No `react-dom` required
+- **Streaming support** - Real-time message streaming with `useStreamingMessage`
+- **Backward compatible** - Drop-in replacement for existing implementations
 
 ## Installation
 
@@ -16,462 +25,251 @@ pnpm add @v0-sdk/react
 
 ## Usage
 
-### Basic Usage
+### Basic JSX Components (Web/React DOM)
 
 ```tsx
-import { Message } from '@v0-sdk/react'
+import { Message, StreamingMessage } from '@v0-sdk/react'
 
-function ChatMessage({ apiResponse }) {
-  // Parse the content from the API response
-  const content = JSON.parse(apiResponse.content)
-
+function ChatMessage({ content }) {
   return (
     <Message
       content={content}
-      messageId={apiResponse.id}
-      role={apiResponse.role}
+      messageId="msg-1"
+      role="assistant"
+      className="my-message"
+    />
+  )
+}
+
+function StreamingChat({ stream }) {
+  return (
+    <StreamingMessage
+      stream={stream}
+      messageId="streaming-msg"
+      role="assistant"
+      onComplete={(content) => console.log('Complete:', content)}
     />
   )
 }
 ```
 
-### With Streaming
-
-The package provides built-in support for streaming responses from v0 API:
+### Headless Hooks (React Native/Ink/TUI)
 
 ```tsx
-import { StreamingMessage } from '@v0-sdk/react'
-import { createClient } from 'v0-sdk'
+import { useMessage, useStreamingMessageData } from '@v0-sdk/react'
+import { Text, View } from 'react-native' // or any other renderer
 
-const v0 = createClient()
+function HeadlessMessage({ content }) {
+  const messageData = useMessage({
+    content,
+    messageId: 'msg-1',
+    role: 'assistant',
+  })
 
-function ChatDemo() {
-  const [stream, setStream] = useState<ReadableStream<Uint8Array> | null>(null)
+  return (
+    <View>
+      {messageData.elements.map((element) => (
+        <Text key={element.key}>
+          {element.type === 'text' ? element.data : JSON.stringify(element)}
+        </Text>
+      ))}
+    </View>
+  )
+}
 
-  const handleSendMessage = async (message: string) => {
-    const response = await v0.chats.create({
-      message,
-      responseMode: 'experimental_stream',
-    })
-    setStream(response)
+function HeadlessStreamingMessage({ stream }) {
+  const streamingData = useStreamingMessageData({
+    stream,
+    messageId: 'streaming-msg',
+    role: 'assistant',
+  })
+
+  if (streamingData.error) {
+    return <Text style={{ color: 'red' }}>Error: {streamingData.error}</Text>
+  }
+
+  if (streamingData.isStreaming && !streamingData.messageData) {
+    return <Text>Loading...</Text>
   }
 
   return (
-    <div>
-      {stream && (
-        <StreamingMessage
-          stream={stream}
-          messageId="demo-message"
-          role="assistant"
-          onComplete={(content) => handleCompletion(content)}
-        />
-      )}
-    </div>
+    <View>
+      {streamingData.messageData?.elements.map((element) => (
+        <Text key={element.key}>
+          {element.type === 'text' ? element.data : JSON.stringify(element)}
+        </Text>
+      ))}
+    </View>
   )
 }
 ```
 
-### Using the Streaming Hook
-
-For more control, use the `useStreamingMessage` hook directly:
+### Ink CLI Example
 
 ```tsx
-import { useStreamingMessage, Message } from '@v0-sdk/react'
+import { useMessage } from '@v0-sdk/react'
+import { Text, Box } from 'ink'
 
-function CustomStreamingComponent({
-  stream,
-}: {
-  stream: ReadableStream<Uint8Array>
-}) {
-  const { content, isStreaming, error, isComplete } =
-    useStreamingMessage(stream)
-
-  if (error) return <div>Error: {error}</div>
+function CliMessage({ content }) {
+  const messageData = useMessage({
+    content,
+    messageId: 'cli-msg',
+    role: 'assistant',
+  })
 
   return (
-    <div>
-      <div>Status: {isStreaming ? 'Streaming...' : 'Complete'}</div>
-      <Message
-        content={content}
-        streaming={isStreaming}
-        isLastMessage={true}
-        messageId="custom-streaming"
-        role="assistant"
-      />
-    </div>
+    <Box flexDirection="column">
+      {messageData.elements.map((element) => (
+        <Text key={element.key}>
+          {element.type === 'text' ? element.data : `[${element.type}]`}
+        </Text>
+      ))}
+    </Box>
   )
 }
 ```
 
-### Custom Component Styling
+## Available Hooks
 
-The `Message` component supports custom component renderers for complete control over styling and behavior:
+### Core Hooks
+
+- `useMessage(props)` - Process message content into headless data structure
+- `useStreamingMessageData(props)` - Handle streaming messages with real-time updates
+- `useStreamingMessage(stream, options)` - Low-level streaming hook
+
+### Component Hooks
+
+- `useIcon(props)` - Icon data and fallbacks
+- `useCodeBlock(props)` - Code block processing
+- `useMath(props)` - Math content processing
+- `useThinkingSection(props)` - Thinking section state management
+- `useTaskSection(props)` - Task section state and processing
+- `useCodeProject(props)` - Code project structure
+- `useContentPart(part)` - Content part analysis and processing
+
+## Available Components
+
+All components are optional JSX renderers that work with DOM environments. For headless usage, use the corresponding hooks instead.
+
+- `Message` - Main message renderer
+- `StreamingMessage` - Streaming message with loading states
+- `Icon` - Generic icon component with fallbacks
+- `CodeBlock` - Code syntax highlighting
+- `MathPart` - Math content rendering
+- `ThinkingSection` - Collapsible thinking sections
+- `TaskSection` - Collapsible task sections
+- `CodeProjectPart` - Code project file browser
+- `ContentPartRenderer` - Handles different content part types
+
+## Customization
+
+### Custom Components
 
 ```tsx
-import { Message, CodeBlock, MathPart } from '@v0-sdk/react'
+import { Message } from '@v0-sdk/react'
 
-// Custom code block with syntax highlighting
-function CustomCodeBlock({ language, code, className }) {
-  return (
-    <div className="my-code-block">
-      <div className="code-header">{language}</div>
-      <pre className={className}>
-        <code>{code}</code>
-      </pre>
-    </div>
-  )
-}
-
-// Custom math renderer
-function CustomMathPart({ content, inline, className }) {
-  return (
-    <span className={`my-math ${inline ? 'inline' : 'block'} ${className}`}>
-      {content}
-    </span>
-  )
-}
-
-function StyledMessage({ apiResponse }) {
-  const content = JSON.parse(apiResponse.content)
-
+function CustomMessage({ content }) {
   return (
     <Message
       content={content}
-      messageId={apiResponse.id}
-      role={apiResponse.role}
       components={{
-        CodeBlock: CustomCodeBlock,
-        MathPart: CustomMathPart,
-        // Style HTML elements with simple className objects
-        p: { className: 'my-paragraph-styles' },
-        h1: { className: 'my-heading-styles' },
-        // Or use custom components for full control
-        blockquote: ({ children, ...props }) => (
-          <div className="my-custom-blockquote" {...props}>
-            {children}
-          </div>
+        // Override specific HTML elements
+        p: ({ children }) => <MyParagraph>{children}</MyParagraph>,
+        code: ({ children }) => <MyCode>{children}</MyCode>,
+
+        // Override v0-specific components
+        CodeBlock: ({ language, code }) => (
+          <MyCodeHighlighter lang={language}>{code}</MyCodeHighlighter>
         ),
+        Icon: ({ name }) => <MyIcon icon={name} />,
       }}
-      className="my-custom-message-styles"
     />
   )
 }
 ```
 
-## API Reference
-
-### Message
-
-The main component for rendering v0 Platform API message content.
-
-#### Props
-
-| Prop            | Type                                          | Default       | Description                                                                  |
-| --------------- | --------------------------------------------- | ------------- | ---------------------------------------------------------------------------- |
-| `content`       | `MessageBinaryFormat`                         | **required**  | The parsed content from the v0 Platform API (JSON.parse the 'content' field) |
-| `messageId`     | `string`                                      | `'unknown'`   | Optional message ID for tracking purposes                                    |
-| `role`          | `'user' \| 'assistant' \| 'system' \| 'tool'` | `'assistant'` | Role of the message sender                                                   |
-| `streaming`     | `boolean`                                     | `false`       | Whether the message is currently being streamed                              |
-| `isLastMessage` | `boolean`                                     | `false`       | Whether this is the last message in the conversation                         |
-| `className`     | `string`                                      | `undefined`   | Custom className for styling the root container                              |
-| `components`    | `ComponentOverrides`                          | `undefined`   | Custom component renderers (see Custom Components section)                   |
-
-### Individual Components
-
-You can also use individual components directly:
+### Headless Custom Rendering
 
 ```tsx
-import {
-  CodeBlock,
-  MathPart,
-  ThinkingSection,
-  TaskSection,
-  CodeProjectPart
-} from '@v0-sdk/react'
+import { useMessage } from '@v0-sdk/react'
 
-// Use components directly
-<CodeBlock language="javascript" code="console.log('Hello')" />
-<MathPart content="E = mc^2" inline />
-<ThinkingSection title="Planning" thought="Let me think about this..." />
-```
+function CustomHeadlessMessage({ content }) {
+  const messageData = useMessage({ content })
 
-#### CodeBlock
-
-| Prop        | Type              | Default      | Description                                  |
-| ----------- | ----------------- | ------------ | -------------------------------------------- |
-| `language`  | `string`          | **required** | Programming language for syntax highlighting |
-| `code`      | `string`          | **required** | The code content to display                  |
-| `filename`  | `string`          | `undefined`  | Optional filename to display                 |
-| `className` | `string`          | `undefined`  | Custom styling                               |
-| `children`  | `React.ReactNode` | `undefined`  | Custom content (overrides code prop)         |
-
-#### MathPart
-
-| Prop          | Type              | Default      | Description                             |
-| ------------- | ----------------- | ------------ | --------------------------------------- |
-| `content`     | `string`          | **required** | The mathematical expression             |
-| `inline`      | `boolean`         | `false`      | Whether to render inline or as block    |
-| `displayMode` | `boolean`         | `undefined`  | Alternative to inline for display mode  |
-| `className`   | `string`          | `undefined`  | Custom styling                          |
-| `children`    | `React.ReactNode` | `undefined`  | Custom content (overrides content prop) |
-
-#### ThinkingSection
-
-| Prop         | Type         | Default     | Description                  |
-| ------------ | ------------ | ----------- | ---------------------------- |
-| `title`      | `string`     | `undefined` | Section title                |
-| `thought`    | `string`     | `undefined` | The thinking content         |
-| `duration`   | `number`     | `undefined` | Duration in milliseconds     |
-| `collapsed`  | `boolean`    | `false`     | Whether section is collapsed |
-| `onCollapse` | `() => void` | `undefined` | Collapse toggle handler      |
-| `className`  | `string`     | `undefined` | Custom styling               |
-
-#### TaskSection
-
-| Prop         | Type         | Default     | Description                  |
-| ------------ | ------------ | ----------- | ---------------------------- |
-| `title`      | `string`     | `undefined` | Section title                |
-| `type`       | `string`     | `undefined` | Task type                    |
-| `parts`      | `any[]`      | `undefined` | Task content parts           |
-| `collapsed`  | `boolean`    | `false`     | Whether section is collapsed |
-| `onCollapse` | `() => void` | `undefined` | Collapse toggle handler      |
-| `className`  | `string`     | `undefined` | Custom styling               |
-
-### Types
-
-#### MessageBinaryFormat
-
-```typescript
-type MessageBinaryFormat = [number, ...any[]][]
-```
-
-The binary format for message content as returned by the v0 Platform API. Each row is a tuple where the first element is the type and the rest are data.
-
-#### MessageProps
-
-```typescript
-interface MessageProps {
-  content: MessageBinaryFormat
-  messageId?: string
-  role?: 'user' | 'assistant' | 'system' | 'tool'
-  streaming?: boolean
-  isLastMessage?: boolean
-  className?: string
-  components?: ComponentOverrides
-}
-```
-
-## Features
-
-### Supported Content Types
-
-- **Markdown/Text Content**: Paragraphs, headings, lists, links, emphasis, code spans, etc.
-- **Code Blocks**: Syntax-highlighted code blocks with filename support
-- **Mathematical Expressions**: Inline and block math expressions
-- **Thinking Sections**: Collapsible reasoning/thinking content
-- **Task Sections**: Structured task and workflow content
-- **Code Projects**: Multi-file code project display
-- **Rich Components**: Full component customization support
-
-### Component Customization
-
-The `components` prop allows you to override any part of the rendering:
-
-```tsx
-// Simple className-based styling
-<Message
-  content={content}
-  components={{
-    p: { className: 'my-paragraph' },
-    h1: { className: 'text-2xl font-bold' }
-  }}
-/>
-
-// Full component replacement
-<Message
-  content={content}
-  components={{
-    CodeBlock: MyCustomCodeBlock,
-    MathPart: MyCustomMathRenderer,
-    ThinkingSection: MyCustomThinking
-  }}
-/>
-```
-
-### Default Styling
-
-The components use Tailwind CSS classes by default but can work with any CSS framework:
-
-1. **Tailwind CSS**: Works out of the box
-2. **Custom CSS**: Use the `className` prop and `components` overrides
-3. **CSS Modules**: Pass CSS module classes via `className` and `components`
-4. **Styled Components**: Wrap components with styled-components
-
-## Backward Compatibility
-
-The package maintains backward compatibility with previous versions:
-
-```tsx
-// These all work and refer to the same component
-import { Message } from '@v0-sdk/react'
-import { MessageRenderer } from '@v0-sdk/react'
-import { V0MessageRenderer } from '@v0-sdk/react'
-
-// These are all equivalent
-<Message content={content} />
-<MessageRenderer content={content} />
-<V0MessageRenderer content={content} />
-```
-
-## Examples
-
-### Complete Chat Interface
-
-```tsx
-import { Message } from '@v0-sdk/react'
-
-function ChatInterface({ messages }) {
-  return (
-    <div className="chat-container">
-      {messages.map((message, index) => {
-        const content = JSON.parse(message.content)
-        const isLast = index === messages.length - 1
-
-        return (
-          <div key={message.id} className="message">
-            <div className="message-header">
-              <span className="role">{message.role}</span>
-              <span className="timestamp">{message.createdAt}</span>
-            </div>
-            <Message
-              content={content}
-              messageId={message.id}
-              role={message.role}
-              isLastMessage={isLast}
-              className="message-content"
-            />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-```
-
-### Custom Theme Example
-
-```tsx
-import { Message, CodeBlock, MathPart } from '@v0-sdk/react'
-
-// Dark theme code block
-function DarkCodeBlock({ language, code, filename }) {
-  return (
-    <div className="bg-gray-900 rounded-lg overflow-hidden">
-      {filename && (
-        <div className="bg-gray-800 px-4 py-2 text-gray-300 text-sm">
-          {filename}
-        </div>
-      )}
-      <div className="bg-gray-700 px-2 py-1 text-xs text-gray-400">
-        {language}
-      </div>
-      <pre className="p-4 text-green-400 overflow-x-auto">
-        <code>{code}</code>
-      </pre>
-    </div>
-  )
-}
-
-// Elegant math renderer
-function ElegantMath({ content, inline }) {
-  return (
-    <span
-      className={`
-      ${inline ? 'mx-1' : 'block text-center my-4'}
-      font-serif text-blue-600
-    `}
-    >
-      {content}
-    </span>
-  )
-}
-
-function ThemedChat({ apiResponse }) {
-  const content = JSON.parse(apiResponse.content)
-
-  return (
-    <Message
-      content={content}
-      components={{
-        CodeBlock: DarkCodeBlock,
-        MathPart: ElegantMath,
-        h1: { className: 'text-3xl font-bold text-gray-800 mb-4' },
-        h2: { className: 'text-2xl font-semibold text-gray-700 mb-3' },
-        p: { className: 'text-gray-600 leading-relaxed mb-4' },
-        blockquote: { className: 'border-l-4 border-blue-500 pl-4 italic' },
-      }}
-      className="max-w-4xl mx-auto p-6"
-    />
-  )
-}
-```
-
-### Error Handling
-
-```tsx
-import { Message } from '@v0-sdk/react'
-
-function SafeMessageRenderer({ apiResponse }) {
-  try {
-    const content = JSON.parse(apiResponse.content)
-
-    return (
-      <Message
-        content={content}
-        messageId={apiResponse.id}
-        role={apiResponse.role}
-      />
-    )
-  } catch (error) {
-    console.error('Failed to parse message content:', error)
-    return (
-      <div className="error-message p-4 bg-red-50 border border-red-200 rounded">
-        <p className="text-red-700">Failed to render message content</p>
-        <pre className="text-xs text-red-600 mt-2 overflow-x-auto">
-          {error.message}
-        </pre>
-      </div>
-    )
+  const renderElement = (element) => {
+    switch (element.type) {
+      case 'text':
+        return <MyText>{element.data}</MyText>
+      case 'code-project':
+        return <MyCodeProject {...element.data} />
+      case 'html':
+        return <MyHtmlElement {...element.data} />
+      default:
+        return null
+    }
   }
+
+  return <MyContainer>{messageData.elements.map(renderElement)}</MyContainer>
 }
 ```
 
-## TypeScript
+## TypeScript Support
 
-The package is written in TypeScript and includes comprehensive type definitions. All components and props are fully typed for the best development experience.
+Full TypeScript support with exported types:
 
 ```tsx
 import type {
-  MessageProps,
-  CodeBlockProps,
-  MathPartProps,
-  MessageBinaryFormat,
+  MessageData,
+  MessageElement,
+  StreamingMessageData,
+  IconData,
+  CodeBlockData,
+  // ... and many more
 } from '@v0-sdk/react'
+```
 
-// Type-safe usage
-const myMessage: MessageProps = {
-  content: parsedContent,
-  role: 'assistant',
-  streaming: false,
+## Migration from Previous Versions
+
+This version is backward compatible. Existing code will continue to work unchanged. To adopt headless patterns:
+
+1. **Keep existing JSX components** for web/DOM environments
+2. **Use headless hooks** for React Native, Ink, or custom renderers
+3. **Gradually migrate** components as needed
+
+## React Native Example
+
+```tsx
+import { useMessage, useIcon } from '@v0-sdk/react'
+import { View, Text, ScrollView } from 'react-native'
+
+function RNMessage({ content }) {
+  const messageData = useMessage({ content })
+
+  const renderElement = (element) => {
+    if (element.type === 'text') {
+      return <Text key={element.key}>{element.data}</Text>
+    }
+
+    if (element.type === 'html' && element.data.tagName === 'p') {
+      return (
+        <Text key={element.key} style={{ marginVertical: 8 }}>
+          {element.children?.map(renderElement)}
+        </Text>
+      )
+    }
+
+    return <Text key={element.key}>[{element.type}]</Text>
+  }
+
+  return <ScrollView>{messageData.elements.map(renderElement)}</ScrollView>
+}
+
+function RNIcon({ name }) {
+  const iconData = useIcon({ name })
+  return <Text>{iconData.fallback}</Text>
 }
 ```
 
-## Requirements
-
-- React 18+ or React 19+
-- Modern browser with ES2020+ support
-- TypeScript 4.5+ (if using TypeScript)
-
 ## License
 
-Apache 2.0
+Apache-2.0

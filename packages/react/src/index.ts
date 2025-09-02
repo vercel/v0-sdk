@@ -1,7 +1,7 @@
 /**
  * @v0-sdk/react
  *
- * React components for rendering content from the v0 Platform API
+ * Headless React components and hooks for rendering content from the v0 Platform API
  */
 
 // Main component
@@ -15,7 +15,18 @@ export { CodeProjectPart } from './components/code-project-part'
 export { ContentPartRenderer } from './components/content-part-renderer'
 export { MathPart } from './components/math-part'
 export { CodeBlock } from './components/code-block'
-export { Icon } from './components/icon'
+export { Icon, IconProvider } from './components/icon'
+
+// Headless hooks (new)
+export { useMessage } from './components/message'
+export { useStreamingMessageData } from './components/streaming-message'
+export { useThinkingSection } from './components/thinking-section'
+export { useTaskSection } from './components/task-section'
+export { useCodeProject } from './components/code-project-part'
+export { useContentPart } from './components/content-part-renderer'
+export { useMath } from './components/math-part'
+export { useCodeBlock } from './components/code-block'
+export { useIcon } from './components/icon'
 
 // Backward compatibility - re-export with old names
 export { Message as MessageRenderer } from './components/message'
@@ -58,6 +69,17 @@ export type {
   StreamingMessageState,
   UseStreamingMessageOptions,
 } from './hooks/use-streaming-message'
+
+// Export headless data types (new)
+export type { MessageData, MessageElement } from './components/message'
+export type { StreamingMessageData } from './components/streaming-message'
+export type { ThinkingSectionData } from './components/thinking-section'
+export type { TaskSectionData, TaskPartData } from './components/task-section'
+export type { CodeProjectData } from './components/code-project-part'
+export type { ContentPartData } from './components/content-part-renderer'
+export type { MathData } from './components/math-part'
+export type { CodeBlockData } from './components/code-block'
+export type { IconData } from './components/icon'
 
 // Backward compatibility for prop types
 export type { MathPartProps as MathRendererProps } from './components/math-part'

@@ -16,10 +16,28 @@ export interface IconProps {
   className?: string
 }
 
+// Headless icon data
+export interface IconData {
+  name: IconProps['name']
+  fallback: string
+  ariaLabel: string
+}
+
+// Headless hook for icon data
+export function useIcon(props: IconProps): IconData {
+  return {
+    name: props.name,
+    fallback: getIconFallback(props.name),
+    ariaLabel: props.name.replace('-', ' '),
+  }
+}
+
 /**
  * Generic icon component that can be customized by consumers.
  * By default, renders a simple fallback. Consumers should provide
  * their own icon implementation via context or props.
+ *
+ * For headless usage, use the useIcon hook instead.
  */
 export function Icon(props: IconProps) {
   const CustomIcon = useContext(IconContext)
@@ -29,16 +47,19 @@ export function Icon(props: IconProps) {
     return <CustomIcon {...props} />
   }
 
+  const iconData = useIcon(props)
+
   // Fallback implementation - consumers should override this
-  return (
-    <span
-      className={props.className}
-      data-icon={props.name}
-      suppressHydrationWarning
-      aria-label={props.name.replace('-', ' ')}
-    >
-      {getIconFallback(props.name)}
-    </span>
+  // This uses minimal DOM-specific attributes for maximum compatibility
+  return React.createElement(
+    'span',
+    {
+      className: props.className,
+      'data-icon': iconData.name,
+      'aria-label': iconData.ariaLabel,
+      // Note: suppressHydrationWarning removed for React Native compatibility
+    },
+    iconData.fallback,
   )
 }
 

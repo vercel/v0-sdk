@@ -189,8 +189,11 @@ class StreamStateManager {
               this.setComplete(true)
               options.onComplete?.(currentContent)
               return
-            } else if (parsedData.object === 'chat' && parsedData.id) {
-              // Handle the initial chat data message
+            } else if (
+              parsedData.object &&
+              parsedData.object.startsWith('chat')
+            ) {
+              // Handle chat metadata messages (chat, chat.title, chat.name, etc.)
               options.onChatData?.(parsedData)
               continue
             } else if (parsedData.delta) {
