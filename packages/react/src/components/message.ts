@@ -272,10 +272,10 @@ function MessageRenderer({
         }
 
       case 'component':
-        return (
-          <React.Fragment key={element.key}>
-            {element.children?.map(renderElement)}
-          </React.Fragment>
+        return React.createElement(
+          React.Fragment,
+          { key: element.key },
+          element.children?.map(renderElement),
         )
 
       default:
@@ -283,8 +283,10 @@ function MessageRenderer({
     }
   }
 
-  return (
-    <div className={className}>{messageData.elements.map(renderElement)}</div>
+  return React.createElement(
+    'div',
+    { className },
+    messageData.elements.map(renderElement),
   )
 }
 
