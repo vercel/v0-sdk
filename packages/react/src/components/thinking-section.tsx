@@ -96,7 +96,7 @@ export function ThinkingSection({
 
   // If children provided, use that (allows complete customization)
   if (children) {
-    return <>{children}</>
+    return React.createElement(React.Fragment, {}, children)
   }
 
   // Uses React.createElement for maximum compatibility across environments

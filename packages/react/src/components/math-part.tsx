@@ -43,7 +43,7 @@ export function MathPart({
 }: MathPartProps) {
   // If children provided, use that (allows complete customization)
   if (children) {
-    return <>{children}</>
+    return React.createElement(React.Fragment, {}, children)
   }
 
   const mathData = useMath({ content, inline, displayMode })

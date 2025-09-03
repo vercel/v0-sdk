@@ -139,7 +139,11 @@ export function StreamingMessage({
   // Handle error state
   if (streamingData.error) {
     if (errorComponent) {
-      return <>{errorComponent(streamingData.error)}</>
+      return React.createElement(
+        React.Fragment,
+        {},
+        errorComponent(streamingData.error),
+      )
     }
     // Fallback error component using React.createElement for compatibility
     return React.createElement(
@@ -164,7 +168,7 @@ export function StreamingMessage({
     streamingData.content.length === 0
   ) {
     if (loadingComponent) {
-      return <>{loadingComponent}</>
+      return React.createElement(React.Fragment, {}, loadingComponent)
     }
     // Fallback loading component using React.createElement for compatibility
     return React.createElement(
@@ -195,13 +199,11 @@ export function StreamingMessage({
   }
 
   // Render the message content
-  return (
-    <Message
-      {...messageProps}
-      content={streamingData.content}
-      streaming={streamingData.isStreaming}
-      isLastMessage={true}
-      className={className}
-    />
-  )
+  return React.createElement(Message, {
+    ...messageProps,
+    content: streamingData.content,
+    streaming: streamingData.isStreaming,
+    isLastMessage: true,
+    className,
+  })
 }

@@ -47,7 +47,7 @@ export function CodeBlock({
 }: CodeBlockProps) {
   // If children provided, use that (allows complete customization)
   if (children) {
-    return <>{children}</>
+    return React.createElement(React.Fragment, {}, children)
   }
 
   const codeBlockData = useCodeBlock({ language, code, filename })

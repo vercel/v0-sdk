@@ -290,7 +290,7 @@ export function TaskSection({
 
   // If children provided, use that (allows complete customization)
   if (children) {
-    return <>{children}</>
+    return React.createElement(React.Fragment, {}, children)
   }
 
   // If there's only one meaningful part, show just the content without the collapsible wrapper

@@ -44,7 +44,7 @@ export function Icon(props: IconProps) {
 
   // Use custom icon implementation if provided via context
   if (CustomIcon) {
-    return <CustomIcon {...props} />
+    return React.createElement(CustomIcon, props)
   }
 
   const iconData = useIcon(props)
@@ -73,8 +73,10 @@ export function IconProvider({
   children: React.ReactNode
   component: React.ComponentType<IconProps>
 }) {
-  return (
-    <IconContext.Provider value={component}>{children}</IconContext.Provider>
+  return React.createElement(
+    IconContext.Provider,
+    { value: component },
+    children,
   )
 }
 

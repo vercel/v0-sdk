@@ -206,30 +206,26 @@ function MessageRenderer({
   const renderElement = (element: MessageElement): React.ReactNode => {
     switch (element.type) {
       case 'text':
-        return <span key={element.key}>{element.data}</span>
+        return React.createElement('span', { key: element.key }, element.data)
 
       case 'content-part':
-        return (
-          <ContentPartRenderer
-            key={element.key}
-            part={element.data.part}
-            iconRenderer={element.data.iconRenderer}
-            thinkingSectionRenderer={element.data.thinkingSectionRenderer}
-            taskSectionRenderer={element.data.taskSectionRenderer}
-          />
-        )
+        return React.createElement(ContentPartRenderer, {
+          key: element.key,
+          part: element.data.part,
+          iconRenderer: element.data.iconRenderer,
+          thinkingSectionRenderer: element.data.thinkingSectionRenderer,
+          taskSectionRenderer: element.data.taskSectionRenderer,
+        })
 
       case 'code-project':
         const CustomCodeProjectPart = element.data.customRenderer
         const CodeProjectComponent = CustomCodeProjectPart || CodeProjectPart
-        return (
-          <CodeProjectComponent
-            key={element.key}
-            language={element.data.language}
-            code={element.data.code}
-            iconRenderer={element.data.iconRenderer}
-          />
-        )
+        return React.createElement(CodeProjectComponent, {
+          key: element.key,
+          language: element.data.language,
+          code: element.data.code,
+          iconRenderer: element.data.iconRenderer,
+        })
 
       case 'html':
         const { tagName, props, componentOrConfig } = element.data
@@ -237,14 +233,14 @@ function MessageRenderer({
 
         if (typeof componentOrConfig === 'function') {
           const Component = componentOrConfig
-          return (
-            <Component
-              key={element.key}
-              {...props}
-              className={props?.className}
-            >
-              {renderedChildren}
-            </Component>
+          return React.createElement(
+            Component,
+            {
+              key: element.key,
+              ...props,
+              className: props?.className,
+            },
+            renderedChildren,
           )
         } else if (componentOrConfig && typeof componentOrConfig === 'object') {
           const mergedClassName = cn(
@@ -313,7 +309,7 @@ function MessageImpl({
     renderers,
   })
 
-  return <MessageRenderer messageData={messageData} className={className} />
+  return React.createElement(MessageRenderer, { messageData, className })
 }
 
 /**
