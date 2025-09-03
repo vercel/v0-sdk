@@ -6,7 +6,6 @@
 
 import 'dotenv/config'
 import { generateText, stepCountIs } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 
 async function chatExample() {
@@ -18,7 +17,7 @@ async function chatExample() {
 
   try {
     const result = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: 'openai/gpt-4o-mini',
       prompt: `
         I want to create a new chat for building a React dashboard component.
         After creating the chat, send a follow-up message asking for dark mode support.
