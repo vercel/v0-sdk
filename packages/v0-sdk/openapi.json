@@ -764,12 +764,13 @@
                                 "type": "string"
                               },
                               "branch": {
-                                "type": "string"
+                                "type": "string",
+                                "maxLength": 250
                               }
                             },
                             "required": ["url"],
                             "additionalProperties": false,
-                            "description": "Specifies a repository source for initialization. Should include relevant details like repository URL, branch, and authentication if needed."
+                            "description": "Specifies a repository source for initialization. Supports both public and private GitHub repositories. For private repositories, ensure your GitHub account is connected through Vercel."
                           },
                           "lockAllFiles": {
                             "type": "boolean",
@@ -6768,7 +6769,8 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted"
+                        "message.deleted",
+                        "message.finished"
                       ]
                     },
                     "description": "List of event types the hook should subscribe to."
@@ -7317,7 +7319,8 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted"
+                        "message.deleted",
+                        "message.finished"
                       ]
                     },
                     "description": "Updated list of event types to subscribe to."
@@ -13540,7 +13543,8 @@
                 "chat.deleted",
                 "message.created",
                 "message.updated",
-                "message.deleted"
+                "message.deleted",
+                "message.finished"
               ]
             },
             "description": "List of event types this webhook is subscribed to."
@@ -13578,7 +13582,8 @@
               "chat.deleted",
               "message.created",
               "message.updated",
-              "message.deleted"
+              "message.deleted",
+              "message.finished"
             ],
             "description": "The type of event that triggered the webhook."
           },
