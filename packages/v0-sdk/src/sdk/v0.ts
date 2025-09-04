@@ -196,6 +196,7 @@ export type HookDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   chatId?: string
   url: string
@@ -211,6 +212,7 @@ export type HookEventDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   status?: 'pending' | 'success' | 'error'
   createdAt: string
 }
@@ -826,6 +828,7 @@ export interface HooksCreateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   chatId?: string
   url: string
@@ -844,6 +847,7 @@ export interface HooksUpdateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   url?: string
 }
