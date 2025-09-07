@@ -6,23 +6,24 @@ const v0 = createClient(
   process.env.V0_API_URL ? { baseUrl: process.env.V0_API_URL } : {},
 )
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ projectId: string }> },
+) {
   try {
-    console.log('Fetching v0 projects...')
+    const { projectId } = await params
+
+    console.log('Fetching project details for:', projectId)
     console.log('Using baseUrl:', process.env.V0_API_URL || 'default')
 
-    // Fetch v0 projects using v0 SDK
-    const projects = await v0.projects.find()
+    // Fetch project details using v0 SDK
+    const project = await v0.projects.getById({ projectId })
 
-    console.log(
-      'v0 projects fetched successfully:',
-      projects.data?.length || 0,
-      'projects',
-    )
+    console.log('Project fetched successfully:', project.name)
 
-    return NextResponse.json(projects)
+    return NextResponse.json(project)
   } catch (error) {
-    console.error('v0 Projects Error:', error)
+    console.error('Project fetch error:', error)
 
     // Log more detailed error information
     if (error instanceof Error) {
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: 'Failed to fetch v0 projects',
+        error: 'Failed to fetch project',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },

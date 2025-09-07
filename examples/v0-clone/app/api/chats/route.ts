@@ -8,21 +8,17 @@ const v0 = createClient(
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching v0 projects...')
+    console.log('Fetching all chats...')
     console.log('Using baseUrl:', process.env.V0_API_URL || 'default')
 
-    // Fetch v0 projects using v0 SDK
-    const projects = await v0.projects.find()
+    // Fetch all chats using v0 SDK
+    const chats = await v0.chats.find()
 
-    console.log(
-      'v0 projects fetched successfully:',
-      projects.data?.length || 0,
-      'projects',
-    )
+    console.log('Chats fetched successfully:', chats.data?.length || 0, 'chats')
 
-    return NextResponse.json(projects)
+    return NextResponse.json(chats)
   } catch (error) {
-    console.error('v0 Projects Error:', error)
+    console.error('Chats fetch error:', error)
 
     // Log more detailed error information
     if (error instanceof Error) {
@@ -32,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: 'Failed to fetch v0 projects',
+        error: 'Failed to fetch chats',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },

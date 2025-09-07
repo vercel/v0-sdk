@@ -176,10 +176,7 @@ export const CodeProjectPartWrapper = ({
   const [isCollapsed, setIsCollapsed] = React.useState(collapsed ?? true)
 
   return (
-    <div
-      className={`my-6 border rounded-lg bg-white dark:bg-gray-900 ${className || ''}`}
-      {...props}
-    >
+    <div className={`my-6 border rounded-lg ${className || ''}`} {...props}>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
