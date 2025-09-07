@@ -393,6 +393,7 @@ export const PromptInputMicButton = ({
   const [isListening, setIsListening] = useState(false)
   const [isSupported, setIsSupported] = useState(false)
   const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const isCleaningUpRef = useRef(false)
 
   useEffect(() => {
     // Check if speech recognition is supported
@@ -406,44 +407,68 @@ export const PromptInputMicButton = ({
       recognition.lang = 'en-US'
 
       recognition.onstart = () => {
-        setIsListening(true)
+        if (!isCleaningUpRef.current) {
+          setIsListening(true)
+        }
       }
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = event.results[0][0].transcript
-        onTranscript?.(transcript)
-        setIsListening(false)
+        if (!isCleaningUpRef.current) {
+          const transcript = event.results[0][0].transcript
+          onTranscript?.(transcript)
+          setIsListening(false)
+        }
       }
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error:', event.error)
-        onError?.(event.error)
+        // Don't report "aborted" errors as they're usually from cleanup or natural timeout
+        if (event.error !== 'aborted' && !isCleaningUpRef.current) {
+          console.error('Speech recognition error:', event.error)
+          onError?.(event.error)
+        }
         setIsListening(false)
       }
 
       recognition.onend = () => {
-        setIsListening(false)
+        if (!isCleaningUpRef.current) {
+          setIsListening(false)
+        }
       }
 
       recognitionRef.current = recognition
     }
 
     return () => {
+      isCleaningUpRef.current = true
       if (recognitionRef.current) {
-        recognitionRef.current.abort()
+        try {
+          recognitionRef.current.abort()
+        } catch (error) {
+          // Ignore errors during cleanup
+        }
       }
     }
   }, [onTranscript, onError])
 
   const toggleListening = useCallback(() => {
-    if (!recognitionRef.current) return
+    if (!recognitionRef.current || isCleaningUpRef.current) return
 
     if (isListening) {
-      recognitionRef.current.stop()
+      try {
+        recognitionRef.current.stop()
+      } catch (error) {
+        console.warn('Error stopping speech recognition:', error)
+        setIsListening(false)
+      }
     } else {
-      recognitionRef.current.start()
+      try {
+        recognitionRef.current.start()
+      } catch (error) {
+        console.error('Error starting speech recognition:', error)
+        onError?.('Failed to start speech recognition')
+      }
     }
-  }, [isListening])
+  }, [isListening, onError])
 
   if (!isSupported) {
     return null
@@ -461,7 +486,7 @@ export const PromptInputMicButton = ({
       {...props}
     >
       {isListening ? (
-        <MicOffIcon className="size-4" />
+        <MicOffIcon className="size-4 text-red-600 dark:text-red-400" />
       ) : (
         <MicIcon className="size-4" />
       )}
