@@ -248,10 +248,42 @@ export const CodeProjectPartWrapper = ({
 }
 
 // Shared components object that can be used by both StreamingMessage and MessageRenderer
+// Custom TaskSection that handles code projects properly
+const CustomTaskSectionWrapper = (props: any) => {
+  // If this task contains code project parts, render as CodeProjectPart instead
+  if (
+    props.parts &&
+    props.parts.some(
+      (part: any) =>
+        part && typeof part === 'object' && part.type === 'code-project',
+    )
+  ) {
+    const codeProjectPart = props.parts.find(
+      (part: any) =>
+        part && typeof part === 'object' && part.type === 'code-project',
+    )
+
+    if (codeProjectPart) {
+      return (
+        <CodeProjectPartWrapper
+          title={props.title || 'Code Project'}
+          filename={codeProjectPart.changedFiles?.[0]?.fileName || 'project'}
+          code={codeProjectPart.source || ''}
+          language="typescript"
+          collapsed={false}
+        />
+      )
+    }
+  }
+
+  // Otherwise, use the regular task wrapper
+  return <TaskSectionWrapper {...props} />
+}
+
 export const sharedComponents = {
   // AI Elements components for structured content
   ThinkingSection: ThinkingSectionWrapper,
-  TaskSection: TaskSectionWrapper,
+  TaskSection: CustomTaskSectionWrapper,
   CodeProjectPart: CodeProjectPartWrapper,
   CodeBlock,
   MathPart,
