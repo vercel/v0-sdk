@@ -70,23 +70,28 @@ export function ResizableLayout({
   return (
     <div ref={containerRef} className={cn('flex h-full', className)}>
       {/* Left Panel */}
-      <div
-        className="flex flex-col border-r border-border dark:border-input"
-        style={{ width: `${leftWidth}%` }}
-      >
+      <div className="flex flex-col" style={{ width: `${leftWidth}%` }}>
         {leftPanel}
       </div>
 
       {/* Resize Handle */}
       <div
         className={cn(
-          'w-1 bg-border dark:bg-input hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize transition-colors relative group',
+          'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
           isDragging && 'bg-blue-500 dark:bg-blue-400',
         )}
         onMouseDown={handleMouseDown}
       >
-        {/* Visual indicator on hover */}
-        <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-500/20 dark:group-hover:bg-blue-400/20 transition-colors" />
+        {/* Blue highlight on hover - 3px wide */}
+        <div
+          className={cn(
+            'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
+            'group-hover:w-[3px]',
+            isDragging && 'w-[3px]',
+          )}
+        />
+        {/* Wider hit area for better UX */}
+        <div className="absolute inset-y-0 -left-2 -right-2" />
       </div>
 
       {/* Right Panel */}

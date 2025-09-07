@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Github } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { ChatMenu } from './chat-menu'
 
 interface AppHeaderProps {
   className?: string
@@ -10,6 +11,10 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
   const pathname = usePathname()
   const isProjectsActive = pathname?.startsWith('/projects')
   const isChatsActive = pathname === '/chats'
+
+  // Check if we're on a chat detail page
+  const isChatDetailPage = pathname?.match(/^\/chats\/[^/]+$/)
+  const chatId = isChatDetailPage ? pathname?.split('/')[2] : null
 
   return (
     <div className={`border-b border-border dark:border-input ${className}`}>
@@ -23,7 +28,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             v0 Clone
           </Link>
 
-          {/* Right side - Chats, Projects and GitHub */}
+          {/* Right side - Chats, Projects, Chat Menu (if on chat detail), and GitHub */}
           <div className="flex items-center gap-4">
             <Link
               href="/chats"
@@ -45,6 +50,8 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             >
               Projects
             </Link>
+            {/* Show chat menu only on chat detail pages */}
+            {isChatDetailPage && chatId && <ChatMenu chatId={chatId} />}
             <Link
               href="https://github.com/vercel/v0-sdk"
               target="_blank"

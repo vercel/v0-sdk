@@ -117,7 +117,7 @@ export function ChatInput({
   )
 
   return (
-    <div className="border-t border-border dark:border-input p-4">
+    <div className="p-4 pt-0">
       {showSuggestions && (
         <Suggestions>
           <Suggestion
