@@ -7,6 +7,7 @@ import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
 import { useChat } from '@/hooks/use-chat'
+import { useStreaming } from '@/contexts/streaming-context'
 import { cn } from '@/lib/utils'
 
 export function ChatDetailClient() {
@@ -15,6 +16,7 @@ export function ChatDetailClient() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
+  const { handoff } = useStreaming()
   const {
     message,
     setMessage,
@@ -40,7 +42,8 @@ export function ChatDetailClient() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isFullscreen])
 
-  if (isLoadingChat) {
+  // Don't show loading if we have a handoff (streaming from homepage)
+  if (isLoadingChat && !(handoff.chatId === chatId && handoff.stream)) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="flex items-center gap-2">
@@ -64,7 +67,7 @@ export function ChatDetailClient() {
 
       <div className="flex h-[calc(100vh-64px)]">
         {/* Chat Section */}
-        <div className="flex-1 flex flex-col">
+        <div className="w-[30%] flex flex-col border-r border-border dark:border-input">
           <ChatMessages
             chatHistory={chatHistory}
             isLoading={isLoading}

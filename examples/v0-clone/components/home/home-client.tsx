@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { StreamingMessage } from '@v0-sdk/react'
 import {
   PromptInput,
   PromptInputSubmit,
@@ -12,14 +11,26 @@ import {
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
 import { AppHeader } from '@/components/shared/app-header'
 import { useStreaming } from '@/contexts/streaming-context'
+import { StreamingMessage } from '@v0-sdk/react'
+import { ChatMessages } from '@/components/chat/chat-messages'
+import { ChatInput } from '@/components/chat/chat-input'
+import { PreviewPanel } from '@/components/chat/preview-panel'
 
 export function HomeClient() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [pendingStream, setPendingStream] = useState<{
-    stream: ReadableStream<Uint8Array>
-    userMessage: string
-  } | null>(null)
+  const [showChatInterface, setShowChatInterface] = useState(false)
+  const [chatHistory, setChatHistory] = useState<
+    Array<{
+      type: 'user' | 'assistant'
+      content: string | any
+      isStreaming?: boolean
+      stream?: ReadableStream<Uint8Array> | null
+    }>
+  >([])
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { startHandoff } = useStreaming()
@@ -37,6 +48,15 @@ export function HomeClient() {
 
     const userMessage = message.trim()
     setMessage('')
+
+    // Immediately show chat interface and add user message
+    setShowChatInterface(true)
+    setChatHistory([
+      {
+        type: 'user',
+        content: userMessage,
+      },
+    ])
     setIsLoading(true)
 
     try {
@@ -61,34 +81,178 @@ export function HomeClient() {
 
       setIsLoading(false)
 
-      // Store the stream and user message for when we get the chatId
-      setPendingStream({
-        stream: response.body,
-        userMessage: userMessage,
-      })
+      // Add streaming assistant response
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          type: 'assistant',
+          content: [],
+          isStreaming: true,
+          stream: response.body,
+        },
+      ])
     } catch (error) {
       console.error('Error creating chat:', error)
       setIsLoading(false)
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          type: 'assistant',
+          content:
+            'Sorry, there was an error processing your message. Please try again.',
+        },
+      ])
     }
   }
 
   const handleChatData = async (chatData: any) => {
     console.log('Received chat data:', chatData)
-    if (chatData.id && pendingStream) {
-      console.log(
-        'Starting streaming in context and redirecting to chat:',
-        chatData.id,
-      )
+    if (chatData.id) {
+      console.log('Chat ID received:', chatData.id)
 
-      // Store the streaming state in context
-      startHandoff(chatData.id, pendingStream.stream, pendingStream.userMessage)
+      // Store the chat ID
+      setCurrentChatId(chatData.id)
 
-      // Clean up the temporary storage
-      setPendingStream(null)
-
-      // Redirect to chat page which will pick up the streaming
-      router.push(`/chats/${chatData.id}`)
+      // Update URL without triggering Next.js routing
+      window.history.pushState(null, '', `/chats/${chatData.id}`)
     }
+  }
+
+  const handleStreamingComplete = (finalContent: any) => {
+    setIsLoading(false)
+
+    // Update chat history with final content
+    setChatHistory((prev) => {
+      const updated = [...prev]
+      const lastIndex = updated.length - 1
+      if (lastIndex >= 0 && updated[lastIndex].isStreaming) {
+        updated[lastIndex] = {
+          ...updated[lastIndex],
+          content: finalContent,
+          isStreaming: false,
+          stream: undefined,
+        }
+      }
+      return updated
+    })
+  }
+
+  const handleChatSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!message.trim() || isLoading || !currentChatId) return
+
+    const userMessage = message.trim()
+    setMessage('')
+    setIsLoading(true)
+
+    // Add user message to chat history
+    setChatHistory((prev) => [...prev, { type: 'user', content: userMessage }])
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          chatId: currentChatId,
+          streaming: true,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      if (!response.body) {
+        throw new Error('No response body for streaming')
+      }
+
+      setIsLoading(false)
+
+      // Add streaming response
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          type: 'assistant',
+          content: [],
+          isStreaming: true,
+          stream: response.body,
+        },
+      ])
+    } catch (error) {
+      console.error('Error:', error)
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          type: 'assistant',
+          content:
+            'Sorry, there was an error sending your message. Please try again.',
+        },
+      ])
+      setIsLoading(false)
+    }
+  }
+
+  if (showChatInterface) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+        <AppHeader />
+
+        <div className="flex h-[calc(100vh-64px)]">
+          {/* Chat Section */}
+          <div className="w-[30%] flex flex-col border-r border-border dark:border-input">
+            <ChatMessages
+              chatHistory={chatHistory}
+              isLoading={isLoading}
+              currentChat={currentChatId ? { id: currentChatId } : null}
+              onStreamingComplete={handleStreamingComplete}
+              onChatData={handleChatData}
+            />
+
+            <ChatInput
+              message={message}
+              setMessage={setMessage}
+              onSubmit={handleChatSendMessage}
+              isLoading={isLoading}
+              showSuggestions={false}
+            />
+          </div>
+
+          {/* Preview Panel */}
+          <PreviewPanel
+            currentChat={currentChatId ? { id: currentChatId } : null}
+            isFullscreen={isFullscreen}
+            setIsFullscreen={setIsFullscreen}
+            refreshKey={refreshKey}
+            setRefreshKey={setRefreshKey}
+          />
+        </div>
+
+        {/* Hidden streaming component for initial response */}
+        {chatHistory.some((msg) => msg.isStreaming && msg.stream) && (
+          <div className="hidden">
+            {chatHistory.map((msg, index) =>
+              msg.isStreaming && msg.stream ? (
+                <StreamingMessage
+                  key={index}
+                  stream={msg.stream}
+                  messageId={`msg-${index}`}
+                  role="assistant"
+                  onComplete={handleStreamingComplete}
+                  onChatData={handleChatData}
+                  onError={(error) => {
+                    console.error('Streaming error:', error)
+                    setIsLoading(false)
+                  }}
+                />
+              ) : null,
+            )}
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -150,33 +314,6 @@ export function HomeClient() {
                 status={isLoading ? 'streaming' : 'ready'}
               />
             </PromptInput>
-
-            {isLoading && (
-              <div className="mt-4 text-center">
-                <div className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-white"></div>
-                  Creating your chat...
-                </div>
-              </div>
-            )}
-
-            {/* Hidden streaming component for processing the response */}
-            {pendingStream && (
-              <div className="hidden">
-                <StreamingMessage
-                  stream={pendingStream.stream}
-                  messageId="homepage-stream"
-                  role="assistant"
-                  onChatData={handleChatData}
-                  onComplete={() => {}}
-                  onError={(error) => {
-                    console.error('Streaming error:', error)
-                    setIsLoading(false)
-                    setPendingStream(null)
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           {/* Footer */}

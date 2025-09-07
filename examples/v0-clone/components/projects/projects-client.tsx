@@ -66,7 +66,7 @@ export function ProjectsClient() {
 
             {projects.length === 0 ? (
               <div className="text-center py-12">
-                <FolderOpen className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                <FolderOpen className="mx-auto h-12 w-12 text-black dark:text-white" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                   No projects found
                 </h3>

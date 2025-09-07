@@ -43,7 +43,12 @@ export function useChat(chatId: string) {
     },
     onSuccess: (chat) => {
       // Update chat history with existing messages when chat loads
-      if (chat.messages && chatHistory.length === 0) {
+      // But skip if we have a handoff (streaming from homepage) to avoid duplicates
+      if (
+        chat.messages &&
+        chatHistory.length === 0 &&
+        !(handoff.chatId === chatId && handoff.stream)
+      ) {
         setChatHistory(
           chat.messages.map((msg) => ({
             type: msg.role,
@@ -80,8 +85,11 @@ export function useChat(chatId: string) {
           stream: handoff.stream,
         },
       ])
+
+      // Clear the handoff immediately to prevent re-runs
+      clearHandoff()
     }
-  }, [chatId, handoff])
+  }, [chatId, handoff, clearHandoff])
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -145,11 +153,6 @@ export function useChat(chatId: string) {
   const handleStreamingComplete = async (finalContent: any) => {
     setIsStreaming(false)
     setIsLoading(false)
-
-    // Clear streaming context if this was the streaming chat
-    if (handoff.chatId === chatId) {
-      clearHandoff()
-    }
 
     // Refresh chat data from server after streaming completes
     mutate(`/api/chats/${chatId}`)

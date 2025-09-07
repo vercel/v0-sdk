@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { MessageSquare, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { AppHeader } from '@/components/shared/app-header'
 import useSWR from 'swr'
 
@@ -82,7 +82,6 @@ export function ChatsClient() {
 
             {chats.length === 0 ? (
               <div className="text-center py-12">
-                <MessageSquare className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                   No chats yet
                 </h3>
@@ -114,7 +113,6 @@ export function ChatsClient() {
                             {chat.name || getFirstUserMessage(chat)}
                           </h3>
                           <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <MessageSquare className="h-4 w-4 mr-1" />
                             <span>{chat.messages?.length || 0} messages</span>
                           </div>
                           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">

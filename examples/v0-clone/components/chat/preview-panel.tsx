@@ -33,7 +33,7 @@ export function PreviewPanel({
     <div
       className={cn(
         'flex flex-col transition-all duration-300',
-        isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-black' : 'w-1/2',
+        isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-black' : 'w-[70%]',
       )}
     >
       <WebPreview
