@@ -69,20 +69,6 @@ export function ChatDetailClient() {
     }
   }, [isLoadingChat])
 
-  // Don't show loading if we have a handoff (streaming from homepage)
-  if (isLoadingChat && !(handoff.chatId === chatId && handoff.stream)) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
-          <span className="text-gray-600 dark:text-gray-300">
-            Loading chat...
-          </span>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div
       className={cn(

@@ -50,11 +50,13 @@ export function ChatMessages({
 
   if (chatHistory.length === 0) {
     return (
-      <div className="text-center font-semibold mt-8">
-        <p className="text-3xl mt-4 text-gray-900 dark:text-white">
-          Continue the conversation
-        </p>
-      </div>
+      <Conversation>
+        <ConversationContent>
+          <div>
+            {/* Empty conversation - messages will appear here when they load */}
+          </div>
+        </ConversationContent>
+      </Conversation>
     )
   }
 
