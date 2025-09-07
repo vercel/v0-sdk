@@ -8,7 +8,7 @@ const v0 = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, chatId, streaming } = await request.json()
+    const { message, chatId, streaming, attachments } = await request.json()
 
     // Debug logging
     console.log('API request:', { message, chatId, streaming })
@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
           chatId: chatId,
           message,
           responseMode: 'experimental_stream',
+          ...(attachments && attachments.length > 0 && { attachments }),
         })
         console.log('Streaming message sent to existing chat successfully')
 
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
         chat = await v0.chats.sendMessage({
           chatId: chatId,
           message,
+          ...(attachments && attachments.length > 0 && { attachments }),
         })
       }
     } else {
@@ -65,6 +67,7 @@ export async function POST(request: NextRequest) {
         chat = await v0.chats.create({
           message,
           responseMode: 'experimental_stream',
+          ...(attachments && attachments.length > 0 && { attachments }),
         })
         console.log('Streaming chat created successfully')
 
@@ -85,6 +88,7 @@ export async function POST(request: NextRequest) {
         chat = await v0.chats.create({
           message,
           responseMode: 'sync',
+          ...(attachments && attachments.length > 0 && { attachments }),
         })
         console.log('Sync chat created successfully')
       }

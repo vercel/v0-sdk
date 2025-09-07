@@ -10,12 +10,17 @@ import { ResizableLayout } from '@/components/shared/resizable-layout'
 import { useChat } from '@/hooks/use-chat'
 import { useStreaming } from '@/contexts/streaming-context'
 import { cn } from '@/lib/utils'
+import {
+  type ImageAttachment,
+  clearPromptFromStorage,
+} from '@/components/ai-elements/prompt-input'
 
 export function ChatDetailClient() {
   const params = useParams()
   const chatId = params.chatId as string
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [attachments, setAttachments] = useState<ImageAttachment[]>([])
 
   const { handoff } = useStreaming()
   const {
@@ -31,6 +36,18 @@ export function ChatDetailClient() {
     handleStreamingComplete,
     handleChatData,
   } = useChat(chatId)
+
+  // Wrapper function to handle attachments
+  const handleSubmitWithAttachments = (
+    e: React.FormEvent<HTMLFormElement>,
+    attachmentUrls?: Array<{ url: string }>,
+  ) => {
+    // Clear sessionStorage immediately upon submission
+    clearPromptFromStorage()
+    // Clear attachments after sending
+    setAttachments([])
+    return handleSendMessage(e, attachmentUrls)
+  }
 
   // Handle fullscreen keyboard shortcuts
   useEffect(() => {
@@ -83,9 +100,11 @@ export function ChatDetailClient() {
             <ChatInput
               message={message}
               setMessage={setMessage}
-              onSubmit={handleSendMessage}
+              onSubmit={handleSubmitWithAttachments}
               isLoading={isLoading}
               showSuggestions={false}
+              attachments={attachments}
+              onAttachmentsChange={setAttachments}
             />
           </>
         }

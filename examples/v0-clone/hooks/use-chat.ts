@@ -91,7 +91,10 @@ export function useChat(chatId: string) {
     }
   }, [chatId, handoff, clearHandoff])
 
-  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendMessage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    attachments?: Array<{ url: string }>,
+  ) => {
     e.preventDefault()
     if (!message.trim() || isLoading || !chatId) return
 
@@ -112,6 +115,7 @@ export function useChat(chatId: string) {
           message: userMessage,
           chatId: chatId,
           streaming: true,
+          ...(attachments && attachments.length > 0 && { attachments }),
         }),
       })
 

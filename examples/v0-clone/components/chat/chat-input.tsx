@@ -1,16 +1,33 @@
 import {
   PromptInput,
+  PromptInputImageButton,
+  PromptInputImagePreview,
+  PromptInputMicButton,
   PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+  createImageAttachment,
+  createImageAttachmentFromStored,
+  savePromptToStorage,
+  loadPromptFromStorage,
+  clearPromptFromStorage,
+  type ImageAttachment,
 } from '@/components/ai-elements/prompt-input'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
+import { useState, useCallback, useEffect } from 'react'
 
 interface ChatInputProps {
   message: string
   setMessage: (message: string) => void
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  onSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    attachments?: Array<{ url: string }>,
+  ) => void
   isLoading: boolean
   showSuggestions: boolean
+  attachments?: ImageAttachment[]
+  onAttachmentsChange?: (attachments: ImageAttachment[]) => void
 }
 
 export function ChatInput({
@@ -19,7 +36,84 @@ export function ChatInput({
   onSubmit,
   isLoading,
   showSuggestions,
+  attachments = [],
+  onAttachmentsChange,
 }: ChatInputProps) {
+  const [isDragOver, setIsDragOver] = useState(false)
+
+  const handleImageFiles = useCallback(
+    async (files: File[]) => {
+      if (!onAttachmentsChange) return
+
+      try {
+        const newAttachments = await Promise.all(
+          files.map((file) => createImageAttachment(file)),
+        )
+        onAttachmentsChange([...attachments, ...newAttachments])
+      } catch (error) {
+        console.error('Error processing image files:', error)
+      }
+    },
+    [attachments, onAttachmentsChange],
+  )
+
+  const handleRemoveAttachment = useCallback(
+    (id: string) => {
+      if (!onAttachmentsChange) return
+      onAttachmentsChange(attachments.filter((att) => att.id !== id))
+    },
+    [attachments, onAttachmentsChange],
+  )
+
+  const handleDragOver = useCallback(() => {
+    setIsDragOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback(() => {
+    setIsDragOver(false)
+  }, [])
+
+  const handleDrop = useCallback(() => {
+    setIsDragOver(false)
+  }, [])
+
+  // Save to sessionStorage when message or attachments change
+  useEffect(() => {
+    if (message.trim() || attachments.length > 0) {
+      savePromptToStorage(message, attachments)
+    } else {
+      // Clear sessionStorage if both message and attachments are empty
+      clearPromptFromStorage()
+    }
+  }, [message, attachments])
+
+  // Restore from sessionStorage on mount (only if no existing data)
+  useEffect(() => {
+    if (!message && attachments.length === 0) {
+      const storedData = loadPromptFromStorage()
+      if (storedData) {
+        setMessage(storedData.message)
+        if (storedData.attachments.length > 0 && onAttachmentsChange) {
+          const restoredAttachments = storedData.attachments.map(
+            createImageAttachmentFromStored,
+          )
+          onAttachmentsChange(restoredAttachments)
+        }
+      }
+    }
+  }, [message, attachments, setMessage, onAttachmentsChange])
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      // Clear sessionStorage immediately upon submission
+      clearPromptFromStorage()
+
+      const attachmentUrls = attachments.map((att) => ({ url: att.dataUrl }))
+      onSubmit(e, attachmentUrls.length > 0 ? attachmentUrls : undefined)
+    },
+    [onSubmit, attachments],
+  )
+
   return (
     <div className="border-t border-border dark:border-input p-4">
       {showSuggestions && (
@@ -46,20 +140,41 @@ export function ChatInput({
       )}
       <div className="flex gap-2">
         <PromptInput
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
           className="mt-4 w-full max-w-2xl mx-auto relative"
+          onImageDrop={handleImageFiles}
+          isDragOver={isDragOver}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
+          <PromptInputImagePreview
+            attachments={attachments}
+            onRemove={handleRemoveAttachment}
+          />
           <PromptInputTextarea
             onChange={(e) => setMessage(e.target.value)}
             value={message}
-            className="pr-12 min-h-[60px]"
+            className="pr-32 min-h-[60px]"
             placeholder="Continue the conversation..."
           />
-          <PromptInputSubmit
-            className="absolute bottom-1 right-1"
-            disabled={!message}
-            status={isLoading ? 'streaming' : 'ready'}
-          />
+          <PromptInputToolbar className="absolute bottom-1 right-1">
+            <PromptInputTools>
+              <PromptInputImageButton onImageSelect={handleImageFiles} />
+              <PromptInputMicButton
+                onTranscript={(transcript) => {
+                  setMessage(message + (message ? ' ' : '') + transcript)
+                }}
+                onError={(error) => {
+                  console.error('Speech recognition error:', error)
+                }}
+              />
+              <PromptInputSubmit
+                disabled={!message}
+                status={isLoading ? 'streaming' : 'ready'}
+              />
+            </PromptInputTools>
+          </PromptInputToolbar>
         </PromptInput>
       </div>
     </div>

@@ -5,8 +5,19 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   PromptInput,
+  PromptInputImageButton,
+  PromptInputImagePreview,
+  PromptInputMicButton,
   PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+  createImageAttachment,
+  createImageAttachmentFromStored,
+  savePromptToStorage,
+  loadPromptFromStorage,
+  clearPromptFromStorage,
+  type ImageAttachment,
 } from '@/components/ai-elements/prompt-input'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
 import { AppHeader } from '@/components/shared/app-header'
@@ -21,6 +32,8 @@ export function HomeClient() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showChatInterface, setShowChatInterface] = useState(false)
+  const [attachments, setAttachments] = useState<ImageAttachment[]>([])
+  const [isDragOver, setIsDragOver] = useState(false)
   const [chatHistory, setChatHistory] = useState<
     Array<{
       type: 'user' | 'assistant'
@@ -36,19 +49,75 @@ export function HomeClient() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { startHandoff } = useStreaming()
 
-  // Auto-focus the textarea on page load
+  // Auto-focus the textarea on page load and restore from sessionStorage
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.focus()
     }
+
+    // Restore prompt data from sessionStorage
+    const storedData = loadPromptFromStorage()
+    if (storedData) {
+      setMessage(storedData.message)
+      if (storedData.attachments.length > 0) {
+        const restoredAttachments = storedData.attachments.map(
+          createImageAttachmentFromStored,
+        )
+        setAttachments(restoredAttachments)
+      }
+    }
   }, [])
+
+  // Save prompt data to sessionStorage whenever message or attachments change
+  useEffect(() => {
+    if (message.trim() || attachments.length > 0) {
+      savePromptToStorage(message, attachments)
+    } else {
+      // Clear sessionStorage if both message and attachments are empty
+      clearPromptFromStorage()
+    }
+  }, [message, attachments])
+
+  // Image attachment handlers
+  const handleImageFiles = async (files: File[]) => {
+    try {
+      const newAttachments = await Promise.all(
+        files.map((file) => createImageAttachment(file)),
+      )
+      setAttachments((prev) => [...prev, ...newAttachments])
+    } catch (error) {
+      console.error('Error processing image files:', error)
+    }
+  }
+
+  const handleRemoveAttachment = (id: string) => {
+    setAttachments((prev) => prev.filter((att) => att.id !== id))
+  }
+
+  const handleDragOver = () => {
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragOver(false)
+  }
+
+  const handleDrop = () => {
+    setIsDragOver(false)
+  }
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()
+    const currentAttachments = [...attachments]
+
+    // Clear sessionStorage immediately upon submission
+    clearPromptFromStorage()
+
     setMessage('')
+    setAttachments([])
 
     // Immediately show chat interface and add user message
     setShowChatInterface(true)
@@ -69,6 +138,7 @@ export function HomeClient() {
         body: JSON.stringify({
           message: userMessage,
           streaming: true,
+          attachments: currentAttachments.map((att) => ({ url: att.dataUrl })),
         }),
       })
 
@@ -303,20 +373,47 @@ export function HomeClient() {
             <PromptInput
               onSubmit={handleSendMessage}
               className="w-full relative"
+              onImageDrop={handleImageFiles}
+              isDragOver={isDragOver}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
+              <PromptInputImagePreview
+                attachments={attachments}
+                onRemove={handleRemoveAttachment}
+              />
               <PromptInputTextarea
                 ref={textareaRef}
                 onChange={(e) => setMessage(e.target.value)}
                 value={message}
                 placeholder="Describe what you want to build..."
-                className="pr-12 min-h-[80px] text-base"
+                className="pr-32 min-h-[80px] text-base"
                 disabled={isLoading}
               />
-              <PromptInputSubmit
-                className="absolute bottom-2 right-2"
-                disabled={!message.trim() || isLoading}
-                status={isLoading ? 'streaming' : 'ready'}
-              />
+              <PromptInputToolbar className="absolute bottom-2 right-2">
+                <PromptInputTools>
+                  <PromptInputImageButton
+                    onImageSelect={handleImageFiles}
+                    disabled={isLoading}
+                  />
+                  <PromptInputMicButton
+                    onTranscript={(transcript) => {
+                      setMessage(
+                        (prev) => prev + (prev ? ' ' : '') + transcript,
+                      )
+                    }}
+                    onError={(error) => {
+                      console.error('Speech recognition error:', error)
+                    }}
+                    disabled={isLoading}
+                  />
+                  <PromptInputSubmit
+                    disabled={!message.trim() || isLoading}
+                    status={isLoading ? 'streaming' : 'ready'}
+                  />
+                </PromptInputTools>
+              </PromptInputToolbar>
             </PromptInput>
           </div>
 
