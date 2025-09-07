@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { AppHeader } from '@/components/shared/app-header'
 import { ChatMessages } from '@/components/chat/chat-messages'
@@ -21,6 +21,7 @@ export function ChatDetailClient() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [attachments, setAttachments] = useState<ImageAttachment[]>([])
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const { handoff } = useStreaming()
   const {
@@ -60,6 +61,13 @@ export function ChatDetailClient() {
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isFullscreen])
+
+  // Auto-focus the textarea on page load
+  useEffect(() => {
+    if (textareaRef.current && !isLoadingChat) {
+      textareaRef.current.focus()
+    }
+  }, [isLoadingChat])
 
   // Don't show loading if we have a handoff (streaming from homepage)
   if (isLoadingChat && !(handoff.chatId === chatId && handoff.stream)) {
@@ -105,6 +113,7 @@ export function ChatDetailClient() {
               showSuggestions={false}
               attachments={attachments}
               onAttachmentsChange={setAttachments}
+              textareaRef={textareaRef}
             />
           </>
         }

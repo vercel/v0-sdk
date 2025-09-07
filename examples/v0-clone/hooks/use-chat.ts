@@ -158,13 +158,42 @@ export function useChat(chatId: string) {
     setIsStreaming(false)
     setIsLoading(false)
 
-    // Refresh chat data from server after streaming completes
-    mutate(`/api/chats/${chatId}`)
-
     console.log(
       'Stream completed with final content:',
       JSON.stringify(finalContent, null, 2),
     )
+
+    // Always try to fetch updated chat details after streaming completes
+    // This ensures we get the latest demoUrl even for existing chats
+    try {
+      console.log('Fetching updated chat details after streaming...')
+      const response = await fetch(`/api/chats/${chatId}`)
+      if (response.ok) {
+        const chatDetails = await response.json()
+        console.log('Updated chat details:', chatDetails)
+
+        const demoUrl = chatDetails?.latestVersion?.demoUrl || chatDetails?.demo
+        console.log('Updated demo URL:', demoUrl)
+
+        // Update SWR cache with the latest chat data
+        mutate(
+          `/api/chats/${chatId}`,
+          {
+            ...chatDetails,
+            demo: demoUrl,
+          },
+          false,
+        )
+      } else {
+        console.warn('Failed to fetch updated chat details:', response.status)
+        // Fallback to just refreshing the cache
+        mutate(`/api/chats/${chatId}`)
+      }
+    } catch (error) {
+      console.error('Error fetching updated chat details:', error)
+      // Fallback to just refreshing the cache
+      mutate(`/api/chats/${chatId}`)
+    }
 
     // Try to extract chat ID from the final content if we don't have one yet
     if (!currentChat && finalContent && Array.isArray(finalContent)) {

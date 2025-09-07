@@ -28,6 +28,7 @@ interface ChatInputProps {
   showSuggestions: boolean
   attachments?: ImageAttachment[]
   onAttachmentsChange?: (attachments: ImageAttachment[]) => void
+  textareaRef?: React.RefObject<HTMLTextAreaElement | null>
 }
 
 export function ChatInput({
@@ -38,6 +39,7 @@ export function ChatInput({
   showSuggestions,
   attachments = [],
   onAttachmentsChange,
+  textareaRef,
 }: ChatInputProps) {
   const [isDragOver, setIsDragOver] = useState(false)
 
@@ -153,14 +155,17 @@ export function ChatInput({
             onRemove={handleRemoveAttachment}
           />
           <PromptInputTextarea
+            ref={textareaRef}
             onChange={(e) => setMessage(e.target.value)}
             value={message}
-            className="pr-32 min-h-[60px]"
+            className="min-h-[60px]"
             placeholder="Continue the conversation..."
           />
-          <PromptInputToolbar className="absolute bottom-1 right-1">
+          <PromptInputToolbar>
             <PromptInputTools>
               <PromptInputImageButton onImageSelect={handleImageFiles} />
+            </PromptInputTools>
+            <PromptInputTools>
               <PromptInputMicButton
                 onTranscript={(transcript) => {
                   setMessage(message + (message ? ' ' : '') + transcript)

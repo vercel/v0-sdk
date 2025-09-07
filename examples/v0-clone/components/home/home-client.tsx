@@ -388,15 +388,17 @@ export function HomeClient() {
                 onChange={(e) => setMessage(e.target.value)}
                 value={message}
                 placeholder="Describe what you want to build..."
-                className="pr-32 min-h-[80px] text-base"
+                className="min-h-[80px] text-base"
                 disabled={isLoading}
               />
-              <PromptInputToolbar className="absolute bottom-2 right-2">
+              <PromptInputToolbar>
                 <PromptInputTools>
                   <PromptInputImageButton
                     onImageSelect={handleImageFiles}
                     disabled={isLoading}
                   />
+                </PromptInputTools>
+                <PromptInputTools>
                   <PromptInputMicButton
                     onTranscript={(transcript) => {
                       setMessage(
