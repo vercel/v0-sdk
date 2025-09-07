@@ -15,6 +15,7 @@ import { StreamingMessage } from '@v0-sdk/react'
 import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
+import { ResizableLayout } from '@/components/shared/resizable-layout'
 
 export function HomeClient() {
   const [message, setMessage] = useState('')
@@ -200,36 +201,38 @@ export function HomeClient() {
       <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
         <AppHeader />
 
-        <div className="flex h-[calc(100vh-64px)]">
-          {/* Chat Section */}
-          <div className="w-[30%] flex flex-col border-r border-border dark:border-input">
-            <ChatMessages
-              chatHistory={chatHistory}
-              isLoading={isLoading}
+        <ResizableLayout
+          className="h-[calc(100vh-64px)]"
+          leftPanel={
+            <>
+              <ChatMessages
+                chatHistory={chatHistory}
+                isLoading={isLoading}
+                currentChat={currentChatId ? { id: currentChatId } : null}
+                onStreamingComplete={handleStreamingComplete}
+                onChatData={handleChatData}
+                onStreamingStarted={() => setIsLoading(false)}
+              />
+
+              <ChatInput
+                message={message}
+                setMessage={setMessage}
+                onSubmit={handleChatSendMessage}
+                isLoading={isLoading}
+                showSuggestions={false}
+              />
+            </>
+          }
+          rightPanel={
+            <PreviewPanel
               currentChat={currentChatId ? { id: currentChatId } : null}
-              onStreamingComplete={handleStreamingComplete}
-              onChatData={handleChatData}
-              onStreamingStarted={() => setIsLoading(false)}
+              isFullscreen={isFullscreen}
+              setIsFullscreen={setIsFullscreen}
+              refreshKey={refreshKey}
+              setRefreshKey={setRefreshKey}
             />
-
-            <ChatInput
-              message={message}
-              setMessage={setMessage}
-              onSubmit={handleChatSendMessage}
-              isLoading={isLoading}
-              showSuggestions={false}
-            />
-          </div>
-
-          {/* Preview Panel */}
-          <PreviewPanel
-            currentChat={currentChatId ? { id: currentChatId } : null}
-            isFullscreen={isFullscreen}
-            setIsFullscreen={setIsFullscreen}
-            refreshKey={refreshKey}
-            setRefreshKey={setRefreshKey}
-          />
-        </div>
+          }
+        />
 
         {/* Hidden streaming component for initial response */}
         {chatHistory.some((msg) => msg.isStreaming && msg.stream) && (

@@ -6,6 +6,7 @@ import { AppHeader } from '@/components/shared/app-header'
 import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
+import { ResizableLayout } from '@/components/shared/resizable-layout'
 import { useChat } from '@/hooks/use-chat'
 import { useStreaming } from '@/contexts/streaming-context'
 import { cn } from '@/lib/utils'
@@ -66,36 +67,38 @@ export function ChatDetailClient() {
     >
       <AppHeader />
 
-      <div className="flex h-[calc(100vh-64px)]">
-        {/* Chat Section */}
-        <div className="w-[30%] flex flex-col border-r border-border dark:border-input">
-          <ChatMessages
-            chatHistory={chatHistory}
-            isLoading={isLoading}
+      <ResizableLayout
+        className="h-[calc(100vh-64px)]"
+        leftPanel={
+          <>
+            <ChatMessages
+              chatHistory={chatHistory}
+              isLoading={isLoading}
+              currentChat={currentChat || null}
+              onStreamingComplete={handleStreamingComplete}
+              onChatData={handleChatData}
+              onStreamingStarted={() => setIsLoading(false)}
+            />
+
+            <ChatInput
+              message={message}
+              setMessage={setMessage}
+              onSubmit={handleSendMessage}
+              isLoading={isLoading}
+              showSuggestions={false}
+            />
+          </>
+        }
+        rightPanel={
+          <PreviewPanel
             currentChat={currentChat || null}
-            onStreamingComplete={handleStreamingComplete}
-            onChatData={handleChatData}
-            onStreamingStarted={() => setIsLoading(false)}
+            isFullscreen={isFullscreen}
+            setIsFullscreen={setIsFullscreen}
+            refreshKey={refreshKey}
+            setRefreshKey={setRefreshKey}
           />
-
-          <ChatInput
-            message={message}
-            setMessage={setMessage}
-            onSubmit={handleSendMessage}
-            isLoading={isLoading}
-            showSuggestions={false}
-          />
-        </div>
-
-        {/* Preview Panel */}
-        <PreviewPanel
-          currentChat={currentChat || null}
-          isFullscreen={isFullscreen}
-          setIsFullscreen={setIsFullscreen}
-          refreshKey={refreshKey}
-          setRefreshKey={setRefreshKey}
-        />
-      </div>
+        }
+      />
     </div>
   )
 }
