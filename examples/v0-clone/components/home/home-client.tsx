@@ -209,6 +209,7 @@ export function HomeClient() {
               currentChat={currentChatId ? { id: currentChatId } : null}
               onStreamingComplete={handleStreamingComplete}
               onChatData={handleChatData}
+              onStreamingStarted={() => setIsLoading(false)}
             />
 
             <ChatInput

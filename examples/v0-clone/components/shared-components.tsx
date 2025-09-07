@@ -68,7 +68,7 @@ export const TaskSectionWrapper = ({
 }: TaskSectionProps) => {
   return (
     <Task
-      className="w-full"
+      className="w-full mb-4"
       defaultOpen={!collapsed}
       onOpenChange={(open) => onCollapse?.()}
     >
@@ -176,7 +176,10 @@ export const CodeProjectPartWrapper = ({
   const [isCollapsed, setIsCollapsed] = React.useState(collapsed ?? true)
 
   return (
-    <div className={`my-6 border rounded-lg ${className || ''}`} {...props}>
+    <div
+      className={`my-6 border border-border dark:border-input rounded-lg ${className || ''}`}
+      {...props}
+    >
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -184,7 +187,7 @@ export const CodeProjectPartWrapper = ({
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 flex items-center justify-center">
             <svg
-              className="w-5 h-5 text-blue-600"
+              className="w-5 h-5 text-black dark:text-white"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -196,7 +199,7 @@ export const CodeProjectPartWrapper = ({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">
             v1
           </span>
           <svg
@@ -214,11 +217,11 @@ export const CodeProjectPartWrapper = ({
       </button>
 
       {!isCollapsed && (
-        <div className="border-t border-gray-200 dark:border-gray-700">
+        <div className="border-t border-border dark:border-input">
           {children || (
             <div className="p-4">
               <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-black dark:text-white">
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -235,10 +238,6 @@ export const CodeProjectPartWrapper = ({
                   </span>
                 </div>
               </div>
-
-              {code && (
-                <CodeBlock language={language || 'typescript'} code={code} />
-              )}
             </div>
           )}
         </div>

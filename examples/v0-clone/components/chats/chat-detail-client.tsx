@@ -22,6 +22,7 @@ export function ChatDetailClient() {
     setMessage,
     currentChat,
     isLoading,
+    setIsLoading,
     isStreaming,
     chatHistory,
     isLoadingChat,
@@ -74,6 +75,7 @@ export function ChatDetailClient() {
             currentChat={currentChat || null}
             onStreamingComplete={handleStreamingComplete}
             onChatData={handleChatData}
+            onStreamingStarted={() => setIsLoading(false)}
           />
 
           <ChatInput

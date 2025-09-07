@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from 'react'
 import { Message, MessageContent } from '@/components/ai-elements/message'
 import {
   Conversation,
@@ -27,6 +28,7 @@ interface ChatMessagesProps {
   currentChat: Chat | null
   onStreamingComplete: (finalContent: any) => void
   onChatData: (chatData: any) => void
+  onStreamingStarted?: () => void
 }
 
 export function ChatMessages({
@@ -35,7 +37,17 @@ export function ChatMessages({
   currentChat,
   onStreamingComplete,
   onChatData,
+  onStreamingStarted,
 }: ChatMessagesProps) {
+  const streamingStartedRef = useRef(false)
+
+  // Reset the streaming started flag when a new message starts loading
+  useEffect(() => {
+    if (isLoading) {
+      streamingStartedRef.current = false
+    }
+  }, [isLoading])
+
   if (chatHistory.length === 0) {
     return (
       <div className="text-center font-semibold mt-8">
@@ -59,8 +71,16 @@ export function ChatMessages({
                   role={msg.type}
                   onComplete={onStreamingComplete}
                   onChatData={onChatData}
+                  onChunk={(chunk) => {
+                    // Hide external loader once we start receiving content (only once)
+                    if (onStreamingStarted && !streamingStartedRef.current) {
+                      streamingStartedRef.current = true
+                      onStreamingStarted()
+                    }
+                  }}
                   onError={(error) => console.error('Streaming error:', error)}
                   components={sharedComponents}
+                  showLoadingIndicator={false}
                 />
               ) : (
                 <MessageRenderer
@@ -71,18 +91,13 @@ export function ChatMessages({
               )}
             </Message>
           ))}
+          {isLoading && (
+            <div className="flex justify-center py-4">
+              <Loader size={16} className="text-gray-500 dark:text-gray-400" />
+            </div>
+          )}
         </ConversationContent>
       </Conversation>
-      {isLoading && (
-        <Message from="assistant">
-          <MessageContent>
-            <div className="flex items-center gap-2">
-              <Loader />
-              Creating your app...
-            </div>
-          </MessageContent>
-        </Message>
-      )}
     </>
   )
 }

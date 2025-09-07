@@ -124,7 +124,7 @@ export function useChat(chatId: string) {
       }
 
       setIsStreaming(true)
-      setIsLoading(false) // Hide "Creating your app..." once streaming starts
+      // Keep isLoading true until streaming message has content
 
       // Add placeholder for streaming response with the stream attached
       setChatHistory((prev) => [
@@ -330,6 +330,7 @@ export function useChat(chatId: string) {
     setMessage,
     currentChat,
     isLoading,
+    setIsLoading,
     isStreaming,
     chatHistory,
     isLoadingChat,
