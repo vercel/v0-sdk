@@ -17,11 +17,10 @@ import { createHookTools } from './tools/hook-tools'
  * @example
  * ```typescript
  * import { generateText } from 'ai'
- * import { openai } from '@ai-sdk/openai'
  * import { v0Tools } from '@v0-sdk/ai-tools'
  *
  * const result = await generateText({
- *   model: openai('gpt-4'),
+ *   model: 'openai/gpt-4',
  *   prompt: 'Create a new React component',
  *   tools: v0Tools({
  *     apiKey: process.env.V0_API_KEY
@@ -61,7 +60,6 @@ export function v0Tools(config: V0ToolsConfig = {}) {
  * @example
  * ```typescript
  * import { generateText } from 'ai'
- * import { openai } from '@ai-sdk/openai'
  * import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
  *
  * const tools = v0ToolsByCategory({
@@ -70,7 +68,7 @@ export function v0Tools(config: V0ToolsConfig = {}) {
  *
  * // Only include chat and project tools
  * const result = await generateText({
- *   model: openai('gpt-4'),
+ *   model: 'openai/gpt-4',
  *   prompt: 'Create a new React component',
  *   tools: {
  *     ...tools.chat,

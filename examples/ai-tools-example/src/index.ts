@@ -7,7 +7,6 @@
 
 import 'dotenv/config'
 import { generateText, stepCountIs } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0Tools, v0ToolsByCategory } from '@v0-sdk/ai-tools'
 
 async function main() {
@@ -17,7 +16,7 @@ async function main() {
   console.log('📝 Example 1: Using all tools')
   try {
     const result1 = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: 'openai/gpt-4o-mini',
       prompt: 'Create a new v0 chat for building a React todo list component',
       tools: v0Tools({
         apiKey: process.env.V0_API_KEY,
@@ -41,7 +40,7 @@ async function main() {
     })
 
     const result2 = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: 'openai/gpt-4o-mini',
       prompt:
         'Create a new project called "My Portfolio Website" and then create a chat within that project',
       tools: {
@@ -68,7 +67,7 @@ async function main() {
     })
 
     const result3 = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: 'openai/gpt-4o-mini',
       prompt:
         'List all my existing projects and show me details about the most recent one',
       tools: {

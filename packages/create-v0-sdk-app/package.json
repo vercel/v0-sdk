@@ -1,0 +1,50 @@
+{
+  "name": "create-v0-sdk-app",
+  "version": "0.1.0",
+  "keywords": [
+    "v0",
+    "v0-sdk",
+    "ai",
+    "react",
+    "next.js"
+  ],
+  "description": "Create v0 SDK-powered apps with one command",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vercel/v0-sdk.git",
+    "directory": "packages/create-v0-sdk-app"
+  },
+  "author": "Vercel Team <support@vercel.com>",
+  "license": "MIT",
+  "bin": {
+    "create-v0-sdk-app": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "prompts": "^2.4.2",
+    "picocolors": "^1.0.0",
+    "cross-spawn": "^7.0.3",
+    "fast-glob": "^3.3.1",
+    "validate-npm-package-name": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.0",
+    "@types/node": "^22.0.0",
+    "@types/prompts": "^2.4.2",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  }
+}

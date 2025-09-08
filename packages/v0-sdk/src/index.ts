@@ -98,6 +98,7 @@ export type {
   ProjectsCreateEnvVarsResponse,
   ProjectsCreateResponse,
   ProjectsDeleteEnvVarsResponse,
+  ProjectsDeleteResponse,
   ProjectsFindEnvVarsResponse,
   ProjectsFindResponse,
   ProjectsGetByChatIdResponse,
