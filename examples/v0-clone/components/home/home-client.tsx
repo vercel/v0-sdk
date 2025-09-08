@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
   PromptInput,
@@ -21,6 +21,14 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
 import { AppHeader } from '@/components/shared/app-header'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { useStreaming } from '@/contexts/streaming-context'
 import { StreamingMessage } from '@v0-sdk/react'
 import { ChatMessages } from '@/components/chat/chat-messages'
@@ -44,10 +52,43 @@ export function HomeClient() {
   >([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { startHandoff } = useStreaming()
+
+  // Reset UI when reset parameter is present
+  useEffect(() => {
+    const reset = searchParams.get('reset')
+    if (reset === 'true') {
+      // Reset all chat-related state
+      setShowChatInterface(false)
+      setChatHistory([])
+      setCurrentChatId(null)
+      setMessage('')
+      setAttachments([])
+      setIsLoading(false)
+      setIsFullscreen(false)
+      setRefreshKey((prev) => prev + 1)
+
+      // Clear any stored data
+      clearPromptFromStorage()
+
+      // Remove the reset parameter from URL without triggering navigation
+      const newUrl = new URL(window.location.href)
+      newUrl.searchParams.delete('reset')
+      window.history.replaceState({}, '', newUrl.pathname)
+
+      // Focus textarea after reset
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus()
+        }
+      }, 0)
+    }
+  }, [searchParams])
 
   // Auto-focus the textarea on page load and restore from sessionStorage
   useEffect(() => {
@@ -55,15 +96,18 @@ export function HomeClient() {
       textareaRef.current.focus()
     }
 
-    // Restore prompt data from sessionStorage
-    const storedData = loadPromptFromStorage()
-    if (storedData) {
-      setMessage(storedData.message)
-      if (storedData.attachments.length > 0) {
-        const restoredAttachments = storedData.attachments.map(
-          createImageAttachmentFromStored,
-        )
-        setAttachments(restoredAttachments)
+    // Restore prompt data from sessionStorage only if not resetting
+    const reset = searchParams.get('reset')
+    if (!reset) {
+      const storedData = loadPromptFromStorage()
+      if (storedData) {
+        setMessage(storedData.message)
+        if (storedData.attachments.length > 0) {
+          const restoredAttachments = storedData.attachments.map(
+            createImageAttachmentFromStored,
+          )
+          setAttachments(restoredAttachments)
+        }
       }
     }
   }, [])
@@ -186,6 +230,25 @@ export function HomeClient() {
 
       // Update URL without triggering Next.js routing
       window.history.pushState(null, '', `/chats/${chatData.id}`)
+
+      // Create ownership record for new chat (only if this is a new chat)
+      if (!currentChatId) {
+        try {
+          await fetch('/api/chat/ownership', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chatId: chatData.id,
+            }),
+          })
+          console.log('Chat ownership created for:', chatData.id)
+        } catch (error) {
+          console.error('Failed to create chat ownership:', error)
+          // Don't fail the UI if ownership creation fails
+        }
+      }
     }
   }
 
@@ -340,32 +403,12 @@ export function HomeClient() {
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               What can we build together?
             </h2>
-          </div>
-
-          {/* Suggestions */}
-          <div className="mb-8">
-            <Suggestions>
-              <Suggestion
-                onClick={() => setMessage('How do I use PPR in Next.js?')}
-                suggestion="How do I use PPR in Next.js?"
-              />
-              <Suggestion
-                onClick={() =>
-                  setMessage('Create a responsive navbar with Tailwind CSS')
-                }
-                suggestion="Create a responsive navbar with Tailwind CSS"
-              />
-              <Suggestion
-                onClick={() => setMessage('Build a todo app with React')}
-                suggestion="Build a todo app with React"
-              />
-              <Suggestion
-                onClick={() =>
-                  setMessage('Make a landing page for a coffee shop')
-                }
-                suggestion="Make a landing page for a coffee shop"
-              />
-            </Suggestions>
+            <button
+              onClick={() => setIsInfoDialogOpen(true)}
+              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+            >
+              What's This?
+            </button>
           </div>
 
           {/* Prompt Input */}
@@ -419,6 +462,32 @@ export function HomeClient() {
             </PromptInput>
           </div>
 
+          {/* Suggestions */}
+          <div className="mt-4 max-w-2xl mx-auto">
+            <Suggestions>
+              <Suggestion
+                onClick={() => setMessage('How do I use PPR in Next.js?')}
+                suggestion="How do I use PPR in Next.js?"
+              />
+              <Suggestion
+                onClick={() =>
+                  setMessage('Create a responsive navbar with Tailwind CSS')
+                }
+                suggestion="Create a responsive navbar with Tailwind CSS"
+              />
+              <Suggestion
+                onClick={() => setMessage('Build a todo app with React')}
+                suggestion="Build a todo app with React"
+              />
+              <Suggestion
+                onClick={() =>
+                  setMessage('Make a landing page for a coffee shop')
+                }
+                suggestion="Make a landing page for a coffee shop"
+              />
+            </Suggestions>
+          </div>
+
           {/* Footer */}
           <div className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
             <p>
@@ -427,6 +496,92 @@ export function HomeClient() {
           </div>
         </div>
       </div>
+
+      {/* Info Dialog */}
+      <Dialog open={isInfoDialogOpen} onOpenChange={setIsInfoDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold mb-4">
+              v0 Clone Platform
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+            <p>
+              This is a <strong>demo</strong> of an end-to-end coding platform
+              where the user can enter text prompts, and the agent will create a
+              full stack application.
+            </p>
+            <p>
+              It uses Vercel's AI Cloud services like{' '}
+              <a
+                href="https://vercel.com/docs/functions/ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Sandbox
+              </a>{' '}
+              for secure code execution,{' '}
+              <a
+                href="https://vercel.com/docs/ai/ai-gateway"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                AI Gateway
+              </a>{' '}
+              for GPT-5 and other models support,{' '}
+              <a
+                href="https://vercel.com/docs/functions/streaming"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Fluid Compute
+              </a>{' '}
+              for efficient rendering and streaming, and it's built with{' '}
+              <a
+                href="https://nextjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Next.js
+              </a>{' '}
+              and the{' '}
+              <a
+                href="https://v0-sdk.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                v0 SDK
+              </a>
+              .
+            </p>
+            <p>
+              Try the demo or{' '}
+              <a
+                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fv0.dev&root-directory=examples%2Fv0-clone"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                deploy your own
+              </a>
+              .
+            </p>
+          </div>
+          <div className="flex justify-end mt-6">
+            <Button
+              onClick={() => setIsInfoDialogOpen(false)}
+              className="bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900"
+            >
+              Try now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -4,8 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start"
+    "build": "tsx lib/db/migrate && next build --turbopack",
+    "start": "next start",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "npx tsx lib/db/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@ai-sdk/react": "^2.0.22",
@@ -20,12 +24,20 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@v0-sdk/react": "workspace:*",
+    "@vercel/postgres": "^0.10.0",
     "ai": "^5.0.22",
+    "bcrypt-ts": "^7.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.5",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.540.0",
+    "nanoid": "^5.1.5",
     "next": "15.5.0",
+    "next-auth": "5.0.0-beta.25",
+    "postgres": "^3.4.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-syntax-highlighter": "^15.6.3",
@@ -33,6 +45,7 @@
     "streamdown": "^1.0.12",
     "swr": "^2.3.6",
     "tailwind-merge": "^2.5.5",
+    "tsx": "^4.19.2",
     "use-stick-to-bottom": "^1.1.1",
     "v0-sdk": "workspace:*",
     "zod": "^4.1.1"

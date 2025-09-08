@@ -118,32 +118,10 @@ export function ChatInput({
 
   return (
     <div className="p-4 pt-0">
-      {showSuggestions && (
-        <Suggestions>
-          <Suggestion
-            onClick={() => setMessage('How do I use PPR in Next.js?')}
-            suggestion="How do I use PPR in Next.js?"
-          />
-          <Suggestion
-            onClick={() =>
-              setMessage('Create a responsive navbar with Tailwind CSS')
-            }
-            suggestion="Create a responsive navbar with Tailwind CSS"
-          />
-          <Suggestion
-            onClick={() => setMessage('Build a todo app with React')}
-            suggestion="Build a todo app with React"
-          />
-          <Suggestion
-            onClick={() => setMessage('Make a landing page for a coffee shop')}
-            suggestion="Make a landing page for a coffee shop"
-          />
-        </Suggestions>
-      )}
       <div className="flex gap-2">
         <PromptInput
           onSubmit={handleSubmit}
-          className="mt-4 w-full max-w-2xl mx-auto relative"
+          className="w-full max-w-2xl mx-auto relative"
           onImageDrop={handleImageFiles}
           isDragOver={isDragOver}
           onDragOver={handleDragOver}
@@ -182,6 +160,32 @@ export function ChatInput({
           </PromptInputToolbar>
         </PromptInput>
       </div>
+      {showSuggestions && (
+        <div className="max-w-2xl mx-auto mt-2">
+          <Suggestions>
+            <Suggestion
+              onClick={() => setMessage('How do I use PPR in Next.js?')}
+              suggestion="How do I use PPR in Next.js?"
+            />
+            <Suggestion
+              onClick={() =>
+                setMessage('Create a responsive navbar with Tailwind CSS')
+              }
+              suggestion="Create a responsive navbar with Tailwind CSS"
+            />
+            <Suggestion
+              onClick={() => setMessage('Build a todo app with React')}
+              suggestion="Build a todo app with React"
+            />
+            <Suggestion
+              onClick={() =>
+                setMessage('Make a landing page for a coffee shop')
+              }
+              suggestion="Make a landing page for a coffee shop"
+            />
+          </Suggestions>
+        </div>
+      )}
     </div>
   )
 }

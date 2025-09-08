@@ -1,5 +1,10 @@
+import { Suspense } from 'react'
 import { HomeClient } from '@/components/home/home-client'
 
 export default function Home() {
-  return <HomeClient />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeClient />
+    </Suspense>
+  )
 }
