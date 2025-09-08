@@ -6,7 +6,6 @@
 
 import 'dotenv/config'
 import { generateText, stepCountIs } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 
 async function projectExample() {
@@ -18,7 +17,7 @@ async function projectExample() {
 
   try {
     const result = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: 'openai/gpt-4o-mini',
       prompt: `
         Help me manage my v0 projects:
         1. First, show me all my existing projects

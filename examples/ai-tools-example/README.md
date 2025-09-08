@@ -15,12 +15,12 @@ This example demonstrates how to use `@v0-sdk/ai-tools` with the AI SDK to inter
 
    ```env
    V0_API_KEY=your_v0_api_key_here
-   OPENAI_API_KEY=your_openai_api_key_here
+   AI_GATEWAY_API_KEY=your_ai_gateway_api_key_here
    ```
 
 3. **Get your API keys:**
    - **v0 API Key**: Get from [v0.dev](https://v0.dev) account settings
-   - **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - **AI Gateway API Key**: Get from [vercel.com](https://vercel.com) AI Gateway settings
 
 ## Examples
 
@@ -58,7 +58,7 @@ pnpm dev:agent
 import { v0Tools } from '@v0-sdk/ai-tools'
 
 const result = await generateText({
-  model: openai('gpt-4o-mini'),
+  model: 'openai/gpt-4o-mini',
   prompt: 'Create a new React component',
   tools: v0Tools({ apiKey: process.env.V0_API_KEY }),
 })
@@ -74,7 +74,7 @@ import { v0ToolsByCategory } from '@v0-sdk/ai-tools'
 const tools = v0ToolsByCategory({ apiKey: process.env.V0_API_KEY })
 
 const result = await generateText({
-  model: openai('gpt-4o-mini'),
+  model: 'openai/gpt-4o-mini',
   prompt: 'Create a new project and chat',
   tools: {
     ...tools.project, // Only project tools
@@ -130,10 +130,10 @@ The `dev:agent` example demonstrates advanced AI agent patterns:
 1. **Start with selective tools** - Only include the categories you need to reduce context size
 2. **Use `stopWhen`** - Control agent execution with conditions like `stepCountIs(n)`
 3. **Handle errors** - Wrap AI calls in try-catch blocks
-4. **Monitor usage** - Check your API usage on both v0 and OpenAI platforms
+4. **Monitor usage** - Check your API usage on both v0 and AI Gateway platforms
 
 ## Troubleshooting
 
 - **"Invalid API key"**: Check your `.env` file and API key validity
 - **"Tool not found"**: Ensure you're using the correct tool category
-- **Rate limits**: Both v0 and OpenAI have rate limits - add delays if needed
+- **Rate limits**: Both v0 and AI Gateway have rate limits - add delays if needed
