@@ -764,12 +764,13 @@
                                 "type": "string"
                               },
                               "branch": {
-                                "type": "string"
+                                "type": "string",
+                                "maxLength": 250
                               }
                             },
                             "required": ["url"],
                             "additionalProperties": false,
-                            "description": "Specifies a repository source for initialization. Should include relevant details like repository URL, branch, and authentication if needed."
+                            "description": "Specifies a repository source for initialization. Supports both public and private GitHub repositories. For private repositories, ensure your GitHub account is connected through Vercel."
                           },
                           "lockAllFiles": {
                             "type": "boolean",
@@ -6768,7 +6769,8 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted"
+                        "message.deleted",
+                        "message.finished"
                       ]
                     },
                     "description": "List of event types the hook should subscribe to."
@@ -7317,7 +7319,8 @@
                         "chat.deleted",
                         "message.created",
                         "message.updated",
-                        "message.deleted"
+                        "message.deleted",
+                        "message.finished"
                       ]
                     },
                     "description": "Updated list of event types to subscribe to."
@@ -9503,6 +9506,279 @@
               "type": "string"
             },
             "description": "The unique identifier of the project to update. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Project",
+        "description": "Deletes a specific project based on the provided projectId. This operation marks the project as deleted and is irreversible.",
+        "operationId": "projects.delete",
+        "tags": ["projects"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "const": "project"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  },
+                  "required": ["id", "object", "deleted"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the project to delete."
           }
         ],
         "security": [
@@ -13540,7 +13816,8 @@
                 "chat.deleted",
                 "message.created",
                 "message.updated",
-                "message.deleted"
+                "message.deleted",
+                "message.finished"
               ]
             },
             "description": "List of event types this webhook is subscribed to."
@@ -13578,7 +13855,8 @@
               "chat.deleted",
               "message.created",
               "message.updated",
-              "message.deleted"
+              "message.deleted",
+              "message.finished"
             ],
             "description": "The type of event that triggered the webhook."
           },

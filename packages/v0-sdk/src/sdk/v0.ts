@@ -196,6 +196,7 @@ export type HookDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   chatId?: string
   url: string
@@ -211,6 +212,7 @@ export type HookEventDetail = {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   status?: 'pending' | 'success' | 'error'
   createdAt: string
 }
@@ -826,6 +828,7 @@ export interface HooksCreateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   chatId?: string
   url: string
@@ -844,6 +847,7 @@ export interface HooksUpdateRequest {
     | 'message.created'
     | 'message.updated'
     | 'message.deleted'
+    | 'message.finished'
   >
   url?: string
 }
@@ -898,6 +902,12 @@ export interface ProjectsUpdateRequest {
 }
 
 export type ProjectsUpdateResponse = ProjectDetail
+
+export interface ProjectsDeleteResponse {
+  id: string
+  object: 'project'
+  deleted: true
+}
 
 export interface ProjectsAssignRequest {
   chatId: string
@@ -1294,6 +1304,15 @@ export function createClient(config: V0ClientConfig = {}) {
         return fetcher(`/projects/${pathParams.projectId}`, 'PATCH', {
           pathParams,
           body,
+        })
+      },
+
+      async delete(params: {
+        projectId: string
+      }): Promise<ProjectsDeleteResponse> {
+        const pathParams = { projectId: params.projectId }
+        return fetcher(`/projects/${pathParams.projectId}`, 'DELETE', {
+          pathParams,
         })
       },
 
