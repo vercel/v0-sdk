@@ -7,7 +7,7 @@
       "outputs": ["dist/**"]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^build", "build"]
     },
     "test:watch": {
       "cache": false,
@@ -17,7 +17,7 @@
       "dependsOn": ["^lint"]
     },
     "type-check": {
-      "dependsOn": ["^type-check"]
+      "dependsOn": ["^build", "build"]
     },
     "dev": {
       "cache": false,
