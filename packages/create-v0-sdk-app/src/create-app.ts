@@ -6,6 +6,7 @@ import type { PackageManager } from './helpers/get-pkg-manager'
 import { install } from './helpers/install'
 import { isFolderEmpty } from './helpers/is-folder-empty'
 import { getOnline } from './helpers/is-online'
+import { downloadAndExtractExample } from './helpers/download'
 
 export type ExampleType =
   | 'ai-tools-example'
@@ -33,28 +34,34 @@ export async function createApp({
   console.log(`Creating a new v0 SDK app in ${green(appPath)}.`)
   console.log()
 
-  // Find the examples directory relative to this package
-  const packageRoot = resolve(__dirname, '..')
-  const monorepoRoot = resolve(packageRoot, '../..')
-  const examplesDir = join(monorepoRoot, 'examples')
-  const examplePath = join(examplesDir, example)
+  // Download example from GitHub repository
+  const repoUrl = 'https://github.com/vercel/v0-sdk'
+  const examplePath = `examples/${example}`
 
-  if (!existsSync(examplePath)) {
-    console.error(`Example ${red(example)} does not exist.`)
+  console.log(
+    `Downloading files from ${cyan(repoUrl)}. This might take a moment.`,
+  )
+  console.log()
+
+  try {
+    await downloadAndExtractExample(repoUrl, examplePath, appPath)
+
+    // Rename gitignore file if it exists
+    const gitignorePath = join(appPath, 'gitignore')
+    const dotGitignorePath = join(appPath, '.gitignore')
+    if (existsSync(gitignorePath)) {
+      await copy(['gitignore'], appPath, {
+        cwd: appPath,
+        rename: () => '.gitignore',
+      })
+    }
+  } catch (error) {
+    console.error(`Failed to download example ${red(example)}:`, error)
+    console.error(
+      `Example ${red(example)} does not exist or could not be downloaded.`,
+    )
     process.exit(1)
   }
-
-  // Copy the example to the target directory
-  await copy(['**'], appPath, {
-    cwd: examplePath,
-    rename: (name) => {
-      // Rename gitignore template to .gitignore
-      if (name === 'gitignore') {
-        return '.gitignore'
-      }
-      return name
-    },
-  })
 
   // Update package.json to use published packages instead of workspace references
   const packageJsonPath = join(appPath, 'package.json')
@@ -77,11 +84,8 @@ export async function createApp({
           if (packageVersions[name]) {
             deps[name] = packageVersions[name]
           } else {
-            // Fallback to monorepo version
-            const rootPackageJson = JSON.parse(
-              readFileSync(join(monorepoRoot, 'package.json'), 'utf8'),
-            )
-            deps[name] = `^${rootPackageJson.version}`
+            // Fallback to latest version
+            deps[name] = 'latest'
           }
         }
       }

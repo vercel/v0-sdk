@@ -404,6 +404,9 @@ importers:
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
+      tar:
+        specifier: ^7.4.3
+        version: 7.4.3
       validate-npm-package-name:
         specifier: ^5.0.1
         version: 5.0.1
