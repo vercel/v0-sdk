@@ -1,0 +1,5 @@
+{
+  "name": "verify-changesets",
+  "type": "module",
+  "private": true
+}
