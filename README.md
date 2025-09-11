@@ -111,11 +111,10 @@ The project includes automated code quality checks:
 
 ### Release Management
 
-This project uses [Changesets](https://github.com/changesets/changesets) for version management and publishing:
+This project uses [Changesets](https://github.com/changesets/changesets) for automated version management and publishing. See [CONTRIBUTING.md](./CONTRIBUTING.md#release-process) for detailed release guidelines.
 
 - `pnpm changeset` - Create a new changeset (describes changes for release)
-- `pnpm version-packages` - Update package versions based on changesets
-- `pnpm release` - Build and publish packages to npm
+- Releases are automated via GitHub Actions when changesets are merged to main
 
 ### CI/CD
 
@@ -123,9 +122,16 @@ The project includes GitHub Actions workflows:
 
 - **CI Pipeline** (`ci.yml`): Runs on every push and PR to main
   - Builds all packages
-  - Runs type checking
-  - Runs tests
-  - Checks code formatting
+  - Runs linting, formatting, and type checking
+  - Runs tests on Node.js 20 and 22
+
+- **Release Pipeline** (`release.yml`): Automated releases
+  - Creates "Version Packages" PRs when changesets are added
+  - Publishes packages to npm when version PRs are merged
+
+- **Changeset Verification** (`verify-changesets.yml`):
+  - Ensures package changes include appropriate changesets
+  - Validates changeset format
 
 - **SDK Generation** (`generate-sdk.yml`):
   - Runs daily to check for OpenAPI spec updates

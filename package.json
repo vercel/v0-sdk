@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "turbo build",
+    "build:packages": "turbo build --filter=@v0-sdk/* --filter=v0-sdk",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "test": "turbo test",
@@ -19,8 +20,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "sdk:generate": "turbo run sdk:generate",
     "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "turbo build && changeset publish",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "ci:release": "turbo clean && turbo build && changeset publish",
     "prepare": "husky"
   },
   "devDependencies": {

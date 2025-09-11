@@ -1,0 +1,144 @@
+name: Verify Changesets
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches:
+      - main
+
+jobs:
+  verify-changesets:
+    name: Verify Changesets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for package changes
+        id: package-changes
+        run: |
+          # Check if any packages have been modified (excluding examples and docs)
+          CHANGED_PACKAGES=$(git diff --name-only origin/main...HEAD | grep -E '^packages/' | head -1)
+          if [ -n "$CHANGED_PACKAGES" ]; then
+            echo "packages-changed=true" >> $GITHUB_OUTPUT
+            echo "Changed packages detected:"
+            git diff --name-only origin/main...HEAD | grep -E '^packages/' | head -10
+          else
+            echo "packages-changed=false" >> $GITHUB_OUTPUT
+            echo "No package changes detected"
+          fi
+
+      - name: Check for changeset files
+        id: changeset-check
+        run: |
+          # Check if there are any changeset files (excluding README.md)
+          CHANGESET_FILES=$(git diff --name-only origin/main...HEAD | grep -E '^\.changeset/.*\.md$' | grep -v 'README.md')
+          if [ -n "$CHANGESET_FILES" ]; then
+            echo "changeset-exists=true" >> $GITHUB_OUTPUT
+            echo "Changeset files found:"
+            echo "$CHANGESET_FILES"
+          else
+            echo "changeset-exists=false" >> $GITHUB_OUTPUT
+            echo "No changeset files found"
+          fi
+
+      - name: Check for bypass labels
+        id: bypass-check
+        run: |
+          # Check if PR has bypass labels (minor or major only)
+          LABELS='${{ toJson(github.event.pull_request.labels.*.name) }}'
+          echo "PR Labels: $LABELS"
+          
+          if echo "$LABELS" | grep -q '"minor"'; then
+            echo "bypass=true" >> $GITHUB_OUTPUT
+            echo "bypass-reason=minor label found" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q '"major"'; then
+            echo "bypass=true" >> $GITHUB_OUTPUT
+            echo "bypass-reason=major label found" >> $GITHUB_OUTPUT
+          else
+            echo "bypass=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Require changeset for package changes
+        if: steps.package-changes.outputs.packages-changed == 'true' && steps.changeset-check.outputs.changeset-exists == 'false' && steps.bypass-check.outputs.bypass == 'false'
+        run: |
+          echo "::error::Package changes detected but no changeset found."
+          echo "::error::"
+          echo "::error::Please create a changeset by running:"
+          echo "::error::  pnpm changeset"
+          echo "::error::"
+          echo "::error::Alternatively, you can create a changeset manually by creating a file in .changeset/"
+          echo "::error::"
+          echo "::error::All package changes require a changeset for proper version management."
+          exit 1
+
+      - name: Validate changeset format and version bumps
+        if: steps.changeset-check.outputs.changeset-exists == 'true'
+        run: |
+          echo "Validating changeset format and version bumps..."
+          
+          # Get all changeset files in this PR
+          CHANGESET_FILES=$(git diff --name-only origin/main...HEAD | grep -E '^\.changeset/.*\.md$' | grep -v 'README.md')
+          
+          for file in $CHANGESET_FILES; do
+            echo "Checking $file..."
+            
+            # Check if file exists and has content
+            if [ ! -f "$file" ]; then
+              echo "::error::Changeset file $file not found"
+              exit 1
+            fi
+            
+            # Check if file has frontmatter
+            if ! grep -q "^---$" "$file"; then
+              echo "::error::Changeset file $file is missing frontmatter"
+              exit 1
+            fi
+            
+            # Check version bumps (only allow patch unless bypass labels are present)
+            if [ "${{ steps.bypass-check.outputs.bypass }}" != "true" ]; then
+              # Extract frontmatter and check for non-patch version bumps
+              FRONTMATTER=$(sed -n '/^---$/,/^---$/p' "$file" | sed '1d;$d')
+              if echo "$FRONTMATTER" | grep -E ': (minor|major)$'; then
+                echo "::error::Only patch version bumps are allowed by default."
+                echo "::error::Found non-patch version bump in $file"
+                echo "::error::To allow minor/major releases, add 'minor' or 'major' label to the PR."
+                exit 1
+              fi
+            fi
+            
+            echo "✓ $file looks valid"
+          done
+          
+          # Use changesets CLI to validate
+          echo "Running changeset status check..."
+          pnpm changeset status
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Changeset Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package changes**: ${{ steps.package-changes.outputs.packages-changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changeset exists**: ${{ steps.changeset-check.outputs.changeset-exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Bypass labels**: ${{ steps.bypass-check.outputs.bypass }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.bypass-check.outputs.bypass }}" = "true" ]; then
+            echo "- **Bypass reason**: ${{ steps.bypass-check.outputs.bypass-reason }}" >> $GITHUB_STEP_SUMMARY
+          fi

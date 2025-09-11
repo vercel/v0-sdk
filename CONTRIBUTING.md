@@ -72,7 +72,9 @@ This will fetch the latest OpenAPI spec and regenerate the TypeScript SDK.
 
 ### Creating a Changeset
 
-Before submitting your PR, create a changeset to describe your changes:
+**Every pull request that modifies packages must include a changeset.** This is automatically enforced by our CI workflow.
+
+Create a changeset to describe your changes:
 
 ```bash
 pnpm changeset
@@ -84,7 +86,7 @@ Follow the prompts to:
 - Choose the type of change (patch, minor, major)
 - Write a summary of your changes
 
-This helps with automatic version management and changelog generation.
+**Please use patch changesets for most changes** unless you're adding new features (minor) or making breaking changes (major).
 
 ### Submitting Changes
 
@@ -176,12 +178,48 @@ Our CI pipeline runs on every push and pull request:
 
 ## Release Process
 
-Releases use [Changesets](https://github.com/changesets/changesets) for version management:
+Releases are fully automated using [Changesets](https://github.com/changesets/changesets):
 
-1. Contributors create changesets describing their changes
-2. Changesets are merged with PRs
-3. When ready to release, run `pnpm version-packages` to update versions
-4. Manually run `pnpm release` to build and publish to npm
+1. **Create a changeset** for your changes using `pnpm changeset`
+2. **Open a pull request** with your changes and the changeset
+3. **Merge the PR** after review and CI passes
+4. **GitHub Actions automatically**:
+   - Creates a "Version Packages" PR with version bumps and changelog updates
+   - When you merge the "Version Packages" PR, packages are published to npm
+
+### Changeset Verification
+
+Our CI workflow ensures:
+
+- **Required changesets**: Any PR modifying packages must include a changeset
+- **Proper format**: Changesets must have valid frontmatter and structure
+- **Patch releases only**: Only patch version bumps are allowed by default
+
+### Version Packages PR
+
+The automated "Version Packages" PR will look like this:
+
+```
+This PR was opened by the Changesets release GitHub action. When you're ready to do a release,
+you can merge this and the packages will be published to npm automatically.
+
+# Releases
+## v0-sdk@1.2.3
+### Patch Changes
+- abc1234: fix: resolve issue with API client timeout
+```
+
+### Manual Release (if needed)
+
+If you need to manually trigger a release:
+
+```bash
+# Version packages (updates package.json versions and CHANGELOG.md)
+pnpm ci:version
+
+# Build and publish to npm
+pnpm ci:release
+```
 
 ## Getting Help
 
