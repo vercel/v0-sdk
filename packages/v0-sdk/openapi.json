@@ -9528,15 +9528,18 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The unique identifier of the deleted project."
                     },
                     "object": {
                       "type": "string",
-                      "const": "project"
+                      "const": "project",
+                      "description": "Fixed value identifying this object as a project."
                     },
                     "deleted": {
                       "type": "boolean",
-                      "const": true
+                      "const": true,
+                      "description": "Confirmation that the project has been deleted."
                     }
                   },
                   "required": ["id", "object", "deleted"],
@@ -9778,7 +9781,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The unique identifier of the project to delete."
+            "description": "The unique identifier of the project to delete. This must be passed as a path parameter in the URL."
           }
         ],
         "security": [
