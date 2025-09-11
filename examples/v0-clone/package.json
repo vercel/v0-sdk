@@ -40,7 +40,7 @@
     "postgres": "^3.4.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-syntax-highlighter": "^15.6.3",
+    "react-syntax-highlighter": "^15.6.6",
     "shiki": "^3.12.2",
     "streamdown": "^1.0.12",
     "swr": "^2.3.6",
