@@ -24,6 +24,7 @@
     "type-check": "tsc --noEmit",
     "type-check:go": "tsgo --noEmit",
     "build": "bunchee",
+    "clean": "rm -rf dist *.tsbuildinfo",
     "sdk:generate": "tsx src/scripts/generate.ts && pnpm format",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "vitest run",

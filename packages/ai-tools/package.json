@@ -23,6 +23,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "build": "bunchee",
+    "clean": "rm -rf dist *.tsbuildinfo",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "vitest run",
     "test:watch": "vitest"

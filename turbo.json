@@ -29,6 +29,9 @@
     },
     "format": {
       "cache": false
+    },
+    "clean": {
+      "dependsOn": ["^clean"]
     }
   }
 }
