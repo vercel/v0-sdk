@@ -1,5 +1,11 @@
 # v0-clone
 
+## 0.1.2
+
+### Patch Changes
+
+- a032be1: use safe versions of esbuild/prismjs
+
 ## 0.1.1
 
 ### Patch Changes
