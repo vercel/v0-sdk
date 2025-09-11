@@ -26,7 +26,7 @@ interface Operation {
 }
 
 async function fetchOpenApiSpec(): Promise<any> {
-  console.log('Fetching latest OpenAPI spec from local server...')
+  console.log('Fetching latest OpenAPI spec from remote server...')
   const response = await fetch('https://api.v0.dev/v1/openapi.json')
 
   if (!response.ok) {
@@ -826,6 +826,19 @@ function generateIndexFile(
     }
     if (operation.responseSchema) {
       exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+
+      // Check if this operation supports streaming and add stream response type
+      const supportsStreaming = operation.bodyProps.some(
+        (prop) =>
+          prop.name === 'responseMode' &&
+          prop.schema?.enum?.includes('experimental_stream'),
+      )
+
+      if (supportsStreaming) {
+        exportedTypes.add(
+          `${toPascalCase(operation.operationId)}StreamResponse`,
+        )
+      }
     }
   }
 
@@ -862,7 +875,13 @@ function generateIndexFile(
   }
 
   // Generate the index.ts content
-  const indexContent = `export { v0, createClient, type V0ClientConfig } from './sdk/v0'
+  const indexContent = `export {
+  v0,
+  createClient,
+  type V0ClientConfig,
+  parseStreamingResponse,
+  type StreamEvent,
+} from './sdk/v0'
 
 // Export all schema types
 export type {
