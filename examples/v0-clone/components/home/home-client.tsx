@@ -21,14 +21,6 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
 import { AppHeader } from '@/components/shared/app-header'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { useStreaming } from '@/contexts/streaming-context'
 import { StreamingMessage } from '@v0-sdk/react'
 import { ChatMessages } from '@/components/chat/chat-messages'
@@ -52,7 +44,6 @@ export function HomeClient() {
   >([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -403,12 +394,6 @@ export function HomeClient() {
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               What can we build together?
             </h2>
-            <button
-              onClick={() => setIsInfoDialogOpen(true)}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
-            >
-              What's This?
-            </button>
           </div>
 
           {/* Prompt Input */}
@@ -466,122 +451,126 @@ export function HomeClient() {
           <div className="mt-4 max-w-2xl mx-auto">
             <Suggestions>
               <Suggestion
-                onClick={() => setMessage('How do I use PPR in Next.js?')}
-                suggestion="How do I use PPR in Next.js?"
+                onClick={() => {
+                  setMessage('Landing page')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Landing page"
               />
               <Suggestion
-                onClick={() =>
-                  setMessage('Create a responsive navbar with Tailwind CSS')
-                }
-                suggestion="Create a responsive navbar with Tailwind CSS"
+                onClick={() => {
+                  setMessage('Todo app')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Todo app"
               />
               <Suggestion
-                onClick={() => setMessage('Build a todo app with React')}
-                suggestion="Build a todo app with React"
+                onClick={() => {
+                  setMessage('Dashboard')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Dashboard"
               />
               <Suggestion
-                onClick={() =>
-                  setMessage('Make a landing page for a coffee shop')
-                }
-                suggestion="Make a landing page for a coffee shop"
+                onClick={() => {
+                  setMessage('Blog')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Blog"
+              />
+              <Suggestion
+                onClick={() => {
+                  setMessage('E-commerce')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="E-commerce"
+              />
+              <Suggestion
+                onClick={() => {
+                  setMessage('Portfolio')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Portfolio"
+              />
+              <Suggestion
+                onClick={() => {
+                  setMessage('Chat app')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Chat app"
+              />
+              <Suggestion
+                onClick={() => {
+                  setMessage('Calculator')
+                  // Submit after setting message
+                  setTimeout(() => {
+                    const form = textareaRef.current?.form
+                    if (form) {
+                      form.requestSubmit()
+                    }
+                  }, 0)
+                }}
+                suggestion="Calculator"
               />
             </Suggestions>
           </div>
 
           {/* Footer */}
-          <div className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-16 text-center text-sm text-muted-foreground">
             <p>
-              Powered by <Link href="https://v0-sdk.dev">v0 SDK</Link>
+              Powered by{' '}
+              <Link
+                href="https://v0-sdk.dev"
+                className="text-foreground hover:underline"
+              >
+                v0 SDK
+              </Link>
             </p>
           </div>
         </div>
       </div>
-
-      {/* Info Dialog */}
-      <Dialog open={isInfoDialogOpen} onOpenChange={setIsInfoDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold mb-4">
-              v0 Clone Platform
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
-            <p>
-              This is a <strong>demo</strong> of an end-to-end coding platform
-              where the user can enter text prompts, and the agent will create a
-              full stack application.
-            </p>
-            <p>
-              It uses Vercel's AI Cloud services like{' '}
-              <a
-                href="https://vercel.com/docs/functions/ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Sandbox
-              </a>{' '}
-              for secure code execution,{' '}
-              <a
-                href="https://vercel.com/docs/ai/ai-gateway"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                AI Gateway
-              </a>{' '}
-              for GPT-5 and other models support,{' '}
-              <a
-                href="https://vercel.com/docs/functions/streaming"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Fluid Compute
-              </a>{' '}
-              for efficient rendering and streaming, and it's built with{' '}
-              <a
-                href="https://nextjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Next.js
-              </a>{' '}
-              and the{' '}
-              <a
-                href="https://v0-sdk.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                v0 SDK
-              </a>
-              .
-            </p>
-            <p>
-              Try the demo or{' '}
-              <a
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fv0.dev&root-directory=examples%2Fv0-clone"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                deploy your own
-              </a>
-              .
-            </p>
-          </div>
-          <div className="flex justify-end mt-6">
-            <Button
-              onClick={() => setIsInfoDialogOpen(false)}
-              className="bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900"
-            >
-              Try now
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

@@ -164,24 +164,108 @@ export function ChatInput({
         <div className="max-w-2xl mx-auto mt-2">
           <Suggestions>
             <Suggestion
-              onClick={() => setMessage('How do I use PPR in Next.js?')}
-              suggestion="How do I use PPR in Next.js?"
+              onClick={() => {
+                setMessage('Landing page')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Landing page"
             />
             <Suggestion
-              onClick={() =>
-                setMessage('Create a responsive navbar with Tailwind CSS')
-              }
-              suggestion="Create a responsive navbar with Tailwind CSS"
+              onClick={() => {
+                setMessage('Todo app')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Todo app"
             />
             <Suggestion
-              onClick={() => setMessage('Build a todo app with React')}
-              suggestion="Build a todo app with React"
+              onClick={() => {
+                setMessage('Dashboard')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Dashboard"
             />
             <Suggestion
-              onClick={() =>
-                setMessage('Make a landing page for a coffee shop')
-              }
-              suggestion="Make a landing page for a coffee shop"
+              onClick={() => {
+                setMessage('Blog')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Blog"
+            />
+            <Suggestion
+              onClick={() => {
+                setMessage('E-commerce')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="E-commerce"
+            />
+            <Suggestion
+              onClick={() => {
+                setMessage('Portfolio')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Portfolio"
+            />
+            <Suggestion
+              onClick={() => {
+                setMessage('Chat app')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Chat app"
+            />
+            <Suggestion
+              onClick={() => {
+                setMessage('Calculator')
+                // Submit after setting message
+                setTimeout(() => {
+                  const form = textareaRef?.current?.form
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }, 0)
+              }}
+              suggestion="Calculator"
             />
           </Suggestions>
         </div>

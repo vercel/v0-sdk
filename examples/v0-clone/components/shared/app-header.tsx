@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChatSelector } from './chat-selector'
@@ -7,6 +8,14 @@ import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
 import { Button } from '@/components/ui/button'
 import { VercelIcon, GitHubIcon } from '@/components/ui/icons'
+import { Info } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface AppHeaderProps {
   className?: string
@@ -16,6 +25,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const isHomepage = pathname === '/'
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
 
   // Handle logo click - reset UI if on homepage, otherwise navigate to homepage
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -43,8 +53,16 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             <ChatSelector />
           </div>
 
-          {/* Right side - GitHub, Deploy, and User */}
+          {/* Right side - What's This, GitHub, Deploy, and User */}
           <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              className="py-1.5 px-2 h-fit text-sm"
+              onClick={() => setIsInfoDialogOpen(true)}
+            >
+              <Info size={16} />
+              What's This?
+            </Button>
             <Button
               variant="outline"
               className="py-1.5 px-2 h-fit text-sm"
@@ -56,7 +74,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 rel="noopener noreferrer"
               >
                 <GitHubIcon size={16} />
-                <span className="ml-2">vercel/v0-sdk</span>
+                vercel/v0-sdk
               </Link>
             </Button>
 
@@ -78,6 +96,92 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
           </div>
         </div>
       </div>
+
+      {/* Info Dialog */}
+      <Dialog open={isInfoDialogOpen} onOpenChange={setIsInfoDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold mb-4">
+              v0 Clone Platform
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+            <p>
+              This is a <strong>demo</strong> of an end-to-end coding platform
+              where the user can enter text prompts, and the agent will create a
+              full stack application.
+            </p>
+            <p>
+              It uses Vercel's AI Cloud services like{' '}
+              <a
+                href="https://vercel.com/docs/functions/ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Sandbox
+              </a>{' '}
+              for secure code execution,{' '}
+              <a
+                href="https://vercel.com/docs/ai/ai-gateway"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                AI Gateway
+              </a>{' '}
+              for GPT-5 and other models support,{' '}
+              <a
+                href="https://vercel.com/docs/functions/streaming"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Fluid Compute
+              </a>{' '}
+              for efficient rendering and streaming, and it's built with{' '}
+              <a
+                href="https://nextjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                Next.js
+              </a>{' '}
+              and the{' '}
+              <a
+                href="https://v0-sdk.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                v0 SDK
+              </a>
+              .
+            </p>
+            <p>
+              Try the demo or{' '}
+              <a
+                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fv0.dev&root-directory=examples%2Fv0-clone"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                deploy your own
+              </a>
+              .
+            </p>
+          </div>
+          <div className="flex justify-end mt-6">
+            <Button
+              onClick={() => setIsInfoDialogOpen(false)}
+              className="bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900"
+            >
+              Try now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
