@@ -25,6 +25,7 @@
     "build": "bunchee",
     "clean": "rm -rf dist *.tsbuildinfo",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "echo 'No linting configured for ai-tools package'",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -27,6 +27,7 @@
     "clean": "rm -rf dist *.tsbuildinfo",
     "sdk:generate": "tsx src/scripts/generate.ts && pnpm format",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "echo 'No linting configured for v0-sdk package'",
     "test": "vitest run",
     "test:watch": "vitest"
   },

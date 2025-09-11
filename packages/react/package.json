@@ -25,7 +25,8 @@
     "type-check": "tsc --noEmit",
     "build": "bunchee",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "echo 'No linting configured for react package'"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"

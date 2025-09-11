@@ -26,7 +26,8 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "echo 'No linting configured for create-v0-sdk-app package'"
   },
   "dependencies": {
     "commander": "^12.1.0",
