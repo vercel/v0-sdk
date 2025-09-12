@@ -25,6 +25,7 @@ export function AuthForm({ type }: AuthFormProps) {
           type="email"
           placeholder="Email"
           required
+          autoFocus
           className="w-full"
         />
       </div>

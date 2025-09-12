@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ChatSelector } from './chat-selector'
 import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
@@ -19,6 +19,29 @@ import {
 
 interface AppHeaderProps {
   className?: string
+}
+
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function SearchParamsHandler() {
+  const searchParams = useSearchParams()
+  const { update } = useSession()
+
+  // Force session refresh when redirected after auth
+  useEffect(() => {
+    const shouldRefresh = searchParams.get('refresh') === 'session'
+
+    if (shouldRefresh) {
+      // Force session update
+      update()
+
+      // Clean up URL without causing navigation
+      const url = new URL(window.location.href)
+      url.searchParams.delete('refresh')
+      window.history.replaceState({}, '', url.pathname)
+    }
+  }, [searchParams, update])
+
+  return null
 }
 
 export function AppHeader({ className = '' }: AppHeaderProps) {
@@ -39,6 +62,11 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
 
   return (
     <div className={`border-b border-border dark:border-input ${className}`}>
+      {/* Handle search params with Suspense boundary */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
+
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left side - Logo and Selector */}
@@ -84,7 +112,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
               asChild
             >
               <Link
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fv0.dev&root-directory=examples%2Fv0-clone"
+                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fclone-demo.v0-sdk.dev&root-directory=examples%2Fv0-clone"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -92,7 +120,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 Deploy with Vercel
               </Link>
             </Button>
-            {session && <UserNav session={session} />}
+            <UserNav session={session} />
           </div>
         </div>
       </div>
@@ -107,39 +135,20 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
           </DialogHeader>
           <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
             <p>
-              This is a <strong>demo</strong> of an end-to-end coding platform
-              where the user can enter text prompts, and the agent will create a
-              full stack application.
+              This is a <strong>demo</strong> of a{' '}
+              <a
+                href="https://v0.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                v0 clone
+              </a>{' '}
+              where users can enter text prompts and generate React components
+              and applications using AI.
             </p>
             <p>
-              It uses Vercel's AI Cloud services like{' '}
-              <a
-                href="https://vercel.com/docs/functions/ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Sandbox
-              </a>{' '}
-              for secure code execution,{' '}
-              <a
-                href="https://vercel.com/docs/ai/ai-gateway"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                AI Gateway
-              </a>{' '}
-              for GPT-5 and other models support,{' '}
-              <a
-                href="https://vercel.com/docs/functions/streaming"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Fluid Compute
-              </a>{' '}
-              for efficient rendering and streaming, and it's built with{' '}
+              It's built with{' '}
               <a
                 href="https://nextjs.org"
                 target="_blank"
@@ -156,13 +165,14 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
               >
                 v0 SDK
-              </a>
-              .
+              </a>{' '}
+              to provide a full-featured interface with authentication, database
+              integration, and real-time streaming responses.
             </p>
             <p>
               Try the demo or{' '}
               <a
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fv0.dev&root-directory=examples%2Fv0-clone"
+                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fclone-demo.v0-sdk.dev&root-directory=examples%2Fv0-clone"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
