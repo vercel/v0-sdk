@@ -1,6 +1,6 @@
-# v0 Platform API Demo
+# Simple v0
 
-A Next.js application showcasing the v0 Platform API. Build AI-powered apps with real-time generation, project management, and seamless deployment to Vercel.
+The simplest way to use v0. Just prompt and see your app generated instantly - no chat management, no complexity. Build AI-powered apps with real-time generation and seamless deployment to Vercel.
 
 ![Screenshot](screenshot.png)
 

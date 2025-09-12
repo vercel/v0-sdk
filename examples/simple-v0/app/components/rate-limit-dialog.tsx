@@ -24,7 +24,7 @@ export default function RateLimitDialog({
   remaining = 0,
 }: RateLimitDialogProps) {
   const deployUrl =
-    'https://vercel.com/new/clone?demo-description=A%20Next.js%20application%20demonstrating%20the%20v0%20Platform%20API&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=v0%20Platform%20API%20Demo&demo-url=https%3A%2F%2Fv0-centered-text-om.vercel.sh%2F&from=templates&project-name=v0%20Platform%20API%20Demo&repository-name=v0-platform-api-demo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-platform-api-demo&skippable-integrations=1'
+    'https://vercel.com/new/clone?demo-description=The%20simplest%20way%20to%20use%20v0%20-%20just%20prompt%20and%20see%20your%20app&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=Simple%20v0&demo-url=https%3A%2F%2Fv0-centered-text-om.vercel.sh%2F&from=templates&project-name=Simple%20v0&repository-name=simple-v0&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fsimple-v0&skippable-integrations=1'
 
   const formatResetTime = (timeStr?: string) => {
     if (!timeStr) return ''

@@ -15,17 +15,17 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'v0 Platform API Demo',
-  description: 'A demo of the v0 Platform API',
+  title: 'Simple v0',
+  description: 'The simplest way to use v0 - just prompt and see your app',
   openGraph: {
-    title: 'v0 Platform API Demo',
-    description: 'A demo of the v0 Platform API',
+    title: 'Simple v0',
+    description: 'The simplest way to use v0 - just prompt and see your app',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'v0 Platform API Demo',
-    description: 'A demo of the v0 Platform API',
+    title: 'Simple v0',
+    description: 'The simplest way to use v0 - just prompt and see your app',
     images: ['/og-image.png'],
   },
 }

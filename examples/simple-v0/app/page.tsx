@@ -218,7 +218,7 @@ export default function HomePage() {
           style={{ transform: 'translateY(-25%)' }}
         >
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4 text-pretty">
-            v0 Platform API Demo
+            Simple v0
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty">
             This is a demo of the{' '}
@@ -237,7 +237,7 @@ export default function HomePage() {
           {/* Mobile-only GitHub link */}
           <div className="sm:hidden mt-6 flex items-center justify-center">
             <a
-              href="https://github.com/vercel/v0-platform-api-demo"
+              href="https://github.com/vercel/simple-v0"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-muted hover:bg-muted/80 text-muted-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
