@@ -21,9 +21,10 @@ export default function RateLimitDialog({
   isOpen,
   onClose,
   resetTime,
-  remaining = 0
+  remaining = 0,
 }: RateLimitDialogProps) {
-  const deployUrl = "https://vercel.com/new/clone?demo-description=A%20Next.js%20application%20demonstrating%20the%20v0%20Platform%20API&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=v0%20Platform%20API%20Demo&demo-url=https%3A%2F%2Fv0-centered-text-om.vercel.sh%2F&from=templates&project-name=v0%20Platform%20API%20Demo&repository-name=v0-platform-api-demo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-platform-api-demo&skippable-integrations=1"
+  const deployUrl =
+    'https://vercel.com/new/clone?demo-description=A%20Next.js%20application%20demonstrating%20the%20v0%20Platform%20API&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=v0%20Platform%20API%20Demo&demo-url=https%3A%2F%2Fv0-centered-text-om.vercel.sh%2F&from=templates&project-name=v0%20Platform%20API%20Demo&repository-name=v0-platform-api-demo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-platform-api-demo&skippable-integrations=1'
 
   const formatResetTime = (timeStr?: string) => {
     if (!timeStr) return ''
@@ -39,15 +40,18 @@ export default function RateLimitDialog({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Rate Limit Reached
-          </AlertDialogTitle>
+          <AlertDialogTitle>Rate Limit Reached</AlertDialogTitle>
           <AlertDialogDescription className="text-left">
-            You've reached the rate limit. Deploy your own copy of this demo to continue.
+            You've reached the rate limit. Deploy your own copy of this demo to
+            continue.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="w-full sm:w-auto"
+          >
             Close
           </Button>
           <Button asChild className="w-full sm:w-auto">
@@ -67,4 +71,4 @@ export default function RateLimitDialog({
       </AlertDialogContent>
     </AlertDialog>
   )
-} 
+}

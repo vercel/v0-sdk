@@ -1,24 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v0 } from 'v0-sdk'
-import { getUserIP, getUserProjects, associateProjectWithIP } from '@/lib/rate-limiter'
+import {
+  getUserIP,
+  getUserProjects,
+  associateProjectWithIP,
+} from '@/lib/rate-limiter'
 
 export async function GET(request: NextRequest) {
   try {
     // Get user's IP
     const userIP = getUserIP(request)
-    
+
     // Get all projects from v0
     const response = await v0.projects.find()
     const allProjects = response.data || response || []
-    
+
     // Get user's project IDs from Redis
     const userProjectIds = await getUserProjects(userIP)
-    
+
     // Filter projects to only include those owned by this user
-    const userProjects = allProjects.filter((project: any) => 
-      userProjectIds.includes(project.id)
+    const userProjects = allProjects.filter((project: any) =>
+      userProjectIds.includes(project.id),
     )
-    
+
     return NextResponse.json({ data: userProjects })
   } catch (error) {
     // Check if it's an API key error

@@ -166,10 +166,13 @@ export default function HomePage() {
         }
 
         // Check for rate limit error
-        if (response.status === 429 && errorData.error === 'RATE_LIMIT_EXCEEDED') {
+        if (
+          response.status === 429 &&
+          errorData.error === 'RATE_LIMIT_EXCEEDED'
+        ) {
           setRateLimitInfo({
             resetTime: errorData.resetTime,
-            remaining: errorData.remaining
+            remaining: errorData.remaining,
           })
           setShowRateLimitDialog(true)
           return

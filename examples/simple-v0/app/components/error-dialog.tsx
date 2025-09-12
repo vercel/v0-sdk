@@ -20,26 +20,22 @@ interface ErrorDialogProps {
 export default function ErrorDialog({
   isOpen,
   onClose,
-  title = "Error",
-  message
+  title = 'Error',
+  message,
 }: ErrorDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {title}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription className="text-left">
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button onClick={onClose}>
-            Close
-          </Button>
+          <Button onClick={onClose}>Close</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
-} 
+}

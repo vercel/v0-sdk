@@ -7,24 +7,27 @@ A Next.js application showcasing the v0 Platform API. Build AI-powered apps with
 ## Setup
 
 1. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 2. **Configure environment:**
    Create a `.env.local` file in the root directory:
+
    ```env
    V0_API_KEY=your_api_key_here
-   
+
    # Optional: For rate limiting (if not provided, rate limiting is disabled)
    KV_REST_API_URL=your_kv_rest_api_url
    KV_REST_API_TOKEN=your_kv_rest_api_token
    ```
-   
+
    - Get your v0 API key from [v0.dev/settings](https://v0.dev/settings)
    - Optionally get your Upstash Redis credentials from [upstash.com](https://upstash.com) for rate limiting
 
 3. **Run development server:**
+
    ```bash
    pnpm dev
    ```
@@ -106,11 +109,11 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `V0_API_KEY` | Yes | Your v0 Platform API key from [v0.dev/settings](https://v0.dev/settings) |
-| `KV_REST_API_URL` | No | Upstash Redis REST URL for rate limiting (if not provided, rate limiting is disabled) |
-| `KV_REST_API_TOKEN` | No | Upstash Redis REST token for rate limiting (if not provided, rate limiting is disabled) |
+| Variable            | Required | Description                                                                             |
+| ------------------- | -------- | --------------------------------------------------------------------------------------- |
+| `V0_API_KEY`        | Yes      | Your v0 Platform API key from [v0.dev/settings](https://v0.dev/settings)                |
+| `KV_REST_API_URL`   | No       | Upstash Redis REST URL for rate limiting (if not provided, rate limiting is disabled)   |
+| `KV_REST_API_TOKEN` | No       | Upstash Redis REST token for rate limiting (if not provided, rate limiting is disabled) |
 
 ## Development Commands
 
