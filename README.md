@@ -8,23 +8,40 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 
 - [`v0-sdk`](./packages/v0-sdk) - TypeScript SDK for the v0 Platform API
 - [`@v0-sdk/react`](./packages/react) - React components for rendering v0 Platform API content
+- [`@v0-sdk/ai-tools`](./packages/ai-tools) - AI SDK tools for the v0 Platform API
+- [`create-v0-sdk-app`](./packages/create-v0-sdk-app) - Create v0 SDK-powered apps with one command
 
 ## Examples
 
+- [`simple-v0`](./examples/simple-v0) - The simplest way to use v0. Just prompt and see your app generated instantly
 - [`classic-v0`](./examples/classic-v0) - Classic v0 interface clone with clean, minimalist design
-- [`v0-clone`](./examples/v0-clone) - Example v0 clone using AI Elements
-- [`v0-sdk-react-example`](./examples/v0-sdk-react-example) - Next.js example demonstrating @v0-sdk/react usage
+- [`v0-clone`](./examples/v0-clone) - Full-featured v0 clone with authentication, database, and AI Elements
+- [`v0-sdk-react-example`](./examples/v0-sdk-react-example) - Next.js example demonstrating @v0-sdk/react usage with multiple UI themes
+- [`ai-tools-example`](./examples/ai-tools-example) - Demonstrates @v0-sdk/ai-tools integration with AI SDK for advanced agent patterns
 
 ## Quick Start
 
-### Installation
+### Option 1: Create a New App (Recommended)
+
+The fastest way to get started is with `create-v0-sdk-app`:
 
 ```bash
+pnpm create v0-sdk-app@latest my-v0-app
+# or
+npx create-v0-sdk-app@latest my-v0-app
+cd my-v0-app
+```
+
+This will create a new project with everything set up and ready to go.
+
+### Option 2: Manual Installation
+
+```bash
+pnpm add v0-sdk
+# or
 npm install v0-sdk
 # or
 yarn add v0-sdk
-# or
-pnpm add v0-sdk
 ```
 
 ### Usage
