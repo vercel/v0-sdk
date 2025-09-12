@@ -77,6 +77,7 @@ export type ChatDetail = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    parentId?: string | null
   }>
   files?: {
     lang: string
@@ -87,9 +88,13 @@ export type ChatDetail = {
   demo?: string
   text: string
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    /** @deprecated */
+    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
+  }
+  permissions: {
+    write: boolean
   }
 }
 
@@ -334,6 +339,7 @@ export type MessageDetail = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  parentId?: string | null
   chatId: string
 }
 
@@ -380,6 +386,7 @@ export type MessageSummary = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  parentId?: string | null
 }
 
 export type MessageSummaryList = {
@@ -427,6 +434,7 @@ export type MessageSummaryList = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    parentId?: string | null
   }>
   pagination: {
     hasMore: boolean
@@ -602,7 +610,8 @@ export interface ChatsCreateRequest {
   chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
   projectId?: string
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    /** @deprecated */
+    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -743,7 +752,8 @@ export interface ChatsSendMessageRequest {
     url: string
   }[]
   modelConfiguration?: {
-    modelId: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    /** @deprecated */
+    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
     imageGenerations?: boolean
     thinking?: boolean
   }
