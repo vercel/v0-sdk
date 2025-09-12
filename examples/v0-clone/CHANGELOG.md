@@ -1,5 +1,13 @@
 # v0-clone
 
+## 0.1.3
+
+### Patch Changes
+
+- 87e124b: fix unknown task parts
+- Updated dependencies [87e124b]
+  - @v0-sdk/react@0.3.1
+
 ## 0.1.2
 
 ### Patch Changes
