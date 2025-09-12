@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -28,6 +28,26 @@ import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
 import { ResizableLayout } from '@/components/shared/resizable-layout'
 
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function SearchParamsHandler({ onReset }: { onReset: () => void }) {
+  const searchParams = useSearchParams()
+
+  // Reset UI when reset parameter is present
+  useEffect(() => {
+    const reset = searchParams.get('reset')
+    if (reset === 'true') {
+      onReset()
+
+      // Remove the reset parameter from URL without triggering navigation
+      const newUrl = new URL(window.location.href)
+      newUrl.searchParams.delete('reset')
+      window.history.replaceState({}, '', newUrl.pathname)
+    }
+  }, [searchParams, onReset])
+
+  return null
+}
+
 export function HomeClient() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -43,43 +63,38 @@ export function HomeClient() {
     }>
   >([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
+  const [currentChat, setCurrentChat] = useState<{
+    id: string
+    demo?: string
+  } | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
-  const searchParams = useSearchParams()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { startHandoff } = useStreaming()
 
-  // Reset UI when reset parameter is present
-  useEffect(() => {
-    const reset = searchParams.get('reset')
-    if (reset === 'true') {
-      // Reset all chat-related state
-      setShowChatInterface(false)
-      setChatHistory([])
-      setCurrentChatId(null)
-      setMessage('')
-      setAttachments([])
-      setIsLoading(false)
-      setIsFullscreen(false)
-      setRefreshKey((prev) => prev + 1)
+  const handleReset = () => {
+    // Reset all chat-related state
+    setShowChatInterface(false)
+    setChatHistory([])
+    setCurrentChatId(null)
+    setCurrentChat(null)
+    setMessage('')
+    setAttachments([])
+    setIsLoading(false)
+    setIsFullscreen(false)
+    setRefreshKey((prev) => prev + 1)
 
-      // Clear any stored data
-      clearPromptFromStorage()
+    // Clear any stored data
+    clearPromptFromStorage()
 
-      // Remove the reset parameter from URL without triggering navigation
-      const newUrl = new URL(window.location.href)
-      newUrl.searchParams.delete('reset')
-      window.history.replaceState({}, '', newUrl.pathname)
-
-      // Focus textarea after reset
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus()
-        }
-      }, 0)
-    }
-  }, [searchParams])
+    // Focus textarea after reset
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 0)
+  }
 
   // Auto-focus the textarea on page load and restore from sessionStorage
   useEffect(() => {
@@ -87,18 +102,15 @@ export function HomeClient() {
       textareaRef.current.focus()
     }
 
-    // Restore prompt data from sessionStorage only if not resetting
-    const reset = searchParams.get('reset')
-    if (!reset) {
-      const storedData = loadPromptFromStorage()
-      if (storedData) {
-        setMessage(storedData.message)
-        if (storedData.attachments.length > 0) {
-          const restoredAttachments = storedData.attachments.map(
-            createImageAttachmentFromStored,
-          )
-          setAttachments(restoredAttachments)
-        }
+    // Restore prompt data from sessionStorage
+    const storedData = loadPromptFromStorage()
+    if (storedData) {
+      setMessage(storedData.message)
+      if (storedData.attachments.length > 0) {
+        const restoredAttachments = storedData.attachments.map(
+          createImageAttachmentFromStored,
+        )
+        setAttachments(restoredAttachments)
       }
     }
   }, [])
@@ -212,15 +224,15 @@ export function HomeClient() {
   }
 
   const handleChatData = async (chatData: any) => {
-    console.log('Received chat data:', chatData)
     if (chatData.id) {
-      console.log('Chat ID received:', chatData.id)
+      // Only set currentChat if it's not already set or if this is the main chat object
+      if (!currentChatId || chatData.object === 'chat') {
+        setCurrentChatId(chatData.id)
+        setCurrentChat({ id: chatData.id })
 
-      // Store the chat ID
-      setCurrentChatId(chatData.id)
-
-      // Update URL without triggering Next.js routing
-      window.history.pushState(null, '', `/chats/${chatData.id}`)
+        // Update URL without triggering Next.js routing
+        window.history.pushState(null, '', `/chats/${chatData.id}`)
+      }
 
       // Create ownership record for new chat (only if this is a new chat)
       if (!currentChatId) {
@@ -234,7 +246,6 @@ export function HomeClient() {
               chatId: chatData.id,
             }),
           })
-          console.log('Chat ownership created for:', chatData.id)
         } catch (error) {
           console.error('Failed to create chat ownership:', error)
           // Don't fail the UI if ownership creation fails
@@ -243,7 +254,7 @@ export function HomeClient() {
     }
   }
 
-  const handleStreamingComplete = (finalContent: any) => {
+  const handleStreamingComplete = async (finalContent: any) => {
     setIsLoading(false)
 
     // Update chat history with final content
@@ -259,6 +270,42 @@ export function HomeClient() {
         }
       }
       return updated
+    })
+
+    // Fetch demo URL after streaming completes
+    // Use the current state by accessing it in the state updater
+    setCurrentChat((prevCurrentChat) => {
+      if (prevCurrentChat?.id) {
+        // Fetch demo URL asynchronously
+        fetch(`/api/chats/${prevCurrentChat.id}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json()
+            } else {
+              console.warn('Failed to fetch chat details:', response.status)
+              return null
+            }
+          })
+          .then((chatDetails) => {
+            if (chatDetails) {
+              const demoUrl =
+                chatDetails?.latestVersion?.demoUrl || chatDetails?.demo
+
+              // Update the current chat with demo URL
+              if (demoUrl) {
+                setCurrentChat((prev) =>
+                  prev ? { ...prev, demo: demoUrl } : null,
+                )
+              }
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching demo URL:', error)
+          })
+      }
+
+      // Return the current state unchanged for now
+      return prevCurrentChat
     })
   }
 
@@ -323,6 +370,11 @@ export function HomeClient() {
   if (showChatInterface) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+        {/* Handle search params with Suspense boundary */}
+        <Suspense fallback={null}>
+          <SearchParamsHandler onReset={handleReset} />
+        </Suspense>
+
         <AppHeader />
 
         <ResizableLayout
@@ -332,7 +384,7 @@ export function HomeClient() {
               <ChatMessages
                 chatHistory={chatHistory}
                 isLoading={isLoading}
-                currentChat={currentChatId ? { id: currentChatId } : null}
+                currentChat={currentChat}
                 onStreamingComplete={handleStreamingComplete}
                 onChatData={handleChatData}
                 onStreamingStarted={() => setIsLoading(false)}
@@ -349,7 +401,7 @@ export function HomeClient() {
           }
           rightPanel={
             <PreviewPanel
-              currentChat={currentChatId ? { id: currentChatId } : null}
+              currentChat={currentChat}
               isFullscreen={isFullscreen}
               setIsFullscreen={setIsFullscreen}
               refreshKey={refreshKey}
@@ -385,6 +437,11 @@ export function HomeClient() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+      {/* Handle search params with Suspense boundary */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler onReset={handleReset} />
+      </Suspense>
+
       <AppHeader />
 
       {/* Main Content */}

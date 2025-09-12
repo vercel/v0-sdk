@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ChatSelector } from './chat-selector'
@@ -21,12 +21,10 @@ interface AppHeaderProps {
   className?: string
 }
 
-export function AppHeader({ className = '' }: AppHeaderProps) {
-  const pathname = usePathname()
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function SearchParamsHandler() {
   const searchParams = useSearchParams()
-  const { data: session, update } = useSession()
-  const isHomepage = pathname === '/'
-  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
+  const { update } = useSession()
 
   // Force session refresh when redirected after auth
   useEffect(() => {
@@ -43,6 +41,15 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
     }
   }, [searchParams, update])
 
+  return null
+}
+
+export function AppHeader({ className = '' }: AppHeaderProps) {
+  const pathname = usePathname()
+  const { data: session } = useSession()
+  const isHomepage = pathname === '/'
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
+
   // Handle logo click - reset UI if on homepage, otherwise navigate to homepage
   const handleLogoClick = (e: React.MouseEvent) => {
     if (isHomepage) {
@@ -55,6 +62,11 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
 
   return (
     <div className={`border-b border-border dark:border-input ${className}`}>
+      {/* Handle search params with Suspense boundary */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
+
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left side - Logo and Selector */}

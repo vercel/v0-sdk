@@ -166,14 +166,11 @@ export function useChat(chatId: string) {
     // Always try to fetch updated chat details after streaming completes
     // This ensures we get the latest demoUrl even for existing chats
     try {
-      console.log('Fetching updated chat details after streaming...')
       const response = await fetch(`/api/chats/${chatId}`)
       if (response.ok) {
         const chatDetails = await response.json()
-        console.log('Updated chat details:', chatDetails)
 
         const demoUrl = chatDetails?.latestVersion?.demoUrl || chatDetails?.demo
-        console.log('Updated demo URL:', demoUrl)
 
         // Update SWR cache with the latest chat data
         mutate(
@@ -304,57 +301,18 @@ export function useChat(chatId: string) {
   }
 
   const handleChatData = async (chatData: any) => {
-    console.log('Received chat data from first SSE message:', chatData)
     if (chatData.id && !currentChat) {
-      console.log('Fetching full chat details for demo URL...')
-
-      try {
-        // Fetch the full chat details to get the demo URL
-        const response = await fetch(`/api/chats/${chatData.id}`)
-        if (response.ok) {
-          const chatDetails = await response.json()
-          console.log('Chat details from onChatData:', chatDetails)
-
-          const demoUrl =
-            chatDetails?.latestVersion?.demoUrl || chatDetails?.demo
-          console.log('Demo URL from chat details:', demoUrl)
-
-          // Update SWR cache with new chat data
-          mutate(
-            `/api/chats/${chatData.id}`,
-            {
-              id: chatData.id,
-              url: chatData.webUrl || chatData.url,
-              demo: demoUrl || `Generated Chat ${chatData.id}`,
-            },
-            false,
-          )
-        } else {
-          console.warn('Failed to fetch chat details:', response.status)
-          // Update SWR cache with new chat data
-          mutate(
-            `/api/chats/${chatData.id}`,
-            {
-              id: chatData.id,
-              url: chatData.webUrl || chatData.url,
-              demo: `Generated Chat ${chatData.id}`,
-            },
-            false,
-          )
-        }
-      } catch (error) {
-        console.error('Error fetching chat details in onChatData:', error)
-        // Update SWR cache with new chat data
-        mutate(
-          `/api/chats/${chatData.id}`,
-          {
-            id: chatData.id,
-            url: chatData.webUrl || chatData.url,
-            demo: `Generated Chat ${chatData.id}`,
-          },
-          false,
-        )
-      }
+      // Only update with basic chat data, without demo URL
+      // The demo URL will be fetched in handleStreamingComplete
+      mutate(
+        `/api/chats/${chatData.id}`,
+        {
+          id: chatData.id,
+          url: chatData.webUrl || chatData.url,
+          // Don't set demo URL here - wait for streaming to complete
+        },
+        false,
+      )
     }
   }
 
