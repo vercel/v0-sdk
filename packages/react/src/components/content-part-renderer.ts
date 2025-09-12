@@ -120,14 +120,22 @@ export function useContentPart(part: any): ContentPartData {
 
     case 'task-generate-design-inspiration-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Generating Design Inspiration'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Generating Design Inspiration'
       iconName = 'wrench'
       break
 
     // Handle any other task-*-v1 patterns that might be added in the future
     default:
       // Check if it's a task type we haven't explicitly handled yet
-      if (type && typeof type === 'string' && type.startsWith('task-') && type.endsWith('-v1')) {
+      if (
+        type &&
+        typeof type === 'string' &&
+        type.startsWith('task-') &&
+        type.endsWith('-v1')
+      ) {
         componentType = 'task'
         // Generate a readable title from the task type
         const taskName = type

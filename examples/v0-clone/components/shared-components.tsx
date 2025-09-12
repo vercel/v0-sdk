@@ -168,22 +168,35 @@ export const TaskSectionWrapper = ({
               // Handle design inspiration task parts
               if (partObj.type === 'generating-design-inspiration') {
                 return (
-                  <TaskItem key={index}>Generating design inspiration...</TaskItem>
+                  <TaskItem key={index}>
+                    Generating design inspiration...
+                  </TaskItem>
                 )
               }
 
-              if (partObj.type === 'design-inspiration-complete' && partObj.inspirations) {
+              if (
+                partObj.type === 'design-inspiration-complete' &&
+                partObj.inspirations
+              ) {
                 return (
                   <TaskItem key={index}>
                     <div className="space-y-2">
                       <div className="text-gray-700 dark:text-gray-300 text-sm">
-                        Generated {partObj.inspirations.length} design inspirations
+                        Generated {partObj.inspirations.length} design
+                        inspirations
                       </div>
-                      {partObj.inspirations.slice(0, 3).map((inspiration: any, i: number) => (
-                        <div key={i} className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                          {inspiration.title || inspiration.description || `Inspiration ${i + 1}`}
-                        </div>
-                      ))}
+                      {partObj.inspirations
+                        .slice(0, 3)
+                        .map((inspiration: any, i: number) => (
+                          <div
+                            key={i}
+                            className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 p-2 rounded"
+                          >
+                            {inspiration.title ||
+                              inspiration.description ||
+                              `Inspiration ${i + 1}`}
+                          </div>
+                        ))}
                     </div>
                   </TaskItem>
                 )
@@ -196,11 +209,15 @@ export const TaskSectionWrapper = ({
                 )
               }
 
-              if (partObj.type === 'requirements-complete' && partObj.requirements) {
+              if (
+                partObj.type === 'requirements-complete' &&
+                partObj.requirements
+              ) {
                 return (
                   <TaskItem key={index}>
                     <div className="text-gray-700 dark:text-gray-300 text-sm">
-                      Analyzed {partObj.requirements.length || 'several'} requirements
+                      Analyzed {partObj.requirements.length || 'several'}{' '}
+                      requirements
                     </div>
                   </TaskItem>
                 )
@@ -252,8 +269,9 @@ export const TaskSectionWrapper = ({
               // Try to extract meaningful information from unknown task parts
               const taskType = partObj.type || 'unknown'
               const status = partObj.status
-              const message = partObj.message || partObj.description || partObj.text
-              
+              const message =
+                partObj.message || partObj.description || partObj.text
+
               if (message) {
                 return (
                   <TaskItem key={index}>
@@ -440,7 +458,11 @@ const CustomTaskSectionWrapper = (props: any) => {
   }
 
   // Handle other potential new task types
-  if (props.type && props.type.startsWith('task-') && props.type.endsWith('-v1')) {
+  if (
+    props.type &&
+    props.type.startsWith('task-') &&
+    props.type.endsWith('-v1')
+  ) {
     // Extract a readable title from the task type
     const taskName = props.type
       .replace('task-', '')
@@ -448,11 +470,16 @@ const CustomTaskSectionWrapper = (props: any) => {
       .split('-')
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ')
-    
+
     return (
       <TaskSectionWrapper
         {...props}
-        title={props.title || props.taskNameComplete || props.taskNameActive || taskName}
+        title={
+          props.title ||
+          props.taskNameComplete ||
+          props.taskNameActive ||
+          taskName
+        }
       />
     )
   }
