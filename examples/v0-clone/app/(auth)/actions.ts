@@ -124,9 +124,3 @@ export async function signUpAction(
     throw error
   }
 }
-
-export async function signOutAction() {
-  await signOut({ redirect: false })
-  revalidatePath('/')
-  redirect('/')
-}
