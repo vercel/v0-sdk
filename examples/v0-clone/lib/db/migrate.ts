@@ -2,10 +2,6 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import postgres from 'postgres'
 
-// Load environment variables
-import { config } from 'dotenv'
-config()
-
 const runMigrate = async () => {
   if (!process.env.POSTGRES_URL) {
     console.log('POSTGRES_URL is not defined, skipping migrations')
