@@ -36,9 +36,9 @@ const onPromptState = (state: {
 
 const examples: { name: ExampleType; description: string }[] = [
   {
-    name: 'ai-tools-example',
+    name: 'v0-clone',
     description:
-      'Node.js example using @v0-sdk/ai-tools with AI SDK + AI Gateway',
+      'Next.js app that replicates the v0.dev interface (Recommended)',
   },
   {
     name: 'classic-v0',
@@ -46,12 +46,13 @@ const examples: { name: ExampleType; description: string }[] = [
       'Full-featured Next.js app similar to the original v0.dev released in 2023',
   },
   {
-    name: 'v0-clone',
-    description: 'Next.js app that replicates the v0.dev interface',
-  },
-  {
     name: 'v0-sdk-react-example',
     description: 'Next.js example using @v0-sdk/react components',
+  },
+  {
+    name: 'ai-tools-example',
+    description:
+      'Node.js example using @v0-sdk/ai-tools with AI SDK + AI Gateway',
   },
 ]
 
@@ -73,12 +74,12 @@ const program = new Command(packageJson.name)
 `,
   )
   .option(
-    '--use-npm',
-    'Explicitly tell the CLI to bootstrap the application using npm.',
+    '--use-pnpm',
+    'Explicitly tell the CLI to bootstrap the application using pnpm (recommended).',
   )
   .option(
-    '--use-pnpm',
-    'Explicitly tell the CLI to bootstrap the application using pnpm.',
+    '--use-npm',
+    'Explicitly tell the CLI to bootstrap the application using npm.',
   )
   .option(
     '--use-yarn',
@@ -102,10 +103,10 @@ const program = new Command(packageJson.name)
 
 const opts = program.opts()
 
-const packageManager: PackageManager = !!opts.useNpm
-  ? 'npm'
-  : !!opts.usePnpm
-    ? 'pnpm'
+const packageManager: PackageManager = !!opts.usePnpm
+  ? 'pnpm'
+  : !!opts.useNpm
+    ? 'npm'
     : !!opts.useYarn
       ? 'yarn'
       : !!opts.useBun
