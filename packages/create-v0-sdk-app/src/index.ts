@@ -41,6 +41,10 @@ const examples: { name: ExampleType; description: string }[] = [
       'Next.js app that replicates the v0.dev interface (Recommended)',
   },
   {
+    name: 'simple-v0',
+    description: 'The simplest way to use v0 - just prompt and see your app',
+  },
+  {
     name: 'classic-v0',
     description:
       'Full-featured Next.js app similar to the original v0.dev released in 2023',

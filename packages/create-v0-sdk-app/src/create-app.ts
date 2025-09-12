@@ -11,6 +11,7 @@ import { downloadAndExtractExample } from './helpers/download'
 export type ExampleType =
   | 'ai-tools-example'
   | 'classic-v0'
+  | 'simple-v0'
   | 'v0-clone'
   | 'v0-sdk-react-example'
 
