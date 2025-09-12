@@ -1,5 +1,11 @@
 # create-v0-sdk-app
 
+## 0.1.3
+
+### Patch Changes
+
+- 2d0775b: add simple-v0 example
+
 ## 0.1.2
 
 ### Patch Changes
