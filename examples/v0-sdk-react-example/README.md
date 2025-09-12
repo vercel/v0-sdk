@@ -86,6 +86,7 @@ function ChatMessage({ apiResponse }) {
 The example demonstrates all content types available in the v0 Platform API:
 
 ### Task Types (v1)
+
 1. **task-thinking-v1** - AI reasoning and thought processes
 2. **task-search-web-v1** - Web search operations with results and citations
 3. **task-search-repo-v1** - Repository/codebase search and file analysis
@@ -104,15 +105,17 @@ The example demonstrates all content types available in the v0 Platform API:
 16. **task-repaired-parser-content-v1** - Content parsing error recovery
 
 ### Non-Task Content Types
+
 17. **mdx** - Rich markdown content with interactive React components
 18. **parse-error** - Content parsing error information
 19. **launch-tasks** - Task launching metadata
 20. **turn-start** - Agent turn initialization events
-21. **turn-reset** - Agent turn reset events  
+21. **turn-reset** - Agent turn reset events
 22. **turn-finish** - Agent turn completion with statistics
 23. **agent-finish** - Agent session completion summary
 
 ### Traditional Content
+
 - **Markdown Text** - Paragraphs, headings, lists, links, emphasis
 - **Code Blocks** - Syntax-highlighted code with language detection
 - **Mathematical Expressions** - Both inline and block math using KaTeX

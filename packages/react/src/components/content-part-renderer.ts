@@ -120,49 +120,67 @@ export function useContentPart(part: any): ContentPartData {
 
     case 'task-run-shell-command-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Running command'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Running command'
       iconName = 'wrench'
       break
 
     case 'task-manage-todos-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Managing todos'
+      title =
+        metadata.taskNameComplete || metadata.taskNameActive || 'Managing todos'
       iconName = 'file-text'
       break
 
     case 'task-read-files-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Reading files'
+      title =
+        metadata.taskNameComplete || metadata.taskNameActive || 'Reading files'
       iconName = 'folder'
       break
 
     case 'task-fetch-from-web-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Fetching from web'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Fetching from web'
       iconName = 'search'
       break
 
     case 'task-inspect-site-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Inspecting site'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Inspecting site'
       iconName = 'search'
       break
 
     case 'task-generate-design-inspiration-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Generating design'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Generating design'
       iconName = 'wrench'
       break
 
     case 'task-get-or-request-integration-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Managing integration'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Managing integration'
       iconName = 'settings'
       break
 
     case 'task-stopped-v1':
       componentType = 'task'
-      title = metadata.taskNameComplete || metadata.taskNameActive || 'Task stopped'
+      title =
+        metadata.taskNameComplete || metadata.taskNameActive || 'Task stopped'
       iconName = 'settings'
       break
 

@@ -476,7 +476,8 @@ export default function WeatherComponent() {
                   {
                     type: 'finished-shell-command',
                     command: 'npm run build',
-                    stdout: '> my-app@1.0.0 build\n> next build\n\n   Creating an optimized production build ...\n✓ Compiled successfully\n',
+                    stdout:
+                      '> my-app@1.0.0 build\n> next build\n\n   Creating an optimized production build ...\n✓ Compiled successfully\n',
                     stderr: '',
                     exitCode: 0,
                     duration: 4.2,
@@ -708,7 +709,11 @@ export default function WeatherComponent() {
                   {
                     type: 'analyzing-design-brief',
                     brief: 'Modern dashboard for analytics platform',
-                    requirements: ['Clean layout', 'Data visualization', 'Mobile responsive'],
+                    requirements: [
+                      'Clean layout',
+                      'Data visualization',
+                      'Mobile responsive',
+                    ],
                   },
                   {
                     type: 'generating-color-palette',
@@ -853,16 +858,7 @@ export default function WeatherComponent() {
           ],
         ],
       ],
-      [
-        0,
-        [
-          [
-            'p',
-            {},
-            'Here are some examples of other content types:',
-          ],
-        ],
-      ],
+      [0, [['p', {}, 'Here are some examples of other content types:']]],
       [
         0,
         [
@@ -969,7 +965,8 @@ And create interactive elements that respond to user input.`,
               part: {
                 type: 'agent-finish',
                 id: 'agent-finish-1',
-                summary: 'Successfully demonstrated all v0 platform API task types',
+                summary:
+                  'Successfully demonstrated all v0 platform API task types',
                 totalDuration: 45.2,
                 tasksExecuted: 12,
                 tokensGenerated: 3456,

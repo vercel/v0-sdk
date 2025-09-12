@@ -154,82 +154,97 @@ function processTaskPart(part: any, index: number): TaskPartData {
     case 'command-output':
       return { ...baseData, content: part.output }
     case 'command-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Command completed (exit code: ${part.exitCode})` 
+        content: `✅ Command completed (exit code: ${part.exitCode})`,
       }
 
     // File operation parts
     case 'starting-read-files':
       return { ...baseData, content: `Reading ${part.files.length} files...` }
     case 'reading-file':
-      return { ...baseData, content: `Reading ${part.file} (${part.progress}/${part.total})` }
+      return {
+        ...baseData,
+        content: `Reading ${part.file} (${part.progress}/${part.total})`,
+      }
     case 'files-read-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Read ${part.filesRead} files (${part.totalLines} lines)` 
+        content: `✅ Read ${part.filesRead} files (${part.totalLines} lines)`,
       }
     case 'starting-file-read':
-      return { ...baseData, content: `Reading ${part.file}${part.searchPattern ? ` (searching: ${part.searchPattern})` : ''}` }
+      return {
+        ...baseData,
+        content: `Reading ${part.file}${part.searchPattern ? ` (searching: ${part.searchPattern})` : ''}`,
+      }
     case 'search-matches-found':
-      return { 
-        ...baseData, 
-        content: `Found ${part.matches.length} matches: ${part.matches.map((m: any) => `Line ${m.line}: ${m.text}`).join(', ')}` 
+      return {
+        ...baseData,
+        content: `Found ${part.matches.length} matches: ${part.matches.map((m: any) => `Line ${m.line}: ${m.text}`).join(', ')}`,
       }
     case 'file-read-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Read ${part.file} (${part.matchCount} matches)` 
+        content: `✅ Read ${part.file} (${part.matchCount} matches)`,
       }
 
     // Todo management parts
     case 'creating-todo-list':
       return { ...baseData, content: `Creating todo list: ${part.title}` }
     case 'adding-todo-item':
-      return { ...baseData, content: `Added: ${part.item.text} (${part.item.status})` }
+      return {
+        ...baseData,
+        content: `Added: ${part.item.text} (${part.item.status})`,
+      }
     case 'todo-list-updated':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Updated todo list: ${part.completedItems}/${part.totalItems} completed` 
+        content: `✅ Updated todo list: ${part.completedItems}/${part.totalItems} completed`,
       }
 
     // Coding parts
     case 'analyzing-requirements':
-      return { ...baseData, content: `Analyzing: ${part.requirements.join(', ')}` }
+      return {
+        ...baseData,
+        content: `Analyzing: ${part.requirements.join(', ')}`,
+      }
     case 'generating-code':
-      return { ...baseData, content: `Generating ${part.filename} (${Math.round(part.progress * 100)}%)` }
+      return {
+        ...baseData,
+        content: `Generating ${part.filename} (${Math.round(part.progress * 100)}%)`,
+      }
     case 'code-generation-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Generated ${part.filename} (${part.linesGenerated} lines)` 
+        content: `✅ Generated ${part.filename} (${part.linesGenerated} lines)`,
       }
     case 'running-linter':
       return { ...baseData, content: `Running ${part.tool}...` }
     case 'linting-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Linting complete: ${part.issues} issues, ${part.warnings} warnings` 
+        content: `✅ Linting complete: ${part.issues} issues, ${part.warnings} warnings`,
       }
 
     // Web fetch parts
     case 'starting-web-fetch':
       return { ...baseData, content: `Fetching ${part.url}` }
     case 'web-fetch-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Fetched ${part.dataSize} bytes (${part.statusCode})` 
+        content: `✅ Fetched ${part.dataSize} bytes (${part.statusCode})`,
       }
     case 'response-parsed':
-      return { 
-        ...baseData, 
-        content: `Parsed response: ${part.fields.join(', ')}` 
+      return {
+        ...baseData,
+        content: `Parsed response: ${part.fields.join(', ')}`,
       }
 
     // Site inspection parts
@@ -238,64 +253,73 @@ function processTaskPart(part: any, index: number): TaskPartData {
     case 'page-loaded':
       return { ...baseData, content: `✅ Page loaded in ${part.loadTime}s` }
     case 'screenshot-captured':
-      return { 
-        ...baseData, 
-        content: `📸 Screenshot captured: ${part.dimensions.width}x${part.dimensions.height}` 
+      return {
+        ...baseData,
+        content: `📸 Screenshot captured: ${part.dimensions.width}x${part.dimensions.height}`,
       }
     case 'inspection-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Inspection complete: Accessibility ${part.accessibility.score}/100` 
+        content: `✅ Inspection complete: Accessibility ${part.accessibility.score}/100`,
       }
 
     // Design inspiration parts
     case 'analyzing-design-brief':
       return { ...baseData, content: `Analyzing: ${part.brief}` }
     case 'generating-color-palette':
-      return { ...baseData, content: `Generated ${part.palettes.length} color palettes` }
+      return {
+        ...baseData,
+        content: `Generated ${part.palettes.length} color palettes`,
+      }
     case 'design-inspiration-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Created ${part.totalVariations} design variations` 
+        content: `✅ Created ${part.totalVariations} design variations`,
       }
 
     // Integration parts
     case 'checking-existing-integrations':
-      return { ...baseData, content: `Found integrations: ${part.integrations.join(', ')}` }
+      return {
+        ...baseData,
+        content: `Found integrations: ${part.integrations.join(', ')}`,
+      }
     case 'integration-authorized':
       return { ...baseData, content: `✅ ${part.service} authorized` }
     case 'environment-updated':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Updated ${part.variablesSet} environment variables` 
+        content: `✅ Updated ${part.variablesSet} environment variables`,
       }
     case 'integration-test-complete':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ ${part.service} test ${part.success ? 'passed' : 'failed'} (${part.responseTime}s)` 
+        content: `✅ ${part.service} test ${part.success ? 'passed' : 'failed'} (${part.responseTime}s)`,
       }
 
     // Task stopped parts
     case 'task-interruption':
-      return { ...baseData, content: `⚠️ Task interrupted: ${part.reason} after ${part.timeElapsed}s` }
+      return {
+        ...baseData,
+        content: `⚠️ Task interrupted: ${part.reason} after ${part.timeElapsed}s`,
+      }
     case 'task-stopped':
-      return { 
-        ...baseData, 
-        content: `🛑 Task stopped: ${part.reason}${part.partialResults ? ' (partial results available)' : ''}` 
+      return {
+        ...baseData,
+        content: `🛑 Task stopped: ${part.reason}${part.partialResults ? ' (partial results available)' : ''}`,
       }
 
     // Parser repair parts
     case 'parser-error-detected':
       return { ...baseData, content: `❌ Parse error: ${part.error}` }
     case 'repair-successful':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: `✅ Content repaired (confidence: ${Math.round(part.confidence * 100)}%)` 
+        content: `✅ Content repaired (confidence: ${Math.round(part.confidence * 100)}%)`,
       }
 
     // Existing task parts (keep existing logic)
@@ -308,16 +332,16 @@ function processTaskPart(part: any, index: number): TaskPartData {
     case 'got-results':
       return { ...baseData, content: `Found ${part.count} results` }
     case 'finished-web-search':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: part.answer 
+        content: part.answer,
       }
     case 'diagnostics-passed':
-      return { 
-        ...baseData, 
+      return {
+        ...baseData,
         isComplete: true,
-        content: '✅ No issues found' 
+        content: '✅ No issues found',
       }
     case 'fetching-diagnostics':
       return { ...baseData, content: 'Checking for issues...' }
@@ -423,7 +447,7 @@ export function useTaskSection({
         (part.status === 'complete' && part.answer)
       )
     }
-    
+
     // Existing task parts
     if (part.type === 'starting-repo-search' && part.query) return true
     if (part.type === 'select-files' && part.filePaths?.length > 0) return true
@@ -432,12 +456,12 @@ export function useTaskSection({
     if (part.type === 'finished-web-search' && part.answer) return true
     if (part.type === 'diagnostics-passed') return true
     if (part.type === 'fetching-diagnostics') return true
-    
+
     // New task parts - shell commands
     if (part.type === 'starting-shell-command') return true
     if (part.type === 'command-output') return true
     if (part.type === 'command-complete') return true
-    
+
     // New task parts - file operations
     if (part.type === 'starting-read-files') return true
     if (part.type === 'reading-file') return true
@@ -445,49 +469,49 @@ export function useTaskSection({
     if (part.type === 'starting-file-read') return true
     if (part.type === 'search-matches-found') return true
     if (part.type === 'file-read-complete') return true
-    
+
     // New task parts - todo management
     if (part.type === 'creating-todo-list') return true
     if (part.type === 'adding-todo-item') return true
     if (part.type === 'todo-list-updated') return true
-    
+
     // New task parts - coding
     if (part.type === 'analyzing-requirements') return true
     if (part.type === 'generating-code') return true
     if (part.type === 'code-generation-complete') return true
     if (part.type === 'running-linter') return true
     if (part.type === 'linting-complete') return true
-    
+
     // New task parts - web fetching
     if (part.type === 'starting-web-fetch') return true
     if (part.type === 'web-fetch-complete') return true
     if (part.type === 'response-parsed') return true
-    
+
     // New task parts - site inspection
     if (part.type === 'starting-site-inspection') return true
     if (part.type === 'page-loaded') return true
     if (part.type === 'screenshot-captured') return true
     if (part.type === 'inspection-complete') return true
-    
+
     // New task parts - design inspiration
     if (part.type === 'analyzing-design-brief') return true
     if (part.type === 'generating-color-palette') return true
     if (part.type === 'design-inspiration-complete') return true
-    
+
     // New task parts - integrations
     if (part.type === 'checking-existing-integrations') return true
     if (part.type === 'integration-authorized') return true
     if (part.type === 'environment-updated') return true
     if (part.type === 'integration-test-complete') return true
-    
+
     // New task parts - task stopped
     if (part.type === 'task-interruption') return true
     if (part.type === 'task-stopped') return true
-    
+
     // New task parts - parser repair
     if (part.type === 'parser-error-detected') return true
     if (part.type === 'repair-successful') return true
-    
+
     return false
   })
 

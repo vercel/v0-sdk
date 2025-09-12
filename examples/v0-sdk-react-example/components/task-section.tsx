@@ -81,15 +81,19 @@ function renderTaskPart(part: any): React.ReactNode {
           <div className="text-green-400">$ {part.command}</div>
         </div>
       )
-    
+
     case 'finished-shell-command':
       return (
         <div className="bg-black/90 rounded-md p-3 font-mono text-sm space-y-1">
           {part.stdout && (
-            <div className="text-gray-300 whitespace-pre-wrap">{part.stdout}</div>
+            <div className="text-gray-300 whitespace-pre-wrap">
+              {part.stdout}
+            </div>
           )}
           {part.stderr && (
-            <div className="text-red-400 whitespace-pre-wrap">{part.stderr}</div>
+            <div className="text-red-400 whitespace-pre-wrap">
+              {part.stderr}
+            </div>
           )}
           <div className="text-gray-500">
             Process exited with code {part.exitCode || 0}
@@ -98,59 +102,116 @@ function renderTaskPart(part: any): React.ReactNode {
       )
 
     case 'starting-read-files':
-      return <div className="text-gray-400">Reading {part.files.length} files...</div>
-    
+      return (
+        <div className="text-gray-400">
+          Reading {part.files.length} files...
+        </div>
+      )
+
     case 'reading-file':
-      return <div className="text-gray-400">Reading {part.file} ({part.progress}/{part.total})</div>
-    
+      return (
+        <div className="text-gray-400">
+          Reading {part.file} ({part.progress}/{part.total})
+        </div>
+      )
+
     case 'files-read-complete':
-      return <div className="text-green-400">✅ Read {part.filesRead} files ({part.totalLines} lines)</div>
+      return (
+        <div className="text-green-400">
+          ✅ Read {part.filesRead} files ({part.totalLines} lines)
+        </div>
+      )
 
     case 'starting-file-read':
-      return <div className="text-gray-400">Reading {part.file}{part.searchPattern ? ` (searching: ${part.searchPattern})` : ''}</div>
-    
+      return (
+        <div className="text-gray-400">
+          Reading {part.file}
+          {part.searchPattern ? ` (searching: ${part.searchPattern})` : ''}
+        </div>
+      )
+
     case 'search-matches-found':
       return (
         <div className="space-y-1">
-          <div className="text-gray-400">Found {part.matches.length} matches:</div>
+          <div className="text-gray-400">
+            Found {part.matches.length} matches:
+          </div>
           {part.matches.map((match: any, idx: number) => (
-            <div key={idx} className="text-gray-300 text-xs font-mono bg-gray-800/50 p-1 rounded">
+            <div
+              key={idx}
+              className="text-gray-300 text-xs font-mono bg-gray-800/50 p-1 rounded"
+            >
               Line {match.line}: {match.text}
             </div>
           ))}
         </div>
       )
-    
+
     case 'file-read-complete':
-      return <div className="text-green-400">✅ Read {part.file} ({part.matchCount} matches)</div>
+      return (
+        <div className="text-green-400">
+          ✅ Read {part.file} ({part.matchCount} matches)
+        </div>
+      )
 
     case 'creating-todo-list':
-      return <div className="text-gray-400">Creating todo list: {part.title}</div>
-    
+      return (
+        <div className="text-gray-400">Creating todo list: {part.title}</div>
+      )
+
     case 'adding-todo-item':
-      return <div className="text-gray-400">Added: {part.item.text} ({part.item.status})</div>
-    
+      return (
+        <div className="text-gray-400">
+          Added: {part.item.text} ({part.item.status})
+        </div>
+      )
+
     case 'todo-list-updated':
-      return <div className="text-green-400">✅ Updated todo list: {part.completedItems}/{part.totalItems} completed</div>
+      return (
+        <div className="text-green-400">
+          ✅ Updated todo list: {part.completedItems}/{part.totalItems}{' '}
+          completed
+        </div>
+      )
 
     case 'analyzing-requirements':
-      return <div className="text-gray-400">Analyzing: {part.requirements.join(', ')}</div>
-    
+      return (
+        <div className="text-gray-400">
+          Analyzing: {part.requirements.join(', ')}
+        </div>
+      )
+
     case 'generating-code':
-      return <div className="text-gray-400">Generating {part.filename} ({Math.round(part.progress * 100)}%)</div>
-    
+      return (
+        <div className="text-gray-400">
+          Generating {part.filename} ({Math.round(part.progress * 100)}%)
+        </div>
+      )
+
     case 'code-generation-complete':
-      return <div className="text-green-400">✅ Generated {part.filename} ({part.linesGenerated} lines)</div>
-    
+      return (
+        <div className="text-green-400">
+          ✅ Generated {part.filename} ({part.linesGenerated} lines)
+        </div>
+      )
+
     case 'running-linter':
       return <div className="text-gray-400">Running {part.tool}...</div>
-    
+
     case 'linting-complete':
-      return <div className="text-green-400">✅ Linting complete: {part.issues} issues, {part.warnings} warnings</div>
+      return (
+        <div className="text-green-400">
+          ✅ Linting complete: {part.issues} issues, {part.warnings} warnings
+        </div>
+      )
 
     case 'starting-fetch-from-web':
-      return <div className="text-gray-400">Visiting "{part.url.replace('https://', '').replace('http://', '')}"</div>
-    
+      return (
+        <div className="text-gray-400">
+          Visiting "{part.url.replace('https://', '').replace('http://', '')}"
+        </div>
+      )
+
     case 'finished-fetch-from-web':
       return (
         <div className="flex items-center gap-2 text-gray-400">
@@ -163,28 +224,47 @@ function renderTaskPart(part: any): React.ReactNode {
 
     case 'starting-site-inspection':
       return <div className="text-gray-400">Inspecting {part.url}</div>
-    
+
     case 'page-loaded':
-      return <div className="text-green-400">✅ Page loaded in {part.loadTime}s</div>
-    
+      return (
+        <div className="text-green-400">✅ Page loaded in {part.loadTime}s</div>
+      )
+
     case 'screenshot-captured':
-      return <div className="text-blue-400">📸 Screenshot captured: {part.dimensions.width}x{part.dimensions.height}</div>
-    
+      return (
+        <div className="text-blue-400">
+          📸 Screenshot captured: {part.dimensions.width}x
+          {part.dimensions.height}
+        </div>
+      )
+
     case 'inspection-complete':
-      return <div className="text-green-400">✅ Inspection complete: Accessibility {part.accessibility.score}/100</div>
+      return (
+        <div className="text-green-400">
+          ✅ Inspection complete: Accessibility {part.accessibility.score}/100
+        </div>
+      )
 
     case 'analyzing-design-brief':
       return <div className="text-gray-400">Analyzing: {part.brief}</div>
-    
+
     case 'generating-color-palette':
-      return <div className="text-gray-400">Generated {part.palettes.length} color palettes</div>
-    
+      return (
+        <div className="text-gray-400">
+          Generated {part.palettes.length} color palettes
+        </div>
+      )
+
     case 'design-inspiration-complete':
-      return <div className="text-green-400">✅ Created {part.totalVariations} design variations</div>
+      return (
+        <div className="text-green-400">
+          ✅ Created {part.totalVariations} design variations
+        </div>
+      )
 
     case 'starting-integration-status-check':
       return <div className="text-gray-400">Checking integrations...</div>
-    
+
     case 'finished-integration-status-check':
       return (
         <div className="space-y-2">
@@ -195,12 +275,17 @@ function renderTaskPart(part: any): React.ReactNode {
                 {integration.instanceName}
               </span>
               {integration.schema && (
-                <span className="text-gray-500"> ({integration.schema.tableCount} tables)</span>
+                <span className="text-gray-500">
+                  {' '}
+                  ({integration.schema.tableCount} tables)
+                </span>
               )}
             </div>
           ))}
           {part.envVars.length > 0 && (
-            <div className="text-gray-400">Found {part.envVars.length} environment variables</div>
+            <div className="text-gray-400">
+              Found {part.envVars.length} environment variables
+            </div>
           )}
         </div>
       )
@@ -209,47 +294,64 @@ function renderTaskPart(part: any): React.ReactNode {
       return (
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-3 text-blue-400">
           <div className="font-medium mb-1">Agent Timeout</div>
-          <div className="text-sm">The Agent timed out. Type a new prompt to continue.</div>
+          <div className="text-sm">
+            The Agent timed out. Type a new prompt to continue.
+          </div>
         </div>
       )
-    
+
     case 'out-of-credits':
       return (
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3 text-yellow-400">
           <div className="font-medium mb-1">Out of Credits</div>
-          <div className="text-sm">The Agent stopped because you are out of credits. Please add more credits to continue.</div>
+          <div className="text-sm">
+            The Agent stopped because you are out of credits. Please add more
+            credits to continue.
+          </div>
         </div>
       )
-    
+
     case 'orchestrator-invocations-exhausted':
     case 'subagent-invocations-exhausted':
       return (
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-3 text-blue-400">
           <div className="font-medium mb-1">Output Stopped</div>
-          <div className="text-sm">The maximum number of calls for the message has been reached ({part.invocations}).</div>
+          <div className="text-sm">
+            The maximum number of calls for the message has been reached (
+            {part.invocations}).
+          </div>
         </div>
       )
-    
+
     case 'orchestrator-error':
       return (
         <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3 text-red-400">
           <div className="font-medium mb-1">Task stopped</div>
-          <div className="text-sm">The task was stopped because the agent encountered an unrecoverable error.</div>
+          <div className="text-sm">
+            The task was stopped because the agent encountered an unrecoverable
+            error.
+          </div>
         </div>
       )
-    
+
     case 'manually-stopped-on-client':
       return null
 
     case 'parser-error-detected':
       return <div className="text-red-400">❌ Parse error: {part.error}</div>
-    
+
     case 'repair-successful':
-      return <div className="text-green-400">✅ Content repaired (confidence: {Math.round(part.confidence * 100)}%)</div>
+      return (
+        <div className="text-green-400">
+          ✅ Content repaired (confidence: {Math.round(part.confidence * 100)}%)
+        </div>
+      )
 
     default:
       // For debugging - show unknown part types
-      return <div className="text-yellow-400 text-xs">Unknown part: {part.type}</div>
+      return (
+        <div className="text-yellow-400 text-xs">Unknown part: {part.type}</div>
+      )
   }
 }
 
@@ -268,9 +370,12 @@ export function TaskSection({
   ...props
 }: TaskSectionProps) {
   // Add state management for collapse/expand
-  const [internalCollapsed, setInternalCollapsed] = useState(initialCollapsed ?? true)
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    initialCollapsed ?? true,
+  )
   const collapsed = onCollapse ? initialCollapsed : internalCollapsed
-  const handleCollapse = onCollapse || (() => setInternalCollapsed(!internalCollapsed))
+  const handleCollapse =
+    onCollapse || (() => setInternalCollapsed(!internalCollapsed))
   const getTaskIcon = (type: string | undefined, title: string | undefined) => {
     const iconClass =
       'w-4 h-4 text-gray-400 group-hover:text-foreground transition-colors'
@@ -336,7 +441,7 @@ export function TaskSection({
     )
   }
 
-  // If there's only one meaningful part AND the original parts array is also small, 
+  // If there's only one meaningful part AND the original parts array is also small,
   // show just the content without heading. But for complex tasks with multiple parts,
   // always show the collapsible interface even if only one part renders meaningfully.
   if (meaningfulParts.length === 1 && parts.length <= 2) {
