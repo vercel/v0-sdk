@@ -23,12 +23,12 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "lucide-react": "^0.525.0",
-    "next": "15.4.2",
+    "next": "15.5.3",
     "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1",
-    "v0-sdk": "^0.5.1",
+    "v0-sdk": "workspace:*",
     "vaul": "^1.1.2"
   },
   "devDependencies": {

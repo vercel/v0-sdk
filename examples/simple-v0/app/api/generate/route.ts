@@ -1,4 +1,4 @@
-import { v0 } from 'v0-sdk'
+import { v0, ChatDetail } from 'v0-sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import {
   checkRateLimit,
@@ -64,8 +64,9 @@ export async function POST(request: NextRequest) {
           imageGenerations: imageGenerations,
           thinking: thinking,
         },
+        responseMode: 'sync',
         ...(attachments.length > 0 && { attachments }),
-      })
+      }) as ChatDetail
     } else {
       // Create new chat
       response = await v0.chats.create({
@@ -77,9 +78,10 @@ export async function POST(request: NextRequest) {
           imageGenerations: imageGenerations,
           thinking: thinking,
         },
+        responseMode: 'sync',
         ...(projectId && { projectId }),
         ...(attachments.length > 0 && { attachments }),
-      })
+      }) as ChatDetail
 
       // If a project was created/returned, associate it with the user's IP
       if (response.projectId) {
