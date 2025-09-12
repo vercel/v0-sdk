@@ -118,6 +118,76 @@ export function useContentPart(part: any): ContentPartData {
       componentType = null // Usually just indicates task start - can be hidden
       break
 
+    case 'task-run-shell-command-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Running command'
+      iconName = 'wrench'
+      break
+
+    case 'task-manage-todos-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Managing todos'
+      iconName = 'file-text'
+      break
+
+    case 'task-read-files-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Reading files'
+      iconName = 'folder'
+      break
+
+    case 'task-fetch-from-web-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Fetching from web'
+      iconName = 'search'
+      break
+
+    case 'task-inspect-site-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Inspecting site'
+      iconName = 'search'
+      break
+
+    case 'task-generate-design-inspiration-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Generating design'
+      iconName = 'wrench'
+      break
+
+    case 'task-get-or-request-integration-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Managing integration'
+      iconName = 'settings'
+      break
+
+    case 'task-stopped-v1':
+      componentType = 'task'
+      title = metadata.taskNameComplete || metadata.taskNameActive || 'Task stopped'
+      iconName = 'settings'
+      break
+
+    case 'task-repaired-parser-content-v1':
+      componentType = 'task'
+      title = 'Repaired content'
+      iconName = 'wrench'
+      break
+
+    // Non-task content types
+    case 'mdx':
+      componentType = null // MDX content should be handled separately
+      break
+
+    case 'parse-error':
+      componentType = null // Parse errors should be handled separately
+      break
+
+    case 'turn-start':
+    case 'turn-reset':
+    case 'turn-finish':
+    case 'agent-finish':
+      componentType = null // Turn events usually don't need UI
+      break
+
     default:
       componentType = 'unknown'
       break
