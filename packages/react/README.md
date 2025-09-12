@@ -161,6 +161,30 @@ All components are optional JSX renderers that work with DOM environments. For h
 - `CodeProjectPart` - Code project file browser
 - `ContentPartRenderer` - Handles different content part types
 
+## Supported Task Types
+
+The package automatically handles all v0 Platform API task types:
+
+### Explicitly Supported Tasks
+
+- `task-thinking-v1` - AI reasoning and thought processes
+- `task-search-web-v1` - Web search operations with results
+- `task-search-repo-v1` - Repository/codebase search functionality
+- `task-diagnostics-v1` - Code analysis and issue detection
+- `task-read-file-v1` - File reading operations
+- `task-coding-v1` - Code generation and editing tasks
+- `task-generate-design-inspiration-v1` - Design inspiration generation
+- `task-start-v1` - Task initialization (usually hidden)
+
+### Future-Proof Support
+
+Any new task type following the `task-*-v1` pattern will be automatically supported with:
+
+- Auto-generated readable titles
+- Appropriate icon selection
+- Proper task section rendering
+- Graceful fallback handling
+
 ## Customization
 
 ### Custom Components

@@ -59,6 +59,12 @@ function getTypeIcon(type?: string, title?: string): IconProps['name'] {
       return 'folder'
     case 'task-diagnostics-v1':
       return 'settings'
+    case 'task-generate-design-inspiration-v1':
+      return 'wrench'
+    case 'task-read-file-v1':
+      return 'folder'
+    case 'task-coding-v1':
+      return 'wrench'
     default:
       return 'wrench'
   }

@@ -87,6 +87,15 @@ This v0 clone includes:
 - **Conversation History**: Maintains chat history throughout the session
 - **Suggestion System**: Provides helpful prompts to get users started
 - **Streaming Support**: Toggle between streaming and non-streaming AI responses for real-time updates
+- **Comprehensive Task Support**: Full support for all v0 Platform API task types including:
+  - `task-thinking-v1` - AI reasoning and thought processes
+  - `task-search-web-v1` - Web search operations with results
+  - `task-search-repo-v1` - Repository/codebase search functionality
+  - `task-diagnostics-v1` - Code analysis and issue detection
+  - `task-read-file-v1` - File reading operations
+  - `task-coding-v1` - Code generation and editing tasks
+  - `task-generate-design-inspiration-v1` - Design inspiration generation
+  - **Graceful fallback** for unknown task types with user-friendly display
 
 ### Authentication & Multi-Tenant Features
 

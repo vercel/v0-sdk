@@ -118,8 +118,37 @@ export function useContentPart(part: any): ContentPartData {
       componentType = null // Usually just indicates task start - can be hidden
       break
 
+    case 'task-generate-design-inspiration-v1':
+      componentType = 'task'
+      title =
+        metadata.taskNameComplete ||
+        metadata.taskNameActive ||
+        'Generating Design Inspiration'
+      iconName = 'wrench'
+      break
+
+    // Handle any other task-*-v1 patterns that might be added in the future
     default:
-      componentType = 'unknown'
+      // Check if it's a task type we haven't explicitly handled yet
+      if (
+        type &&
+        typeof type === 'string' &&
+        type.startsWith('task-') &&
+        type.endsWith('-v1')
+      ) {
+        componentType = 'task'
+        // Generate a readable title from the task type
+        const taskName = type
+          .replace('task-', '')
+          .replace('-v1', '')
+          .split('-')
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')
+        title = metadata.taskNameComplete || metadata.taskNameActive || taskName
+        iconName = 'wrench' // Default icon for unknown task types
+      } else {
+        componentType = 'unknown'
+      }
       break
   }
 
