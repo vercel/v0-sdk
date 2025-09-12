@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     if (chatId) {
       // Continue existing chat using sendMessage
-      response = await v0.chats.sendMessage({
+      response = (await v0.chats.sendMessage({
         chatId: chatId,
         message: message.trim(),
         modelConfiguration: {
@@ -66,10 +66,10 @@ export async function POST(request: NextRequest) {
         },
         responseMode: 'sync',
         ...(attachments.length > 0 && { attachments }),
-      }) as ChatDetail
+      })) as ChatDetail
     } else {
       // Create new chat
-      response = await v0.chats.create({
+      response = (await v0.chats.create({
         system:
           'v0 MUST always generate code even if the user just says "hi" or asks a question. v0 MUST NOT ask the user to clarify their request.',
         message: message.trim(),
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         responseMode: 'sync',
         ...(projectId && { projectId }),
         ...(attachments.length > 0 && { attachments }),
-      }) as ChatDetail
+      })) as ChatDetail
 
       // If a project was created/returned, associate it with the user's IP
       if (response.projectId) {
