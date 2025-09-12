@@ -25,7 +25,11 @@ export function EnvGuard({ children }: EnvGuardProps) {
         } else {
           // If API call fails, assume all environment variables are present
           // This prevents showing the setup screen when env vars are actually configured
-          console.warn('Failed to check environment variables from server, assuming they are configured', response.status, response.statusText)
+          console.warn(
+            'Failed to check environment variables from server, assuming they are configured',
+            response.status,
+            response.statusText,
+          )
           setMissingVars([])
         }
       } catch (error) {

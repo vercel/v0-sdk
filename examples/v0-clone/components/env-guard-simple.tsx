@@ -21,7 +21,10 @@ export function EnvGuardSimple({ children }: EnvGuardProps) {
     const checkEnvVars = async () => {
       // Skip environment variable checking on Vercel deployments
       // This prevents the "Setup Required" screen from showing when env vars are actually configured
-      if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        typeof window !== 'undefined'
+      ) {
         // In production (like Vercel), assume environment variables are configured
         setMissingVars([])
         setIsChecking(false)

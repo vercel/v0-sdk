@@ -20,7 +20,10 @@ export function EnvGuardProductionOverride({ children }: EnvGuardProps) {
   useEffect(() => {
     const checkEnvVars = async () => {
       // Skip environment check entirely on Vercel production
-      if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        typeof window !== 'undefined'
+      ) {
         console.log('Production environment detected, skipping env check')
         setMissingVars([])
         setIsChecking(false)
@@ -35,7 +38,10 @@ export function EnvGuardProductionOverride({ children }: EnvGuardProps) {
           console.log('Environment check response:', data)
           setMissingVars(data.missingVars || [])
         } else {
-          console.warn('Env check failed, assuming configured:', response.status)
+          console.warn(
+            'Env check failed, assuming configured:',
+            response.status,
+          )
           setMissingVars([])
         }
       } catch (error) {
