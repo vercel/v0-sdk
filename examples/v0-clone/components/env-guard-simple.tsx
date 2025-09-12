@@ -8,31 +8,39 @@ interface EnvGuardProps {
   children: React.ReactNode
 }
 
-export function EnvGuard({ children }: EnvGuardProps) {
+/**
+ * Alternative EnvGuard implementation that skips environment variable checking
+ * on Vercel deployments to avoid SSR issues. This assumes that if the app is
+ * deployed on Vercel, the environment variables are properly configured.
+ */
+export function EnvGuardSimple({ children }: EnvGuardProps) {
   const [missingVars, setMissingVars] = useState<MissingEnvVar[]>([])
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    // Check environment variables on the client side
     const checkEnvVars = async () => {
+      // Skip environment variable checking on Vercel deployments
+      // This prevents the "Setup Required" screen from showing when env vars are actually configured
+      if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+        // In production (like Vercel), assume environment variables are configured
+        setMissingVars([])
+        setIsChecking(false)
+        return
+      }
+
       try {
-        // Make an API call to check environment variables server-side
+        // Only check environment variables in development or when specifically needed
         const response = await fetch('/api/env-check')
         if (response.ok) {
           const data = await response.json()
-          console.log('Environment check response:', data)
           setMissingVars(data.missingVars || [])
         } else {
-          // If API call fails, assume all environment variables are present
-          // This prevents showing the setup screen when env vars are actually configured
-          console.warn('Failed to check environment variables from server, assuming they are configured', response.status, response.statusText)
+          // Assume environment variables are configured if check fails
           setMissingVars([])
         }
       } catch (error) {
         console.error('Error checking environment variables:', error)
-        // If there's an error, assume environment variables are configured
-        // This is better for production deployments where the check might fail
-        // but the actual environment variables are properly set
+        // Assume environment variables are configured if check fails
         setMissingVars([])
       } finally {
         setIsChecking(false)
@@ -42,13 +50,12 @@ export function EnvGuard({ children }: EnvGuardProps) {
     checkEnvVars()
   }, [])
 
-  // Show loading state while checking
+  // Show minimal loading state
   if (isChecking) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
         </div>
       </div>
     )
