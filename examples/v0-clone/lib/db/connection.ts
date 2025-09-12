@@ -1,8 +1,9 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'
-import { config } from 'dotenv'
 
+// Load environment variables
+import { config } from 'dotenv'
 config()
 
 let db: any = null
