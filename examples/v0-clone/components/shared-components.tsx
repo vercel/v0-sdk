@@ -176,7 +176,7 @@ export const TaskSectionWrapper = ({
 
               if (
                 partObj.type === 'design-inspiration-complete' &&
-                partObj.inspirations
+                Array.isArray(partObj.inspirations)
               ) {
                 return (
                   <TaskItem key={index}>
