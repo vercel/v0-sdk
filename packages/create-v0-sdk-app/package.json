@@ -15,7 +15,7 @@
     "directory": "packages/create-v0-sdk-app"
   },
   "author": "Vercel Team <support@vercel.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bin": {
     "create-v0-sdk-app": "./dist/index.js"
   },
