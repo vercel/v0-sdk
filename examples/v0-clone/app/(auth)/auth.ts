@@ -6,10 +6,6 @@ import { authConfig } from './auth.config'
 import { DUMMY_PASSWORD } from '@/lib/constants'
 import type { DefaultJWT } from 'next-auth/jwt'
 
-// Load environment variables
-import { config } from 'dotenv'
-config()
-
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 // Check for required environment variables

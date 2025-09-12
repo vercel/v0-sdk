@@ -4,7 +4,6 @@ import './globals.css'
 import { StreamingProvider } from '@/contexts/streaming-context'
 import { SWRProvider } from '@/components/providers/swr-provider'
 import { SessionProvider } from '@/components/providers/session-provider'
-import { EnvGuard } from '@/components/env-guard'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,13 +55,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <EnvGuard>
-          <SessionProvider>
-            <SWRProvider>
-              <StreamingProvider>{children}</StreamingProvider>
-            </SWRProvider>
-          </SessionProvider>
-        </EnvGuard>
+        <SessionProvider>
+          <SWRProvider>
+            <StreamingProvider>{children}</StreamingProvider>
+          </SWRProvider>
+        </SessionProvider>
       </body>
     </html>
   )
