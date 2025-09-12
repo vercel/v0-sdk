@@ -107,39 +107,20 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
           </DialogHeader>
           <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
             <p>
-              This is a <strong>demo</strong> of an end-to-end coding platform
-              where the user can enter text prompts, and the agent will create a
-              full stack application.
+              This is a <strong>demo</strong> of a{' '}
+              <a
+                href="https://v0.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+              >
+                v0 clone
+              </a>{' '}
+              where users can enter text prompts and generate React components
+              and applications using AI.
             </p>
             <p>
-              It uses Vercel's AI Cloud services like{' '}
-              <a
-                href="https://vercel.com/docs/functions/ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Sandbox
-              </a>{' '}
-              for secure code execution,{' '}
-              <a
-                href="https://vercel.com/docs/ai/ai-gateway"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                AI Gateway
-              </a>{' '}
-              for GPT-5 and other models support,{' '}
-              <a
-                href="https://vercel.com/docs/functions/streaming"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-              >
-                Fluid Compute
-              </a>{' '}
-              for efficient rendering and streaming, and it's built with{' '}
+              It's built with{' '}
               <a
                 href="https://nextjs.org"
                 target="_blank"
@@ -156,8 +137,9 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
               >
                 v0 SDK
-              </a>
-              .
+              </a>{' '}
+              to provide a full-featured interface with authentication, database
+              integration, and real-time streaming responses.
             </p>
             <p>
               Try the demo or{' '}
