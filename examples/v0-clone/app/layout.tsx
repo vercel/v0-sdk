@@ -4,7 +4,6 @@ import './globals.css'
 import { StreamingProvider } from '@/contexts/streaming-context'
 import { SWRProvider } from '@/components/providers/swr-provider'
 import { SessionProvider } from '@/components/providers/session-provider'
-import { EnvGuard } from '@/components/env-guard'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
     'A clone of v0.dev built with the v0 SDK - Generate and preview React components with AI',
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -56,13 +55,11 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <EnvGuard>
-          <SessionProvider>
-            <SWRProvider>
-              <StreamingProvider>{children}</StreamingProvider>
-            </SWRProvider>
-          </SessionProvider>
-        </EnvGuard>
+        <SessionProvider>
+          <SWRProvider>
+            <StreamingProvider>{children}</StreamingProvider>
+          </SWRProvider>
+        </SessionProvider>
       </body>
     </html>
   )

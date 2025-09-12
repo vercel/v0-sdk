@@ -38,3 +38,9 @@ export function checkRequiredEnvVars(): MissingEnvVar[] {
 export function hasAllRequiredEnvVars(): boolean {
   return checkRequiredEnvVars().length === 0
 }
+
+export const hasEnvVars = !!(
+  process.env.V0_API_KEY &&
+  process.env.AUTH_SECRET &&
+  process.env.POSTGRES_URL
+)
