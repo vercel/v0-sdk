@@ -83,18 +83,21 @@
                           "v0-1.5-md",
                           "v0-1.5-lg",
                           "v0-gpt-5"
-                        ]
+                        ],
+                        "description": "Deprecated Model ID field preserved for backward compatibility.",
+                        "deprecated": true
                       },
                       "imageGenerations": {
                         "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version.",
                         "default": false
                       },
                       "thinking": {
                         "type": "boolean",
+                        "description": "Enables thinking to generate a response in multiple steps.",
                         "default": false
                       }
                     },
-                    "required": ["modelId"],
                     "additionalProperties": false,
                     "description": "Settings that control how the model behaves in the chat."
                   },
@@ -3115,18 +3118,21 @@
                           "v0-1.5-md",
                           "v0-1.5-lg",
                           "v0-gpt-5"
-                        ]
+                        ],
+                        "description": "Deprecated Model ID field preserved for backward compatibility.",
+                        "deprecated": true
                       },
                       "imageGenerations": {
                         "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version.",
                         "default": false
                       },
                       "thinking": {
                         "type": "boolean",
+                        "description": "Enables thinking to generate a response in multiple steps.",
                         "default": false
                       }
                     },
-                    "required": ["modelId"],
                     "additionalProperties": false,
                     "description": "Overrides for the model behavior."
                   },
@@ -13315,6 +13321,10 @@
                 "apiUrl": {
                   "type": "string",
                   "description": "API URL to access this message via the API."
+                },
+                "parentId": {
+                  "type": ["string", "null"],
+                  "description": "The ID of the parent message."
                 }
               },
               "required": [
@@ -13371,20 +13381,34 @@
             "properties": {
               "modelId": {
                 "type": "string",
-                "enum": ["v0-1.5-sm", "v0-1.5-md", "v0-1.5-lg", "v0-gpt-5"]
+                "enum": ["v0-1.5-sm", "v0-1.5-md", "v0-1.5-lg", "v0-gpt-5"],
+                "description": "Deprecated Model ID field preserved for backward compatibility.",
+                "deprecated": true
               },
               "imageGenerations": {
                 "type": "boolean",
+                "description": "Enables image generations to generate up to 5 images per version.",
                 "default": false
               },
               "thinking": {
                 "type": "boolean",
+                "description": "Enables thinking to generate a response in multiple steps.",
                 "default": false
               }
             },
-            "required": ["modelId"],
             "additionalProperties": false,
             "description": "The configuration used to generate responses in this chat."
+          },
+          "permissions": {
+            "type": "object",
+            "properties": {
+              "write": {
+                "type": "boolean",
+                "description": "If true, the user has write access to the chat."
+              }
+            },
+            "required": ["write"],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -13399,7 +13423,8 @@
           "apiUrl",
           "url",
           "messages",
-          "text"
+          "text",
+          "permissions"
         ],
         "additionalProperties": false,
         "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
@@ -13956,7 +13981,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -14005,7 +14031,8 @@
               "required": ["object", "id", "connected", "integration"],
               "additionalProperties": false,
               "description": "Summary information about an integration connection to a project."
-            }
+            },
+            "description": "Array of integration connection summaries."
           }
         },
         "required": ["object", "data"],
@@ -14096,7 +14123,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -14139,7 +14167,8 @@
               ],
               "additionalProperties": false,
               "description": "Detailed information about an integration."
-            }
+            },
+            "description": "Array of integration details."
           }
         },
         "required": ["object", "data"],
@@ -14285,6 +14314,10 @@
             "type": "string",
             "description": "API URL to access this message via the API."
           },
+          "parentId": {
+            "type": ["string", "null"],
+            "description": "The ID of the parent message."
+          },
           "chatId": {
             "type": "string",
             "description": "The ID of the chat to which this message belongs."
@@ -14416,6 +14449,10 @@
           "apiUrl": {
             "type": "string",
             "description": "API URL to access this message via the API."
+          },
+          "parentId": {
+            "type": ["string", "null"],
+            "description": "The ID of the parent message."
           }
         },
         "required": [
@@ -14553,6 +14590,10 @@
                 "apiUrl": {
                   "type": "string",
                   "description": "API URL to access this message via the API."
+                },
+                "parentId": {
+                  "type": ["string", "null"],
+                  "description": "The ID of the parent message."
                 }
               },
               "required": [
@@ -14636,7 +14677,8 @@
         "properties": {
           "object": {
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "description": "Fixed value identifying this as a list response."
           },
           "data": {
             "type": "array",
@@ -14679,7 +14721,8 @@
               ],
               "additionalProperties": false,
               "description": "Summary information about a marketplace or store product."
-            }
+            },
+            "description": "Array of product summaries."
           }
         },
         "required": ["object", "data"],
