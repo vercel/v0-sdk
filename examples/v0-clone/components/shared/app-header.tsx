@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ChatSelector } from './chat-selector'
 import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
@@ -23,9 +23,25 @@ interface AppHeaderProps {
 
 export function AppHeader({ className = '' }: AppHeaderProps) {
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const searchParams = useSearchParams()
+  const { data: session, update } = useSession()
   const isHomepage = pathname === '/'
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
+
+  // Force session refresh when redirected after auth
+  useEffect(() => {
+    const shouldRefresh = searchParams.get('refresh') === 'session'
+    
+    if (shouldRefresh) {
+      // Force session update
+      update()
+      
+      // Clean up URL without causing navigation
+      const url = new URL(window.location.href)
+      url.searchParams.delete('refresh')
+      window.history.replaceState({}, '', url.pathname)
+    }
+  }, [searchParams, update])
 
   // Handle logo click - reset UI if on homepage, otherwise navigate to homepage
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -92,7 +108,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 Deploy with Vercel
               </Link>
             </Button>
-            {session && <UserNav session={session} />}
+            <UserNav session={session} />
           </div>
         </div>
       </div>

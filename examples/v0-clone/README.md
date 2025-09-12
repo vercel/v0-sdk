@@ -3,6 +3,10 @@
 > **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
 
 <p align="center">
+    <img src="./screenshot.png" alt="v0 Clone Screenshot" width="800" />
+</p>
+
+<p align="center">
     An example of how to use the AI Elements to build a v0 clone with authentication and multi-tenant support.
 </p>
 

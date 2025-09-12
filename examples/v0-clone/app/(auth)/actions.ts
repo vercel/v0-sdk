@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { signIn, signOut } from './auth'
 import { createUser, getUser } from '@/lib/db/queries'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { AuthError } from 'next-auth'
 
 const signInSchema = z.object({
@@ -37,7 +38,8 @@ export async function signInAction(
       redirect: false,
     })
 
-    redirect('/')
+    revalidatePath('/')
+    redirect('/?refresh=session')
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -87,13 +89,21 @@ export async function signUpAction(
 
     await createUser(validatedData.email, validatedData.password)
 
-    await signIn('credentials', {
+    const result = await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
       redirect: false,
     })
 
-    redirect('/')
+    if (result?.error) {
+      return {
+        type: 'error',
+        message: 'Failed to sign in after registration. Please try signing in manually.',
+      }
+    }
+
+    revalidatePath('/')
+    redirect('/?refresh=session')
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -115,5 +125,7 @@ export async function signUpAction(
 }
 
 export async function signOutAction() {
-  await signOut({ redirectTo: '/login' })
+  await signOut({ redirect: false })
+  revalidatePath('/')
+  redirect('/')
 }

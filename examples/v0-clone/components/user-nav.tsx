@@ -1,6 +1,6 @@
 'use client'
 
-import { signOutAction } from '@/app/(auth)/actions'
+import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,14 +15,14 @@ import { LogOut, User } from 'lucide-react'
 import { Session } from 'next-auth'
 
 interface UserNavProps {
-  session: Session
+  session: Session | null
 }
 
 export function UserNav({ session }: UserNavProps) {
-  const initials =
-    session.user?.email?.split('@')[0]?.slice(0, 2)?.toUpperCase() || 'U'
+  const initials = session?.user?.email?.split('@')[0]?.slice(0, 2)?.toUpperCase() || 'U'
 
-  const isGuest = session.user?.type === 'guest'
+  const isGuest = session?.user?.type === 'guest'
+  const isSignedOut = !session
 
   return (
     <DropdownMenu>
@@ -30,7 +30,7 @@ export function UserNav({ session }: UserNavProps) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground">
-              {initials}
+              {isSignedOut ? <User className="h-4 w-4" /> : initials}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -39,42 +39,43 @@ export function UserNav({ session }: UserNavProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {isGuest ? 'Guest User' : 'User'}
+              {isSignedOut ? 'Not signed in' : isGuest ? 'Guest User' : 'User'}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {session.user?.email}
-            </p>
+            {session?.user?.email && (
+              <p className="text-xs leading-none text-muted-foreground">
+                {session.user.email}
+              </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {isGuest && (
+        {(isGuest || isSignedOut) && (
           <>
             <DropdownMenuItem asChild>
               <a href="/register" className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
                 <span>Create Account</span>
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href="/login" className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
                 <span>Sign In</span>
               </a>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {!isSignedOut && <DropdownMenuSeparator />}
           </>
         )}
-        <DropdownMenuItem asChild>
-          <form action={signOutAction}>
-            <button
-              type="submit"
-              className="flex w-full cursor-pointer items-center"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Sign out</span>
-            </button>
-          </form>
-        </DropdownMenuItem>
+        {!isSignedOut && (
+          <DropdownMenuItem 
+            onClick={async () => {
+              // Clear any local session data first
+              await signOut({ callbackUrl: '/', redirect: true })
+            }}
+            className="cursor-pointer"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Sign out</span>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
