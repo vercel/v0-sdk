@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     'A clone of v0.dev built with the v0 SDK - Generate and preview React components with AI',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode

@@ -5,7 +5,8 @@ interface EnvGuardProps {
   children: React.ReactNode
 }
 
-export function EnvGuard({ children }: EnvGuardProps) {
+export async function EnvGuard({ children }: EnvGuardProps) {
+  // This runs on the server where environment variables are available
   const missingVars = checkRequiredEnvVars()
 
   if (missingVars.length > 0) {
