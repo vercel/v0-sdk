@@ -98,7 +98,8 @@ export async function signUpAction(
     if (result?.error) {
       return {
         type: 'error',
-        message: 'Failed to sign in after registration. Please try signing in manually.',
+        message:
+          'Failed to sign in after registration. Please try signing in manually.',
       }
     }
 

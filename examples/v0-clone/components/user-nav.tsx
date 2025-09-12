@@ -19,7 +19,8 @@ interface UserNavProps {
 }
 
 export function UserNav({ session }: UserNavProps) {
-  const initials = session?.user?.email?.split('@')[0]?.slice(0, 2)?.toUpperCase() || 'U'
+  const initials =
+    session?.user?.email?.split('@')[0]?.slice(0, 2)?.toUpperCase() || 'U'
 
   const isGuest = session?.user?.type === 'guest'
   const isSignedOut = !session
@@ -65,7 +66,7 @@ export function UserNav({ session }: UserNavProps) {
           </>
         )}
         {!isSignedOut && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={async () => {
               // Clear any local session data first
               await signOut({ callbackUrl: '/', redirect: true })

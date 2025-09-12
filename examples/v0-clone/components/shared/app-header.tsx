@@ -31,11 +31,11 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
   // Force session refresh when redirected after auth
   useEffect(() => {
     const shouldRefresh = searchParams.get('refresh') === 'session'
-    
+
     if (shouldRefresh) {
       // Force session update
       update()
-      
+
       // Clean up URL without causing navigation
       const url = new URL(window.location.href)
       url.searchParams.delete('refresh')
