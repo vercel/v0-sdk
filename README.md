@@ -13,9 +13,9 @@ A monorepo containing SDKs for interacting with the v0 Platform API to create an
 
 ## Examples
 
-- [`simple-v0`](./examples/simple-v0) - The simplest way to use v0. Just prompt and see your app generated instantly
+- [`v0-clone`](./examples/v0-clone) ([Demo](https://clone-demo.v0-sdk.dev)) - Full-featured v0 clone with authentication, database, and AI Elements
+- [`simple-v0`](./examples/simple-v0) ([Demo](https://simple-demo.v0-sdk.dev)) - The simplest way to use v0. Just prompt and see your app generated instantly
 - [`classic-v0`](./examples/classic-v0) - Classic v0 interface clone with clean, minimalist design
-- [`v0-clone`](./examples/v0-clone) - Full-featured v0 clone with authentication, database, and AI Elements
 - [`v0-sdk-react-example`](./examples/v0-sdk-react-example) - Next.js example demonstrating @v0-sdk/react usage with multiple UI themes
 - [`ai-tools-example`](./examples/ai-tools-example) - Demonstrates @v0-sdk/ai-tools integration with AI SDK for advanced agent patterns
 
