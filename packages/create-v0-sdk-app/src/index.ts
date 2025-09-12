@@ -37,7 +37,8 @@ const onPromptState = (state: {
 const examples: { name: ExampleType; description: string }[] = [
   {
     name: 'v0-clone',
-    description: 'Next.js app that replicates the v0.dev interface (Recommended)',
+    description:
+      'Next.js app that replicates the v0.dev interface (Recommended)',
   },
   {
     name: 'classic-v0',
