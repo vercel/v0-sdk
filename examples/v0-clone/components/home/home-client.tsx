@@ -190,7 +190,22 @@ export function HomeClient() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create chat')
+        // Try to get the specific error message from the response
+        let errorMessage = 'Sorry, there was an error processing your message. Please try again.'
+        try {
+          const errorData = await response.json()
+          if (errorData.message) {
+            errorMessage = errorData.message
+          } else if (response.status === 429) {
+            errorMessage = 'You have exceeded your maximum number of messages for the day. Please try again later.'
+          }
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError)
+          if (response.status === 429) {
+            errorMessage = 'You have exceeded your maximum number of messages for the day. Please try again later.'
+          }
+        }
+        throw new Error(errorMessage)
       }
 
       if (!response.body) {
@@ -212,12 +227,17 @@ export function HomeClient() {
     } catch (error) {
       console.error('Error creating chat:', error)
       setIsLoading(false)
+      
+      // Use the specific error message if available, otherwise fall back to generic message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Sorry, there was an error processing your message. Please try again.'
+      
       setChatHistory((prev) => [
         ...prev,
         {
           type: 'assistant',
-          content:
-            'Sorry, there was an error processing your message. Please try again.',
+          content: errorMessage,
         },
       ])
     }
@@ -334,7 +354,22 @@ export function HomeClient() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to send message')
+        // Try to get the specific error message from the response
+        let errorMessage = 'Sorry, there was an error processing your message. Please try again.'
+        try {
+          const errorData = await response.json()
+          if (errorData.message) {
+            errorMessage = errorData.message
+          } else if (response.status === 429) {
+            errorMessage = 'You have exceeded your maximum number of messages for the day. Please try again later.'
+          }
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError)
+          if (response.status === 429) {
+            errorMessage = 'You have exceeded your maximum number of messages for the day. Please try again later.'
+          }
+        }
+        throw new Error(errorMessage)
       }
 
       if (!response.body) {
@@ -355,12 +390,17 @@ export function HomeClient() {
       ])
     } catch (error) {
       console.error('Error:', error)
+      
+      // Use the specific error message if available, otherwise fall back to generic message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Sorry, there was an error processing your message. Please try again.'
+      
       setChatHistory((prev) => [
         ...prev,
         {
           type: 'assistant',
-          content:
-            'Sorry, there was an error sending your message. Please try again.',
+          content: errorMessage,
         },
       ])
       setIsLoading(false)
