@@ -112,11 +112,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
               className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 hidden md:flex py-1.5 px-2 h-fit text-sm"
               asChild
             >
-              <Link
-                href={DEPLOY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={DEPLOY_URL} target="_blank" rel="noopener noreferrer">
                 <VercelIcon size={16} />
                 Deploy with Vercel
               </Link>
