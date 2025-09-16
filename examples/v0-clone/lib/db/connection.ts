@@ -10,7 +10,7 @@ let db: any = null
 
 // Only initialize database if POSTGRES_URL is available
 if (process.env.POSTGRES_URL) {
-  console.log('🗄️  Using PostgreSQL database')
+  console.log('Using PostgreSQL database')
   const client = postgres(process.env.POSTGRES_URL)
   db = drizzle(client, { schema })
 }
