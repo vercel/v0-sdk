@@ -9,17 +9,38 @@ config()
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const runMigrate = async (retries = 5, throttleMs = 3000) => {
-  if (!process.env.POSTGRES_URL) {
-    console.log('POSTGRES_URL is not defined, skipping migrations')
+  // Try different Neon database URL environment variables in order of preference
+  const databaseUrl =
+    process.env.POSTGRES_URL ||
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.DATABASE_URL_UNPOOLED
+
+  if (!databaseUrl) {
+    console.log('No database URL found, skipping migrations')
+    console.log(
+      'Checked: POSTGRES_URL, DATABASE_URL, POSTGRES_URL_NON_POOLING, DATABASE_URL_UNPOOLED',
+    )
     return false
   }
+
+  console.log(
+    'Using database URL from:',
+    process.env.POSTGRES_URL
+      ? 'POSTGRES_URL'
+      : process.env.DATABASE_URL
+        ? 'DATABASE_URL'
+        : process.env.POSTGRES_URL_NON_POOLING
+          ? 'POSTGRES_URL_NON_POOLING'
+          : 'DATABASE_URL_UNPOOLED',
+  )
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       console.log(`Running migrations (attempt ${attempt}/${retries})...`)
 
       // Use a more conservative connection pool for build-time migrations
-      const connection = postgres(process.env.POSTGRES_URL, {
+      const connection = postgres(databaseUrl, {
         max: 1,
         idle_timeout: 20,
         max_lifetime: 60 * 30, // 30 minutes
