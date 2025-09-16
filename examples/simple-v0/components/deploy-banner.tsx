@@ -86,7 +86,7 @@ export default function DeployBanner() {
               <div className="flex items-center gap-3 sm:flex-shrink-0">
                 <Button variant="default" size="sm" asChild>
                   <a
-                    href="https://vercel.com/new/clone?demo-description=The%20simplest%20way%20to%20use%20v0%20-%20just%20prompt%20and%20see%20your%20app&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=Simple%20v0&demo-url=https%3A%2F%2Fv0-centered-text-om.vercel.sh%2F&from=templates&project-name=Simple%20v0&repository-name=simple-v0&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fsimple-v0&skippable-integrations=1"
+                    href="https://vercel.com/new/clone?demo-description=The%20simplest%20way%20to%20use%20v0%20-%20just%20prompt%20and%20see%20your%20app&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F28EABpFanXbK3bENHYGPe7%2F2b37a0cf17f3f8f9a19ee23e539b62eb%2Fscreenshot.png&demo-title=Simple%20v0&demo-url=https%3A%2F%2Fsimple-demo.v0-sdk.dev&from=templates&project-name=Simple%20v0&repository-name=simple-v0&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Ftree%2Fmain%2Fexamples%2Fsimple-v0&env=V0_API_KEY&envDescription=Get+your+v0+API+key&envLink=https%3A%2F%2Fv0.app%2Fchat%2Fsettings%2Fkeys&skippable-integrations=1"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
@@ -101,7 +101,7 @@ export default function DeployBanner() {
 
                 <Button variant="outline" size="sm" asChild>
                   <a
-                    href="https://github.com/vercel/simple-v0"
+                    href="https://github.com/vercel/v0-sdk/tree/main/examples/simple-v0"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
