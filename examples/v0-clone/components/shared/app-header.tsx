@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ChatSelector } from './chat-selector'
+import { MobileMenu } from './mobile-menu'
 import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
 import { Button } from '@/components/ui/button'
@@ -62,7 +63,9 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
   }
 
   return (
-    <div className={`border-b border-border dark:border-input ${className}`}>
+    <div
+      className={`${!isHomepage ? 'border-b border-border dark:border-input' : ''} ${className}`}
+    >
       {/* Handle search params with Suspense boundary */}
       <Suspense fallback={null}>
         <SearchParamsHandler />
@@ -79,11 +82,14 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             >
               v0 Clone
             </Link>
-            <ChatSelector />
+            {/* Hide ChatSelector on mobile */}
+            <div className="hidden lg:block">
+              <ChatSelector />
+            </div>
           </div>
 
-          {/* Right side - What's This, GitHub, Deploy, and User */}
-          <div className="flex items-center gap-4">
+          {/* Desktop right side - What's This, GitHub, Deploy, and User */}
+          <div className="hidden lg:flex items-center gap-4">
             <Button
               variant="outline"
               className="py-1.5 px-2 h-fit text-sm"
@@ -109,7 +115,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
 
             {/* Deploy with Vercel button - hidden on mobile */}
             <Button
-              className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 hidden md:flex py-1.5 px-2 h-fit text-sm"
+              className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 py-1.5 px-2 h-fit text-sm"
               asChild
             >
               <Link href={DEPLOY_URL} target="_blank" rel="noopener noreferrer">
@@ -118,6 +124,12 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
               </Link>
             </Button>
             <UserNav session={session} />
+          </div>
+
+          {/* Mobile right side - Only menu button and user avatar */}
+          <div className="flex lg:hidden items-center gap-2">
+            <UserNav session={session} />
+            <MobileMenu onInfoDialogOpen={() => setIsInfoDialogOpen(true)} />
           </div>
         </div>
       </div>

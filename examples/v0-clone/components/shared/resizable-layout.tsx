@@ -10,6 +10,8 @@ interface ResizableLayoutProps {
   minLeftWidth?: number
   maxLeftWidth?: number
   className?: string
+  singlePanelMode?: boolean
+  activePanel?: 'left' | 'right'
 }
 
 export function ResizableLayout({
@@ -19,6 +21,8 @@ export function ResizableLayout({
   minLeftWidth = 20,
   maxLeftWidth = 60,
   className,
+  singlePanelMode = false,
+  activePanel = 'left',
 }: ResizableLayoutProps) {
   const [leftWidth, setLeftWidth] = useState(defaultLeftWidth)
   const [isDragging, setIsDragging] = useState(false)
@@ -67,35 +71,46 @@ export function ResizableLayout({
     }
   }, [isDragging, handleMouseMove, handleMouseUp])
 
+  if (singlePanelMode) {
+    return (
+      <div ref={containerRef} className={cn('flex flex-col h-full', className)}>
+        <div className="flex-1 flex flex-col min-h-0">
+          {activePanel === 'left' ? leftPanel : rightPanel}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div ref={containerRef} className={cn('flex h-full', className)}>
-      {/* Left Panel */}
-      <div className="flex flex-col" style={{ width: `${leftWidth}%` }}>
-        {leftPanel}
+      <div className="flex md:hidden flex-col h-full w-full">
+        {activePanel === 'left' ? leftPanel : rightPanel}
       </div>
 
-      {/* Resize Handle */}
-      <div
-        className={cn(
-          'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
-          isDragging && 'bg-blue-500 dark:bg-blue-400',
-        )}
-        onMouseDown={handleMouseDown}
-      >
-        {/* Blue highlight on hover - 3px wide */}
+      <div className="hidden md:flex h-full w-full">
+        <div className="flex flex-col" style={{ width: `${leftWidth}%` }}>
+          {leftPanel}
+        </div>
+
         <div
           className={cn(
-            'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
-            'group-hover:w-[3px]',
-            isDragging && 'w-[3px]',
+            'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
+            isDragging && 'bg-blue-500 dark:bg-blue-400',
           )}
-        />
-        {/* Wider hit area for better UX */}
-        <div className="absolute inset-y-0 -left-2 -right-2" />
-      </div>
+          onMouseDown={handleMouseDown}
+        >
+          <div
+            className={cn(
+              'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
+              'group-hover:w-[3px]',
+              isDragging && 'w-[3px]',
+            )}
+          />
+          <div className="absolute inset-y-0 -left-2 -right-2" />
+        </div>
 
-      {/* Right Panel */}
-      <div className="flex-1 flex flex-col">{rightPanel}</div>
+        <div className="flex-1 flex flex-col">{rightPanel}</div>
+      </div>
     </div>
   )
 }

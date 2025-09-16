@@ -117,7 +117,7 @@ export function ChatInput({
   )
 
   return (
-    <div className="p-4 pt-0">
+    <div className="px-4 md:pb-4">
       <div className="flex gap-2">
         <PromptInput
           onSubmit={handleSubmit}

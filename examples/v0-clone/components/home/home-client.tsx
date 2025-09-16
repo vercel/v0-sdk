@@ -27,6 +27,7 @@ import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
 import { ResizableLayout } from '@/components/shared/resizable-layout'
+import { BottomToolbar } from '@/components/shared/bottom-toolbar'
 
 // Component that uses useSearchParams - needs to be wrapped in Suspense
 function SearchParamsHandler({ onReset }: { onReset: () => void }) {
@@ -69,6 +70,7 @@ export function HomeClient() {
   } | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { startHandoff } = useStreaming()
@@ -320,6 +322,9 @@ export function HomeClient() {
                 setCurrentChat((prev) =>
                   prev ? { ...prev, demo: demoUrl } : null,
                 )
+                if (window.innerWidth < 768) {
+                  setActivePanel('preview')
+                }
               }
             }
           })
@@ -425,38 +430,52 @@ export function HomeClient() {
 
         <AppHeader />
 
-        <ResizableLayout
-          className="h-[calc(100vh-64px)]"
-          leftPanel={
-            <>
-              <ChatMessages
-                chatHistory={chatHistory}
-                isLoading={isLoading}
-                currentChat={currentChat}
-                onStreamingComplete={handleStreamingComplete}
-                onChatData={handleChatData}
-                onStreamingStarted={() => setIsLoading(false)}
-              />
+        <div className="flex flex-col h-[calc(100vh-64px-40px)] md:h-[calc(100vh-64px)]">
+          <ResizableLayout
+            className="flex-1 min-h-0"
+            singlePanelMode={false}
+            activePanel={activePanel === 'chat' ? 'left' : 'right'}
+            leftPanel={
+              <div className="flex flex-col h-full">
+                <div className="flex-1 overflow-y-auto">
+                  <ChatMessages
+                    chatHistory={chatHistory}
+                    isLoading={isLoading}
+                    currentChat={currentChat}
+                    onStreamingComplete={handleStreamingComplete}
+                    onChatData={handleChatData}
+                    onStreamingStarted={() => setIsLoading(false)}
+                  />
+                </div>
 
-              <ChatInput
-                message={message}
-                setMessage={setMessage}
-                onSubmit={handleChatSendMessage}
-                isLoading={isLoading}
-                showSuggestions={false}
+                <ChatInput
+                  message={message}
+                  setMessage={setMessage}
+                  onSubmit={handleChatSendMessage}
+                  isLoading={isLoading}
+                  showSuggestions={false}
+                />
+              </div>
+            }
+            rightPanel={
+              <PreviewPanel
+                currentChat={currentChat}
+                isFullscreen={isFullscreen}
+                setIsFullscreen={setIsFullscreen}
+                refreshKey={refreshKey}
+                setRefreshKey={setRefreshKey}
               />
-            </>
-          }
-          rightPanel={
-            <PreviewPanel
-              currentChat={currentChat}
-              isFullscreen={isFullscreen}
-              setIsFullscreen={setIsFullscreen}
-              refreshKey={refreshKey}
-              setRefreshKey={setRefreshKey}
+            }
+          />
+
+          <div className="md:hidden">
+            <BottomToolbar
+              activePanel={activePanel}
+              onPanelChange={setActivePanel}
+              hasPreview={!!currentChat}
             />
-          }
-        />
+          </div>
+        </div>
 
         {/* Hidden streaming component for initial response */}
         {chatHistory.some((msg) => msg.isStreaming && msg.stream) && (
@@ -495,8 +514,8 @@ export function HomeClient() {
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl w-full">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               What can we build together?
             </h2>
           </div>
@@ -663,7 +682,7 @@ export function HomeClient() {
           </div>
 
           {/* Footer */}
-          <div className="mt-16 text-center text-sm text-muted-foreground">
+          <div className="mt-8 md:mt-16 text-center text-sm text-muted-foreground">
             <p>
               Powered by{' '}
               <Link
