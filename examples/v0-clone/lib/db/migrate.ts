@@ -6,7 +6,7 @@ import postgres from 'postgres'
 import { config } from 'dotenv'
 config()
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const runMigrate = async (retries = 5, throttleMs = 3000) => {
   if (!process.env.POSTGRES_URL) {
@@ -17,14 +17,14 @@ export const runMigrate = async (retries = 5, throttleMs = 3000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       console.log(`Running migrations (attempt ${attempt}/${retries})...`)
-      
+
       // Use a more conservative connection pool for build-time migrations
-      const connection = postgres(process.env.POSTGRES_URL, { 
+      const connection = postgres(process.env.POSTGRES_URL, {
         max: 1,
         idle_timeout: 20,
-        max_lifetime: 60 * 30 // 30 minutes
+        max_lifetime: 60 * 30, // 30 minutes
       })
-      
+
       const db = drizzle(connection)
       const start = Date.now()
 
@@ -33,19 +33,19 @@ export const runMigrate = async (retries = 5, throttleMs = 3000) => {
 
       const end = Date.now()
       console.log('Migrations completed in', end - start, 'ms')
-      
+
       // Clean up connection
       await connection.end()
       return true
-      
     } catch (err: any) {
       console.error(`Migration attempt ${attempt} failed`)
-      
+
       // Check if it's a quota error
-      const isQuotaError = err?.cause?.code === 'XX000' || 
-                          err?.message?.includes('quota') ||
-                          err?.message?.includes('compute time')
-      
+      const isQuotaError =
+        err?.cause?.code === 'XX000' ||
+        err?.message?.includes('quota') ||
+        err?.message?.includes('compute time')
+
       if (isQuotaError) {
         console.log('Database quota exceeded, waiting before retry...')
         if (attempt < retries) {
@@ -55,7 +55,9 @@ export const runMigrate = async (retries = 5, throttleMs = 3000) => {
           continue
         } else {
           console.log('All retry attempts exhausted due to quota limits')
-          console.log('Consider upgrading your database plan or trying deployment later')
+          console.log(
+            'Consider upgrading your database plan or trying deployment later',
+          )
           return false
         }
       } else {
@@ -65,7 +67,7 @@ export const runMigrate = async (retries = 5, throttleMs = 3000) => {
       }
     }
   }
-  
+
   return false
 }
 
