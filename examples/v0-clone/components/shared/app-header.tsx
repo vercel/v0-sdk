@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
 import { Button } from '@/components/ui/button'
 import { VercelIcon, GitHubIcon } from '@/components/ui/icons'
+import { DEPLOY_URL } from '@/lib/constants'
 import { Info } from 'lucide-react'
 import {
   Dialog,
@@ -112,7 +113,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
               asChild
             >
               <Link
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&products=%255B%257B%2522type%2522%253A%2522integration%2522%252C%2522protocol%2522%253A%2522storage%2522%252C%2522productSlug%2522%253A%2522neon%2522%252C%2522integrationSlug%2522%253A%2522neon%2522%257D%255D&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fclone-demo.v0-sdk.dev&root-directory=examples%2Fv0-clone"
+                href={DEPLOY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -172,7 +173,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             <p>
               Try the demo or{' '}
               <a
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk&env=V0_API_KEY,AUTH_SECRET,POSTGRES_URL&envDescription=Learn+more+about+how+to+get+the+required+environment+variables&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Fblob%2Fmain%2Fexamples%2Fv0-clone%2FREADME.md%23environment-variables&products=%255B%257B%2522type%2522%253A%2522integration%2522%252C%2522protocol%2522%253A%2522storage%2522%252C%2522productSlug%2522%253A%2522neon%2522%252C%2522integrationSlug%2522%253A%2522neon%2522%257D%255D&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fclone-demo.v0-sdk.dev&root-directory=examples%2Fv0-clone"
+                href={DEPLOY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
