@@ -6,23 +6,5 @@
       "productSlug": "neon",
       "integrationSlug": "neon"
     }
-  ],
-  "env": [
-    {
-      "name": "V0_API_KEY",
-      "description": "Get your API key from https://v0.dev/chat/settings/keys",
-      "type": "secret"
-    },
-    {
-      "name": "AUTH_SECRET",
-      "description": "Set a random secret to use for authentication.",
-      "type": "secret",
-      "generate": true
-    },
-    {
-      "name": "POSTGRES_URL",
-      "description": "PostgreSQL connection string. This will be automatically set when you connect the Neon database.",
-      "type": "secret"
-    }
   ]
 }
