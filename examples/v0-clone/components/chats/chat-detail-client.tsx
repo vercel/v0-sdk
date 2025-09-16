@@ -7,6 +7,7 @@ import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
 import { ResizableLayout } from '@/components/shared/resizable-layout'
+import { BottomToolbar } from '@/components/shared/bottom-toolbar'
 import { useChat } from '@/hooks/use-chat'
 import { useStreaming } from '@/contexts/streaming-context'
 import { cn } from '@/lib/utils'
@@ -21,6 +22,7 @@ export function ChatDetailClient() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [attachments, setAttachments] = useState<ImageAttachment[]>([])
+  const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const { handoff } = useStreaming()
@@ -78,41 +80,55 @@ export function ChatDetailClient() {
     >
       <AppHeader />
 
-      <ResizableLayout
-        className="h-[calc(100vh-64px)]"
-        leftPanel={
-          <>
-            <ChatMessages
-              chatHistory={chatHistory}
-              isLoading={isLoading}
-              currentChat={currentChat || null}
-              onStreamingComplete={handleStreamingComplete}
-              onChatData={handleChatData}
-              onStreamingStarted={() => setIsLoading(false)}
-            />
+      <div className="flex flex-col h-[calc(100vh-64px-1px)] md:h-[calc(100vh-64px-1px)]">
+        <ResizableLayout
+          className="flex-1 min-h-0"
+          singlePanelMode={false}
+          activePanel={activePanel === 'chat' ? 'left' : 'right'}
+          leftPanel={
+            <div className="flex flex-col h-full">
+              <div className="flex-1 overflow-y-auto">
+                <ChatMessages
+                  chatHistory={chatHistory}
+                  isLoading={isLoading}
+                  currentChat={currentChat || null}
+                  onStreamingComplete={handleStreamingComplete}
+                  onChatData={handleChatData}
+                  onStreamingStarted={() => setIsLoading(false)}
+                />
+              </div>
 
-            <ChatInput
-              message={message}
-              setMessage={setMessage}
-              onSubmit={handleSubmitWithAttachments}
-              isLoading={isLoading}
-              showSuggestions={false}
-              attachments={attachments}
-              onAttachmentsChange={setAttachments}
-              textareaRef={textareaRef}
+              <ChatInput
+                message={message}
+                setMessage={setMessage}
+                onSubmit={handleSubmitWithAttachments}
+                isLoading={isLoading}
+                showSuggestions={false}
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
+                textareaRef={textareaRef}
+              />
+            </div>
+          }
+          rightPanel={
+            <PreviewPanel
+              currentChat={currentChat || null}
+              isFullscreen={isFullscreen}
+              setIsFullscreen={setIsFullscreen}
+              refreshKey={refreshKey}
+              setRefreshKey={setRefreshKey}
             />
-          </>
-        }
-        rightPanel={
-          <PreviewPanel
-            currentChat={currentChat || null}
-            isFullscreen={isFullscreen}
-            setIsFullscreen={setIsFullscreen}
-            refreshKey={refreshKey}
-            setRefreshKey={setRefreshKey}
+          }
+        />
+
+        <div className="md:hidden">
+          <BottomToolbar
+            activePanel={activePanel}
+            onPanelChange={setActivePanel}
+            hasPreview={!!currentChat}
           />
-        }
-      />
+        </div>
+      </div>
     </div>
   )
 }
