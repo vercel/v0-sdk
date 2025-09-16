@@ -160,7 +160,7 @@ export function MobileMenu({ onInfoDialogOpen }: MobileMenuProps) {
                       onClick={closeMenu}
                     >
                       <div className="flex items-center gap-3 w-full">
-                        <GitHubIcon className="h-4 w-4 flex-shrink-0" />
+                        <GitHubIcon size={16} />
                         <div className="flex-1">
                           <div className="font-medium">GitHub</div>
                           <div className="text-sm text-muted-foreground">
@@ -183,7 +183,7 @@ export function MobileMenu({ onInfoDialogOpen }: MobileMenuProps) {
                       onClick={closeMenu}
                     >
                       <div className="flex items-center gap-3 w-full">
-                        <VercelIcon className="h-4 w-4 flex-shrink-0" />
+                        <VercelIcon size={16} />
                         <div className="flex-1">
                           <div className="font-medium">Deploy with Vercel</div>
                           <div className="text-sm text-muted-foreground">
