@@ -53,6 +53,9 @@ jobs:
       - name: Generate SDK
         run: pnpm sdk:generate
 
+      - name: Format generated code
+        run: pnpm format
+
       - name: Check for changes
         id: verify-changed-files
         run: |
