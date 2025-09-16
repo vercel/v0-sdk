@@ -4,6 +4,12 @@ The simplest way to use v0. Just prompt and see your app generated instantly - n
 
 ![Screenshot](screenshot.png)
 
+## Deploy Your Own
+
+You can deploy your own version of Simple v0 to Vercel with one click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Ftree%2Fmain%2Fexamples%2Fsimple-v0&env=V0_API_KEY&envDescription=Get+your+v0+API+key&envLink=https%3A%2F%2Fv0.app%2Fchat%2Fsettings%2Fkeys&project-name=simple-v0&repository-name=simple-v0&demo-title=Simple+v0&demo-description=The+simplest+way+to+use+v0+-+just+prompt+and+see+your+app&demo-url=https%3A%2F%2Fsimple-demo.v0-sdk.dev)
+
 ## Setup
 
 1. **Install dependencies:**
