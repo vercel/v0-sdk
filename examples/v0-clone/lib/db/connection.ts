@@ -8,17 +8,10 @@ config()
 
 let db: any = null
 
-// Try different Neon database URL environment variables
-const databaseUrl =
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL_NON_POOLING ||
-  process.env.DATABASE_URL_UNPOOLED
-
-// Only initialize database if a database URL is available
-if (databaseUrl) {
+// Only initialize database if POSTGRES_URL is available
+if (process.env.POSTGRES_URL) {
   console.log('Using PostgreSQL database')
-  const client = postgres(databaseUrl)
+  const client = postgres(process.env.POSTGRES_URL)
   db = drizzle(client, { schema })
 }
 
