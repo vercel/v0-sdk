@@ -85,6 +85,7 @@
                           "v0-gpt-5"
                         ],
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
+                        "default": "v0-1.5-md",
                         "deprecated": true
                       },
                       "imageGenerations": {
@@ -3120,6 +3121,7 @@
                           "v0-gpt-5"
                         ],
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
+                        "default": "v0-1.5-md",
                         "deprecated": true
                       },
                       "imageGenerations": {
@@ -13383,6 +13385,7 @@
                 "type": "string",
                 "enum": ["v0-1.5-sm", "v0-1.5-md", "v0-1.5-lg", "v0-gpt-5"],
                 "description": "Deprecated Model ID field preserved for backward compatibility.",
+                "default": "v0-1.5-md",
                 "deprecated": true
               },
               "imageGenerations": {
