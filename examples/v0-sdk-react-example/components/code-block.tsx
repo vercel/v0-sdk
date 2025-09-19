@@ -98,7 +98,7 @@ export function CodeBlock({
       language={language}
       code={code}
       className={cn(
-        'bg-gray-900 dark:bg-gray-900 border border-gray-700 p-4 rounded-lg overflow-x-auto text-sm font-mono',
+        'bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 p-4 rounded-lg overflow-x-auto text-sm font-mono',
         className,
       )}
     >
@@ -119,7 +119,7 @@ export function CodeBlock({
           )}
         >
           <code
-            className={`language-${normalizeLanguage(language)} text-gray-100`}
+            className={`language-${normalizeLanguage(language)} text-gray-900 dark:text-gray-100`}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           />
         </pre>

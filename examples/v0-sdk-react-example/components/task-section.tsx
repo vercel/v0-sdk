@@ -1,13 +1,6 @@
 import React from 'react'
 import { TaskSectionProps } from '@v0-sdk/react'
-import {
-  ChevronRight,
-  ChevronDown,
-  Search,
-  Folder,
-  Settings,
-  Wrench,
-} from 'lucide-react'
+import { ChevronDown, Search, Folder, Settings, Wrench } from 'lucide-react'
 
 function renderTaskPart(part: any): React.ReactNode {
   if (!part || typeof part !== 'object') {
@@ -26,10 +19,12 @@ function renderTaskPart(part: any): React.ReactNode {
             {part.filePaths?.map((path: string, idx: number) => (
               <div
                 key={idx}
-                className="inline-flex items-center gap-1 bg-gray-700/50 px-2 py-1 rounded text-xs"
+                className="inline-flex items-center gap-1 bg-gray-200 dark:bg-gray-700/50 px-2 py-1 rounded text-xs"
               >
-                <Settings className="w-3 h-3 text-blue-400" />
-                <span className="text-gray-300">{path.split('/').pop()}</span>
+                <Settings className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                <span className="text-gray-700 dark:text-gray-300">
+                  {path.split('/').pop()}
+                </span>
               </div>
             ))}
           </div>
@@ -46,7 +41,7 @@ function renderTaskPart(part: any): React.ReactNode {
       return (
         <div className="space-y-2">
           {part.answer && (
-            <div className="text-gray-300 text-sm leading-relaxed">
+            <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
               {part.answer}
             </div>
           )}
@@ -58,7 +53,7 @@ function renderTaskPart(part: any): React.ReactNode {
 
     case 'diagnostics-passed':
       return (
-        <div className="flex items-center gap-2 text-gray-400">
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
           <Wrench className="w-4 h-4" />
           <span>No issues found</span>
         </div>
@@ -88,7 +83,7 @@ export function TaskSection({
 }: TaskSectionProps) {
   const getTaskIcon = (type: string | undefined, title: string | undefined) => {
     const iconClass =
-      'w-4 h-4 text-gray-400 group-hover:text-foreground transition-colors'
+      'w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors'
     if (title?.includes('No issues found'))
       return <Wrench className={iconClass} />
     if (title?.includes('Analyzed codebase'))
@@ -115,7 +110,7 @@ export function TaskSection({
   if (meaningfulParts.length === 1) {
     return (
       <div className="mb-4" {...props}>
-        <div className="text-gray-400 text-sm">
+        <div className="text-gray-600 dark:text-gray-400 text-sm">
           {renderTaskPart(meaningfulParts[0])}
         </div>
       </div>
@@ -132,7 +127,7 @@ export function TaskSection({
           {collapsed ? (
             getTaskIcon(type, title)
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-foreground transition-colors" />
+            <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" />
           )}
         </div>
         <span className="text-gray-400 hover:text-foreground text-sm transition-colors">
@@ -141,10 +136,10 @@ export function TaskSection({
       </button>
       {!collapsed && (
         <div
-          className="pl-4 border-l border-gray-600 pt-2"
+          className="pl-4 border-l border-gray-300 dark:border-gray-600 pt-2"
           style={{ marginLeft: '7px' }}
         >
-          <div className="text-gray-400 text-sm space-y-2">
+          <div className="text-gray-600 dark:text-gray-400 text-sm space-y-2">
             {parts.map((part, index) => (
               <div key={index}>{renderTaskPart(part)}</div>
             ))}

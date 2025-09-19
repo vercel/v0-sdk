@@ -25,24 +25,26 @@ export function CodeProjectPart({
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               {collapsed ? (
-                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               ) : (
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               )}
             </div>
-            <span className="text-gray-300 text-sm font-medium">
+            <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">
               {title || 'Code Project'}
             </span>
-            <span className="text-gray-500 text-xs">v1</span>
+            <span className="text-gray-600 dark:text-gray-400 text-xs">v1</span>
           </div>
         </button>
 
         {!collapsed && (
           <div className="px-3 pb-3 space-y-1">
             <div className="flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-300">page.tsx</span>
-              <span className="text-gray-500">app/page.tsx</span>
+              <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <span className="text-gray-700 dark:text-gray-300">page.tsx</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                app/page.tsx
+              </span>
             </div>
           </div>
         )}
