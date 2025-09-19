@@ -430,7 +430,19 @@ function generateParameterInterface(
   const pathProps = pathParams.map((p) => `${p.name}: string`)
   const queryProps = queryParams.map((p) => {
     // Generate proper TypeScript type from schema
-    const tsType = schemaToTypeScript(p.schema, {})
+    let tsType = schemaToTypeScript(p.schema, {})
+
+    // Convert boolean-like string enums to native boolean
+    if (
+      p.schema?.enum &&
+      Array.isArray(p.schema.enum) &&
+      p.schema.enum.length === 2 &&
+      p.schema.enum.includes('true') &&
+      p.schema.enum.includes('false')
+    ) {
+      tsType = 'boolean'
+    }
+
     return `${p.name}${p.required ? '' : '?'}: ${tsType}`
   })
 
@@ -531,7 +543,20 @@ function generateFunctionBody(
       lines.push(`const query = params ? Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => `    ${p.name}: params.${p.name}`)
+        .map((p) => {
+          // Convert boolean to string for boolean-like enums
+          const isBooleanEnum =
+            p.schema?.enum &&
+            Array.isArray(p.schema.enum) &&
+            p.schema.enum.length === 2 &&
+            p.schema.enum.includes('true') &&
+            p.schema.enum.includes('false')
+
+          if (isBooleanEnum) {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+          return `    ${p.name}: params.${p.name}`
+        })
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
@@ -540,7 +565,20 @@ function generateFunctionBody(
       lines.push(`const query = Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => `    ${p.name}: params.${p.name}`)
+        .map((p) => {
+          // Convert boolean to string for boolean-like enums
+          const isBooleanEnum =
+            p.schema?.enum &&
+            Array.isArray(p.schema.enum) &&
+            p.schema.enum.length === 2 &&
+            p.schema.enum.includes('true') &&
+            p.schema.enum.includes('false')
+
+          if (isBooleanEnum) {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+          return `    ${p.name}: params.${p.name}`
+        })
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
