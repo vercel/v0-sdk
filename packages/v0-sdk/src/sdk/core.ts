@@ -68,9 +68,7 @@ export function createFetcher(config: ClientConfig = {}) {
     const contentType = res.headers.get('content-type') || ''
     if (
       contentType.includes('application/zip') ||
-      contentType.includes('application/gzip') ||
-      contentType.includes('application/octet-stream') ||
-      contentType.includes('application/x-tar')
+      contentType.includes('application/gzip')
     ) {
       return res.arrayBuffer()
     }
