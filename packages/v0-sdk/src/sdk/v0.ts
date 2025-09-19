@@ -443,6 +443,11 @@ export type MessageSummaryList = {
   }
 }
 
+export interface NotificationPreferenceSchema {
+  liveActivity: boolean
+  pushNotifications: boolean
+}
+
 export interface ProductDetailSchema {
   object: 'product'
   id: string
@@ -546,6 +551,37 @@ export interface UserDetail {
   name?: string
   email: string
   avatar: string
+}
+
+export type UserPreferencesPostResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export type UserPreferencesResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export interface UserPreferencesSchema {
+  notifications: {
+    liveActivity: boolean
+    pushNotifications: boolean
+  }
 }
 
 export interface VercelProjectDetail {
@@ -1217,15 +1253,22 @@ export function createClient(config: V0ClientConfig = {}) {
       async getVersion(params: {
         chatId: string
         versionId: string
+        includeDefaultFiles?: string
       }): Promise<ChatsGetVersionResponse> {
         const pathParams = {
           chatId: params.chatId,
           versionId: params.versionId,
         }
+        const query = Object.fromEntries(
+          Object.entries({
+            includeDefaultFiles: params.includeDefaultFiles,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
         return fetcher(
           `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
           'GET',
-          { pathParams },
+          { pathParams, ...(hasQuery ? { query } : {}) },
         )
       },
 
@@ -1244,6 +1287,30 @@ export function createClient(config: V0ClientConfig = {}) {
           `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
           'PATCH',
           { pathParams, body },
+        )
+      },
+
+      async downloadVersion(params: {
+        chatId: string
+        versionId: string
+        format?: string
+        includeDefaultFiles?: string
+      }): Promise<ArrayBuffer> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        const query = Object.fromEntries(
+          Object.entries({
+            format: params.format,
+            includeDefaultFiles: params.includeDefaultFiles,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}/download`,
+          'GET',
+          { pathParams, ...(hasQuery ? { query } : {}) },
         )
       },
 

@@ -4247,6 +4247,17 @@
               "type": "string"
             },
             "description": "The unique identifier of the version to retrieve. Provided as a path parameter."
+          },
+          {
+            "name": "includeDefaultFiles",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"],
+              "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files."
+            },
+            "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files."
           }
         ],
         "security": [
@@ -4552,6 +4563,307 @@
               "type": "string"
             },
             "description": "The unique identifier of the version (block) to update. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/versions/{versionId}/download": {
+      "get": {
+        "summary": "Download version files",
+        "description": "Download all files for a specific chat version as a zip or tarball archive. Use includeDefaultFiles=true to include all deployment files (package.json, configuration files, etc.) or false/omitted to return only the generated source files.",
+        "operationId": "chats.downloadVersion",
+        "tags": ["chats"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "ZIP archive containing the version files"
+                }
+              },
+              "application/gzip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Gzipped tar archive containing the version files"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unauthorized_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "forbidden_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "not_found_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "conflict_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "payload_too_large_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "unprocessable_entity_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "too_many_requests_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "internal_server_error"
+                        }
+                      },
+                      "required": ["message", "type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the version. Provided as a path parameter."
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the version to download. Provided as a path parameter."
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["zip", "tarball"],
+              "default": "zip",
+              "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems."
+            },
+            "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems."
+          },
+          {
+            "name": "includeDefaultFiles",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"],
+              "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files."
+            },
+            "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files."
           }
         ],
         "security": [
@@ -14638,6 +14950,22 @@
         "additionalProperties": false,
         "description": "List response containing multiple message summaries with cursor-based pagination."
       },
+      "NotificationPreferenceSchema": {
+        "type": "object",
+        "properties": {
+          "liveActivity": {
+            "type": "boolean",
+            "description": "Whether the user wants to receive live activities."
+          },
+          "pushNotifications": {
+            "type": "boolean",
+            "description": "Whether the user wants to receive push notifications."
+          }
+        },
+        "required": ["liveActivity", "pushNotifications"],
+        "additionalProperties": false,
+        "description": "User preference for notification delivery methods."
+      },
       "ProductDetailSchema": {
         "type": "object",
         "properties": {
@@ -15098,6 +15426,120 @@
         "required": ["id", "object", "email", "avatar"],
         "additionalProperties": false,
         "description": "Details of the authenticated user, including profile and contact information."
+      },
+      "UserPreferencesPostResponseSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "user_preferences",
+            "description": "Object type identifier."
+          },
+          "preferences": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "notifications": {
+                    "type": "object",
+                    "properties": {
+                      "liveActivity": {
+                        "type": "boolean",
+                        "description": "Whether the user wants to receive live activities."
+                      },
+                      "pushNotifications": {
+                        "type": "boolean",
+                        "description": "Whether the user wants to receive push notifications."
+                      }
+                    },
+                    "required": ["liveActivity", "pushNotifications"],
+                    "additionalProperties": false,
+                    "description": "The user's preferred method for receiving notifications."
+                  }
+                },
+                "required": ["notifications"],
+                "additionalProperties": false,
+                "description": "User preferences configuration including notification settings."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The updated preferences if successful, or null if failed."
+          }
+        },
+        "required": ["object", "preferences"],
+        "additionalProperties": false,
+        "description": "Response schema for updating user preferences."
+      },
+      "UserPreferencesResponseSchema": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "user_preferences",
+            "description": "Object type identifier."
+          },
+          "preferences": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "notifications": {
+                    "type": "object",
+                    "properties": {
+                      "liveActivity": {
+                        "type": "boolean",
+                        "description": "Whether the user wants to receive live activities."
+                      },
+                      "pushNotifications": {
+                        "type": "boolean",
+                        "description": "Whether the user wants to receive push notifications."
+                      }
+                    },
+                    "required": ["liveActivity", "pushNotifications"],
+                    "additionalProperties": false,
+                    "description": "The user's preferred method for receiving notifications."
+                  }
+                },
+                "required": ["notifications"],
+                "additionalProperties": false,
+                "description": "User preferences configuration including notification settings."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The user's current preferences, or null if not set."
+          }
+        },
+        "required": ["object", "preferences"],
+        "additionalProperties": false,
+        "description": "Response schema for retrieving user preferences."
+      },
+      "UserPreferencesSchema": {
+        "type": "object",
+        "properties": {
+          "notifications": {
+            "type": "object",
+            "properties": {
+              "liveActivity": {
+                "type": "boolean",
+                "description": "Whether the user wants to receive live activities."
+              },
+              "pushNotifications": {
+                "type": "boolean",
+                "description": "Whether the user wants to receive push notifications."
+              }
+            },
+            "required": ["liveActivity", "pushNotifications"],
+            "additionalProperties": false,
+            "description": "The user's preferred method for receiving notifications."
+          }
+        },
+        "required": ["notifications"],
+        "additionalProperties": false,
+        "description": "User preferences configuration including notification settings."
       },
       "VercelProjectDetail": {
         "type": "object",

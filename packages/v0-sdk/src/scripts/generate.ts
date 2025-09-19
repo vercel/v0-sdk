@@ -275,10 +275,28 @@ function extractRequestBodyProperties(
 }
 
 function extractResponseSchema(responses?: any): any {
-  if (!responses?.['200']?.content?.['application/json']?.schema) {
+  if (!responses?.['200']?.content) {
     return null
   }
-  return responses['200'].content['application/json'].schema
+
+  const content = responses['200'].content
+
+  // Check for binary responses first
+  if (
+    content['application/zip'] ||
+    content['application/gzip'] ||
+    content['application/octet-stream'] ||
+    content['application/x-tar']
+  ) {
+    return { type: 'binary', format: 'arrayBuffer' }
+  }
+
+  // Default to JSON response
+  if (content['application/json']?.schema) {
+    return content['application/json'].schema
+  }
+
+  return null
 }
 
 function generateInterfaces(operations: Operation[], schemas: any): string {
@@ -355,6 +373,11 @@ ${properties}
 
     // Generate interfaces for responses
     if (operation.responseSchema) {
+      // Skip interface generation for binary responses
+      if (operation.responseSchema.type === 'binary') {
+        continue
+      }
+
       const interfaceName = `${toPascalCase(operation.operationId)}Response`
       if (!generatedTypes.has(interfaceName)) {
         const tsType = schemaToTypeScript(operation.responseSchema, schemas)
@@ -445,6 +468,11 @@ function generateReturnType(
 ): string {
   if (!responseSchema) {
     return 'any'
+  }
+
+  // Handle binary responses
+  if (responseSchema.type === 'binary') {
+    return 'ArrayBuffer'
   }
 
   const responseTypeName = `${toPascalCase(operationId)}Response`
@@ -825,7 +853,10 @@ function generateIndexFile(
       exportedTypes.add(`${toPascalCase(operation.operationId)}Request`)
     }
     if (operation.responseSchema) {
-      exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+      // Skip binary response types as they don't need to be exported
+      if (operation.responseSchema.type !== 'binary') {
+        exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+      }
 
       // Check if this operation supports streaming and add stream response type
       const supportsStreaming = operation.bodyProps.some(
