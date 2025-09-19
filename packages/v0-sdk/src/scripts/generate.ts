@@ -428,9 +428,11 @@ function generateParameterInterface(
   const queryParams = params.filter((p) => p.in === 'query')
 
   const pathProps = pathParams.map((p) => `${p.name}: string`)
-  const queryProps = queryParams.map(
-    (p) => `${p.name}${p.required ? '' : '?'}: string`,
-  )
+  const queryProps = queryParams.map((p) => {
+    // Generate proper TypeScript type from schema
+    const tsType = schemaToTypeScript(p.schema, {})
+    return `${p.name}${p.required ? '' : '?'}: ${tsType}`
+  })
 
   let bodyInterface = ''
   if (bodyProps.length > 0 || requestBodySchema) {

@@ -1107,9 +1107,9 @@ export function createClient(config: V0ClientConfig = {}) {
       },
 
       async find(params?: {
-        limit?: string
-        offset?: string
-        isFavorite?: string
+        limit?: number
+        offset?: number
+        isFavorite?: 'true' | 'false'
       }): Promise<ChatsFindResponse> {
         const query = params
           ? (Object.fromEntries(
@@ -1174,7 +1174,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findMessages(params: {
         chatId: string
-        limit?: string
+        limit?: number
         cursor?: string
       }): Promise<ChatsFindMessagesResponse> {
         const pathParams = { chatId: params.chatId }
@@ -1233,7 +1233,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findVersions(params: {
         chatId: string
-        limit?: string
+        limit?: number
         cursor?: string
       }): Promise<ChatsFindVersionsResponse> {
         const pathParams = { chatId: params.chatId }
@@ -1253,7 +1253,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async getVersion(params: {
         chatId: string
         versionId: string
-        includeDefaultFiles?: string
+        includeDefaultFiles?: 'true' | 'false'
       }): Promise<ChatsGetVersionResponse> {
         const pathParams = {
           chatId: params.chatId,
@@ -1293,8 +1293,8 @@ export function createClient(config: V0ClientConfig = {}) {
       async downloadVersion(params: {
         chatId: string
         versionId: string
-        format?: string
-        includeDefaultFiles?: string
+        format?: 'zip' | 'tarball'
+        includeDefaultFiles?: 'true' | 'false'
       }): Promise<ArrayBuffer> {
         const pathParams = {
           chatId: params.chatId,
@@ -1406,7 +1406,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findEnvVars(params: {
         projectId: string
-        decrypted?: string
+        decrypted?: 'true' | 'false'
       }): Promise<ProjectsFindEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
         const query = Object.fromEntries(
@@ -1424,7 +1424,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async createEnvVars(
         params: {
           projectId: string
-          decrypted?: string
+          decrypted?: 'true' | 'false'
         } & ProjectsCreateEnvVarsRequest,
       ): Promise<ProjectsCreateEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
@@ -1448,7 +1448,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async updateEnvVars(
         params: {
           projectId: string
-          decrypted?: string
+          decrypted?: 'true' | 'false'
         } & ProjectsUpdateEnvVarsRequest,
       ): Promise<ProjectsUpdateEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
@@ -1481,7 +1481,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async getEnvVar(params: {
         projectId: string
         environmentVariableId: string
-        decrypted?: string
+        decrypted?: 'true' | 'false'
       }): Promise<ProjectsGetEnvVarResponse> {
         const pathParams = {
           projectId: params.projectId,
@@ -1548,7 +1548,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findLogs(params: {
         deploymentId: string
-        since?: string
+        since?: number
       }): Promise<DeploymentsFindLogsResponse> {
         const pathParams = { deploymentId: params.deploymentId }
         const query = Object.fromEntries(
