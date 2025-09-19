@@ -111,4 +111,10 @@ export type {
   UserGetPlanResponse,
   UserGetResponse,
   UserGetScopesResponse,
+
+  // Other types
+  NotificationPreferenceSchema,
+  UserPreferencesPostResponseSchema,
+  UserPreferencesResponseSchema,
+  UserPreferencesSchema,
 } from './sdk/v0'

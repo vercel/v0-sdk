@@ -443,6 +443,11 @@ export type MessageSummaryList = {
   }
 }
 
+export interface NotificationPreferenceSchema {
+  liveActivity: boolean
+  pushNotifications: boolean
+}
+
 export interface ProductDetailSchema {
   object: 'product'
   id: string
@@ -546,6 +551,37 @@ export interface UserDetail {
   name?: string
   email: string
   avatar: string
+}
+
+export type UserPreferencesPostResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export type UserPreferencesResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export interface UserPreferencesSchema {
+  notifications: {
+    liveActivity: boolean
+    pushNotifications: boolean
+  }
 }
 
 export interface VercelProjectDetail {
