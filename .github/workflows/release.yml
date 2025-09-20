@@ -35,6 +35,14 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Backup workspace config and exclude examples
+        run: |
+          cp pnpm-workspace.yaml pnpm-workspace.yaml.bak
+          cat > pnpm-workspace.yaml << 'EOF'
+          packages:
+            - 'packages/*'
+          EOF
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
@@ -46,6 +54,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
+
+      - name: Restore workspace config
+        if: always()
+        run: |
+          if [ -f pnpm-workspace.yaml.bak ]; then
+            mv pnpm-workspace.yaml.bak pnpm-workspace.yaml
+          fi
 
       - name: Update examples with new versions
         if: steps.changesets.outputs.published == 'true'

@@ -20,7 +20,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "sdk:generate": "turbo run sdk:generate",
     "changeset": "changeset",
-    "ci:version": "changeset version && pnpm install --no-frozen-lockfile --filter='!./examples/*'",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
     "ci:release": "turbo clean && turbo build && changeset publish",
     "prepare": "husky"
   },
