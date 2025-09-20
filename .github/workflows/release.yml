@@ -35,13 +35,10 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Backup workspace config and exclude examples
+      - name: Temporarily hide examples from workspace
         run: |
-          cp pnpm-workspace.yaml pnpm-workspace.yaml.bak
-          cat > pnpm-workspace.yaml << 'EOF'
-          packages:
-            - 'packages/*'
-          EOF
+          # Move examples out of the way so changeset doesn't see them
+          mv examples examples-temp
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -55,11 +52,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
 
-      - name: Restore workspace config
+      - name: Restore examples directory
         if: always()
         run: |
-          if [ -f pnpm-workspace.yaml.bak ]; then
-            mv pnpm-workspace.yaml.bak pnpm-workspace.yaml
+          # Restore examples directory if it was moved
+          if [ -d examples-temp ]; then
+            mv examples-temp examples
           fi
 
       - name: Update examples with new versions
