@@ -35,11 +35,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Temporarily hide examples from workspace
-        run: |
-          # Move examples out of the way so changeset doesn't see them
-          mv examples examples-temp
-
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
@@ -51,42 +46,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
-
-      - name: Restore examples directory
-        if: always()
-        run: |
-          # Restore examples directory if it was moved
-          if [ -d examples-temp ]; then
-            mv examples-temp examples
-          fi
-
-      - name: Update examples with new versions
-        if: steps.changesets.outputs.published == 'true'
-        run: |
-          # Get the new version of v0-sdk
-          V0_SDK_VERSION=$(node -p "require('./packages/v0-sdk/package.json').version")
-          V0_REACT_VERSION=$(node -p "require('./packages/react/package.json').version")
-          
-          echo "Updating examples to v0-sdk@^$V0_SDK_VERSION and @v0-sdk/react@^$V0_REACT_VERSION"
-          
-          # Update simple-v0 example
-          sed -i "s/\"v0-sdk\": \"[^\"]*\"/\"v0-sdk\": \"^$V0_SDK_VERSION\"/" examples/simple-v0/package.json
-          
-          # Update v0-clone example  
-          sed -i "s/\"v0-sdk\": \"[^\"]*\"/\"v0-sdk\": \"^$V0_SDK_VERSION\"/" examples/v0-clone/package.json
-          sed -i "s/\"@v0-sdk\/react\": \"[^\"]*\"/\"@v0-sdk\/react\": \"^$V0_REACT_VERSION\"/" examples/v0-clone/package.json
-          
-          # Check if there are changes to commit
-          if [[ -n $(git status --porcelain) ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add examples/*/package.json
-            git commit -m "chore: update examples to use published versions
-
-          - v0-sdk@^$V0_SDK_VERSION
-          - @v0-sdk/react@^$V0_REACT_VERSION"
-            git push
-            echo "Examples updated and committed"
-          else
-            echo "No changes to examples needed"
-          fi
