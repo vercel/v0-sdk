@@ -1,5 +1,17 @@
 # @v0-sdk/ai-tools
 
+## 0.2.0
+
+### Minor Changes
+
+- 1e39cb3: - add v0.chats.downloadVersion()
+  - use correct types for query params
+
+### Patch Changes
+
+- Updated dependencies [1e39cb3]
+  - v0-sdk@0.12.0
+
 ## 0.1.2
 
 ### Patch Changes
