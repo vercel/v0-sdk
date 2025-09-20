@@ -275,10 +275,28 @@ function extractRequestBodyProperties(
 }
 
 function extractResponseSchema(responses?: any): any {
-  if (!responses?.['200']?.content?.['application/json']?.schema) {
+  if (!responses?.['200']?.content) {
     return null
   }
-  return responses['200'].content['application/json'].schema
+
+  const content = responses['200'].content
+
+  // Check for binary responses first
+  if (
+    content['application/zip'] ||
+    content['application/gzip'] ||
+    content['application/octet-stream'] ||
+    content['application/x-tar']
+  ) {
+    return { type: 'binary', format: 'arrayBuffer' }
+  }
+
+  // Default to JSON response
+  if (content['application/json']?.schema) {
+    return content['application/json'].schema
+  }
+
+  return null
 }
 
 function generateInterfaces(operations: Operation[], schemas: any): string {
@@ -355,6 +373,11 @@ ${properties}
 
     // Generate interfaces for responses
     if (operation.responseSchema) {
+      // Skip interface generation for binary responses
+      if (operation.responseSchema.type === 'binary') {
+        continue
+      }
+
       const interfaceName = `${toPascalCase(operation.operationId)}Response`
       if (!generatedTypes.has(interfaceName)) {
         const tsType = schemaToTypeScript(operation.responseSchema, schemas)
@@ -405,9 +428,23 @@ function generateParameterInterface(
   const queryParams = params.filter((p) => p.in === 'query')
 
   const pathProps = pathParams.map((p) => `${p.name}: string`)
-  const queryProps = queryParams.map(
-    (p) => `${p.name}${p.required ? '' : '?'}: string`,
-  )
+  const queryProps = queryParams.map((p) => {
+    // Generate proper TypeScript type from schema
+    let tsType = schemaToTypeScript(p.schema, {})
+
+    // Convert boolean-like string enums to native boolean
+    if (
+      p.schema?.enum &&
+      Array.isArray(p.schema.enum) &&
+      p.schema.enum.length === 2 &&
+      p.schema.enum.includes('true') &&
+      p.schema.enum.includes('false')
+    ) {
+      tsType = 'boolean'
+    }
+
+    return `${p.name}${p.required ? '' : '?'}: ${tsType}`
+  })
 
   let bodyInterface = ''
   if (bodyProps.length > 0 || requestBodySchema) {
@@ -445,6 +482,11 @@ function generateReturnType(
 ): string {
   if (!responseSchema) {
     return 'any'
+  }
+
+  // Handle binary responses
+  if (responseSchema.type === 'binary') {
+    return 'ArrayBuffer'
   }
 
   const responseTypeName = `${toPascalCase(operationId)}Response`
@@ -501,7 +543,26 @@ function generateFunctionBody(
       lines.push(`const query = params ? Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => `    ${p.name}: params.${p.name}`)
+        .map((p) => {
+          // Convert boolean to string for boolean-like enums
+          const isBooleanEnum =
+            p.schema?.enum &&
+            Array.isArray(p.schema.enum) &&
+            p.schema.enum.length === 2 &&
+            p.schema.enum.includes('true') &&
+            p.schema.enum.includes('false')
+
+          if (isBooleanEnum) {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
+          // Convert numbers to strings for query parameters
+          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
+          return `    ${p.name}: params.${p.name}`
+        })
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
@@ -510,7 +571,26 @@ function generateFunctionBody(
       lines.push(`const query = Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => `    ${p.name}: params.${p.name}`)
+        .map((p) => {
+          // Convert boolean to string for boolean-like enums
+          const isBooleanEnum =
+            p.schema?.enum &&
+            Array.isArray(p.schema.enum) &&
+            p.schema.enum.length === 2 &&
+            p.schema.enum.includes('true') &&
+            p.schema.enum.includes('false')
+
+          if (isBooleanEnum) {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
+          // Convert numbers to strings for query parameters
+          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
+          return `    ${p.name}: params.${p.name}`
+        })
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
@@ -825,7 +905,10 @@ function generateIndexFile(
       exportedTypes.add(`${toPascalCase(operation.operationId)}Request`)
     }
     if (operation.responseSchema) {
-      exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+      // Skip binary response types as they don't need to be exported
+      if (operation.responseSchema.type !== 'binary') {
+        exportedTypes.add(`${toPascalCase(operation.operationId)}Response`)
+      }
 
       // Check if this operation supports streaming and add stream response type
       const supportsStreaming = operation.bodyProps.some(

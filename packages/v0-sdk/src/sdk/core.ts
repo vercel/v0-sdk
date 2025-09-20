@@ -64,6 +64,15 @@ export function createFetcher(config: ClientConfig = {}) {
       throw new Error(`HTTP ${res.status}: ${text}`)
     }
 
+    // Handle binary responses based on Content-Type
+    const contentType = res.headers.get('content-type') || ''
+    if (
+      contentType.includes('application/zip') ||
+      contentType.includes('application/gzip')
+    ) {
+      return res.arrayBuffer()
+    }
+
     return res.json()
   }
 }

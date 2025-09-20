@@ -443,6 +443,11 @@ export type MessageSummaryList = {
   }
 }
 
+export interface NotificationPreferenceSchema {
+  liveActivity: boolean
+  pushNotifications: boolean
+}
+
 export interface ProductDetailSchema {
   object: 'product'
   id: string
@@ -546,6 +551,37 @@ export interface UserDetail {
   name?: string
   email: string
   avatar: string
+}
+
+export type UserPreferencesPostResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export type UserPreferencesResponseSchema = {
+  object: 'user_preferences'
+  preferences:
+    | {
+        notifications: {
+          liveActivity: boolean
+          pushNotifications: boolean
+        }
+      }
+    | unknown
+}
+
+export interface UserPreferencesSchema {
+  notifications: {
+    liveActivity: boolean
+    pushNotifications: boolean
+  }
 }
 
 export interface VercelProjectDetail {
@@ -1071,16 +1107,23 @@ export function createClient(config: V0ClientConfig = {}) {
       },
 
       async find(params?: {
-        limit?: string
-        offset?: string
-        isFavorite?: string
+        limit?: number
+        offset?: number
+        isFavorite?: boolean
       }): Promise<ChatsFindResponse> {
         const query = params
           ? (Object.fromEntries(
               Object.entries({
-                limit: params.limit,
-                offset: params.offset,
-                isFavorite: params.isFavorite,
+                limit:
+                  params.limit !== undefined ? String(params.limit) : undefined,
+                offset:
+                  params.offset !== undefined
+                    ? String(params.offset)
+                    : undefined,
+                isFavorite:
+                  params.isFavorite !== undefined
+                    ? String(params.isFavorite)
+                    : undefined,
               }).filter(([_, value]) => value !== undefined),
             ) as Record<string, string>)
           : {}
@@ -1138,13 +1181,14 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findMessages(params: {
         chatId: string
-        limit?: string
+        limit?: number
         cursor?: string
       }): Promise<ChatsFindMessagesResponse> {
         const pathParams = { chatId: params.chatId }
         const query = Object.fromEntries(
           Object.entries({
-            limit: params.limit,
+            limit:
+              params.limit !== undefined ? String(params.limit) : undefined,
             cursor: params.cursor,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
@@ -1197,13 +1241,14 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findVersions(params: {
         chatId: string
-        limit?: string
+        limit?: number
         cursor?: string
       }): Promise<ChatsFindVersionsResponse> {
         const pathParams = { chatId: params.chatId }
         const query = Object.fromEntries(
           Object.entries({
-            limit: params.limit,
+            limit:
+              params.limit !== undefined ? String(params.limit) : undefined,
             cursor: params.cursor,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
@@ -1217,15 +1262,25 @@ export function createClient(config: V0ClientConfig = {}) {
       async getVersion(params: {
         chatId: string
         versionId: string
+        includeDefaultFiles?: boolean
       }): Promise<ChatsGetVersionResponse> {
         const pathParams = {
           chatId: params.chatId,
           versionId: params.versionId,
         }
+        const query = Object.fromEntries(
+          Object.entries({
+            includeDefaultFiles:
+              params.includeDefaultFiles !== undefined
+                ? String(params.includeDefaultFiles)
+                : undefined,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
         return fetcher(
           `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
           'GET',
-          { pathParams },
+          { pathParams, ...(hasQuery ? { query } : {}) },
         )
       },
 
@@ -1244,6 +1299,33 @@ export function createClient(config: V0ClientConfig = {}) {
           `/chats/${pathParams.chatId}/versions/${pathParams.versionId}`,
           'PATCH',
           { pathParams, body },
+        )
+      },
+
+      async downloadVersion(params: {
+        chatId: string
+        versionId: string
+        format?: 'zip' | 'tarball'
+        includeDefaultFiles?: boolean
+      }): Promise<ArrayBuffer> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        const query = Object.fromEntries(
+          Object.entries({
+            format: params.format,
+            includeDefaultFiles:
+              params.includeDefaultFiles !== undefined
+                ? String(params.includeDefaultFiles)
+                : undefined,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}/download`,
+          'GET',
+          { pathParams, ...(hasQuery ? { query } : {}) },
         )
       },
 
@@ -1339,12 +1421,15 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findEnvVars(params: {
         projectId: string
-        decrypted?: string
+        decrypted?: boolean
       }): Promise<ProjectsFindEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
         const query = Object.fromEntries(
           Object.entries({
-            decrypted: params.decrypted,
+            decrypted:
+              params.decrypted !== undefined
+                ? String(params.decrypted)
+                : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const hasQuery = Object.keys(query).length > 0
@@ -1357,13 +1442,16 @@ export function createClient(config: V0ClientConfig = {}) {
       async createEnvVars(
         params: {
           projectId: string
-          decrypted?: string
+          decrypted?: boolean
         } & ProjectsCreateEnvVarsRequest,
       ): Promise<ProjectsCreateEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
         const query = Object.fromEntries(
           Object.entries({
-            decrypted: params.decrypted,
+            decrypted:
+              params.decrypted !== undefined
+                ? String(params.decrypted)
+                : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const body = {
@@ -1381,13 +1469,16 @@ export function createClient(config: V0ClientConfig = {}) {
       async updateEnvVars(
         params: {
           projectId: string
-          decrypted?: string
+          decrypted?: boolean
         } & ProjectsUpdateEnvVarsRequest,
       ): Promise<ProjectsUpdateEnvVarsResponse> {
         const pathParams = { projectId: params.projectId }
         const query = Object.fromEntries(
           Object.entries({
-            decrypted: params.decrypted,
+            decrypted:
+              params.decrypted !== undefined
+                ? String(params.decrypted)
+                : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const body = { environmentVariables: params.environmentVariables }
@@ -1414,7 +1505,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async getEnvVar(params: {
         projectId: string
         environmentVariableId: string
-        decrypted?: string
+        decrypted?: boolean
       }): Promise<ProjectsGetEnvVarResponse> {
         const pathParams = {
           projectId: params.projectId,
@@ -1422,7 +1513,10 @@ export function createClient(config: V0ClientConfig = {}) {
         }
         const query = Object.fromEntries(
           Object.entries({
-            decrypted: params.decrypted,
+            decrypted:
+              params.decrypted !== undefined
+                ? String(params.decrypted)
+                : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const hasQuery = Object.keys(query).length > 0
@@ -1481,12 +1575,13 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async findLogs(params: {
         deploymentId: string
-        since?: string
+        since?: number
       }): Promise<DeploymentsFindLogsResponse> {
         const pathParams = { deploymentId: params.deploymentId }
         const query = Object.fromEntries(
           Object.entries({
-            since: params.since,
+            since:
+              params.since !== undefined ? String(params.since) : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const hasQuery = Object.keys(query).length > 0
