@@ -189,8 +189,8 @@ importers:
         specifier: ^3.3.1
         version: 3.3.1
       v0-sdk:
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: workspace:*
+        version: link:../../packages/v0-sdk
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.7(@types/react@19.1.11))(@types/react@19.1.11)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -256,8 +256,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.1.11)(react@19.1.0)
       '@v0-sdk/react':
-        specifier: ^0.3.1
-        version: 0.3.1(react@19.1.0)
+        specifier: workspace:*
+        version: link:../../packages/react
       '@vercel/postgres':
         specifier: ^0.10.0
         version: 0.10.0
@@ -328,8 +328,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(react@19.1.0)
       v0-sdk:
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: workspace:*
+        version: link:../../packages/v0-sdk
       zod:
         specifier: ^4.1.1
         version: 4.1.1
@@ -2369,11 +2369,6 @@ packages:
 
   '@upstash/redis@1.35.3':
     resolution: {integrity: sha512-hSjv66NOuahW3MisRGlSgoszU2uONAY2l5Qo3Sae8OT3/Tng9K+2/cBRuyPBX8egwEGcNNCF9+r0V6grNnhL+w==}
-
-  '@v0-sdk/react@0.3.1':
-    resolution: {integrity: sha512-yR8bvUs7fx+cTB2wUn6nqmVWJ+sSzeDxH7w6uVaFsVCsHHg1ZQExDo0as/WiMq4Yx1XmWWPlltqAQFgD2UgsJA==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
 
   '@vercel/postgres@0.10.0':
     resolution: {integrity: sha512-fSD23DxGND40IzSkXjcFcxr53t3Tiym59Is0jSYIFpG4/0f0KO9SGtcp1sXiebvPaGe7N/tU05cH4yt2S6/IPg==}
@@ -5267,10 +5262,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  v0-sdk@0.11.2:
-    resolution: {integrity: sha512-fQraCQ1N5w85enXhjyctlTOrBhqUI18VDgjL/b9XG5Vtm2Py06iPtwHGDxTqKGQUtnVllRgtB9zSAx8uTuSsMQ==}
-    engines: {node: '>=22', pnpm: '>=9'}
-
   validate-npm-package-name@5.0.1:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -7138,11 +7129,6 @@ snapshots:
   '@upstash/redis@1.35.3':
     dependencies:
       uncrypto: 0.1.3
-
-  '@v0-sdk/react@0.3.1(react@19.1.0)':
-    dependencies:
-      jsondiffpatch: 0.7.3
-      react: 19.1.0
 
   '@vercel/postgres@0.10.0':
     dependencies:
@@ -10568,8 +10554,6 @@ snapshots:
       react: 19.1.0
 
   util-deprecate@1.0.2: {}
-
-  v0-sdk@0.11.2: {}
 
   validate-npm-package-name@5.0.1: {}
 
