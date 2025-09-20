@@ -249,9 +249,9 @@ export function createProjectTools(config: V0ClientConfig = {}) {
     }),
     execute: async (params) => {
       const { projectId, decrypted } = params
-      const result = await client.projects.findEnvVars({ 
-        projectId, 
-        decrypted 
+      const result = await client.projects.findEnvVars({
+        projectId,
+        decrypted,
       })
 
       return {
