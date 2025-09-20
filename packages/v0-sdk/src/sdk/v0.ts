@@ -1114,8 +1114,12 @@ export function createClient(config: V0ClientConfig = {}) {
         const query = params
           ? (Object.fromEntries(
               Object.entries({
-                limit: params.limit,
-                offset: params.offset,
+                limit:
+                  params.limit !== undefined ? String(params.limit) : undefined,
+                offset:
+                  params.offset !== undefined
+                    ? String(params.offset)
+                    : undefined,
                 isFavorite:
                   params.isFavorite !== undefined
                     ? String(params.isFavorite)
@@ -1183,7 +1187,8 @@ export function createClient(config: V0ClientConfig = {}) {
         const pathParams = { chatId: params.chatId }
         const query = Object.fromEntries(
           Object.entries({
-            limit: params.limit,
+            limit:
+              params.limit !== undefined ? String(params.limit) : undefined,
             cursor: params.cursor,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
@@ -1242,7 +1247,8 @@ export function createClient(config: V0ClientConfig = {}) {
         const pathParams = { chatId: params.chatId }
         const query = Object.fromEntries(
           Object.entries({
-            limit: params.limit,
+            limit:
+              params.limit !== undefined ? String(params.limit) : undefined,
             cursor: params.cursor,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
@@ -1574,7 +1580,8 @@ export function createClient(config: V0ClientConfig = {}) {
         const pathParams = { deploymentId: params.deploymentId }
         const query = Object.fromEntries(
           Object.entries({
-            since: params.since,
+            since:
+              params.since !== undefined ? String(params.since) : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const hasQuery = Object.keys(query).length > 0

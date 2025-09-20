@@ -555,6 +555,12 @@ function generateFunctionBody(
           if (isBooleanEnum) {
             return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
           }
+
+          // Convert numbers to strings for query parameters
+          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
           return `    ${p.name}: params.${p.name}`
         })
         .join(',\n')
@@ -577,6 +583,12 @@ function generateFunctionBody(
           if (isBooleanEnum) {
             return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
           }
+
+          // Convert numbers to strings for query parameters
+          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
+            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
+          }
+
           return `    ${p.name}: params.${p.name}`
         })
         .join(',\n')
