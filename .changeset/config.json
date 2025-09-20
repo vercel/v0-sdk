@@ -9,7 +9,7 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "simple-v0",
-    "classic-v0", 
+    "classic-v0",
     "v0-clone",
     "v0-sdk-react-example",
     "ai-tools-example"
