@@ -105,7 +105,7 @@ export function createDeploymentTools(config: V0ClientConfig = {}) {
     description: 'Get logs for a deployment',
     inputSchema: z.object({
       deploymentId: z.string().describe('ID of the deployment'),
-      since: z.string().optional().describe('Timestamp to get logs since'),
+      since: z.number().optional().describe('Timestamp to get logs since'),
     }),
     execute: async (params) => {
       const { deploymentId, since } = params

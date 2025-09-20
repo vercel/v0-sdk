@@ -213,7 +213,7 @@ export function createProjectTools(config: V0ClientConfig = {}) {
         .optional()
         .describe('Whether to upsert existing variables'),
       decrypted: z
-        .string()
+        .boolean()
         .optional()
         .describe('Whether to return decrypted values'),
     }),
@@ -243,13 +243,16 @@ export function createProjectTools(config: V0ClientConfig = {}) {
     inputSchema: z.object({
       projectId: z.string().describe('ID of the project'),
       decrypted: z
-        .string()
+        .boolean()
         .optional()
         .describe('Whether to return decrypted values'),
     }),
     execute: async (params) => {
       const { projectId, decrypted } = params
-      const result = await client.projects.findEnvVars({ projectId, decrypted })
+      const result = await client.projects.findEnvVars({ 
+        projectId, 
+        decrypted 
+      })
 
       return {
         environmentVariables: result.data.map((envVar) => ({
@@ -277,7 +280,7 @@ export function createProjectTools(config: V0ClientConfig = {}) {
         )
         .describe('Environment variables to update'),
       decrypted: z
-        .string()
+        .boolean()
         .optional()
         .describe('Whether to return decrypted values'),
     }),

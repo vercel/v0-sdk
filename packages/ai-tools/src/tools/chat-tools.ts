@@ -267,9 +267,9 @@ export function createChatTools(config: V0ClientConfig = {}) {
   const listChats = tool({
     description: 'List all chats',
     inputSchema: z.object({
-      limit: z.string().optional().describe('Number of chats to return'),
-      offset: z.string().optional().describe('Offset for pagination'),
-      isFavorite: z.string().optional().describe('Filter by favorite status'),
+      limit: z.number().optional().describe('Number of chats to return'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      isFavorite: z.boolean().optional().describe('Filter by favorite status'),
     }),
     execute: async (params) => {
       const { limit, offset, isFavorite } = params
