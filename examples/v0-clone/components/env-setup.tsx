@@ -43,7 +43,7 @@ export function EnvSetup({ missingVars }: EnvSetupProps) {
             <p className="text-gray-600 dark:text-gray-400">
               Add these environment variables to your{' '}
               <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">
-                .env
+                .env.local
               </code>{' '}
               file:
             </p>

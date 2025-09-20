@@ -43,10 +43,10 @@ A faithful recreation of the original v0.dev interface using the v0-sdk. This ex
    pnpm install
    ```
 
-3. Set up environment variables:
+3. Create a `.env.local` file in the root directory:
 
    ```bash
-   export V0_API_KEY=your_api_key_here
+   cp .env.example .env.local
    ```
 
 4. Run the development server:
