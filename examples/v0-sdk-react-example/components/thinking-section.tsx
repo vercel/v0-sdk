@@ -1,6 +1,6 @@
 import React from 'react'
 import { ThinkingSectionProps } from '@v0-sdk/react'
-import { Brain, ChevronRight, ChevronDown } from 'lucide-react'
+import { Brain, ChevronDown } from 'lucide-react'
 
 export function ThinkingSection({
   title,
@@ -24,22 +24,22 @@ export function ThinkingSection({
       >
         <div className="flex items-center gap-1">
           {collapsed ? (
-            <Brain className="w-4 h-4 text-gray-400 group-hover:text-foreground transition-colors" />
+            <Brain className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-foreground transition-colors" />
+            <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" />
           )}
         </div>
-        <span className="text-gray-400 hover:text-foreground text-sm transition-colors">
+        <span className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm transition-colors">
           {title || 'Thought'}
           {duration && ` for ${Math.round(duration)}s`}
         </span>
       </button>
       {!collapsed && thought && (
         <div
-          className="pl-4 border-l border-gray-600 pt-2"
+          className="pl-4 border-l border-gray-300 dark:border-gray-600 pt-2"
           style={{ marginLeft: '7px' }}
         >
-          <div className="text-gray-400 text-sm space-y-2">
+          <div className="text-gray-600 dark:text-gray-400 text-sm space-y-2">
             {thought.split('\n\n').map((paragraph, index) => (
               <div key={index}>{paragraph}</div>
             ))}
