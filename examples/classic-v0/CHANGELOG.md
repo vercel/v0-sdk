@@ -1,5 +1,12 @@
 # classic-v0
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [df2abd4]
+  - v0-sdk@0.13.0
+
 ## 0.1.4
 
 ### Patch Changes

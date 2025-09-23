@@ -1,5 +1,12 @@
 # @v0-sdk/ai-tools
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [df2abd4]
+  - v0-sdk@0.13.0
+
 ## 0.2.0
 
 ### Minor Changes

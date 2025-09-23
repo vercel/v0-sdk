@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.13.0
+
+### Minor Changes
+
+- df2abd4: adds v0.reports.getUsage() for chat/message usage
+
 ## 0.12.0
 
 ### Minor Changes
