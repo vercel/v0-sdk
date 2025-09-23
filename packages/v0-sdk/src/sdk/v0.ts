@@ -637,6 +637,62 @@ export type VersionSummaryList = {
   }
 }
 
+export interface UnauthorizedError {
+  error: {
+    message: string
+    type: 'unauthorized_error'
+  }
+}
+
+export interface ForbiddenError {
+  error: {
+    message: string
+    type: 'forbidden_error'
+  }
+}
+
+export interface NotFoundError {
+  error: {
+    message: string
+    type: 'not_found_error'
+  }
+}
+
+export interface ConflictError {
+  error: {
+    message: string
+    type: 'conflict_error'
+  }
+}
+
+export interface PayloadTooLargeError {
+  error: {
+    message: string
+    type: 'payload_too_large_error'
+  }
+}
+
+export interface UnprocessableEntityError {
+  error: {
+    message: string
+    type: 'unprocessable_entity_error'
+  }
+}
+
+export interface TooManyRequestsError {
+  error: {
+    message: string
+    type: 'too_many_requests_error'
+  }
+}
+
+export interface InternalServerError {
+  error: {
+    message: string
+    type: 'internal_server_error'
+  }
+}
+
 export interface ChatsCreateRequest {
   message: string
   attachments?: {
@@ -1072,6 +1128,34 @@ export interface UserGetPlanResponse {
 export interface UserGetScopesResponse {
   object: 'list'
   data: ScopeSummary[]
+}
+
+export type ReportsGetUsageResponse = {
+  object: 'list'
+  data: Array<{
+    id: string
+    object: 'usage_event'
+    type?:
+      | 'image_generation'
+      | 'message'
+      | 'manual_debit'
+      | 'api_request'
+      | 'inline-edit'
+    promptCost?: string
+    completionCost?: string
+    totalCost: string
+    chatId?: string
+    messageId?: string
+    userId?: string
+  }>
+  pagination: {
+    hasMore: boolean
+    nextCursor?: string
+    nextUrl?: string
+  }
+  meta: {
+    totalCount: number
+  }
 }
 
 export interface V0ClientConfig {
@@ -1704,6 +1788,35 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async getScopes(): Promise<UserGetScopesResponse> {
         return fetcher(`/user/scopes`, 'GET', {})
+      },
+    },
+
+    reports: {
+      async getUsage(params?: {
+        startDate?: string
+        endDate?: string
+        chatId?: string
+        messageId?: string
+        limit?: number
+        cursor?: string
+      }): Promise<ReportsGetUsageResponse> {
+        const query = params
+          ? (Object.fromEntries(
+              Object.entries({
+                startDate: params.startDate,
+                endDate: params.endDate,
+                chatId: params.chatId,
+                messageId: params.messageId,
+                limit:
+                  params.limit !== undefined ? String(params.limit) : undefined,
+                cursor: params.cursor,
+              }).filter(([_, value]) => value !== undefined),
+            ) as Record<string, string>)
+          : {}
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/reports/usage`, 'GET', {
+          ...(hasQuery ? { query } : {}),
+        })
       },
     },
   }
