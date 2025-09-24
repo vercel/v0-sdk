@@ -31,6 +31,7 @@ export type ChatDetail = {
       content: string
       locked: boolean
     }[]
+    screenshotUrl?: string
   }
   /** @deprecated */
   url: string
@@ -609,6 +610,7 @@ export type VersionDetail = {
     content: string
     locked: boolean
   }[]
+  screenshotUrl?: string
 }
 
 export type VersionSummary = {

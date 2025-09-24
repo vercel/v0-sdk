@@ -7131,6 +7131,10 @@
                   "description": "Detailed representation of a file, including its content and lock status."
                 },
                 "description": "A list of files that were generated or included in this version."
+              },
+              "screenshotUrl": {
+                "type": "string",
+                "description": "URL to retrieve a screenshot of this version."
               }
             },
             "required": ["id", "object", "status", "createdAt", "files"],
@@ -9264,6 +9268,10 @@
               "description": "Detailed representation of a file, including its content and lock status."
             },
             "description": "A list of files that were generated or included in this version."
+          },
+          "screenshotUrl": {
+            "type": "string",
+            "description": "URL to retrieve a screenshot of this version."
           }
         },
         "required": ["id", "object", "status", "createdAt", "files"],
