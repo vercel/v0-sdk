@@ -1,5 +1,11 @@
 # ai-tools-example
 
+## 0.1.5
+
+### Patch Changes
+
+- @v0-sdk/ai-tools@0.2.2
+
 ## 0.1.4
 
 ### Patch Changes

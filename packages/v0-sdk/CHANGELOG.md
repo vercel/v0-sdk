@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.14.0
+
+### Minor Changes
+
+- 92db946: add screenshotUrl for versions
+
 ## 0.13.0
 
 ### Minor Changes
