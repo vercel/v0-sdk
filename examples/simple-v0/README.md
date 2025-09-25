@@ -21,12 +21,8 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 2. **Configure environment:**
    Create a `.env.local` file in the root directory:
 
-   ```env
-   V0_API_KEY=your_api_key_here
-
-   # Optional: For rate limiting (if not provided, rate limiting is disabled)
-   KV_REST_API_URL=your_kv_rest_api_url
-   KV_REST_API_TOKEN=your_kv_rest_api_token
+   ```bash
+   cp .env.example .env.local
    ```
 
    - Get your v0 API key from [v0.dev/settings](https://v0.dev/settings)
