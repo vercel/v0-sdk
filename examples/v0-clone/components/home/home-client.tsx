@@ -21,8 +21,6 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion'
 import { AppHeader } from '@/components/shared/app-header'
-import { useStreaming } from '@/contexts/streaming-context'
-import { StreamingMessage } from '@v0-sdk/react'
 import { ChatMessages } from '@/components/chat/chat-messages'
 import { ChatInput } from '@/components/chat/chat-input'
 import { PreviewPanel } from '@/components/chat/preview-panel'
@@ -73,7 +71,6 @@ export function HomeClient() {
   const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const { startHandoff } = useStreaming()
 
   const handleReset = () => {
     // Reset all chat-related state
@@ -476,28 +473,6 @@ export function HomeClient() {
             />
           </div>
         </div>
-
-        {/* Hidden streaming component for initial response */}
-        {chatHistory.some((msg) => msg.isStreaming && msg.stream) && (
-          <div className="hidden">
-            {chatHistory.map((msg, index) =>
-              msg.isStreaming && msg.stream ? (
-                <StreamingMessage
-                  key={index}
-                  stream={msg.stream}
-                  messageId={`msg-${index}`}
-                  role="assistant"
-                  onComplete={handleStreamingComplete}
-                  onChatData={handleChatData}
-                  onError={(error) => {
-                    console.error('Streaming error:', error)
-                    setIsLoading(false)
-                  }}
-                />
-              ) : null,
-            )}
-          </div>
-        )}
       </div>
     )
   }
