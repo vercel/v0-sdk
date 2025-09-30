@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/lib/client-utils'
 
 interface ResizableLayoutProps {
   leftPanel: React.ReactNode
@@ -27,6 +28,7 @@ export function ResizableLayout({
   const [leftWidth, setLeftWidth] = useState(defaultLeftWidth)
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -81,36 +83,43 @@ export function ResizableLayout({
     )
   }
 
+  // On mobile, conditionally render to avoid stream duplication
+  // On desktop, always render both to prevent iframe remounting
+  if (isMobile) {
+    return (
+      <div ref={containerRef} className={cn('flex h-full', className)}>
+        <div className="flex flex-col h-full w-full">
+          {activePanel === 'left' ? leftPanel : rightPanel}
+        </div>
+      </div>
+    )
+  }
+
+  // Desktop: Always render both panels to prevent remounting on resize
   return (
     <div ref={containerRef} className={cn('flex h-full', className)}>
-      <div className="flex md:hidden flex-col h-full w-full">
-        {activePanel === 'left' ? leftPanel : rightPanel}
+      <div className="flex flex-col" style={{ width: `${leftWidth}%` }}>
+        {leftPanel}
       </div>
 
-      <div className="hidden md:flex h-full w-full">
-        <div className="flex flex-col" style={{ width: `${leftWidth}%` }}>
-          {leftPanel}
-        </div>
-
+      <div
+        className={cn(
+          'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
+          isDragging && 'bg-blue-500 dark:bg-blue-400',
+        )}
+        onMouseDown={handleMouseDown}
+      >
         <div
           className={cn(
-            'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
-            isDragging && 'bg-blue-500 dark:bg-blue-400',
+            'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
+            'group-hover:w-[3px]',
+            isDragging && 'w-[3px]',
           )}
-          onMouseDown={handleMouseDown}
-        >
-          <div
-            className={cn(
-              'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
-              'group-hover:w-[3px]',
-              isDragging && 'w-[3px]',
-            )}
-          />
-          <div className="absolute inset-y-0 -left-2 -right-2" />
-        </div>
-
-        <div className="flex-1 flex flex-col">{rightPanel}</div>
+        />
+        <div className="absolute inset-y-0 -left-2 -right-2" />
       </div>
+
+      <div className="flex-1 flex flex-col">{rightPanel}</div>
     </div>
   )
 }
