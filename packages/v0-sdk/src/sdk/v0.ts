@@ -39,16 +39,7 @@ export type ChatDetail = {
     id: string
     object: 'message'
     content: string
-    experimental_content?: Array<
-      | [0, unknown[]]
-      | [
-          1,
-          {
-            title?: string
-            [key: string]: unknown
-          },
-        ]
-    >
+    experimental_content?: Array<unknown[] | unknown[]>
     createdAt: string
     updatedAt?: string
     type:
@@ -78,7 +69,16 @@ export type ChatDetail = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    authorId: string | null
     parentId?: string | null
+    attachments?: Array<{
+      url: string
+      name?: string
+      contentType?: string
+      size: number
+      content?: string
+      type?: 'screenshot' | 'figma' | 'zip'
+    }>
   }>
   files?: {
     lang: string
@@ -301,16 +301,7 @@ export type MessageDetail = {
   id: string
   object: 'message'
   content: string
-  experimental_content?: Array<
-    | [0, unknown[]]
-    | [
-        1,
-        {
-          title?: string
-          [key: string]: unknown
-        },
-      ]
-  >
+  experimental_content?: Array<unknown[] | unknown[]>
   createdAt: string
   updatedAt?: string
   type:
@@ -340,7 +331,16 @@ export type MessageDetail = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  authorId: string | null
   parentId?: string | null
+  attachments?: Array<{
+    url: string
+    name?: string
+    contentType?: string
+    size: number
+    content?: string
+    type?: 'screenshot' | 'figma' | 'zip'
+  }>
   chatId: string
 }
 
@@ -348,16 +348,7 @@ export type MessageSummary = {
   id: string
   object: 'message'
   content: string
-  experimental_content?: Array<
-    | [0, unknown[]]
-    | [
-        1,
-        {
-          title?: string
-          [key: string]: unknown
-        },
-      ]
-  >
+  experimental_content?: Array<unknown[] | unknown[]>
   createdAt: string
   updatedAt?: string
   type:
@@ -387,7 +378,16 @@ export type MessageSummary = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  authorId: string | null
   parentId?: string | null
+  attachments?: Array<{
+    url: string
+    name?: string
+    contentType?: string
+    size: number
+    content?: string
+    type?: 'screenshot' | 'figma' | 'zip'
+  }>
 }
 
 export type MessageSummaryList = {
@@ -396,16 +396,7 @@ export type MessageSummaryList = {
     id: string
     object: 'message'
     content: string
-    experimental_content?: Array<
-      | [0, unknown[]]
-      | [
-          1,
-          {
-            title?: string
-            [key: string]: unknown
-          },
-        ]
-    >
+    experimental_content?: Array<unknown[] | unknown[]>
     createdAt: string
     updatedAt?: string
     type:
@@ -435,7 +426,16 @@ export type MessageSummaryList = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    authorId: string | null
     parentId?: string | null
+    attachments?: Array<{
+      url: string
+      name?: string
+      contentType?: string
+      size: number
+      content?: string
+      type?: 'screenshot' | 'figma' | 'zip'
+    }>
   }>
   pagination: {
     hasMore: boolean
@@ -905,10 +905,18 @@ export interface DeploymentsDeleteResponse {
   deleted: true
 }
 
-export interface DeploymentsFindLogsResponse {
-  error?: string
-  logs: string[]
+export type DeploymentsFindLogsResponse = {
+  logs: Array<{
+    createdAt: string
+    deploymentId: string
+    id: string
+    text: string
+    type: 'stdout' | 'stderr'
+    level?: 'error' | 'warning' | 'info'
+    object: 'deployment_log'
+  }>
   nextSince?: number
+  object: 'list'
 }
 
 export interface DeploymentsFindErrorsResponse {
@@ -966,7 +974,7 @@ export interface HooksDeleteResponse {
 
 export interface IntegrationsVercelProjectsFindResponse {
   object: 'list'
-  data: VercelProjectDetail[]
+  data: VercelProjectSummary[]
 }
 
 export interface IntegrationsVercelProjectsCreateRequest {
