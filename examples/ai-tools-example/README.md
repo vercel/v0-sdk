@@ -11,11 +11,10 @@ This example demonstrates how to use `@v0-sdk/ai-tools` with the AI SDK to inter
    ```
 
 2. **Set up environment variables:**
-   Create a `.env` file in this directory:
+   Create a `.env.local` file in the root directory:
 
-   ```env
-   V0_API_KEY=your_v0_api_key_here
-   AI_GATEWAY_API_KEY=your_ai_gateway_api_key_here
+   ```bash
+   cp .env.example .env.local
    ```
 
 3. **Get your API keys:**
