@@ -318,4 +318,4 @@ function MessageImpl({
  * Main component for rendering v0 Platform API message content
  * This is a backward-compatible JSX renderer. For headless usage, use the useMessage hook.
  */
-export const Message = React.memo(MessageImpl)
+export const Message = MessageImpl
