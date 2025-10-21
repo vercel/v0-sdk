@@ -23,6 +23,7 @@ export type ChatDetail = {
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    screenshotUrl?: string
     createdAt: string
     updatedAt?: string
     files: {
@@ -31,7 +32,6 @@ export type ChatDetail = {
       content: string
       locked: boolean
     }[]
-    screenshotUrl?: string
   }
   /** @deprecated */
   url: string
@@ -39,16 +39,7 @@ export type ChatDetail = {
     id: string
     object: 'message'
     content: string
-    experimental_content?: Array<
-      | [0, unknown[]]
-      | [
-          1,
-          {
-            title?: string
-            [key: string]: unknown
-          },
-        ]
-    >
+    experimental_content?: Array<unknown[] | unknown[]>
     createdAt: string
     updatedAt?: string
     type:
@@ -78,7 +69,16 @@ export type ChatDetail = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    authorId: string | null
     parentId?: string | null
+    attachments?: Array<{
+      url: string
+      name?: string
+      contentType?: string
+      size: number
+      content?: string
+      type?: 'screenshot' | 'figma' | 'zip'
+    }>
   }>
   files?: {
     lang: string
@@ -119,6 +119,7 @@ export type ChatSummary = {
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    screenshotUrl?: string
     createdAt: string
     updatedAt?: string
   }
@@ -301,16 +302,7 @@ export type MessageDetail = {
   id: string
   object: 'message'
   content: string
-  experimental_content?: Array<
-    | [0, unknown[]]
-    | [
-        1,
-        {
-          title?: string
-          [key: string]: unknown
-        },
-      ]
-  >
+  experimental_content?: Array<unknown[] | unknown[]>
   createdAt: string
   updatedAt?: string
   type:
@@ -340,7 +332,16 @@ export type MessageDetail = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  authorId: string | null
   parentId?: string | null
+  attachments?: Array<{
+    url: string
+    name?: string
+    contentType?: string
+    size: number
+    content?: string
+    type?: 'screenshot' | 'figma' | 'zip'
+  }>
   chatId: string
 }
 
@@ -348,16 +349,7 @@ export type MessageSummary = {
   id: string
   object: 'message'
   content: string
-  experimental_content?: Array<
-    | [0, unknown[]]
-    | [
-        1,
-        {
-          title?: string
-          [key: string]: unknown
-        },
-      ]
-  >
+  experimental_content?: Array<unknown[] | unknown[]>
   createdAt: string
   updatedAt?: string
   type:
@@ -387,7 +379,16 @@ export type MessageSummary = {
     | 'other'
     | 'unknown'
   apiUrl: string
+  authorId: string | null
   parentId?: string | null
+  attachments?: Array<{
+    url: string
+    name?: string
+    contentType?: string
+    size: number
+    content?: string
+    type?: 'screenshot' | 'figma' | 'zip'
+  }>
 }
 
 export type MessageSummaryList = {
@@ -396,16 +397,7 @@ export type MessageSummaryList = {
     id: string
     object: 'message'
     content: string
-    experimental_content?: Array<
-      | [0, unknown[]]
-      | [
-          1,
-          {
-            title?: string
-            [key: string]: unknown
-          },
-        ]
-    >
+    experimental_content?: Array<unknown[] | unknown[]>
     createdAt: string
     updatedAt?: string
     type:
@@ -435,7 +427,16 @@ export type MessageSummaryList = {
       | 'other'
       | 'unknown'
     apiUrl: string
+    authorId: string | null
     parentId?: string | null
+    attachments?: Array<{
+      url: string
+      name?: string
+      contentType?: string
+      size: number
+      content?: string
+      type?: 'screenshot' | 'figma' | 'zip'
+    }>
   }>
   pagination: {
     hasMore: boolean
@@ -512,6 +513,7 @@ export type ProjectDetail = {
       object: 'version'
       status: 'pending' | 'completed' | 'failed'
       demoUrl?: string
+      screenshotUrl?: string
       createdAt: string
       updatedAt?: string
     }
@@ -602,6 +604,7 @@ export type VersionDetail = {
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
   demoUrl?: string
+  screenshotUrl?: string
   createdAt: string
   updatedAt?: string
   files: {
@@ -610,7 +613,6 @@ export type VersionDetail = {
     content: string
     locked: boolean
   }[]
-  screenshotUrl?: string
 }
 
 export type VersionSummary = {
@@ -618,6 +620,7 @@ export type VersionSummary = {
   object: 'version'
   status: 'pending' | 'completed' | 'failed'
   demoUrl?: string
+  screenshotUrl?: string
   createdAt: string
   updatedAt?: string
 }
@@ -629,6 +632,7 @@ export type VersionSummaryList = {
     object: 'version'
     status: 'pending' | 'completed' | 'failed'
     demoUrl?: string
+    screenshotUrl?: string
     createdAt: string
     updatedAt?: string
   }>
@@ -905,10 +909,18 @@ export interface DeploymentsDeleteResponse {
   deleted: true
 }
 
-export interface DeploymentsFindLogsResponse {
-  error?: string
-  logs: string[]
+export type DeploymentsFindLogsResponse = {
+  logs: Array<{
+    createdAt: string
+    deploymentId: string
+    id: string
+    text: string
+    type: 'stdout' | 'stderr'
+    level?: 'error' | 'warning' | 'info'
+    object: 'deployment_log'
+  }>
   nextSince?: number
+  object: 'list'
 }
 
 export interface DeploymentsFindErrorsResponse {
@@ -966,7 +978,7 @@ export interface HooksDeleteResponse {
 
 export interface IntegrationsVercelProjectsFindResponse {
   object: 'list'
-  data: VercelProjectDetail[]
+  data: VercelProjectSummary[]
 }
 
 export interface IntegrationsVercelProjectsCreateRequest {
