@@ -27,9 +27,7 @@
         "summary": "Create Chat",
         "description": "Creates a new chat using a user message, optional system context, and model configuration. Useful for prompting the model within the scope of a specific project.",
         "operationId": "chats.create",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -51,9 +49,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "url"
-                      ],
+                      "required": ["url"],
                       "additionalProperties": false
                     }
                   },
@@ -110,23 +106,14 @@
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "default": "sync",
                     "type": "string",
-                    "enum": [
-                      "sync",
-                      "async",
-                      "experimental_stream"
-                    ]
+                    "enum": ["sync", "async", "experimental_stream"]
                   },
                   "designSystemId": {
                     "description": "The ID of a design system to apply to this chat. Design systems provide consistent styling and components for generated UI.",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
+                    "type": ["string", "null"]
                   }
                 },
-                "required": [
-                  "message"
-                ],
+                "required": ["message"],
                 "additionalProperties": false
               }
             }
@@ -234,9 +221,7 @@
         "summary": "Find Chats",
         "description": "Retrieves a list of existing chats, with support for pagination and filtering by favorite status. Helps manage and navigate chat history.",
         "operationId": "chats.find",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -256,10 +241,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -377,10 +359,7 @@
             "schema": {
               "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats."
           }
@@ -397,9 +376,7 @@
         "summary": "Initialize Chat",
         "description": "Initializes a new chat from source content such as files, repositories, registries, or zip archives. Enables context-rich conversations based on code or assets.",
         "operationId": "chats.init",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -461,10 +438,7 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": [
-                                    "name",
-                                    "url"
-                                  ],
+                                  "required": ["name", "url"],
                                   "additionalProperties": false
                                 },
                                 {
@@ -481,20 +455,14 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": [
-                                    "name",
-                                    "content"
-                                  ],
+                                  "required": ["name", "content"],
                                   "additionalProperties": false
                                 }
                               ]
                             }
                           }
                         },
-                        "required": [
-                          "type",
-                          "files"
-                        ],
+                        "required": ["type", "files"],
                         "additionalProperties": false
                       },
                       {
@@ -517,9 +485,7 @@
                                 "maxLength": 250
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false
                           },
                           "lockAllFiles": {
@@ -527,10 +493,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "repo"
-                        ],
+                        "required": ["type", "repo"],
                         "additionalProperties": false
                       },
                       {
@@ -549,9 +512,7 @@
                                 "type": "string"
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false
                           },
                           "lockAllFiles": {
@@ -559,10 +520,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "registry"
-                        ],
+                        "required": ["type", "registry"],
                         "additionalProperties": false
                       },
                       {
@@ -582,9 +540,7 @@
                                 "format": "uri"
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false
                           },
                           "lockAllFiles": {
@@ -592,10 +548,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "zip"
-                        ],
+                        "required": ["type", "zip"],
                         "additionalProperties": false
                       },
                       {
@@ -611,10 +564,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "type",
-                          "templateId"
-                        ],
+                        "required": ["type", "templateId"],
                         "additionalProperties": false
                       }
                     ]
@@ -728,9 +678,7 @@
         "summary": "Delete Chat",
         "description": "Deletes a specific chat based on the provided chatId. This operation is irreversible and permanently removes the chat and its contents.",
         "operationId": "chats.delete",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -751,11 +699,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -863,9 +807,7 @@
         "summary": "Get Chat",
         "description": "Retrieves the full details of a specific chat using its `chatId`. Includes messages, metadata, and associated configuration.",
         "operationId": "chats.getById",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -979,9 +921,7 @@
         "summary": "Update Chat",
         "description": "Updates the metadata of an existing chat using its `chatId`. Supports changes to the chat name and privacy setting.",
         "operationId": "chats.update",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1125,9 +1065,7 @@
         "summary": "Favorite Chat",
         "description": "Marks or unmarks a chat as a favorite using its `chatId`. This helps with organizing and quickly accessing important chats.",
         "operationId": "chats.favorite",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1140,9 +1078,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "isFavorite"
-                ],
+                "required": ["isFavorite"],
                 "additionalProperties": false
               }
             }
@@ -1167,11 +1103,7 @@
                       "type": "boolean"
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "favorited"
-                  ],
+                  "required": ["id", "object", "favorited"],
                   "additionalProperties": false
                 }
               }
@@ -1281,9 +1213,7 @@
         "summary": "Fork Chat",
         "description": "Creates a new chat fork (duplicate) from a specific version within an existing chat. Useful for branching off alternate directions without modifying the original conversation.",
         "operationId": "chats.fork",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1429,9 +1359,7 @@
         "summary": "Get Project by Chat ID",
         "description": "Retrieves the v0 project associated with a given chat. Useful for determining the context or scope of a chat session.",
         "operationId": "projects.getByChatId",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1547,9 +1475,7 @@
         "summary": "Find Chat Messages",
         "description": "Retrieves a list of all messages for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes message content, role, and type information.",
         "operationId": "chats.findMessages",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1581,17 +1507,11 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination"
-                  ],
+                  "required": ["object", "data", "pagination"],
                   "additionalProperties": false
                 }
               }
@@ -1722,9 +1642,7 @@
         "summary": "Send Message",
         "description": "Creates a new message in an existing chat. Triggers a model response using the provided prompt, with optional attachments and configuration settings.",
         "operationId": "chats.sendMessage",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1747,9 +1665,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "url"
-                      ],
+                      "required": ["url"],
                       "additionalProperties": false
                     }
                   },
@@ -1786,16 +1702,10 @@
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "default": "sync",
                     "type": "string",
-                    "enum": [
-                      "sync",
-                      "async",
-                      "experimental_stream"
-                    ]
+                    "enum": ["sync", "async", "experimental_stream"]
                   }
                 },
-                "required": [
-                  "message"
-                ],
+                "required": ["message"],
                 "additionalProperties": false
               }
             }
@@ -1916,9 +1826,7 @@
         "summary": "Get Chat Message",
         "description": "Retrieves detailed information about a specific message within a chat, including content, files, model configuration, and demo URLs.",
         "operationId": "chats.getMessage",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2043,9 +1951,7 @@
         "summary": "Find Chat Versions",
         "description": "Retrieves a list of all versions (iterations) for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes version status and demo URLs.",
         "operationId": "chats.findVersions",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2077,17 +1983,11 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination"
-                  ],
+                  "required": ["object", "data", "pagination"],
                   "additionalProperties": false
                 }
               }
@@ -2220,9 +2120,7 @@
         "summary": "Get Chat Version",
         "description": "Retrieves detailed information about a specific version of a chat, including all files with their content and lock status.",
         "operationId": "chats.getVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2341,10 +2239,7 @@
             "schema": {
               "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files."
           }
@@ -2359,9 +2254,7 @@
         "summary": "Update Chat Version Files",
         "description": "Updates the source files of a specific chat version (block) manually. This allows editing generated files directly through the API.",
         "operationId": "chats.updateVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2388,17 +2281,12 @@
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "name",
-                        "content"
-                      ],
+                      "required": ["name", "content"],
                       "additionalProperties": false
                     }
                   }
                 },
-                "required": [
-                  "files"
-                ],
+                "required": ["files"],
                 "additionalProperties": false
               }
             }
@@ -2528,9 +2416,7 @@
         "summary": "Download version files",
         "description": "Download all files for a specific chat version as a zip or tarball archive. Use includeDefaultFiles=true to include all deployment files (package.json, configuration files, etc.) or false/omitted to return only the generated source files.",
         "operationId": "chats.downloadVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2659,10 +2545,7 @@
               "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems.",
               "default": "zip",
               "type": "string",
-              "enum": [
-                "zip",
-                "tarball"
-              ]
+              "enum": ["zip", "tarball"]
             },
             "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems."
           },
@@ -2673,10 +2556,7 @@
             "schema": {
               "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files."
           }
@@ -2693,9 +2573,7 @@
         "summary": "Resume Message",
         "description": "Resumes processing of a previously interrupted or incomplete message in a chat. Useful for continuing generation when a message was paused or stopped.",
         "operationId": "chats.resume",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2820,9 +2698,7 @@
         "summary": "Find Deployments",
         "description": "Find deployments by project and chat IDs. This will return a list of deployments for the given project and chat IDs.",
         "operationId": "deployments.find",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2842,10 +2718,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -2974,9 +2847,7 @@
         "summary": "Create Deployment",
         "description": "Create a new deployment for a specific chat and version. This will trigger a deployment to Vercel.",
         "operationId": "deployments.create",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2994,11 +2865,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "projectId",
-                  "chatId",
-                  "versionId"
-                ],
+                "required": ["projectId", "chatId", "versionId"],
                 "additionalProperties": false
               }
             }
@@ -3108,9 +2975,7 @@
         "summary": "Get Deployment",
         "description": "Get a deployment by ID. This will return the details of the deployment, including the inspector URL, chat ID, project ID, version ID, API URL, and web URL.",
         "operationId": "deployments.getById",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3224,9 +3089,7 @@
         "summary": "Delete Deployment",
         "description": "Delete a deployment by ID. This will delete the deployment from Vercel.",
         "operationId": "deployments.delete",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3247,11 +3110,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -3361,9 +3220,7 @@
         "summary": "Find Deployment Logs",
         "description": "Retrieves logs for a specific deployment. Supports filtering by timestamp to fetch only recent logs.",
         "operationId": "deployments.findLogs",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3397,20 +3254,13 @@
                           "type": {
                             "description": "Output stream type.",
                             "type": "string",
-                            "enum": [
-                              "stdout",
-                              "stderr"
-                            ]
+                            "enum": ["stdout", "stderr"]
                           },
                           "level": {
                             "description": "Log severity level.",
                             "default": "info",
                             "type": "string",
-                            "enum": [
-                              "error",
-                              "warning",
-                              "info"
-                            ]
+                            "enum": ["error", "warning", "info"]
                           },
                           "object": {
                             "description": "Object type identifier.",
@@ -3439,10 +3289,7 @@
                       "const": "list"
                     }
                   },
-                  "required": [
-                    "logs",
-                    "object"
-                  ],
+                  "required": ["logs", "object"],
                   "additionalProperties": false
                 }
               }
@@ -3562,9 +3409,7 @@
         "summary": "Find Deployment Errors",
         "description": "Retrieves a list of errors that occurred during a specific deployment. Useful for diagnosing and debugging deployment issues.",
         "operationId": "deployments.findErrors",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3695,9 +3540,7 @@
         "summary": "Find Hooks",
         "description": "Retrieves a list of existing hooks in your workspace. Useful for managing active webhooks tied to chat events or deployments.",
         "operationId": "hooks.find",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3717,10 +3560,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -3817,9 +3657,7 @@
         "summary": "Create Hook",
         "description": "Creates a new webhook that listens for specific events. Supports optional association with a chat.",
         "operationId": "hooks.create",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "requestBody": {
           "required": true,
           "content": {
@@ -3857,11 +3695,7 @@
                     "format": "uri"
                   }
                 },
-                "required": [
-                  "name",
-                  "events",
-                  "url"
-                ],
+                "required": ["name", "events", "url"],
                 "additionalProperties": false
               }
             }
@@ -3971,9 +3805,7 @@
         "summary": "Get Hook",
         "description": "Retrieves the details of a specific webhook using its ID.",
         "operationId": "hooks.getById",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4087,9 +3919,7 @@
         "summary": "Update Hook",
         "description": "Updates the configuration of an existing webhook, including its name, event subscriptions, or target URL.",
         "operationId": "hooks.update",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "requestBody": {
           "required": true,
           "content": {
@@ -4241,9 +4071,7 @@
         "summary": "Delete Hook",
         "description": "Deletes a webhook based on its ID. This action is irreversible.",
         "operationId": "hooks.delete",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4264,11 +4092,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -4378,9 +4202,7 @@
         "summary": "Find Vercel Projects",
         "description": "Retrieves a list of Vercel projects linked to your integration. Useful for associating chats, deployments, or hooks with specific Vercel projects.",
         "operationId": "integrations.vercel.projects.find",
-        "tags": [
-          "integrations"
-        ],
+        "tags": ["integrations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4400,10 +4222,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -4500,9 +4319,7 @@
         "summary": "Create Vercel Project",
         "description": "Links a Vercel project to an existing v0 project. Enables Vercel-related features and deployment integration within the v0 workspace.",
         "operationId": "integrations.vercel.projects.create",
-        "tags": [
-          "integrations"
-        ],
+        "tags": ["integrations"],
         "requestBody": {
           "required": true,
           "content": {
@@ -4519,10 +4336,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "projectId",
-                  "name"
-                ],
+                "required": ["projectId", "name"],
                 "additionalProperties": false
               }
             }
@@ -4632,9 +4446,7 @@
         "summary": "Find Projects",
         "description": "Returns a list of all v0 projects in your workspace. Useful for browsing or managing projects across different chats or use cases.",
         "operationId": "projects.find",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4654,10 +4466,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -4754,9 +4563,7 @@
         "summary": "Create Project",
         "description": "Creates a new v0 project with an optional description, icon, environment variables, and instructions. Projects help organize chats and manage context.",
         "operationId": "projects.create",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -4794,10 +4601,7 @@
                           "maxLength": 1000
                         }
                       },
-                      "required": [
-                        "key",
-                        "value"
-                      ],
+                      "required": ["key", "value"],
                       "additionalProperties": false
                     }
                   },
@@ -4813,15 +4617,10 @@
                   "privacy": {
                     "description": "The privacy setting for the project. For user accounts, this is always \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\".",
                     "type": "string",
-                    "enum": [
-                      "private",
-                      "team"
-                    ]
+                    "enum": ["private", "team"]
                   }
                 },
-                "required": [
-                  "name"
-                ],
+                "required": ["name"],
                 "additionalProperties": false
               }
             }
@@ -4931,9 +4730,7 @@
         "summary": "Get Project by ID",
         "description": "Retrieves the details of a specific v0 project by its ID.",
         "operationId": "projects.getById",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5047,9 +4844,7 @@
         "summary": "Update Project",
         "description": "Updates the metadata of an existing project using its `projectId`. Supports changes to the project name and privacy setting.",
         "operationId": "projects.update",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5072,10 +4867,7 @@
                   "privacy": {
                     "description": "The privacy setting for the project. For user accounts, this must be \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\".",
                     "type": "string",
-                    "enum": [
-                      "private",
-                      "team"
-                    ]
+                    "enum": ["private", "team"]
                   }
                 },
                 "additionalProperties": false
@@ -5196,9 +4988,7 @@
         "summary": "Delete Project",
         "description": "Deletes a specific project based on the provided projectId. This operation marks the project as deleted and is irreversible.",
         "operationId": "projects.delete",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5222,11 +5012,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -5336,9 +5122,7 @@
         "summary": "Assign Project to Chat",
         "description": "Links an existing v0 project to a specific chat. Helps group conversations under a shared project context.",
         "operationId": "projects.assign",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5351,9 +5135,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "chatId"
-                ],
+                "required": ["chatId"],
                 "additionalProperties": false
               }
             }
@@ -5379,11 +5161,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "object",
-                    "id",
-                    "assigned"
-                  ],
+                  "required": ["object", "id", "assigned"],
                   "additionalProperties": false
                 }
               }
@@ -5493,9 +5271,7 @@
         "summary": "Find Environment Variables",
         "description": "Retrieves all environment variables for a given project.",
         "operationId": "projects.findEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5515,10 +5291,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -5622,10 +5395,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -5640,9 +5410,7 @@
         "summary": "Create Environment Variables",
         "description": "Creates new environment variables for a given project. This endpoint will fail if any of the specified environment variable keys already exist, unless upsert is set to true.",
         "operationId": "projects.createEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5666,10 +5434,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "key",
-                        "value"
-                      ],
+                      "required": ["key", "value"],
                       "additionalProperties": false
                     }
                   },
@@ -5678,9 +5443,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "environmentVariables"
-                ],
+                "required": ["environmentVariables"],
                 "additionalProperties": false
               }
             }
@@ -5705,10 +5468,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -5812,10 +5572,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -5830,9 +5587,7 @@
         "summary": "Update Environment Variables",
         "description": "Updates multiple environment variables for a given project. Only the value of each environment variable can be updated.",
         "operationId": "projects.updateEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5855,17 +5610,12 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "id",
-                        "value"
-                      ],
+                      "required": ["id", "value"],
                       "additionalProperties": false
                     }
                   }
                 },
-                "required": [
-                  "environmentVariables"
-                ],
+                "required": ["environmentVariables"],
                 "additionalProperties": false
               }
             }
@@ -5890,10 +5640,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -5997,10 +5744,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -6017,9 +5761,7 @@
         "summary": "Delete Environment Variables",
         "description": "Deletes multiple environment variables for a given project by their IDs.",
         "operationId": "projects.deleteEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -6036,9 +5778,7 @@
                     }
                   }
                 },
-                "required": [
-                  "environmentVariableIds"
-                ],
+                "required": ["environmentVariableIds"],
                 "additionalProperties": false
               }
             }
@@ -6073,19 +5813,12 @@
                             "const": true
                           }
                         },
-                        "required": [
-                          "id",
-                          "object",
-                          "deleted"
-                        ],
+                        "required": ["id", "object", "deleted"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -6195,9 +5928,7 @@
         "summary": "Get Environment Variable",
         "description": "Retrieves a specific environment variable for a given project by its ID, including its value.",
         "operationId": "projects.getEnvVar",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6214,10 +5945,7 @@
                       "$ref": "#/components/schemas/EnvironmentVariableDetailSchema"
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -6330,10 +6058,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -6350,9 +6075,7 @@
         "summary": "Find Rate Limit",
         "description": "Retrieves rate limit information for a given scope. Useful for monitoring usage limits and avoiding throttling.",
         "operationId": "rateLimits.find",
-        "tags": [
-          "rateLimits"
-        ],
+        "tags": ["rateLimits"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6371,9 +6094,7 @@
                       "type": "number"
                     }
                   },
-                  "required": [
-                    "limit"
-                  ],
+                  "required": ["limit"],
                   "additionalProperties": false
                 }
               }
@@ -6484,9 +6205,7 @@
         "summary": "Get User",
         "description": "Retrieves information about the authenticated user, including their ID, name, email, and account metadata.",
         "operationId": "user.get",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6591,9 +6310,7 @@
         "summary": "Get Billing",
         "description": "Fetches billing usage and quota information for the authenticated user. Can be scoped to a specific context (e.g. project or namespace).",
         "operationId": "user.getBilling",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6631,10 +6348,7 @@
                                   "type": "number"
                                 }
                               },
-                              "required": [
-                                "start",
-                                "end"
-                              ],
+                              "required": ["start", "end"],
                               "additionalProperties": false
                             },
                             "balance": {
@@ -6647,10 +6361,7 @@
                                   "type": "number"
                                 }
                               },
-                              "required": [
-                                "remaining",
-                                "total"
-                              ],
+                              "required": ["remaining", "total"],
                               "additionalProperties": false
                             },
                             "onDemand": {
@@ -6686,9 +6397,7 @@
                                   }
                                 }
                               },
-                              "required": [
-                                "balance"
-                              ],
+                              "required": ["balance"],
                               "additionalProperties": false
                             }
                           },
@@ -6702,10 +6411,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "billingType",
-                        "data"
-                      ],
+                      "required": ["billingType", "data"],
                       "additionalProperties": false
                     },
                     {
@@ -6728,16 +6434,11 @@
                               "type": "number"
                             }
                           },
-                          "required": [
-                            "limit"
-                          ],
+                          "required": ["limit"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "billingType",
-                        "data"
-                      ],
+                      "required": ["billingType", "data"],
                       "additionalProperties": false
                     }
                   ]
@@ -6850,9 +6551,7 @@
         "summary": "Get Plan",
         "description": "Returns the current subscription plan for the authenticated user, including tier details and feature limits.",
         "operationId": "user.getPlan",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6878,10 +6577,7 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "start",
-                        "end"
-                      ],
+                      "required": ["start", "end"],
                       "additionalProperties": false
                     },
                     "balance": {
@@ -6894,19 +6590,11 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "remaining",
-                        "total"
-                      ],
+                      "required": ["remaining", "total"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "plan",
-                    "billingCycle",
-                    "balance"
-                  ],
+                  "required": ["object", "plan", "billingCycle", "balance"],
                   "additionalProperties": false
                 }
               }
@@ -7005,9 +6693,7 @@
         "summary": "Get User Scopes",
         "description": "Retrieves all accessible scopes for the authenticated user, such as personal workspaces or shared teams.",
         "operationId": "user.getScopes",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7027,10 +6713,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -7129,9 +6812,7 @@
         "summary": "Get Usage Report",
         "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat.",
         "operationId": "reports.getUsage",
-        "tags": [
-          "reports"
-        ],
+        "tags": ["reports"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7185,11 +6866,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "id",
-                          "object",
-                          "totalCost"
-                        ],
+                        "required": ["id", "object", "totalCost"],
                         "additionalProperties": false
                       }
                     },
@@ -7206,9 +6883,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -7218,18 +6893,11 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "totalCount"
-                      ],
+                      "required": ["totalCount"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination",
-                    "meta"
-                  ],
+                  "required": ["object", "data", "pagination", "meta"],
                   "additionalProperties": false
                 }
               }
@@ -7410,13 +7078,7 @@
           "privacy": {
             "description": "Defines the visibility of the chat—private, team-only, or public.",
             "type": "string",
-            "enum": [
-              "public",
-              "private",
-              "team",
-              "team-edit",
-              "unlisted"
-            ]
+            "enum": ["public", "private", "team", "team-edit", "unlisted"]
           },
           "name": {
             "description": "An optional name assigned to the chat by the user.",
@@ -7473,11 +7135,7 @@
               "status": {
                 "description": "The current status of the version generation process.",
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ]
+                "enum": ["pending", "completed", "failed"]
               },
               "demoUrl": {
                 "description": "Optional URL for previewing the generated output.",
@@ -7524,23 +7182,12 @@
                       "type": "boolean"
                     }
                   },
-                  "required": [
-                    "object",
-                    "name",
-                    "content",
-                    "locked"
-                  ],
+                  "required": ["object", "name", "content", "locked"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": [
-              "id",
-              "object",
-              "status",
-              "createdAt",
-              "files"
-            ],
+            "required": ["id", "object", "status", "createdAt", "files"],
             "additionalProperties": false
           },
           "url": {
@@ -7855,10 +7502,7 @@
                 "role": {
                   "description": "Specifies whether the message was sent by the user or the assistant.",
                   "type": "string",
-                  "enum": [
-                    "user",
-                    "assistant"
-                  ]
+                  "enum": ["user", "assistant"]
                 },
                 "finishReason": {
                   "description": "The reason why the message generation finished.",
@@ -7879,17 +7523,11 @@
                 },
                 "authorId": {
                   "description": "The ID of the user who sent the message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "parentId": {
                   "description": "The ID of the parent message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "attachments": {
                   "type": "array",
@@ -7919,17 +7557,10 @@
                       "type": {
                         "description": "Optional v0-specific attachment type for enhanced processing.",
                         "type": "string",
-                        "enum": [
-                          "screenshot",
-                          "figma",
-                          "zip"
-                        ]
+                        "enum": ["screenshot", "figma", "zip"]
                       }
                     },
-                    "required": [
-                      "url",
-                      "size"
-                    ],
+                    "required": ["url", "size"],
                     "additionalProperties": false
                   }
                 }
@@ -7972,11 +7603,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "lang",
-                "meta",
-                "source"
-              ],
+              "required": ["lang", "meta", "source"],
               "additionalProperties": false
             }
           },
@@ -7998,12 +7625,7 @@
                 "description": "Deprecated Model ID field preserved for backward compatibility.",
                 "deprecated": true,
                 "type": "string",
-                "enum": [
-                  "v0-1.5-sm",
-                  "v0-1.5-md",
-                  "v0-1.5-lg",
-                  "v0-gpt-5"
-                ]
+                "enum": ["v0-1.5-sm", "v0-1.5-md", "v0-1.5-lg", "v0-gpt-5"]
               },
               "imageGenerations": {
                 "default": false,
@@ -8026,9 +7648,7 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "write"
-            ],
+            "required": ["write"],
             "additionalProperties": false
           }
         },
@@ -8069,13 +7689,7 @@
           "privacy": {
             "description": "Defines the visibility of the chat—private, team-only, or public.",
             "type": "string",
-            "enum": [
-              "public",
-              "private",
-              "team",
-              "team-edit",
-              "unlisted"
-            ]
+            "enum": ["public", "private", "team", "team-edit", "unlisted"]
           },
           "name": {
             "description": "An optional name assigned to the chat by the user.",
@@ -8132,11 +7746,7 @@
               "status": {
                 "description": "The current status of the version generation process.",
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ]
+                "enum": ["pending", "completed", "failed"]
               },
               "demoUrl": {
                 "description": "Optional URL for previewing the generated output.",
@@ -8159,12 +7769,7 @@
                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
               }
             },
-            "required": [
-              "id",
-              "object",
-              "status",
-              "createdAt"
-            ],
+            "required": ["id", "object", "status", "createdAt"],
             "additionalProperties": false
           }
         },
@@ -8317,14 +7922,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "key",
-          "value",
-          "decrypted",
-          "createdAt"
-        ],
+        "required": ["id", "object", "key", "value", "decrypted", "createdAt"],
         "additionalProperties": false
       },
       "EnvironmentVariableSummarySchema": {
@@ -8361,14 +7959,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "key",
-          "value",
-          "decrypted",
-          "createdAt"
-        ],
+        "required": ["id", "object", "key", "value", "decrypted", "createdAt"],
         "additionalProperties": false
       },
       "EnvironmentVariablesListSchema": {
@@ -8429,10 +8020,7 @@
             }
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false
       },
       "FileDetail": {
@@ -8457,12 +8045,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "object",
-          "name",
-          "content",
-          "locked"
-        ],
+        "required": ["object", "name", "content", "locked"],
         "additionalProperties": false
       },
       "FileSummary": {
@@ -8479,10 +8062,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "object",
-          "name"
-        ],
+        "required": ["object", "name"],
         "additionalProperties": false
       },
       "HookDetail": {
@@ -8527,13 +8107,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name",
-          "events",
-          "url"
-        ],
+        "required": ["id", "object", "name", "events", "url"],
         "additionalProperties": false
       },
       "HookEventDetail": {
@@ -8566,11 +8140,7 @@
             "description": "The delivery status of the webhook (e.g., delivered, failed).",
             "default": "pending",
             "type": "string",
-            "enum": [
-              "pending",
-              "success",
-              "error"
-            ]
+            "enum": ["pending", "success", "error"]
           },
           "createdAt": {
             "description": "Timestamp of when the webhook event was triggered.",
@@ -8579,12 +8149,7 @@
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "event",
-          "createdAt"
-        ],
+        "required": ["id", "object", "event", "createdAt"],
         "additionalProperties": false
       },
       "HookSummary": {
@@ -8605,11 +8170,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false
       },
       "IntegrationConnectionDetailSchema": {
@@ -8651,12 +8212,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "id",
-              "object",
-              "slug",
-              "name"
-            ],
+            "required": ["id", "object", "slug", "name"],
             "additionalProperties": false
           },
           "metadata": {
@@ -8668,12 +8224,7 @@
             "additionalProperties": {}
           }
         },
-        "required": [
-          "object",
-          "id",
-          "connected",
-          "integration"
-        ],
+        "required": ["object", "id", "connected", "integration"],
         "additionalProperties": false
       },
       "IntegrationConnectionListSchema": {
@@ -8727,29 +8278,16 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "slug",
-                    "name"
-                  ],
+                  "required": ["id", "object", "slug", "name"],
                   "additionalProperties": false
                 }
               },
-              "required": [
-                "object",
-                "id",
-                "connected",
-                "integration"
-              ],
+              "required": ["object", "id", "connected", "integration"],
               "additionalProperties": false
             }
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false
       },
       "IntegrationConnectionSummarySchema": {
@@ -8791,21 +8329,11 @@
                 "type": "string"
               }
             },
-            "required": [
-              "id",
-              "object",
-              "slug",
-              "name"
-            ],
+            "required": ["id", "object", "slug", "name"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "object",
-          "id",
-          "connected",
-          "integration"
-        ],
+        "required": ["object", "id", "connected", "integration"],
         "additionalProperties": false
       },
       "IntegrationDetailSchema": {
@@ -8838,14 +8366,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["id", "object", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false
       },
       "IntegrationListSchema": {
@@ -8902,10 +8423,7 @@
             }
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false
       },
       "IntegrationSummarySchema": {
@@ -8930,12 +8448,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "slug",
-          "name"
-        ],
+        "required": ["id", "object", "slug", "name"],
         "additionalProperties": false
       },
       "MessageDetail": {
@@ -9242,10 +8755,7 @@
           "role": {
             "description": "Specifies whether the message was sent by the user or the assistant.",
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ]
+            "enum": ["user", "assistant"]
           },
           "finishReason": {
             "description": "The reason why the message generation finished.",
@@ -9266,17 +8776,11 @@
           },
           "authorId": {
             "description": "The ID of the user who sent the message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "parentId": {
             "description": "The ID of the parent message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "attachments": {
             "type": "array",
@@ -9306,17 +8810,10 @@
                 "type": {
                   "description": "Optional v0-specific attachment type for enhanced processing.",
                   "type": "string",
-                  "enum": [
-                    "screenshot",
-                    "figma",
-                    "zip"
-                  ]
+                  "enum": ["screenshot", "figma", "zip"]
                 }
               },
-              "required": [
-                "url",
-                "size"
-              ],
+              "required": ["url", "size"],
               "additionalProperties": false
             }
           },
@@ -9642,10 +9139,7 @@
           "role": {
             "description": "Specifies whether the message was sent by the user or the assistant.",
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ]
+            "enum": ["user", "assistant"]
           },
           "finishReason": {
             "description": "The reason why the message generation finished.",
@@ -9666,17 +9160,11 @@
           },
           "authorId": {
             "description": "The ID of the user who sent the message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "parentId": {
             "description": "The ID of the parent message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "attachments": {
             "type": "array",
@@ -9706,17 +9194,10 @@
                 "type": {
                   "description": "Optional v0-specific attachment type for enhanced processing.",
                   "type": "string",
-                  "enum": [
-                    "screenshot",
-                    "figma",
-                    "zip"
-                  ]
+                  "enum": ["screenshot", "figma", "zip"]
                 }
               },
-              "required": [
-                "url",
-                "size"
-              ],
+              "required": ["url", "size"],
               "additionalProperties": false
             }
           }
@@ -10049,10 +9530,7 @@
                 "role": {
                   "description": "Specifies whether the message was sent by the user or the assistant.",
                   "type": "string",
-                  "enum": [
-                    "user",
-                    "assistant"
-                  ]
+                  "enum": ["user", "assistant"]
                 },
                 "finishReason": {
                   "description": "The reason why the message generation finished.",
@@ -10073,17 +9551,11 @@
                 },
                 "authorId": {
                   "description": "The ID of the user who sent the message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "parentId": {
                   "description": "The ID of the parent message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "attachments": {
                   "type": "array",
@@ -10113,17 +9585,10 @@
                       "type": {
                         "description": "Optional v0-specific attachment type for enhanced processing.",
                         "type": "string",
-                        "enum": [
-                          "screenshot",
-                          "figma",
-                          "zip"
-                        ]
+                        "enum": ["screenshot", "figma", "zip"]
                       }
                     },
-                    "required": [
-                      "url",
-                      "size"
-                    ],
+                    "required": ["url", "size"],
                     "additionalProperties": false
                   }
                 }
@@ -10158,17 +9623,11 @@
                 "type": "string"
               }
             },
-            "required": [
-              "hasMore"
-            ],
+            "required": ["hasMore"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "object",
-          "data",
-          "pagination"
-        ],
+        "required": ["object", "data", "pagination"],
         "additionalProperties": false
       },
       "NotificationPreferenceSchema": {
@@ -10184,10 +9643,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "liveActivity",
-          "pushNotifications"
-        ],
+        "required": ["liveActivity", "pushNotifications"],
         "additionalProperties": false
       },
       "ProductDetailSchema": {
@@ -10224,14 +9680,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "object",
-          "id",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["object", "id", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false
       },
       "ProductListSchema": {
@@ -10288,10 +9737,7 @@
             }
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false
       },
       "ProductSummarySchema": {
@@ -10324,14 +9770,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "object",
-          "id",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["object", "id", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false
       },
       "ProjectDetail": {
@@ -10354,10 +9793,7 @@
           "privacy": {
             "description": "The privacy setting for the project - either private or team.",
             "type": "string",
-            "enum": [
-              "private",
-              "team"
-            ]
+            "enum": ["private", "team"]
           },
           "vercelProjectId": {
             "description": "Optional ID of the linked Vercel project, if connected.",
@@ -10416,13 +9852,7 @@
                 "privacy": {
                   "description": "Defines the visibility of the chat—private, team-only, or public.",
                   "type": "string",
-                  "enum": [
-                    "public",
-                    "private",
-                    "team",
-                    "team-edit",
-                    "unlisted"
-                  ]
+                  "enum": ["public", "private", "team", "team-edit", "unlisted"]
                 },
                 "name": {
                   "description": "An optional name assigned to the chat by the user.",
@@ -10479,11 +9909,7 @@
                     "status": {
                       "description": "The current status of the version generation process.",
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "completed",
-                        "failed"
-                      ]
+                      "enum": ["pending", "completed", "failed"]
                     },
                     "demoUrl": {
                       "description": "Optional URL for previewing the generated output.",
@@ -10506,12 +9932,7 @@
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "status",
-                    "createdAt"
-                  ],
+                  "required": ["id", "object", "status", "createdAt"],
                   "additionalProperties": false
                 }
               },
@@ -10562,10 +9983,7 @@
           "privacy": {
             "description": "The privacy setting for the project - either private or team.",
             "type": "string",
-            "enum": [
-              "private",
-              "team"
-            ]
+            "enum": ["private", "team"]
           },
           "vercelProjectId": {
             "description": "Optional ID of the linked Vercel project, if connected.",
@@ -10623,10 +10041,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object"
-        ],
+        "required": ["id", "object"],
         "additionalProperties": false
       },
       "SearchResultItem": {
@@ -10640,10 +10055,7 @@
           "object": {
             "description": "Type of item returned, either 'chat' or 'project'.",
             "type": "string",
-            "enum": [
-              "chat",
-              "project"
-            ]
+            "enum": ["chat", "project"]
           },
           "name": {
             "description": "The display name of the item.",
@@ -10670,14 +10082,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name",
-          "createdAt",
-          "apiUrl",
-          "webUrl"
-        ],
+        "required": ["id", "object", "name", "createdAt", "apiUrl", "webUrl"],
         "additionalProperties": false
       },
       "UserDetail": {
@@ -10706,12 +10111,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "email",
-          "avatar"
-        ],
+        "required": ["id", "object", "email", "avatar"],
         "additionalProperties": false
       },
       "UserPreferencesPostResponseSchema": {
@@ -10743,16 +10143,11 @@
                         "type": "boolean"
                       }
                     },
-                    "required": [
-                      "liveActivity",
-                      "pushNotifications"
-                    ],
+                    "required": ["liveActivity", "pushNotifications"],
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "notifications"
-                ],
+                "required": ["notifications"],
                 "additionalProperties": false
               },
               {
@@ -10761,10 +10156,7 @@
             ]
           }
         },
-        "required": [
-          "object",
-          "preferences"
-        ],
+        "required": ["object", "preferences"],
         "additionalProperties": false
       },
       "UserPreferencesResponseSchema": {
@@ -10796,16 +10188,11 @@
                         "type": "boolean"
                       }
                     },
-                    "required": [
-                      "liveActivity",
-                      "pushNotifications"
-                    ],
+                    "required": ["liveActivity", "pushNotifications"],
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "notifications"
-                ],
+                "required": ["notifications"],
                 "additionalProperties": false
               },
               {
@@ -10814,10 +10201,7 @@
             ]
           }
         },
-        "required": [
-          "object",
-          "preferences"
-        ],
+        "required": ["object", "preferences"],
         "additionalProperties": false
       },
       "UserPreferencesSchema": {
@@ -10837,16 +10221,11 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "liveActivity",
-              "pushNotifications"
-            ],
+            "required": ["liveActivity", "pushNotifications"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "notifications"
-        ],
+        "required": ["notifications"],
         "additionalProperties": false
       },
       "VercelProjectDetail": {
@@ -10866,11 +10245,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false
       },
       "VercelProjectSummary": {
@@ -10891,11 +10266,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false
       },
       "VersionDetail": {
@@ -10914,11 +10285,7 @@
           "status": {
             "description": "The current status of the version generation process.",
             "type": "string",
-            "enum": [
-              "pending",
-              "completed",
-              "failed"
-            ]
+            "enum": ["pending", "completed", "failed"]
           },
           "demoUrl": {
             "description": "Optional URL for previewing the generated output.",
@@ -10965,23 +10332,12 @@
                   "type": "boolean"
                 }
               },
-              "required": [
-                "object",
-                "name",
-                "content",
-                "locked"
-              ],
+              "required": ["object", "name", "content", "locked"],
               "additionalProperties": false
             }
           }
         },
-        "required": [
-          "id",
-          "object",
-          "status",
-          "createdAt",
-          "files"
-        ],
+        "required": ["id", "object", "status", "createdAt", "files"],
         "additionalProperties": false
       },
       "VersionSummary": {
@@ -11000,11 +10356,7 @@
           "status": {
             "description": "The current status of the version generation process.",
             "type": "string",
-            "enum": [
-              "pending",
-              "completed",
-              "failed"
-            ]
+            "enum": ["pending", "completed", "failed"]
           },
           "demoUrl": {
             "description": "Optional URL for previewing the generated output.",
@@ -11027,12 +10379,7 @@
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "status",
-          "createdAt"
-        ],
+        "required": ["id", "object", "status", "createdAt"],
         "additionalProperties": false
       },
       "VersionSummaryList": {
@@ -11063,11 +10410,7 @@
                 "status": {
                   "description": "The current status of the version generation process.",
                   "type": "string",
-                  "enum": [
-                    "pending",
-                    "completed",
-                    "failed"
-                  ]
+                  "enum": ["pending", "completed", "failed"]
                 },
                 "demoUrl": {
                   "description": "Optional URL for previewing the generated output.",
@@ -11090,12 +10433,7 @@
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                 }
               },
-              "required": [
-                "id",
-                "object",
-                "status",
-                "createdAt"
-              ],
+              "required": ["id", "object", "status", "createdAt"],
               "additionalProperties": false
             }
           },
@@ -11116,17 +10454,11 @@
                 "type": "string"
               }
             },
-            "required": [
-              "hasMore"
-            ],
+            "required": ["hasMore"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "object",
-          "data",
-          "pagination"
-        ],
+        "required": ["object", "data", "pagination"],
         "additionalProperties": false
       },
       "UnauthorizedError": {
@@ -11144,16 +10476,11 @@
                 "const": "unauthorized_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "ForbiddenError": {
@@ -11171,16 +10498,11 @@
                 "const": "forbidden_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "NotFoundError": {
@@ -11198,16 +10520,11 @@
                 "const": "not_found_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "ConflictError": {
@@ -11225,16 +10542,11 @@
                 "const": "conflict_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "PayloadTooLargeError": {
@@ -11252,16 +10564,11 @@
                 "const": "payload_too_large_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "UnprocessableEntityError": {
@@ -11279,16 +10586,11 @@
                 "const": "unprocessable_entity_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "TooManyRequestsError": {
@@ -11306,16 +10608,11 @@
                 "const": "too_many_requests_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "InternalServerError": {
@@ -11333,16 +10630,11 @@
                 "const": "internal_server_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       }
     },
