@@ -1,5 +1,18 @@
 # v0-clone
 
+## 0.2.0
+
+### Minor Changes
+
+- d56f338: update usage, add authorId, add attachments
+
+### Patch Changes
+
+- 06a1262: fix ui streaming
+- Updated dependencies [d56f338]
+  - @v0-sdk/react@0.4.0
+  - v0-sdk@0.15.0
+
 ## 0.1.7
 
 ### Patch Changes

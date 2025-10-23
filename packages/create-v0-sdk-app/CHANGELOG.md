@@ -1,5 +1,11 @@
 # create-v0-sdk-app
 
+## 0.2.0
+
+### Minor Changes
+
+- d56f338: update usage, add authorId, add attachments
+
 ## 0.1.3
 
 ### Patch Changes

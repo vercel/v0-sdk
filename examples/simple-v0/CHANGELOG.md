@@ -1,5 +1,16 @@
 # simple-v0
 
+## 0.2.0
+
+### Minor Changes
+
+- d56f338: update usage, add authorId, add attachments
+
+### Patch Changes
+
+- Updated dependencies [d56f338]
+  - v0-sdk@0.15.0
+
 ## 0.1.5
 
 ### Patch Changes
