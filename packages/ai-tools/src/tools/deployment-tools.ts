@@ -116,7 +116,6 @@ export function createDeploymentTools(config: V0ClientConfig = {}) {
 
       return {
         logs: result.logs,
-        error: result.error,
         nextSince: result.nextSince,
       }
     },
