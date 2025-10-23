@@ -1,6 +1,6 @@
 {
   "name": "ai-tools-example",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "private": true,
   "description": "Example usage of @v0-sdk/ai-tools with AI SDK",
   "type": "module",
