@@ -6810,7 +6810,7 @@
     "/reports/usage": {
       "get": {
         "summary": "Get Usage Report",
-        "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat.",
+        "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat, or by userId to show usage for a specific user.",
         "operationId": "reports.getUsage",
         "tags": ["reports"],
         "responses": {
@@ -7028,6 +7028,15 @@
               "type": "string"
             },
             "description": "Query parameter \"messageId\""
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Query parameter \"userId\""
           },
           {
             "name": "limit",
