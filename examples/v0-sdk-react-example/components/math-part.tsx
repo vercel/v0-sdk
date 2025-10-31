@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MathPart as BaseMathPart, MathPartProps } from '@v0-sdk/react'
 
 /**
