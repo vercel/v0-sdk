@@ -6810,7 +6810,7 @@
     "/reports/usage": {
       "get": {
         "summary": "Get Usage Report",
-        "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat.",
+        "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat, or by userId to show usage for a specific user.",
         "operationId": "reports.getUsage",
         "tags": ["reports"],
         "responses": {
@@ -6868,9 +6868,15 @@
                           },
                           "user": {
                             "$ref": "#/components/schemas/UserSummarySchema"
+                          },
+                          "createdAt": {
+                            "description": "The ISO timestamp representing when the usage event was created.",
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                           }
                         },
-                        "required": ["id", "object", "totalCost"],
+                        "required": ["id", "object", "totalCost", "createdAt"],
                         "additionalProperties": false
                       }
                     },
@@ -7028,6 +7034,15 @@
               "type": "string"
             },
             "description": "Query parameter \"messageId\""
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Query parameter \"userId\""
           },
           {
             "name": "limit",

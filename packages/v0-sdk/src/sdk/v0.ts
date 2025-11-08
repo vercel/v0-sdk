@@ -1174,6 +1174,7 @@ export type ReportsGetUsageResponse = {
     messageId?: string
     userId?: string
     user?: UserSummarySchema
+    createdAt: string
   }>
   pagination: {
     hasMore: boolean
@@ -1824,6 +1825,7 @@ export function createClient(config: V0ClientConfig = {}) {
         endDate?: string
         chatId?: string
         messageId?: string
+        userId?: string
         limit?: number
         cursor?: string
       }): Promise<ReportsGetUsageResponse> {
@@ -1834,6 +1836,7 @@ export function createClient(config: V0ClientConfig = {}) {
                 endDate: params.endDate,
                 chatId: params.chatId,
                 messageId: params.messageId,
+                userId: params.userId,
                 limit:
                   params.limit !== undefined ? String(params.limit) : undefined,
                 cursor: params.cursor,
