@@ -109,7 +109,9 @@ export function Sidebar({
           <Avatar className="h-9 w-9">
             <AvatarImage src={user?.image} alt={user?.name || 'User'} />
             <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
-              {user?.name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+              {user?.name?.charAt(0)?.toUpperCase() ||
+                user?.email?.charAt(0)?.toUpperCase() ||
+                'U'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
@@ -136,8 +138,12 @@ export function Sidebar({
                     className="cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
-                      {theme === 'light' && <span className="text-blue-600">✓</span>}
-                      <span className={theme !== 'light' ? 'ml-6' : ''}>Light</span>
+                      {theme === 'light' && (
+                        <span className="text-blue-600">✓</span>
+                      )}
+                      <span className={theme !== 'light' ? 'ml-6' : ''}>
+                        Light
+                      </span>
                     </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -145,8 +151,12 @@ export function Sidebar({
                     className="cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
-                      {theme === 'dark' && <span className="text-blue-600">✓</span>}
-                      <span className={theme !== 'dark' ? 'ml-6' : ''}>Dark</span>
+                      {theme === 'dark' && (
+                        <span className="text-blue-600">✓</span>
+                      )}
+                      <span className={theme !== 'dark' ? 'ml-6' : ''}>
+                        Dark
+                      </span>
                     </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -154,8 +164,12 @@ export function Sidebar({
                     className="cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
-                      {theme === 'system' && <span className="text-blue-600">✓</span>}
-                      <span className={theme !== 'system' ? 'ml-6' : ''}>System</span>
+                      {theme === 'system' && (
+                        <span className="text-blue-600">✓</span>
+                      )}
+                      <span className={theme !== 'system' ? 'ml-6' : ''}>
+                        System
+                      </span>
                     </span>
                   </DropdownMenuItem>
                 </>
