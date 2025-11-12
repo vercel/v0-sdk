@@ -108,7 +108,7 @@ export function Sidebar({
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
             <AvatarImage src={user?.image} alt={user?.name || 'User'} />
-            <AvatarFallback className="bg-accent/10 text-accent">
+            <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.name?.charAt(0)?.toUpperCase() ||
                 user?.email?.charAt(0)?.toUpperCase() ||
                 'U'}

@@ -143,3 +143,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Vercel-style syntax highlighting for JSON */
+.hljs {
+  color: var(--foreground);
+  background: transparent;
+}
+
+.hljs-attr {
+  color: oklch(0.65 0.25 350); /* Bright pink for keys */
+}
+
+.hljs-string {
+  color: oklch(0.7 0.2 145); /* Bright green for strings */
+}
+
+.hljs-number {
+  color: oklch(0.65 0.2 250); /* Bright blue for numbers */
+}
+
+.hljs-literal {
+  color: oklch(0.65 0.2 250); /* Bright blue for booleans/null */
+}
+
+.hljs-punctuation {
+  color: var(--foreground);
+}
+
+.dark .hljs-attr {
+  color: oklch(0.75 0.24 340); /* Bright pink in dark mode */
+}
+
+.dark .hljs-string {
+  color: oklch(0.75 0.19 145); /* Bright green in dark mode */
+}
+
+.dark .hljs-number {
+  color: oklch(0.7 0.19 255); /* Bright blue in dark mode */
+}
+
+.dark .hljs-literal {
+  color: oklch(0.7 0.19 255); /* Bright blue in dark mode */
+}

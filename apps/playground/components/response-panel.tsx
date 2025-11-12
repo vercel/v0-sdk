@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Copy, Check } from 'lucide-react'
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
-import 'highlight.js/styles/github-dark.css'
 
 // Register the JSON language
 hljs.registerLanguage('json', json)
@@ -120,18 +119,18 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4 bg-[#0d1117]">
+      <div className="flex-1 overflow-auto p-4 bg-background">
         {activeTab === 'body' && (
-          <pre className="text-sm">
-            <code ref={codeRef} className="language-json">
+          <pre className="text-sm font-mono">
+            <code ref={codeRef} className="language-json block text-foreground">
               {JSON.stringify(displayData, null, 2)}
             </code>
           </pre>
         )}
         {activeTab === 'headers' && response.headers && (
-          <div className="space-y-2">
+          <div className="space-y-2 font-mono">
             {Object.entries(response.headers).map(([key, value]) => (
-              <div key={key} className="flex gap-2">
+              <div key={key} className="flex gap-2 text-sm">
                 <span className="font-medium text-foreground">{key}:</span>
                 <span className="text-muted-foreground">{value}</span>
               </div>
