@@ -93,14 +93,28 @@ export default function Home() {
       })
     } catch (error: any) {
       console.error('API Error:', error)
+      
+      // Try to extract status code from various possible locations
+      const status = 
+        error.status || 
+        error.response?.status || 
+        error.statusCode ||
+        (error.cause?.status) ||
+        500
+
+      const statusText = 
+        error.statusText || 
+        error.response?.statusText ||
+        (status >= 500 ? 'Server Error' : status >= 400 ? 'Client Error' : 'Error')
+
       setResponse({
         error: {
           message: error.message || 'An error occurred',
-          details: error.response?.data || error,
+          details: error.response?.data || error.body || error.data || error,
         },
-        status: error.status || error.response?.status || 500,
-        statusText: error.statusText || 'Error',
-        headers: error.response?.headers || {},
+        status,
+        statusText,
+        headers: error.response?.headers || error.headers || {},
       })
     } finally {
       setIsLoading(false)

@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import type { APIEndpoint } from '../lib/openapi-parser'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface RequestPanelProps {
   endpoint?: APIEndpoint
@@ -62,20 +69,21 @@ export function RequestPanel({
 
     if (param.schema?.enum) {
       return (
-        <select
+        <Select
           value={value}
-          onChange={(e) =>
-            setParams({ ...params, [param.name]: e.target.value })
-          }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onValueChange={(val) => setParams({ ...params, [param.name]: val })}
         >
-          <option value="">Select...</option>
-          {param.schema.enum.map((option: string) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select..." />
+          </SelectTrigger>
+          <SelectContent>
+            {param.schema.enum.map((option: string) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       )
     }
 
@@ -113,11 +121,24 @@ export function RequestPanel({
       )
     }
 
+    // Use textarea only for message and system fields
+    if (param.name === 'message' || param.name === 'system') {
+      return (
+        <textarea
+          value={value}
+          onChange={(e) => setParams({ ...params, [param.name]: e.target.value })}
+          rows={4}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      )
+    }
+
+    // Default to input field for strings
     return (
-      <textarea
+      <input
+        type="text"
         value={value}
         onChange={(e) => setParams({ ...params, [param.name]: e.target.value })}
-        rows={param.name === 'message' || param.name === 'system' ? 4 : 2}
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     )

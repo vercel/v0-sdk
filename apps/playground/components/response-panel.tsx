@@ -1,7 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Copy, Check } from 'lucide-react'
+import hljs from 'highlight.js/lib/core'
+import json from 'highlight.js/lib/languages/json'
+import 'highlight.js/styles/github-dark.css'
+
+// Register the JSON language
+hljs.registerLanguage('json', json)
 
 interface ResponsePanelProps {
   response?: {
@@ -17,6 +23,13 @@ interface ResponsePanelProps {
 export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'body' | 'headers'>('body')
+  const codeRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (codeRef.current && response && activeTab === 'body') {
+      hljs.highlightElement(codeRef.current)
+    }
+  }, [response, activeTab])
 
   const copyToClipboard = () => {
     if (response?.data) {
@@ -107,10 +120,12 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto p-4 bg-[#0d1117]">
         {activeTab === 'body' && (
-          <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-            {JSON.stringify(displayData, null, 2)}
+          <pre className="text-sm">
+            <code ref={codeRef} className="language-json">
+              {JSON.stringify(displayData, null, 2)}
+            </code>
           </pre>
         )}
         {activeTab === 'headers' && response.headers && (
