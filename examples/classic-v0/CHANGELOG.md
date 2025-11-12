@@ -1,5 +1,12 @@
 # classic-v0
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [f6f5f5f]
+  - v0-sdk@0.15.1
+
 ## 0.2.0
 
 ### Minor Changes
