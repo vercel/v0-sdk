@@ -88,7 +88,7 @@ export function Sidebar({
                   {category.endpoints.map((endpoint) => {
                     const { resource, action } = operationIdToRoute(endpoint.id)
                     const href = `/${resource}/${action}`
-                    
+
                     return (
                       <Link
                         key={endpoint.id}

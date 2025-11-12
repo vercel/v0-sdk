@@ -34,4 +34,3 @@ export function routeToOperationId(resource: string, action: string): string {
   const actionCamel = kebabToCamel(action)
   return `${resourceParts}.${actionCamel}`
 }
-

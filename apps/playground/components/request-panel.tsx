@@ -108,7 +108,7 @@ export function RequestPanel({
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i]
         const arrayMatch = key.match(/^(.+)\[(\d+)\]$/)
-        
+
         if (arrayMatch) {
           const arrayKey = arrayMatch[1]
           const index = parseInt(arrayMatch[2])
@@ -123,7 +123,7 @@ export function RequestPanel({
 
       const lastKey = keys[keys.length - 1]
       const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/)
-      
+
       if (arrayMatch) {
         const arrayKey = arrayMatch[1]
         const index = parseInt(arrayMatch[2])
