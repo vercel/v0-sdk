@@ -1,65 +1,297 @@
-import Image from 'next/image'
+'use client'
+
+import { useState } from 'react'
+import { Sidebar } from '../components/sidebar'
+import { RequestPanel } from '../components/request-panel'
+import { ResponsePanel } from '../components/response-panel'
+import { parseOpenAPISpec } from '../lib/openapi-parser'
+import type { APIEndpoint } from '../lib/openapi-parser'
+import { createClient } from 'v0-sdk'
 
 export default function Home() {
+  const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint>()
+  const [response, setResponse] = useState<any>()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const categories = parseOpenAPISpec()
+
+  const executeRequest = async (params: Record<string, any>) => {
+    if (!selectedEndpoint) return
+
+    setIsLoading(true)
+    setResponse(undefined)
+
+    try {
+      const { apiKey, ...requestParams } = params
+
+      // Create v0 client with the provided API key
+      const v0 = createClient({ apiKey })
+
+      // Build the path with path parameters
+      let path = selectedEndpoint.path
+      const pathParams =
+        selectedEndpoint.parameters?.filter((p) => p.in === 'path') || []
+      pathParams.forEach((param) => {
+        if (requestParams[param.name]) {
+          path = path.replace(`{${param.name}}`, requestParams[param.name])
+        }
+      })
+
+      // Collect query parameters
+      const queryParams: Record<string, any> = {}
+      const queryParamDefs =
+        selectedEndpoint.parameters?.filter((p) => p.in === 'query') || []
+      queryParamDefs.forEach((param) => {
+        if (
+          requestParams[param.name] !== undefined &&
+          requestParams[param.name] !== ''
+        ) {
+          queryParams[param.name] = requestParams[param.name]
+        }
+      })
+
+      // Collect body parameters
+      const bodyParams: Record<string, any> = {}
+      const bodyParamDefs =
+        selectedEndpoint.parameters?.filter((p) => p.in === 'body') || []
+      bodyParamDefs.forEach((param) => {
+        if (
+          requestParams[param.name] !== undefined &&
+          requestParams[param.name] !== ''
+        ) {
+          bodyParams[param.name] = requestParams[param.name]
+        }
+      })
+
+      // Map endpoint to SDK method
+      const result = await executeEndpoint(v0, selectedEndpoint, {
+        pathParams: Object.fromEntries(
+          pathParams.map((p) => [p.name, requestParams[p.name]]),
+        ),
+        queryParams,
+        bodyParams,
+      })
+
+      setResponse({
+        data: result,
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+    } catch (error: any) {
+      console.error('API Error:', error)
+      setResponse({
+        error: {
+          message: error.message || 'An error occurred',
+          details: error.response?.data || error,
+        },
+        status: error.status || error.response?.status || 500,
+        statusText: error.statusText || 'Error',
+        headers: error.response?.headers || {},
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="h-screen flex overflow-hidden bg-gray-100">
+      <div className="w-80 flex-shrink-0">
+        <Sidebar
+          categories={categories}
+          selectedEndpoint={selectedEndpoint}
+          onSelectEndpoint={setSelectedEndpoint}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{' '}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{' '}
-            or the{' '}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{' '}
-            center.
-          </p>
+      </div>
+      <div className="flex-1 flex overflow-hidden">
+        <div className="w-1/2 border-r border-gray-200">
+          <RequestPanel
+            endpoint={selectedEndpoint}
+            onExecute={executeRequest}
+            isLoading={isLoading}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="w-1/2">
+          <ResponsePanel response={response} isLoading={isLoading} />
         </div>
-      </main>
+      </div>
     </div>
   )
+}
+
+async function executeEndpoint(
+  v0: any,
+  endpoint: APIEndpoint,
+  params: {
+    pathParams: Record<string, any>
+    queryParams: Record<string, any>
+    bodyParams: Record<string, any>
+  },
+) {
+  const { pathParams, queryParams, bodyParams } = params
+  const allParams = { ...pathParams, ...queryParams, ...bodyParams }
+
+  // Map operation IDs to SDK methods
+  const operationId = endpoint.id
+
+  // Projects
+  if (operationId === 'projects.create') {
+    return v0.projects.create(bodyParams)
+  }
+  if (operationId === 'projects.find') {
+    return v0.projects.find()
+  }
+  if (operationId === 'projects.getById') {
+    return v0.projects.getById(pathParams)
+  }
+  if (operationId === 'projects.getByChatId') {
+    return v0.projects.getByChatId(pathParams)
+  }
+  if (operationId === 'projects.update') {
+    return v0.projects.update(allParams)
+  }
+  if (operationId === 'projects.assign') {
+    return v0.projects.assign(allParams)
+  }
+  if (operationId === 'projects.createEnvVars') {
+    return v0.projects.createEnvVars(allParams)
+  }
+  if (operationId === 'projects.delete') {
+    return v0.projects.delete(pathParams)
+  }
+  if (operationId === 'projects.deleteEnvVars') {
+    return v0.projects.deleteEnvVars(allParams)
+  }
+  if (operationId === 'projects.findEnvVars') {
+    return v0.projects.findEnvVars(allParams)
+  }
+  if (operationId === 'projects.getEnvVar') {
+    return v0.projects.getEnvVar(allParams)
+  }
+  if (operationId === 'projects.updateEnvVars') {
+    return v0.projects.updateEnvVars(allParams)
+  }
+
+  // Chats
+  if (operationId === 'chats.create') {
+    return v0.chats.create(bodyParams)
+  }
+  if (operationId === 'chats.find') {
+    return v0.chats.find(queryParams)
+  }
+  if (operationId === 'chats.init') {
+    return v0.chats.init(bodyParams)
+  }
+  if (operationId === 'chats.delete') {
+    return v0.chats.delete(pathParams)
+  }
+  if (operationId === 'chats.getById') {
+    return v0.chats.getById(pathParams)
+  }
+  if (operationId === 'chats.update') {
+    return v0.chats.update(allParams)
+  }
+  if (operationId === 'chats.favorite') {
+    return v0.chats.favorite(allParams)
+  }
+  if (operationId === 'chats.fork') {
+    return v0.chats.fork(allParams)
+  }
+  if (operationId === 'chats.sendMessage') {
+    return v0.chats.sendMessage(allParams)
+  }
+  if (operationId === 'chats.findMessages') {
+    return v0.chats.findMessages(allParams)
+  }
+  if (operationId === 'chats.getMessage') {
+    return v0.chats.getMessage(allParams)
+  }
+  if (operationId === 'chats.findVersions') {
+    return v0.chats.findVersions(allParams)
+  }
+  if (operationId === 'chats.getVersion') {
+    return v0.chats.getVersion(allParams)
+  }
+  if (operationId === 'chats.updateVersion') {
+    return v0.chats.updateVersion(allParams)
+  }
+  if (operationId === 'chats.resume') {
+    return v0.chats.resume(allParams)
+  }
+  if (operationId === 'chats.downloadVersion') {
+    return v0.chats.downloadVersion(allParams)
+  }
+
+  // Deployments
+  if (operationId === 'deployments.create') {
+    return v0.deployments.create(bodyParams)
+  }
+  if (operationId === 'deployments.find') {
+    return v0.deployments.find(queryParams)
+  }
+  if (operationId === 'deployments.getById') {
+    return v0.deployments.getById(pathParams)
+  }
+  if (operationId === 'deployments.delete') {
+    return v0.deployments.delete(pathParams)
+  }
+  if (operationId === 'deployments.findLogs') {
+    return v0.deployments.findLogs(allParams)
+  }
+  if (operationId === 'deployments.findErrors') {
+    return v0.deployments.findErrors(pathParams)
+  }
+
+  // Integrations
+  if (operationId === 'integrations.vercel.projects.create') {
+    return v0.integrations.vercel.projects.create(bodyParams)
+  }
+  if (operationId === 'integrations.vercel.projects.find') {
+    return v0.integrations.vercel.projects.find()
+  }
+
+  // Hooks
+  if (operationId === 'hooks.find') {
+    return v0.hooks.find()
+  }
+  if (operationId === 'hooks.create') {
+    return v0.hooks.create(bodyParams)
+  }
+  if (operationId === 'hooks.getById') {
+    return v0.hooks.getById(pathParams)
+  }
+  if (operationId === 'hooks.update') {
+    return v0.hooks.update(allParams)
+  }
+  if (operationId === 'hooks.delete') {
+    return v0.hooks.delete(pathParams)
+  }
+
+  // Rate Limits
+  if (operationId === 'rateLimits.find') {
+    return v0.rateLimits.find(queryParams)
+  }
+
+  // User
+  if (operationId === 'user.get') {
+    return v0.user.get()
+  }
+  if (operationId === 'user.getBilling') {
+    return v0.user.getBilling(queryParams)
+  }
+  if (operationId === 'user.getPlan') {
+    return v0.user.getPlan()
+  }
+  if (operationId === 'user.getScopes') {
+    return v0.user.getScopes()
+  }
+
+  // Reports
+  if (operationId === 'reports.getUsage') {
+    return v0.reports.getUsage(queryParams)
+  }
+
+  throw new Error(`Unsupported operation: ${operationId}`)
 }

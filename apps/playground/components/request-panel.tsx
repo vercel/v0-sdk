@@ -1,0 +1,300 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import type { APIEndpoint } from '../lib/openapi-parser'
+
+interface RequestPanelProps {
+  endpoint?: APIEndpoint
+  onExecute: (params: Record<string, any>) => void
+  isLoading: boolean
+}
+
+export function RequestPanel({
+  endpoint,
+  onExecute,
+  isLoading,
+}: RequestPanelProps) {
+  const [params, setParams] = useState<Record<string, any>>({})
+  const [apiKey, setApiKey] = useState('')
+
+  useEffect(() => {
+    // Load API key from localStorage
+    const savedKey = localStorage.getItem('v0_api_key')
+    if (savedKey) setApiKey(savedKey)
+  }, [])
+
+  useEffect(() => {
+    // Reset params when endpoint changes
+    if (endpoint) {
+      const initialParams: Record<string, any> = {}
+      endpoint.parameters?.forEach((param) => {
+        if (param.schema?.default !== undefined) {
+          initialParams[param.name] = param.schema.default
+        } else if (param.schema?.type === 'boolean') {
+          initialParams[param.name] = false
+        } else if (param.schema?.type === 'array') {
+          initialParams[param.name] = []
+        } else if (param.schema?.type === 'object') {
+          initialParams[param.name] = {}
+        } else {
+          initialParams[param.name] = ''
+        }
+      })
+      setParams(initialParams)
+    }
+  }, [endpoint])
+
+  const handleApiKeyChange = (value: string) => {
+    setApiKey(value)
+    localStorage.setItem('v0_api_key', value)
+  }
+
+  const renderInput = (param: any) => {
+    const value = params[param.name] ?? ''
+
+    if (param.schema?.type === 'boolean') {
+      return (
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={value}
+            onChange={(e) =>
+              setParams({ ...params, [param.name]: e.target.checked })
+            }
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-600">
+            {param.schema.description || param.description}
+          </span>
+        </label>
+      )
+    }
+
+    if (param.schema?.enum) {
+      return (
+        <select
+          value={value}
+          onChange={(e) =>
+            setParams({ ...params, [param.name]: e.target.value })
+          }
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select...</option>
+          {param.schema.enum.map((option: string) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      )
+    }
+
+    if (param.schema?.type === 'integer' || param.schema?.type === 'number') {
+      return (
+        <input
+          type="number"
+          value={value}
+          onChange={(e) =>
+            setParams({ ...params, [param.name]: Number(e.target.value) })
+          }
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      )
+    }
+
+    if (param.schema?.type === 'array' || param.schema?.type === 'object') {
+      return (
+        <textarea
+          value={
+            typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+          }
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value)
+              setParams({ ...params, [param.name]: parsed })
+            } catch {
+              setParams({ ...params, [param.name]: e.target.value })
+            }
+          }}
+          rows={4}
+          placeholder={`JSON ${param.schema?.type}`}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      )
+    }
+
+    return (
+      <textarea
+        value={value}
+        onChange={(e) => setParams({ ...params, [param.name]: e.target.value })}
+        rows={param.name === 'message' || param.name === 'system' ? 4 : 2}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    )
+  }
+
+  if (!endpoint) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-500">
+            Select an endpoint from the sidebar to begin
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const pathParams = endpoint.parameters?.filter((p) => p.in === 'path') || []
+  const queryParams = endpoint.parameters?.filter((p) => p.in === 'query') || []
+  const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
+
+  return (
+    <div className="h-full flex flex-col bg-white">
+      <div className="flex-none p-4 border-b border-gray-200">
+        <div className="flex items-center gap-3 mb-3">
+          <span
+            className={`px-2 py-1 text-sm font-medium rounded ${
+              endpoint.method === 'GET'
+                ? 'text-green-600 bg-green-50'
+                : endpoint.method === 'POST'
+                  ? 'text-blue-600 bg-blue-50'
+                  : endpoint.method === 'PATCH'
+                    ? 'text-yellow-600 bg-yellow-50'
+                    : endpoint.method === 'PUT'
+                      ? 'text-orange-600 bg-orange-50'
+                      : 'text-red-600 bg-red-50'
+            }`}
+          >
+            {endpoint.method}
+          </span>
+          <code className="text-sm text-gray-700">{endpoint.path}</code>
+        </div>
+        <h2 className="text-lg font-semibold text-gray-900">{endpoint.name}</h2>
+        {endpoint.description && (
+          <p className="text-sm text-gray-600 mt-1">{endpoint.description}</p>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-6">
+          {/* API Key */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              API Key <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => handleApiKeyChange(e.target.value)}
+              placeholder="Enter your v0 API key"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Get your API key from{' '}
+              <a
+                href="https://v0.dev/chat/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                v0.dev/chat/settings/keys
+              </a>
+            </p>
+          </div>
+
+          {/* Path Parameters */}
+          {pathParams.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Path Parameters
+              </h3>
+              <div className="space-y-3">
+                {pathParams.map((param) => (
+                  <div key={param.name}>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      {param.name}
+                      {param.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    {renderInput(param)}
+                    {param.description && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {param.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Query Parameters */}
+          {queryParams.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Query Parameters
+              </h3>
+              <div className="space-y-3">
+                {queryParams.map((param) => (
+                  <div key={param.name}>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      {param.name}
+                      {param.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    {renderInput(param)}
+                    {param.description && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {param.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Body Parameters */}
+          {bodyParams.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Request Body
+              </h3>
+              <div className="space-y-3">
+                {bodyParams.map((param) => (
+                  <div key={param.name}>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      {param.name}
+                      {param.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    {renderInput(param)}
+                    {param.description && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {param.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-none p-4 border-t border-gray-200">
+        <button
+          onClick={() => onExecute({ apiKey, ...params })}
+          disabled={isLoading || !apiKey}
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+        >
+          {isLoading ? 'Executing...' : 'Send Request'}
+        </button>
+      </div>
+    </div>
+  )
+}
