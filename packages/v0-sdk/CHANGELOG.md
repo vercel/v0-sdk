@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.15.1
+
+### Patch Changes
+
+- f6f5f5f: add createdAt, userId to usage report
+
 ## 0.15.0
 
 ### Minor Changes
