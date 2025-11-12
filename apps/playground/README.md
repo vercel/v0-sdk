@@ -20,6 +20,20 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Configuration
+
+### Environment Variables
+
+Create a `.env.local` file in the root of the playground directory to configure the application:
+
+```bash
+# v0 API Configuration
+# Base URL for the v0 API (defaults to https://api.v0.dev/)
+NEXT_PUBLIC_V0_API_BASE_URL=https://api.v0.dev/
+```
+
+**Note:** The `NEXT_PUBLIC_` prefix is required for Next.js to expose the variable to the browser.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

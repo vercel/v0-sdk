@@ -99,7 +99,3 @@
     --tw-prose-td-borders: theme(colors.gray.700);
   }
 }
-
-button {
-  cursor: pointer;
-}

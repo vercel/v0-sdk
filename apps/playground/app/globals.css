@@ -185,3 +185,7 @@
 .dark .hljs-literal {
   color: oklch(0.7 0.19 255); /* Bright blue in dark mode */
 }
+
+button {
+  cursor: pointer;
+}

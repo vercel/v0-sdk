@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import {
   Select,
@@ -24,11 +25,40 @@ export function RequestPanel({
   hasApiKey,
 }: RequestPanelProps) {
   const [params, setParams] = useState<Record<string, any>>({})
+  const [expandedObjects, setExpandedObjects] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     // Reset params when endpoint changes
     if (endpoint) {
       const initialParams: Record<string, any> = {}
+      const pathsToExpand = new Set<string>()
+
+      // Helper function to collect all expandable paths
+      const collectExpandablePaths = (
+        schema: any,
+        basePath: string = '',
+        value: any = null
+      ) => {
+        if (schema?.type === 'object' && schema?.properties) {
+          if (basePath) pathsToExpand.add(basePath)
+          Object.entries(schema.properties).forEach(([key, propSchema]: [string, any]) => {
+            const fieldPath = basePath ? `${basePath}.${key}` : key
+            collectExpandablePaths(propSchema, fieldPath, value?.[key])
+          })
+        } else if (schema?.type === 'array' && schema?.items) {
+          // For arrays, we'll expand items as they're added
+          if (value && Array.isArray(value)) {
+            value.forEach((_, index) => {
+              const itemPath = `${basePath}[${index}]`
+              pathsToExpand.add(itemPath)
+              if (schema.items?.type === 'object') {
+                collectExpandablePaths(schema.items, itemPath, value[index])
+              }
+            })
+          }
+        }
+      }
+
       endpoint.parameters?.forEach((param) => {
         if (param.schema?.default !== undefined) {
           initialParams[param.name] = param.schema.default
@@ -41,43 +71,167 @@ export function RequestPanel({
         } else {
           initialParams[param.name] = ''
         }
+
+        // Collect paths for this parameter
+        collectExpandablePaths(param.schema, param.name, initialParams[param.name])
       })
+
       setParams(initialParams)
+      setExpandedObjects(pathsToExpand)
     }
   }, [endpoint])
 
-  const renderInput = (param: any) => {
-    const value = params[param.name] ?? ''
+  const toggleObjectExpanded = (path: string) => {
+    setExpandedObjects((prev) => {
+      const next = new Set(prev)
+      if (next.has(path)) {
+        next.delete(path)
+      } else {
+        next.add(path)
+      }
+      return next
+    })
+  }
 
-    if (param.schema?.type === 'boolean') {
+  const updateNestedValue = (path: string, value: any) => {
+    const keys = path.split('.')
+    const newParams = { ...params }
+    let current: any = newParams
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i]
+      const arrayMatch = key.match(/^(.+)\[(\d+)\]$/)
+      
+      if (arrayMatch) {
+        const arrayKey = arrayMatch[1]
+        const index = parseInt(arrayMatch[2])
+        if (!current[arrayKey]) current[arrayKey] = []
+        if (!current[arrayKey][index]) current[arrayKey][index] = {}
+        current = current[arrayKey][index]
+      } else {
+        if (!current[key]) current[key] = {}
+        current = current[key]
+      }
+    }
+
+    const lastKey = keys[keys.length - 1]
+    const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/)
+    
+    if (arrayMatch) {
+      const arrayKey = arrayMatch[1]
+      const index = parseInt(arrayMatch[2])
+      if (!current[arrayKey]) current[arrayKey] = []
+      current[arrayKey][index] = value
+    } else {
+      current[lastKey] = value
+    }
+
+    setParams(newParams)
+  }
+
+  const renderObjectFields = (
+    objectSchema: any,
+    path: string,
+    currentValue: any = {}
+  ): JSX.Element => {
+    const properties = objectSchema?.properties || {}
+    const required = objectSchema?.required || []
+
+    return (
+      <div className="space-y-3 pl-4 border-l-2 border-border">
+        {Object.entries(properties).map(([key, schema]: [string, any]) => {
+          const fieldPath = path ? `${path}.${key}` : key
+          const fieldValue = currentValue?.[key] ?? ''
+          const isRequired = required.includes(key)
+
+          return (
+            <div key={fieldPath}>
+              <label className="block text-sm text-foreground mb-1">
+                {key}
+                {isRequired && <span className="text-destructive ml-1">*</span>}
+                {schema.description && (
+                  <span className="text-xs text-muted-foreground ml-2">
+                    {schema.description}
+                  </span>
+                )}
+              </label>
+              {renderFieldByType(schema, fieldPath, fieldValue)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  const renderFieldByType = (
+    schema: any,
+    path: string,
+    value: any
+  ): JSX.Element => {
+    if (schema.type === 'object') {
+      const isExpanded = expandedObjects.has(path)
+      return (
+        <div className="border border-input rounded-md">
+          <button
+            type="button"
+            onClick={() => toggleObjectExpanded(path)}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+            <span className="font-medium">Object</span>
+          </button>
+          {isExpanded && (
+            <div className="p-3 pt-0">
+              {renderObjectFields(schema, path, value || {})}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (schema.type === 'array') {
+      return renderArrayField(schema, path, value)
+    }
+
+    if (schema.type === 'boolean') {
       return (
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={value}
-            onChange={(e) =>
-              setParams({ ...params, [param.name]: e.target.checked })
-            }
+            checked={value || false}
+            onChange={(e) => updateNestedValue(path, e.target.checked)}
             className="rounded border-input text-primary focus:ring-ring"
           />
-          <span className="text-sm text-muted-foreground">
-            {param.schema.description || param.description}
-          </span>
         </label>
       )
     }
 
-    if (param.schema?.enum) {
+    if (schema.type === 'number' || schema.type === 'integer') {
+      return (
+        <input
+          type="number"
+          value={value || ''}
+          onChange={(e) => updateNestedValue(path, Number(e.target.value))}
+          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      )
+    }
+
+    if (schema.enum) {
       return (
         <Select
-          value={value}
-          onValueChange={(val) => setParams({ ...params, [param.name]: val })}
+          value={value || ''}
+          onValueChange={(val) => updateNestedValue(path, val)}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
-            {param.schema.enum.map((option: string) => (
+            {schema.enum.map((option: string) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
@@ -87,40 +241,109 @@ export function RequestPanel({
       )
     }
 
-    if (param.schema?.type === 'integer' || param.schema?.type === 'number') {
-      return (
-        <input
-          type="number"
-          value={value}
-          onChange={(e) =>
-            setParams({ ...params, [param.name]: Number(e.target.value) })
-          }
-          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      )
+    return (
+      <input
+        type="text"
+        value={value || ''}
+        onChange={(e) => updateNestedValue(path, e.target.value)}
+        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+    )
+  }
+
+  const renderArrayField = (
+    schema: any,
+    path: string,
+    value: any
+  ): JSX.Element => {
+    const arrayValue = Array.isArray(value) ? value : []
+    const itemSchema = schema.items || { type: 'string' }
+
+    const addArrayItem = () => {
+      const newItem =
+        itemSchema.type === 'object'
+          ? {}
+          : itemSchema.type === 'number'
+            ? 0
+            : itemSchema.type === 'boolean'
+              ? false
+              : ''
+      const newArray = [...arrayValue, newItem]
+      updateNestedValue(path, newArray)
+      
+      // Auto-expand the newly added item if it's an object
+      if (itemSchema.type === 'object') {
+        const newItemPath = `${path}[${arrayValue.length}]`
+        setExpandedObjects((prev) => new Set(prev).add(newItemPath))
+      }
     }
 
-    if (param.schema?.type === 'array' || param.schema?.type === 'object') {
-      return (
-        <textarea
-          value={
-            typeof value === 'string' ? value : JSON.stringify(value, null, 2)
-          }
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value)
-              setParams({ ...params, [param.name]: parsed })
-            } catch {
-              setParams({ ...params, [param.name]: e.target.value })
-            }
-          }}
-          rows={4}
-          placeholder={`JSON ${param.schema?.type}`}
-          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      )
+    const removeArrayItem = (index: number) => {
+      const newArray = arrayValue.filter((_: any, i: number) => i !== index)
+      updateNestedValue(path, newArray)
     }
 
+    return (
+      <div className="space-y-2">
+        {arrayValue.map((item: any, index: number) => {
+          const itemPath = `${path}[${index}]`
+          const isExpanded = expandedObjects.has(itemPath)
+
+          return (
+            <div key={index} className="flex gap-2">
+              <div className="flex-1 border border-input rounded-md">
+                {itemSchema.type === 'object' ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => toggleObjectExpanded(itemPath)}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      )}
+                      <span className="font-medium">Item {index + 1}</span>
+                    </button>
+                    {isExpanded && (
+                      <div className="p-3 pt-0">
+                        {renderObjectFields(itemSchema, itemPath, item)}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="p-2">
+                    {renderFieldByType(itemSchema, itemPath, item)}
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => removeArrayItem(index)}
+                className="p-2 border border-input bg-background text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                title="Remove item"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )
+        })}
+        <button
+          type="button"
+          onClick={addArrayItem}
+          className="flex items-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Add Item
+        </button>
+      </div>
+    )
+  }
+
+  const renderInput = (param: any) => {
+    const value = params[param.name] ?? ''
+    
     // Use textarea only for message and system fields
     if (param.name === 'message' || param.name === 'system') {
       return (
@@ -135,15 +358,8 @@ export function RequestPanel({
       )
     }
 
-    // Default to input field for strings
-    return (
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setParams({ ...params, [param.name]: e.target.value })}
-        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-      />
-    )
+    // Use the new rendering system for all schema-based fields
+    return renderFieldByType(param.schema || { type: 'string' }, param.name, value)
   }
 
   if (!endpoint) {

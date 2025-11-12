@@ -8,6 +8,8 @@ import { parseOpenAPISpec } from '../lib/openapi-parser'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import { createClient } from 'v0-sdk'
 
+const V0_API_BASE_URL = process.env.NEXT_PUBLIC_V0_API_BASE_URL || 'https://api.v0.dev/'
+
 export default function Home() {
   const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint>()
   const [response, setResponse] = useState<any>()
@@ -29,7 +31,10 @@ export default function Home() {
 
   const fetchUser = async (key: string) => {
     try {
-      const v0 = createClient({ apiKey: key })
+      const v0 = createClient({ 
+        apiKey: key,
+        baseUrl: V0_API_BASE_URL
+      })
       const userResponse = await v0.user.get()
       setUser(userResponse)
     } catch (error) {
@@ -55,7 +60,10 @@ export default function Home() {
 
     try {
       // Create v0 client with the provided API key
-      const v0 = createClient({ apiKey })
+      const v0 = createClient({ 
+        apiKey,
+        baseUrl: V0_API_BASE_URL
+      })
       const requestParams = params
 
       // Build the path with path parameters
