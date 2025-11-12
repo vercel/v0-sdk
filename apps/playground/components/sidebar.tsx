@@ -44,13 +44,6 @@ export function Sidebar({
 
   return (
     <div className="h-full overflow-y-auto border-r border-gray-200 bg-white">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">v0 API Playground</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Explore the v0 Platform API
-        </p>
-      </div>
-
       <nav className="p-2">
         {categories.map((category) => {
           const isExpanded = expandedCategories.has(category.id)
@@ -66,9 +59,6 @@ export function Sidebar({
                   <ChevronRight className="w-4 h-4" />
                 )}
                 <span>{category.name}</span>
-                <span className="ml-auto text-xs text-gray-500">
-                  {category.endpoints.length}
-                </span>
               </button>
 
               {isExpanded && (
@@ -83,13 +73,6 @@ export function Sidebar({
                           : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
-                      <span
-                        className={`px-1.5 py-0.5 text-xs font-medium rounded ${getMethodColor(
-                          endpoint.method,
-                        )}`}
-                      >
-                        {endpoint.method}
-                      </span>
                       <span className="truncate">{endpoint.name}</span>
                     </button>
                   ))}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sidebar } from '../components/sidebar'
 import { RequestPanel } from '../components/request-panel'
 import { ResponsePanel } from '../components/response-panel'
@@ -12,20 +12,31 @@ export default function Home() {
   const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint>()
   const [response, setResponse] = useState<any>()
   const [isLoading, setIsLoading] = useState(false)
+  const [apiKey, setApiKey] = useState('')
 
   const categories = parseOpenAPISpec()
 
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const savedKey = localStorage.getItem('v0_api_key')
+    if (savedKey) setApiKey(savedKey)
+  }, [])
+
+  const handleApiKeyChange = (value: string) => {
+    setApiKey(value)
+    localStorage.setItem('v0_api_key', value)
+  }
+
   const executeRequest = async (params: Record<string, any>) => {
-    if (!selectedEndpoint) return
+    if (!selectedEndpoint || !apiKey) return
 
     setIsLoading(true)
     setResponse(undefined)
 
     try {
-      const { apiKey, ...requestParams } = params
-
       // Create v0 client with the provided API key
       const v0 = createClient({ apiKey })
+      const requestParams = params
 
       // Build the path with path parameters
       let path = selectedEndpoint.path
@@ -97,24 +108,67 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">
-      <div className="w-80 flex-shrink-0">
-        <Sidebar
-          categories={categories}
-          selectedEndpoint={selectedEndpoint}
-          onSelectEndpoint={setSelectedEndpoint}
-        />
-      </div>
+    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+      {/* Header */}
+      <header className="flex-none bg-white border-b border-gray-200 shadow-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                v0 API Playground
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Explore the v0 Platform API
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-80">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                API Key <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => handleApiKeyChange(e.target.value)}
+                placeholder="Enter your v0 API key"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Get your API key from{' '}
+                <a
+                  href="https://v0.dev/chat/settings/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  v0.dev/chat/settings/keys
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-1/2 border-r border-gray-200">
-          <RequestPanel
-            endpoint={selectedEndpoint}
-            onExecute={executeRequest}
-            isLoading={isLoading}
+        <div className="w-80 flex-shrink-0">
+          <Sidebar
+            categories={categories}
+            selectedEndpoint={selectedEndpoint}
+            onSelectEndpoint={setSelectedEndpoint}
           />
         </div>
-        <div className="w-1/2">
-          <ResponsePanel response={response} isLoading={isLoading} />
+        <div className="flex-1 flex overflow-hidden">
+          <div className="w-1/2 border-r border-gray-200">
+            <RequestPanel
+              endpoint={selectedEndpoint}
+              onExecute={executeRequest}
+              isLoading={isLoading}
+              hasApiKey={!!apiKey}
+            />
+          </div>
+          <div className="w-1/2">
+            <ResponsePanel response={response} isLoading={isLoading} />
+          </div>
         </div>
       </div>
     </div>

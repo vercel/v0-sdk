@@ -7,21 +7,16 @@ interface RequestPanelProps {
   endpoint?: APIEndpoint
   onExecute: (params: Record<string, any>) => void
   isLoading: boolean
+  hasApiKey: boolean
 }
 
 export function RequestPanel({
   endpoint,
   onExecute,
   isLoading,
+  hasApiKey,
 }: RequestPanelProps) {
   const [params, setParams] = useState<Record<string, any>>({})
-  const [apiKey, setApiKey] = useState('')
-
-  useEffect(() => {
-    // Load API key from localStorage
-    const savedKey = localStorage.getItem('v0_api_key')
-    if (savedKey) setApiKey(savedKey)
-  }, [])
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -43,11 +38,6 @@ export function RequestPanel({
       setParams(initialParams)
     }
   }, [endpoint])
-
-  const handleApiKeyChange = (value: string) => {
-    setApiKey(value)
-    localStorage.setItem('v0_api_key', value)
-  }
 
   const renderInput = (param: any) => {
     const value = params[param.name] ?? ''
@@ -178,31 +168,6 @@ export function RequestPanel({
 
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-6">
-          {/* API Key */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              API Key <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => handleApiKeyChange(e.target.value)}
-              placeholder="Enter your v0 API key"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Get your API key from{' '}
-              <a
-                href="https://v0.dev/chat/settings/keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                v0.dev/chat/settings/keys
-              </a>
-            </p>
-          </div>
-
           {/* Path Parameters */}
           {pathParams.length > 0 && (
             <div>
@@ -211,7 +176,7 @@ export function RequestPanel({
               </h3>
               <div className="space-y-3">
                 {pathParams.map((param) => (
-                  <div key={param.name}>
+                  <div key={`path-${param.name}`}>
                     <label className="block text-sm text-gray-700 mb-1">
                       {param.name}
                       {param.required && (
@@ -238,7 +203,7 @@ export function RequestPanel({
               </h3>
               <div className="space-y-3">
                 {queryParams.map((param) => (
-                  <div key={param.name}>
+                  <div key={`query-${param.name}`}>
                     <label className="block text-sm text-gray-700 mb-1">
                       {param.name}
                       {param.required && (
@@ -265,7 +230,7 @@ export function RequestPanel({
               </h3>
               <div className="space-y-3">
                 {bodyParams.map((param) => (
-                  <div key={param.name}>
+                  <div key={`body-${param.name}`}>
                     <label className="block text-sm text-gray-700 mb-1">
                       {param.name}
                       {param.required && (
@@ -288,12 +253,17 @@ export function RequestPanel({
 
       <div className="flex-none p-4 border-t border-gray-200">
         <button
-          onClick={() => onExecute({ apiKey, ...params })}
-          disabled={isLoading || !apiKey}
+          onClick={() => onExecute(params)}
+          disabled={isLoading || !hasApiKey}
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
         >
           {isLoading ? 'Executing...' : 'Send Request'}
         </button>
+        {!hasApiKey && (
+          <p className="mt-2 text-xs text-red-600 text-center">
+            Please enter your API key in the header above
+          </p>
+        )}
       </div>
     </div>
   )
