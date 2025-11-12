@@ -183,9 +183,13 @@ export function RequestPanel({
           </span>
           <code className="text-sm text-foreground">{endpoint.path}</code>
         </div>
-        <h2 className="text-lg font-semibold text-foreground">{endpoint.name}</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          {endpoint.name}
+        </h2>
         {endpoint.description && (
-          <p className="text-sm text-muted-foreground mt-1">{endpoint.description}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {endpoint.description}
+          </p>
         )}
       </div>
 
