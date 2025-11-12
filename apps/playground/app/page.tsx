@@ -13,18 +13,38 @@ export default function Home() {
   const [response, setResponse] = useState<any>()
   const [isLoading, setIsLoading] = useState(false)
   const [apiKey, setApiKey] = useState('')
+  const [user, setUser] = useState<any>(null)
 
   const categories = parseOpenAPISpec()
 
   // Load API key from localStorage on mount
   useEffect(() => {
     const savedKey = localStorage.getItem('v0_api_key')
-    if (savedKey) setApiKey(savedKey)
+    if (savedKey) {
+      setApiKey(savedKey)
+      // Try to fetch user info when API key is loaded
+      fetchUser(savedKey)
+    }
   }, [])
+
+  const fetchUser = async (key: string) => {
+    try {
+      const v0 = createClient({ apiKey: key })
+      const userResponse = await v0.user.get()
+      setUser(userResponse)
+    } catch (error) {
+      console.error('Failed to fetch user:', error)
+    }
+  }
 
   const handleApiKeyChange = (value: string) => {
     setApiKey(value)
     localStorage.setItem('v0_api_key', value)
+    if (value) {
+      fetchUser(value)
+    } else {
+      setUser(null)
+    }
   }
 
   const executeRequest = async (params: Record<string, any>) => {
@@ -93,19 +113,23 @@ export default function Home() {
       })
     } catch (error: any) {
       console.error('API Error:', error)
-      
+
       // Try to extract status code from various possible locations
-      const status = 
-        error.status || 
-        error.response?.status || 
+      const status =
+        error.status ||
+        error.response?.status ||
         error.statusCode ||
-        (error.cause?.status) ||
+        error.cause?.status ||
         500
 
-      const statusText = 
-        error.statusText || 
+      const statusText =
+        error.statusText ||
         error.response?.statusText ||
-        (status >= 500 ? 'Server Error' : status >= 400 ? 'Client Error' : 'Error')
+        (status >= 500
+          ? 'Server Error'
+          : status >= 400
+            ? 'Client Error'
+            : 'Error')
 
       setResponse({
         error: {
@@ -122,22 +146,22 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+    <div className="h-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
-      <header className="flex-none bg-white border-b border-gray-200 shadow-sm">
+      <header className="flex-none bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 v0 API Playground
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Explore the v0 Platform API
               </p>
             </div>
             <div className="flex-shrink-0 w-96">
               <div className="flex items-start gap-3">
-                <label className="text-sm font-medium text-gray-700 whitespace-nowrap pt-3">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap pt-3">
                   API Key <span className="text-red-500">*</span>
                 </label>
                 <div className="flex-1">
@@ -146,9 +170,9 @@ export default function Home() {
                     value={apiKey}
                     onChange={(e) => handleApiKeyChange(e.target.value)}
                     placeholder="Enter your v0 API key"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     Get your API key from{' '}
                     <a
                       href="https://v0.dev/chat/settings/keys"
@@ -173,6 +197,7 @@ export default function Home() {
             categories={categories}
             selectedEndpoint={selectedEndpoint}
             onSelectEndpoint={setSelectedEndpoint}
+            user={user}
           />
         </div>
         <div className="flex-1 flex overflow-hidden">
