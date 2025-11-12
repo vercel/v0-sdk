@@ -121,28 +121,32 @@ export default function Home() {
                 Explore the v0 Platform API
               </p>
             </div>
-            <div className="flex-shrink-0 w-80">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                API Key <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => handleApiKeyChange(e.target.value)}
-                placeholder="Enter your v0 API key"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Get your API key from{' '}
-                <a
-                  href="https://v0.dev/chat/settings/keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  v0.dev/chat/settings/keys
-                </a>
-              </p>
+            <div className="flex-shrink-0 w-96">
+              <div className="flex items-start gap-3">
+                <label className="text-sm font-medium text-gray-700 whitespace-nowrap pt-3">
+                  API Key <span className="text-red-500">*</span>
+                </label>
+                <div className="flex-1">
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => handleApiKeyChange(e.target.value)}
+                    placeholder="Enter your v0 API key"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Get your API key from{' '}
+                    <a
+                      href="https://v0.dev/chat/settings/keys"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      v0.dev/chat/settings/keys
+                    </a>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
