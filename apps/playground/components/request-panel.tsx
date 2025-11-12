@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import {
@@ -37,14 +37,16 @@ export function RequestPanel({
       const collectExpandablePaths = (
         schema: any,
         basePath: string = '',
-        value: any = null
+        value: any = null,
       ) => {
         if (schema?.type === 'object' && schema?.properties) {
           if (basePath) pathsToExpand.add(basePath)
-          Object.entries(schema.properties).forEach(([key, propSchema]: [string, any]) => {
-            const fieldPath = basePath ? `${basePath}.${key}` : key
-            collectExpandablePaths(propSchema, fieldPath, value?.[key])
-          })
+          Object.entries(schema.properties).forEach(
+            ([key, propSchema]: [string, any]) => {
+              const fieldPath = basePath ? `${basePath}.${key}` : key
+              collectExpandablePaths(propSchema, fieldPath, value?.[key])
+            },
+          )
         } else if (schema?.type === 'array' && schema?.items) {
           // For arrays, we'll expand items as they're added
           if (value && Array.isArray(value)) {
@@ -73,7 +75,11 @@ export function RequestPanel({
         }
 
         // Collect paths for this parameter
-        collectExpandablePaths(param.schema, param.name, initialParams[param.name])
+        collectExpandablePaths(
+          param.schema,
+          param.name,
+          initialParams[param.name],
+        )
       })
 
       setParams(initialParams)
@@ -93,46 +99,48 @@ export function RequestPanel({
     })
   }
 
-  const updateNestedValue = (path: string, value: any) => {
+  const updateNestedValue = useCallback((path: string, value: any) => {
     const keys = path.split('.')
-    const newParams = { ...params }
-    let current: any = newParams
+    setParams((prevParams) => {
+      const newParams = { ...prevParams }
+      let current: any = newParams
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i]
-      const arrayMatch = key.match(/^(.+)\[(\d+)\]$/)
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i]
+        const arrayMatch = key.match(/^(.+)\[(\d+)\]$/)
+        
+        if (arrayMatch) {
+          const arrayKey = arrayMatch[1]
+          const index = parseInt(arrayMatch[2])
+          if (!current[arrayKey]) current[arrayKey] = []
+          if (!current[arrayKey][index]) current[arrayKey][index] = {}
+          current = current[arrayKey][index]
+        } else {
+          if (!current[key]) current[key] = {}
+          current = current[key]
+        }
+      }
+
+      const lastKey = keys[keys.length - 1]
+      const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/)
       
       if (arrayMatch) {
         const arrayKey = arrayMatch[1]
         const index = parseInt(arrayMatch[2])
         if (!current[arrayKey]) current[arrayKey] = []
-        if (!current[arrayKey][index]) current[arrayKey][index] = {}
-        current = current[arrayKey][index]
+        current[arrayKey][index] = value
       } else {
-        if (!current[key]) current[key] = {}
-        current = current[key]
+        current[lastKey] = value
       }
-    }
 
-    const lastKey = keys[keys.length - 1]
-    const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/)
-    
-    if (arrayMatch) {
-      const arrayKey = arrayMatch[1]
-      const index = parseInt(arrayMatch[2])
-      if (!current[arrayKey]) current[arrayKey] = []
-      current[arrayKey][index] = value
-    } else {
-      current[lastKey] = value
-    }
-
-    setParams(newParams)
-  }
+      return newParams
+    })
+  }, [])
 
   const renderObjectFields = (
     objectSchema: any,
     path: string,
-    currentValue: any = {}
+    currentValue: any = {},
   ): JSX.Element => {
     const properties = objectSchema?.properties || {}
     const required = objectSchema?.required || []
@@ -166,7 +174,7 @@ export function RequestPanel({
   const renderFieldByType = (
     schema: any,
     path: string,
-    value: any
+    value: any,
   ): JSX.Element => {
     if (schema.type === 'object') {
       const isExpanded = expandedObjects.has(path)
@@ -224,6 +232,7 @@ export function RequestPanel({
     if (schema.enum) {
       return (
         <Select
+          key={path}
           value={value || ''}
           onValueChange={(val) => updateNestedValue(path, val)}
         >
@@ -254,7 +263,7 @@ export function RequestPanel({
   const renderArrayField = (
     schema: any,
     path: string,
-    value: any
+    value: any,
   ): JSX.Element => {
     const arrayValue = Array.isArray(value) ? value : []
     const itemSchema = schema.items || { type: 'string' }
@@ -270,7 +279,7 @@ export function RequestPanel({
               : ''
       const newArray = [...arrayValue, newItem]
       updateNestedValue(path, newArray)
-      
+
       // Auto-expand the newly added item if it's an object
       if (itemSchema.type === 'object') {
         const newItemPath = `${path}[${arrayValue.length}]`
@@ -343,7 +352,7 @@ export function RequestPanel({
 
   const renderInput = (param: any) => {
     const value = params[param.name] ?? ''
-    
+
     // Use textarea only for message and system fields
     if (param.name === 'message' || param.name === 'system') {
       return (
@@ -359,7 +368,11 @@ export function RequestPanel({
     }
 
     // Use the new rendering system for all schema-based fields
-    return renderFieldByType(param.schema || { type: 'string' }, param.name, value)
+    return renderFieldByType(
+      param.schema || { type: 'string' },
+      param.name,
+      value,
+    )
   }
 
   if (!endpoint) {

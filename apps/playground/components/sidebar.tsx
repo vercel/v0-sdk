@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { ChevronDown, ChevronRight, Settings } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import type { APICategory, APIEndpoint } from '../lib/openapi-parser'
@@ -11,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { operationIdToRoute } from '../lib/route-utils'
 
 interface SidebarProps {
   categories: APICategory[]
@@ -83,19 +85,24 @@ export function Sidebar({
 
               {isExpanded && (
                 <div className="ml-2 mt-1 space-y-1">
-                  {category.endpoints.map((endpoint) => (
-                    <button
-                      key={endpoint.id}
-                      onClick={() => onSelectEndpoint(endpoint)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors ${
-                        selectedEndpoint?.id === endpoint.id
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      <span className="truncate">{endpoint.name}</span>
-                    </button>
-                  ))}
+                  {category.endpoints.map((endpoint) => {
+                    const { resource, action } = operationIdToRoute(endpoint.id)
+                    const href = `/${resource}/${action}`
+                    
+                    return (
+                      <Link
+                        key={endpoint.id}
+                        href={href}
+                        className={`block w-full px-3 py-2 text-sm rounded-md transition-colors ${
+                          selectedEndpoint?.id === endpoint.id
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted'
+                        }`}
+                      >
+                        <span className="truncate">{endpoint.name}</span>
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </div>
