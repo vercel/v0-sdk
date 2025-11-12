@@ -58,9 +58,9 @@ export function RequestPanel({
             onChange={(e) =>
               setParams({ ...params, [param.name]: e.target.checked })
             }
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="rounded border-input text-primary focus:ring-ring"
           />
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             {param.schema.description || param.description}
           </span>
         </label>
@@ -95,7 +95,7 @@ export function RequestPanel({
           onChange={(e) =>
             setParams({ ...params, [param.name]: Number(e.target.value) })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
         />
       )
     }
@@ -116,7 +116,7 @@ export function RequestPanel({
           }}
           rows={4}
           placeholder={`JSON ${param.schema?.type}`}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
       )
     }
@@ -130,7 +130,7 @@ export function RequestPanel({
             setParams({ ...params, [param.name]: e.target.value })
           }
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
         />
       )
     }
@@ -141,16 +141,16 @@ export function RequestPanel({
         type="text"
         value={value}
         onChange={(e) => setParams({ ...params, [param.name]: e.target.value })}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
       />
     )
   }
 
   if (!endpoint) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-muted">
         <div className="text-center">
-          <p className="text-gray-500">
+          <p className="text-muted-foreground">
             Select an endpoint from the sidebar to begin
           </p>
         </div>
@@ -163,29 +163,29 @@ export function RequestPanel({
   const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="flex-none p-4 border-b border-gray-200">
+    <div className="h-full flex flex-col bg-card">
+      <div className="flex-none p-4 border-b border-border">
         <div className="flex items-center gap-3 mb-3">
           <span
             className={`px-2 py-1 text-sm font-medium rounded ${
               endpoint.method === 'GET'
-                ? 'text-green-600 bg-green-50'
+                ? 'text-success-foreground bg-success/10'
                 : endpoint.method === 'POST'
-                  ? 'text-blue-600 bg-blue-50'
+                  ? 'text-info-foreground bg-info/10'
                   : endpoint.method === 'PATCH'
-                    ? 'text-yellow-600 bg-yellow-50'
+                    ? 'text-warning-foreground bg-warning/20'
                     : endpoint.method === 'PUT'
-                      ? 'text-orange-600 bg-orange-50'
-                      : 'text-red-600 bg-red-50'
+                      ? 'text-warning-foreground bg-warning/10'
+                      : 'text-destructive-foreground bg-destructive/10'
             }`}
           >
             {endpoint.method}
           </span>
-          <code className="text-sm text-gray-700">{endpoint.path}</code>
+          <code className="text-sm text-foreground">{endpoint.path}</code>
         </div>
-        <h2 className="text-lg font-semibold text-gray-900">{endpoint.name}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{endpoint.name}</h2>
         {endpoint.description && (
-          <p className="text-sm text-gray-600 mt-1">{endpoint.description}</p>
+          <p className="text-sm text-muted-foreground mt-1">{endpoint.description}</p>
         )}
       </div>
 
@@ -194,21 +194,21 @@ export function RequestPanel({
           {/* Path Parameters */}
           {pathParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-3">
                 Path Parameters
               </h3>
               <div className="space-y-3">
                 {pathParams.map((param) => (
                   <div key={`path-${param.name}`}>
-                    <label className="block text-sm text-gray-700 mb-1">
+                    <label className="block text-sm text-foreground mb-1">
                       {param.name}
                       {param.required && (
-                        <span className="text-red-500 ml-1">*</span>
+                        <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
                     {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {param.description}
                       </p>
                     )}
@@ -221,21 +221,21 @@ export function RequestPanel({
           {/* Query Parameters */}
           {queryParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-3">
                 Query Parameters
               </h3>
               <div className="space-y-3">
                 {queryParams.map((param) => (
                   <div key={`query-${param.name}`}>
-                    <label className="block text-sm text-gray-700 mb-1">
+                    <label className="block text-sm text-foreground mb-1">
                       {param.name}
                       {param.required && (
-                        <span className="text-red-500 ml-1">*</span>
+                        <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
                     {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {param.description}
                       </p>
                     )}
@@ -248,21 +248,21 @@ export function RequestPanel({
           {/* Body Parameters */}
           {bodyParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-3">
                 Request Body
               </h3>
               <div className="space-y-3">
                 {bodyParams.map((param) => (
                   <div key={`body-${param.name}`}>
-                    <label className="block text-sm text-gray-700 mb-1">
+                    <label className="block text-sm text-foreground mb-1">
                       {param.name}
                       {param.required && (
-                        <span className="text-red-500 ml-1">*</span>
+                        <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
                     {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {param.description}
                       </p>
                     )}
@@ -274,16 +274,16 @@ export function RequestPanel({
         </div>
       </div>
 
-      <div className="flex-none p-4 border-t border-gray-200">
+      <div className="flex-none p-4 border-t border-border">
         <button
           onClick={() => onExecute(params)}
           disabled={isLoading || !hasApiKey}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+          className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors font-medium"
         >
           {isLoading ? 'Executing...' : 'Send Request'}
         </button>
         {!hasApiKey && (
-          <p className="mt-2 text-xs text-red-600 text-center">
+          <p className="mt-2 text-xs text-destructive text-center">
             Please enter your API key in the header above
           </p>
         )}

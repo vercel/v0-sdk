@@ -41,10 +41,10 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Executing request...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Executing request...</p>
         </div>
       </div>
     )
@@ -52,9 +52,9 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
 
   if (!response) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-muted">
         <div className="text-center">
-          <p className="text-gray-500">Response will appear here</p>
+          <p className="text-muted-foreground">Response will appear here</p>
         </div>
       </div>
     )
@@ -64,15 +64,15 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
   const displayData = response.error || response.data
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="flex-none border-b border-gray-200">
+    <div className="h-full flex flex-col bg-card">
+      <div className="flex-none border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <span
               className={`px-2 py-1 text-sm font-medium rounded ${
                 hasError
-                  ? 'text-red-600 bg-red-50'
-                  : 'text-green-600 bg-green-50'
+                  ? 'text-destructive-foreground bg-destructive/10'
+                  : 'text-success-foreground bg-success/10'
               }`}
             >
               {response.status || 'Error'} {response.statusText || ''}
@@ -80,7 +80,7 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
           </div>
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
           >
             {copied ? (
               <>
@@ -96,13 +96,13 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
           </button>
         </div>
 
-        <div className="flex border-t border-gray-200">
+        <div className="flex border-t border-border">
           <button
             onClick={() => setActiveTab('body')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'body'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Body
@@ -111,8 +111,8 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
             onClick={() => setActiveTab('headers')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'headers'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Headers
@@ -132,8 +132,8 @@ export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
           <div className="space-y-2">
             {Object.entries(response.headers).map(([key, value]) => (
               <div key={key} className="flex gap-2">
-                <span className="font-medium text-gray-700">{key}:</span>
-                <span className="text-gray-600">{value}</span>
+                <span className="font-medium text-foreground">{key}:</span>
+                <span className="text-muted-foreground">{value}</span>
               </div>
             ))}
           </div>

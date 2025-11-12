@@ -146,23 +146,23 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Header */}
-      <header className="flex-none bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+      <header className="flex-none bg-card border-b border-border shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <h1 className="text-2xl font-bold text-foreground">
                 v0 API Playground
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Explore the v0 Platform API
               </p>
             </div>
             <div className="flex-shrink-0 w-96">
               <div className="flex items-start gap-3">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap pt-3">
-                  API Key <span className="text-red-500">*</span>
+                <label className="text-sm font-medium text-foreground whitespace-nowrap pt-3">
+                  API Key <span className="text-destructive">*</span>
                 </label>
                 <div className="flex-1">
                   <input
@@ -170,15 +170,15 @@ export default function Home() {
                     value={apiKey}
                     onChange={(e) => handleApiKeyChange(e.target.value)}
                     placeholder="Enter your v0 API key"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                   />
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Get your API key from{' '}
                     <a
                       href="https://v0.dev/chat/settings/keys"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="text-primary hover:underline"
                     >
                       v0.dev/chat/settings/keys
                     </a>
@@ -201,7 +201,7 @@ export default function Home() {
           />
         </div>
         <div className="flex-1 flex overflow-hidden">
-          <div className="w-1/2 border-r border-gray-200">
+          <div className="w-1/2 border-r border-border">
             <RequestPanel
               endpoint={selectedEndpoint}
               onExecute={executeRequest}
