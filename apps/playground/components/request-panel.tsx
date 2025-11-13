@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
 import type { APIEndpoint } from '../lib/openapi-parser'
+import ReactMarkdown from 'react-markdown'
 import {
   Select,
   SelectContent,
@@ -10,12 +11,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface RequestPanelProps {
   endpoint?: APIEndpoint
   onExecute: (params: Record<string, any>) => void
   isLoading: boolean
   hasApiKey: boolean
+  apiKey: string
+  onApiKeyChange: (key: string) => void
 }
 
 export function RequestPanel({
@@ -23,9 +34,13 @@ export function RequestPanel({
   onExecute,
   isLoading,
   hasApiKey,
+  apiKey,
+  onApiKeyChange,
 }: RequestPanelProps) {
   const [params, setParams] = useState<Record<string, any>>({})
   const [expandedObjects, setExpandedObjects] = useState<Set<string>>(new Set())
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false)
+  const [dialogApiKey, setDialogApiKey] = useState('')
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -157,12 +172,12 @@ export function RequestPanel({
               <label className="block text-sm text-foreground mb-1">
                 {key}
                 {isRequired && <span className="text-destructive ml-1">*</span>}
-                {schema.description && (
-                  <span className="text-xs text-muted-foreground ml-2">
-                    {schema.description}
-                  </span>
-                )}
               </label>
+              {schema.description && (
+                <div className="text-xs text-muted-foreground mb-2 markdown-content">
+                  <ReactMarkdown>{schema.description}</ReactMarkdown>
+                </div>
+              )}
               {renderFieldByType(schema, fieldPath, fieldValue)}
             </div>
           )
@@ -391,6 +406,24 @@ export function RequestPanel({
   const queryParams = endpoint.parameters?.filter((p) => p.in === 'query') || []
   const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
 
+  const handleSendRequest = () => {
+    if (!hasApiKey) {
+      setDialogApiKey(apiKey)
+      setShowApiKeyDialog(true)
+    } else {
+      onExecute(params)
+    }
+  }
+
+  const handleSaveApiKey = () => {
+    onApiKeyChange(dialogApiKey)
+    setShowApiKeyDialog(false)
+    // Execute request after saving API key
+    if (dialogApiKey) {
+      onExecute(params)
+    }
+  }
+
   return (
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none p-4 border-b border-border">
@@ -439,12 +472,12 @@ export function RequestPanel({
                         <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
-                    {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {param.description}
-                      </p>
+                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                      </div>
                     )}
+                    {renderInput(param)}
                   </div>
                 ))}
               </div>
@@ -466,12 +499,12 @@ export function RequestPanel({
                         <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
-                    {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {param.description}
-                      </p>
+                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                      </div>
                     )}
+                    {renderInput(param)}
                   </div>
                 ))}
               </div>
@@ -493,12 +526,12 @@ export function RequestPanel({
                         <span className="text-destructive ml-1">*</span>
                       )}
                     </label>
-                    {renderInput(param)}
                     {param.description && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {param.description}
-                      </p>
+                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                      </div>
                     )}
+                    {renderInput(param)}
                   </div>
                 ))}
               </div>
@@ -509,18 +542,65 @@ export function RequestPanel({
 
       <div className="flex-none p-4 border-t border-border">
         <button
-          onClick={() => onExecute(params)}
-          disabled={isLoading || !hasApiKey}
+          onClick={handleSendRequest}
+          disabled={isLoading}
           className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors font-medium"
         >
           {isLoading ? 'Executing...' : 'Send Request'}
         </button>
-        {!hasApiKey && (
-          <p className="mt-2 text-xs text-destructive text-center">
-            Please enter your API key in the header above
-          </p>
-        )}
       </div>
+
+      {/* API Key Dialog */}
+      <Dialog open={showApiKeyDialog} onOpenChange={setShowApiKeyDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter API Key</DialogTitle>
+            <DialogDescription>
+              Please enter your v0 API key to make requests.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <input
+              type="password"
+              value={dialogApiKey}
+              onChange={(e) => setDialogApiKey(e.target.value)}
+              placeholder="Enter your v0 API key"
+              className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && dialogApiKey) {
+                  handleSaveApiKey()
+                }
+              }}
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Get your API key from{' '}
+              <a
+                href="https://v0.dev/chat/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                v0.dev/chat/settings/keys
+              </a>
+            </p>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowApiKeyDialog(false)}
+              className="px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveApiKey}
+              disabled={!dialogApiKey}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
+            >
+              Save & Send
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
