@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'v0 API Playground',
-  description: 'Explore the v0 Platform API',
+  description: 'Try out the v0 Platform API',
 }
 
 export default function RootLayout({

@@ -43,7 +43,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex overflow-hidden bg-background">
+    <div className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background">
       {/* Mobile menu button */}
       <button
         onClick={() => setIsSidebarOpen(true)}
