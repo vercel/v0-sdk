@@ -13,8 +13,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { operationIdToRoute } from '../lib/route-utils'
-import { expandedCategoriesAtom, apiKeyAtom } from '../lib/atoms'
+import { expandedCategoriesAtom, apiKeyAtom, hasApiKeyAtom } from '../lib/atoms'
 
 interface SidebarProps {
   categories: APICategory[]
@@ -40,10 +48,13 @@ export function Sidebar({
   const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(
     expandedCategoriesAtom,
   )
-  const [, setApiKey] = useAtom(apiKeyAtom)
+  const [apiKey, setApiKey] = useAtom(apiKeyAtom)
+  const [hasApiKey] = useAtom(hasApiKeyAtom)
   const expandedCategories = new Set(expandedCategoriesArray)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false)
+  const [dialogApiKey, setDialogApiKey] = useState('')
   const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -113,6 +124,15 @@ export function Sidebar({
     return colors[method] || 'text-muted-foreground bg-muted'
   }
 
+  const handleSaveApiKey = () => {
+    if (dialogApiKey) {
+      setApiKey(dialogApiKey)
+      setDialogApiKey('')
+      setShowApiKeyDialog(false)
+      window.location.reload()
+    }
+  }
+
   return (
     <>
       {/* Mobile overlay */}
@@ -137,7 +157,7 @@ export function Sidebar({
                 v0 SDK Playground
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
-                Explore the v0 Platform API
+                Try out the v0 Platform API
               </p>
             </div>
             {onClose && (
@@ -212,21 +232,30 @@ export function Sidebar({
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {user?.name?.charAt(0)?.toUpperCase() ||
                         user?.email?.charAt(0)?.toUpperCase() ||
-                        'U'}
+                        'A'}
                     </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setApiKey('')
-                    window.location.reload()
-                  }}
-                  className="cursor-pointer"
-                >
-                  Sign Out
-                </DropdownMenuItem>
+                {hasApiKey ? (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setApiKey('')
+                      window.location.reload()
+                    }}
+                    className="cursor-pointer"
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => setShowApiKeyDialog(true)}
+                    className="cursor-pointer"
+                  >
+                    Enter API Key
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex-1 min-w-0">
@@ -293,6 +322,58 @@ export function Sidebar({
             </DropdownMenu>
           </div>
         </div>
+
+        {/* API Key Dialog */}
+        <Dialog open={showApiKeyDialog} onOpenChange={setShowApiKeyDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enter API Key</DialogTitle>
+              <DialogDescription>
+                Please enter your v0 API key to make requests.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <input
+                type="password"
+                value={dialogApiKey}
+                onChange={(e) => setDialogApiKey(e.target.value)}
+                placeholder="Enter your v0 API key"
+                className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && dialogApiKey) {
+                    handleSaveApiKey()
+                  }
+                }}
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Get your API key from{' '}
+                <a
+                  href="https://v0.dev/chat/settings/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  v0.dev/chat/settings/keys
+                </a>
+              </p>
+            </div>
+            <DialogFooter>
+              <button
+                onClick={() => setShowApiKeyDialog(false)}
+                className="px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveApiKey}
+                disabled={!dialogApiKey}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
+              >
+                Save
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   )

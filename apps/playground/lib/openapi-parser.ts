@@ -110,6 +110,82 @@ function formatOperationName(operationId: string): string {
   return operationId
 }
 
+function sortEndpoints(
+  endpoints: APIEndpoint[],
+  categoryName: string,
+): APIEndpoint[] {
+  // Define custom sort order for each category
+  const sortOrder: Record<string, string[]> = {
+    Projects: [
+      'projects.create',
+      'projects.find',
+      'projects.getById',
+      'projects.getByChatId',
+      'projects.update',
+      'projects.assign',
+      'projects.createEnvVars',
+      'projects.delete',
+      'projects.deleteEnvVars',
+      'projects.findEnvVars',
+      'projects.getEnvVar',
+      'projects.updateEnvVars',
+    ],
+    Chats: [
+      'chats.create',
+      'chats.find',
+      'chats.init',
+      'chats.delete',
+      'chats.getById',
+      'chats.update',
+      'chats.favorite',
+      'chats.fork',
+      'chats.sendMessage',
+      'chats.findMessages',
+      'chats.getMessage',
+      'chats.findVersions',
+      'chats.getVersion',
+      'chats.updateVersion',
+      'chats.resume',
+      'chats.downloadVersion',
+    ],
+    Deployments: [
+      'deployments.create',
+      'deployments.find',
+      'deployments.getById',
+      'deployments.delete',
+      'deployments.findLogs',
+      'deployments.findErrors',
+    ],
+    Integrations: [
+      'integrations.vercel.projects.create',
+      'integrations.vercel.projects.find',
+    ],
+    Hooks: [
+      'hooks.find',
+      'hooks.create',
+      'hooks.getById',
+      'hooks.update',
+      'hooks.delete',
+    ],
+    'Rate Limits': ['rateLimits.find'],
+    User: ['user.get', 'user.getBilling', 'user.getPlan', 'user.getScopes'],
+    Reports: ['reports.getUsage'],
+  }
+
+  const order = sortOrder[categoryName]
+  if (!order) return endpoints
+
+  // Create a map of operationId to index
+  const indexMap = new Map(order.map((id, index) => [id, index]))
+
+  // Sort endpoints based on the order
+  return [...endpoints].sort((a, b) => {
+    const aIndex = indexMap.get(a.id) ?? Infinity
+    const bIndex = indexMap.get(b.id) ?? Infinity
+    return aIndex - bIndex
+  })
+}
+
 export function parseOpenAPISpec(): APICategory[] {
   const categoryMap = new Map<string, APIEndpoint[]>()
 
@@ -160,7 +236,7 @@ export function parseOpenAPISpec(): APICategory[] {
       categories.push({
         id: categoryName.toLowerCase().replace(/\s+/g, '-'),
         name: categoryName,
-        endpoints,
+        endpoints: sortEndpoints(endpoints, categoryName),
       })
     }
   })

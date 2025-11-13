@@ -208,7 +208,7 @@ export default function EndpointPage() {
   }
 
   return (
-    <div className="h-screen flex overflow-hidden bg-background">
+    <div className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background">
       {/* Sidebar wrapper - only takes space on desktop */}
       <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
