@@ -44,14 +44,6 @@ export default function Home() {
 
   return (
     <div className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background">
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setIsSidebarOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-30 p-2 bg-card border border-border rounded-md shadow-lg"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
-
       {/* Sidebar wrapper - only takes space on desktop */}
       <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
@@ -72,8 +64,8 @@ export default function Home() {
         />
       </div>
 
-      {/* Mobile sidebar - overlays content */}
-      <div className="lg:hidden">
+      {/* Mobile sidebar - full width, always visible */}
+      <div className="lg:hidden w-full h-full">
         <Sidebar
           categories={categories}
           selectedEndpoint={undefined}
@@ -85,15 +77,15 @@ export default function Home() {
               .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
               .toLowerCase()
             router.push(`/${resource}/${action}`)
-            setIsSidebarOpen(false)
           }}
           user={user}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+          isOpen={true}
+          onClose={undefined}
+          mobileFullWidth={true}
         />
       </div>
 
-      <div className="flex-1 flex items-center justify-center bg-muted">
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-muted">
         <div className="text-center px-4">
           <p className="text-muted-foreground">
             Select an endpoint from the sidebar to begin
