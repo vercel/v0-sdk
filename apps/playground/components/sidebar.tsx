@@ -33,7 +33,9 @@ export function Sidebar({
   onSelectEndpoint,
   user,
 }: SidebarProps) {
-  const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(expandedCategoriesAtom)
+  const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(
+    expandedCategoriesAtom,
+  )
   const [, setApiKey] = useAtom(apiKeyAtom)
   const expandedCategories = new Set(expandedCategoriesArray)
   const { theme, setTheme } = useTheme()
@@ -82,7 +84,9 @@ export function Sidebar({
 
   const toggleCategory = (categoryId: string) => {
     if (expandedCategories.has(categoryId)) {
-      setExpandedCategoriesArray((prev) => prev.filter((id) => id !== categoryId))
+      setExpandedCategoriesArray((prev) =>
+        prev.filter((id) => id !== categoryId),
+      )
     } else {
       setExpandedCategoriesArray((prev) => [...prev, categoryId])
     }

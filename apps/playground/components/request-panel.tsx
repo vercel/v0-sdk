@@ -27,10 +27,7 @@ interface RequestPanelProps {
   onExecute: (params: Record<string, any>) => void
 }
 
-export function RequestPanel({
-  endpoint,
-  onExecute,
-}: RequestPanelProps) {
+export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const [params, setParams] = useState<Record<string, any>>({})
   const [expandedObjects, setExpandedObjects] = useState<Set<string>>(new Set())
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false)

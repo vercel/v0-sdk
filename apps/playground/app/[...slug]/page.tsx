@@ -75,7 +75,6 @@ export default function EndpointPage() {
     }
   }
 
-
   const executeRequest = async (requestParams: Record<string, any>) => {
     if (!selectedEndpoint || !apiKey) return
 

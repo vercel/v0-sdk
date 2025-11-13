@@ -12,13 +12,16 @@ export const userAtom = atom<any>(null)
 export const selectedEndpointAtom = atom<APIEndpoint | undefined>(undefined)
 
 // Response state
-export const responseAtom = atom<{
-  data?: any
-  error?: any
-  status?: number
-  statusText?: string
-  headers?: Record<string, string>
-} | undefined>(undefined)
+export const responseAtom = atom<
+  | {
+      data?: any
+      error?: any
+      status?: number
+      statusText?: string
+      headers?: Record<string, string>
+    }
+  | undefined
+>(undefined)
 
 // Loading state
 export const isLoadingAtom = atom<boolean>(false)
@@ -34,4 +37,3 @@ export const hasApiKeyAtom = atom((get) => {
   const apiKey = get(apiKeyAtom)
   return !!apiKey
 })
-
