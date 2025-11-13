@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ChevronDown, ChevronRight, Settings } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useAtom } from 'jotai'
 import type { APICategory, APIEndpoint } from '../lib/openapi-parser'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -13,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { operationIdToRoute } from '../lib/route-utils'
+import { expandedCategoriesAtom, apiKeyAtom } from '../lib/atoms'
 
 interface SidebarProps {
   categories: APICategory[]
@@ -31,25 +33,15 @@ export function Sidebar({
   onSelectEndpoint,
   user,
 }: SidebarProps) {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(),
-  )
+  const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(expandedCategoriesAtom)
+  const [, setApiKey] = useAtom(apiKeyAtom)
+  const expandedCategories = new Set(expandedCategoriesArray)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setMounted(true)
-
-    // Load from localStorage after mount to avoid hydration mismatch
-    const stored = localStorage.getItem('sidebar_expanded_categories')
-    if (stored) {
-      try {
-        setExpandedCategories(new Set(JSON.parse(stored)))
-      } catch {
-        // Ignore parsing errors
-      }
-    }
   }, [])
 
   // Save scroll position to sessionStorage
@@ -76,16 +68,6 @@ export function Sidebar({
     }
   }, [selectedEndpoint])
 
-  // Save to localStorage whenever expanded categories change
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        'sidebar_expanded_categories',
-        JSON.stringify(Array.from(expandedCategories)),
-      )
-    }
-  }, [expandedCategories])
-
   // Auto-expand category containing selected endpoint
   useEffect(() => {
     if (selectedEndpoint) {
@@ -93,25 +75,17 @@ export function Sidebar({
         cat.endpoints.some((ep) => ep.id === selectedEndpoint.id),
       )
       if (category && !expandedCategories.has(category.id)) {
-        setExpandedCategories((prev) => {
-          const next = new Set(prev)
-          next.add(category.id)
-          return next
-        })
+        setExpandedCategoriesArray((prev) => [...prev, category.id])
       }
     }
   }, [selectedEndpoint, categories, expandedCategories])
 
   const toggleCategory = (categoryId: string) => {
-    setExpandedCategories((prev) => {
-      const next = new Set(prev)
-      if (next.has(categoryId)) {
-        next.delete(categoryId)
-      } else {
-        next.add(categoryId)
-      }
-      return next
-    })
+    if (expandedCategories.has(categoryId)) {
+      setExpandedCategoriesArray((prev) => prev.filter((id) => id !== categoryId))
+    } else {
+      setExpandedCategoriesArray((prev) => [...prev, categoryId])
+    }
   }
 
   const getMethodColor = (method: string) => {
@@ -198,7 +172,7 @@ export function Sidebar({
             <DropdownMenuContent align="start" className="w-48">
               <DropdownMenuItem
                 onClick={() => {
-                  localStorage.removeItem('v0_api_key')
+                  setApiKey('')
                   window.location.reload()
                 }}
                 className="cursor-pointer"

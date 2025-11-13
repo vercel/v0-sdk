@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useAtom } from 'jotai'
 import { Sidebar } from '../components/sidebar'
 import { parseOpenAPISpec } from '../lib/openapi-parser'
 import { useRouter } from 'next/navigation'
 import { createClient } from 'v0-sdk'
 import type { APIEndpoint } from '../lib/openapi-parser'
+import { apiKeyAtom, userAtom } from '../lib/atoms'
 
 const V0_API_BASE_URL =
   process.env.NEXT_PUBLIC_V0_API_BASE_URL || 'https://api.v0.dev/'
@@ -13,17 +15,17 @@ const V0_API_BASE_URL =
 export default function Home() {
   const router = useRouter()
   const categories = useMemo(() => parseOpenAPISpec(), [])
-  const [apiKey, setApiKey] = useState('')
-  const [user, setUser] = useState<any>(null)
+  const [apiKey] = useAtom(apiKeyAtom)
+  const [user, setUser] = useAtom(userAtom)
 
-  // Load API key from localStorage on mount
+  // Load user when API key changes
   useEffect(() => {
-    const savedKey = localStorage.getItem('v0_api_key')
-    if (savedKey) {
-      setApiKey(savedKey)
-      fetchUser(savedKey)
+    if (apiKey) {
+      fetchUser(apiKey)
+    } else {
+      setUser(null)
     }
-  }, [])
+  }, [apiKey])
 
   const fetchUser = async (key: string) => {
     try {
@@ -35,16 +37,6 @@ export default function Home() {
       setUser(userResponse)
     } catch (error) {
       console.error('Failed to fetch user:', error)
-    }
-  }
-
-  const handleApiKeyChange = (value: string) => {
-    setApiKey(value)
-    localStorage.setItem('v0_api_key', value)
-    if (value) {
-      fetchUser(value)
-    } else {
-      setUser(null)
     }
   }
 

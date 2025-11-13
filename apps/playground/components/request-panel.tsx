@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
+import { useAtom } from 'jotai'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import ReactMarkdown from 'react-markdown'
 import {
@@ -19,28 +20,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { apiKeyAtom, hasApiKeyAtom, isLoadingAtom } from '../lib/atoms'
 
 interface RequestPanelProps {
   endpoint?: APIEndpoint
   onExecute: (params: Record<string, any>) => void
-  isLoading: boolean
-  hasApiKey: boolean
-  apiKey: string
-  onApiKeyChange: (key: string) => void
 }
 
 export function RequestPanel({
   endpoint,
   onExecute,
-  isLoading,
-  hasApiKey,
-  apiKey,
-  onApiKeyChange,
 }: RequestPanelProps) {
   const [params, setParams] = useState<Record<string, any>>({})
   const [expandedObjects, setExpandedObjects] = useState<Set<string>>(new Set())
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false)
   const [dialogApiKey, setDialogApiKey] = useState('')
+  const [apiKey, setApiKey] = useAtom(apiKeyAtom)
+  const [hasApiKey] = useAtom(hasApiKeyAtom)
+  const [isLoading] = useAtom(isLoadingAtom)
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -416,7 +413,7 @@ export function RequestPanel({
   }
 
   const handleSaveApiKey = () => {
-    onApiKeyChange(dialogApiKey)
+    setApiKey(dialogApiKey)
     setShowApiKeyDialog(false)
     // Execute request after saving API key
     if (dialogApiKey) {

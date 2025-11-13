@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useAtom } from 'jotai'
 import { Sidebar } from '../../components/sidebar'
 import { RequestPanel } from '../../components/request-panel'
 import { ResponsePanel } from '../../components/response-panel'
@@ -9,6 +10,13 @@ import { parseOpenAPISpec } from '../../lib/openapi-parser'
 import { routeToOperationId } from '../../lib/route-utils'
 import type { APIEndpoint } from '../../lib/openapi-parser'
 import { createClient } from 'v0-sdk'
+import {
+  apiKeyAtom,
+  userAtom,
+  selectedEndpointAtom,
+  responseAtom,
+  isLoadingAtom,
+} from '../../lib/atoms'
 
 const V0_API_BASE_URL =
   process.env.NEXT_PUBLIC_V0_API_BASE_URL || 'https://api.v0.dev/'
@@ -16,22 +24,22 @@ const V0_API_BASE_URL =
 export default function EndpointPage() {
   const params = useParams()
   const router = useRouter()
-  const [response, setResponse] = useState<any>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [apiKey, setApiKey] = useState('')
-  const [user, setUser] = useState<any>(null)
-  const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint>()
+  const [response, setResponse] = useAtom(responseAtom)
+  const [isLoading, setIsLoading] = useAtom(isLoadingAtom)
+  const [apiKey] = useAtom(apiKeyAtom)
+  const [user, setUser] = useAtom(userAtom)
+  const [selectedEndpoint, setSelectedEndpoint] = useAtom(selectedEndpointAtom)
 
   const categories = useMemo(() => parseOpenAPISpec(), [])
 
-  // Load API key from localStorage on mount
+  // Load user when API key changes
   useEffect(() => {
-    const savedKey = localStorage.getItem('v0_api_key')
-    if (savedKey) {
-      setApiKey(savedKey)
-      fetchUser(savedKey)
+    if (apiKey) {
+      fetchUser(apiKey)
+    } else {
+      setUser(null)
     }
-  }, [])
+  }, [apiKey])
 
   // Find endpoint based on route params
   useEffect(() => {
@@ -67,15 +75,6 @@ export default function EndpointPage() {
     }
   }
 
-  const handleApiKeyChange = (value: string) => {
-    setApiKey(value)
-    localStorage.setItem('v0_api_key', value)
-    if (value) {
-      fetchUser(value)
-    } else {
-      setUser(null)
-    }
-  }
 
   const executeRequest = async (requestParams: Record<string, any>) => {
     if (!selectedEndpoint || !apiKey) return
@@ -198,14 +197,10 @@ export default function EndpointPage() {
           <RequestPanel
             endpoint={selectedEndpoint}
             onExecute={executeRequest}
-            isLoading={isLoading}
-            hasApiKey={!!apiKey}
-            apiKey={apiKey}
-            onApiKeyChange={handleApiKeyChange}
           />
         </div>
         <div className="w-1/2">
-          <ResponsePanel response={response} isLoading={isLoading} />
+          <ResponsePanel />
         </div>
       </div>
     </div>

@@ -2,24 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Copy, Check } from 'lucide-react'
+import { useAtom } from 'jotai'
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
+import { responseAtom, isLoadingAtom } from '../lib/atoms'
 
 // Register the JSON language
 hljs.registerLanguage('json', json)
 
-interface ResponsePanelProps {
-  response?: {
-    data?: any
-    error?: any
-    status?: number
-    statusText?: string
-    headers?: Record<string, string>
-  }
-  isLoading: boolean
-}
-
-export function ResponsePanel({ response, isLoading }: ResponsePanelProps) {
+export function ResponsePanel() {
+  const [response] = useAtom(responseAtom)
+  const [isLoading] = useAtom(isLoadingAtom)
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'body' | 'headers'>('body')
   const codeRef = useRef<HTMLElement>(null)
