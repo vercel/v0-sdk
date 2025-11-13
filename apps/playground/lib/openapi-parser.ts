@@ -27,22 +27,7 @@ export interface APICategory {
 function parseParameters(operation: any, path: string): any[] {
   const parameters: any[] = []
 
-  // Path parameters
-  const pathParams = path.match(/\{([^}]+)\}/g)
-  if (pathParams) {
-    pathParams.forEach((param) => {
-      const paramName = param.replace(/[{}]/g, '')
-      parameters.push({
-        name: paramName,
-        in: 'path',
-        required: true,
-        schema: { type: 'string' },
-        description: `Path parameter: ${paramName}`,
-      })
-    })
-  }
-
-  // Query and other parameters
+  // Query and other parameters from operation
   if (operation.parameters) {
     operation.parameters.forEach((param: any) => {
       parameters.push({
@@ -52,6 +37,27 @@ function parseParameters(operation: any, path: string): any[] {
         schema: param.schema,
         description: param.description,
       })
+    })
+  }
+
+  // Path parameters - only add if not already defined in operation.parameters
+  const pathParams = path.match(/\{([^}]+)\}/g)
+  if (pathParams) {
+    pathParams.forEach((param) => {
+      const paramName = param.replace(/[{}]/g, '')
+      // Check if this path parameter is already defined
+      const existingParam = parameters.find(
+        (p) => p.name === paramName && p.in === 'path',
+      )
+      if (!existingParam) {
+        parameters.push({
+          name: paramName,
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: `Path parameter: ${paramName}`,
+        })
+      }
     })
   }
 
