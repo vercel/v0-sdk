@@ -169,7 +169,7 @@ export function Sidebar({
             {onClose && (
               <button
                 onClick={onClose}
-                className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors"
+                className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
