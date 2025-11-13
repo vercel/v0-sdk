@@ -76,11 +76,17 @@ export function Sidebar({
       const category = categories.find((cat) =>
         cat.endpoints.some((ep) => ep.id === selectedEndpoint.id),
       )
-      if (category && !expandedCategories.has(category.id)) {
-        setExpandedCategoriesArray((prev) => [...prev, category.id])
+      if (category) {
+        setExpandedCategoriesArray((prev) => {
+          // Only add if not already in the array
+          if (!prev.includes(category.id)) {
+            return [...prev, category.id]
+          }
+          return prev
+        })
       }
     }
-  }, [selectedEndpoint, categories, expandedCategories])
+  }, [selectedEndpoint, categories, setExpandedCategoriesArray])
 
   const toggleCategory = (categoryId: string) => {
     if (expandedCategories.has(categoryId)) {
