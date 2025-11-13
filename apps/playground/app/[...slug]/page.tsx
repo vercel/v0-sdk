@@ -97,7 +97,10 @@ export default function EndpointPage() {
       const pathParams =
         selectedEndpoint.parameters?.filter((p) => p.in === 'path') || []
       pathParams.forEach((param) => {
-        if (requestParams[param.name]) {
+        if (
+          requestParams[param.name] !== undefined &&
+          requestParams[param.name] !== ''
+        ) {
           path = path.replace(`{${param.name}}`, requestParams[param.name])
         }
       })
