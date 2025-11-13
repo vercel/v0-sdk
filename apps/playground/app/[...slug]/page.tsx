@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Sidebar } from '../../components/sidebar'
 import { RequestPanel } from '../../components/request-panel'
@@ -22,7 +22,7 @@ export default function EndpointPage() {
   const [user, setUser] = useState<any>(null)
   const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint>()
 
-  const categories = parseOpenAPISpec()
+  const categories = useMemo(() => parseOpenAPISpec(), [])
 
   // Load API key from localStorage on mount
   useEffect(() => {
