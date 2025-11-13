@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
 import { useAtom } from 'jotai'
 import type { APIEndpoint } from '../lib/openapi-parser'
@@ -150,7 +150,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     objectSchema: any,
     path: string,
     currentValue: any = {},
-  ): JSX.Element => {
+  ): React.ReactElement => {
     const properties = objectSchema?.properties || {}
     const required = objectSchema?.required || []
 
@@ -184,7 +184,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     schema: any,
     path: string,
     value: any,
-  ): JSX.Element => {
+  ): React.ReactElement => {
     if (schema.type === 'object') {
       const isExpanded = expandedObjects.has(path)
       return (
@@ -273,7 +273,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     schema: any,
     path: string,
     value: any,
-  ): JSX.Element => {
+  ): React.ReactElement => {
     const arrayValue = Array.isArray(value) ? value : []
     const itemSchema = schema.items || { type: 'string' }
 
