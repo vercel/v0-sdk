@@ -31,14 +31,16 @@ export function Sidebar({
   onSelectEndpoint,
   user,
 }: SidebarProps) {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  )
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setMounted(true)
-    
+
     // Load from localStorage after mount to avoid hydration mismatch
     const stored = localStorage.getItem('sidebar_expanded_categories')
     if (stored) {
@@ -127,9 +129,7 @@ export function Sidebar({
     <div className="h-full border-r border-border bg-card flex flex-col">
       {/* Header */}
       <div className="flex-none p-4 border-b border-border">
-        <h1 className="text-xl font-bold text-foreground">
-          v0 SDK Playground
-        </h1>
+        <h1 className="text-xl font-bold text-foreground">v0 SDK Playground</h1>
         <p className="text-xs text-muted-foreground mt-1">
           Explore the v0 Platform API
         </p>
