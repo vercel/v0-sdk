@@ -29,23 +29,10 @@ You can deploy your own version of the v0 clone to Vercel with one click:
 
 ### Environment Variables
 
-Create a `.env` file with all required variables:
+Create a `.env.local` file in the root directory:
 
 ```bash
-# Auth Secret - Generate a random string for production
-# Generate with: openssl rand -base64 32
-# Or visit: https://generate-secret.vercel.app/32
-AUTH_SECRET=your-auth-secret-here
-
-# Database URL - PostgreSQL connection string
-POSTGRES_URL=postgresql://user:password@localhost:5432/v0_clone
-# For Vercel Postgres, use the connection string from your dashboard
-
-# Get your API key from https://v0.dev/chat/settings/keys
-V0_API_KEY=your_v0_api_key_here
-
-# Optional: Use a custom API URL
-# V0_API_URL=http://localhost:3001/v1
+cp .env.example .env.local
 ```
 
 ### Database Setup
@@ -116,7 +103,7 @@ This v0 clone includes:
 
 ### Setup
 
-1. Set up all environment variables in `.env`
+1. Set up all environment variables in `.env.local`
 2. Run database migrations with `pnpm db:migrate`
 3. Start the development server with `pnpm dev` or production server with `pnpm start`
 
