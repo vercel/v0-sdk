@@ -21,7 +21,7 @@ interface SidebarProps {
   user?: {
     name?: string
     email?: string
-    image?: string
+    avatar?: string
   }
 }
 
@@ -114,7 +114,7 @@ export function Sidebar({
       <div className="flex-none border-t border-border p-3">
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user?.image} alt={user?.name || 'User'} />
+            <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
             <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.name?.charAt(0)?.toUpperCase() ||
                 user?.email?.charAt(0)?.toUpperCase() ||
