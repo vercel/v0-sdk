@@ -110,10 +110,13 @@ function formatOperationName(operationId: string): string {
   return operationId
 }
 
-function sortEndpoints(endpoints: APIEndpoint[], categoryName: string): APIEndpoint[] {
+function sortEndpoints(
+  endpoints: APIEndpoint[],
+  categoryName: string,
+): APIEndpoint[] {
   // Define custom sort order for each category
   const sortOrder: Record<string, string[]> = {
-    'Projects': [
+    Projects: [
       'projects.create',
       'projects.find',
       'projects.getById',
@@ -127,7 +130,7 @@ function sortEndpoints(endpoints: APIEndpoint[], categoryName: string): APIEndpo
       'projects.getEnvVar',
       'projects.updateEnvVars',
     ],
-    'Chats': [
+    Chats: [
       'chats.create',
       'chats.find',
       'chats.init',
@@ -145,7 +148,7 @@ function sortEndpoints(endpoints: APIEndpoint[], categoryName: string): APIEndpo
       'chats.resume',
       'chats.downloadVersion',
     ],
-    'Deployments': [
+    Deployments: [
       'deployments.create',
       'deployments.find',
       'deployments.getById',
@@ -153,29 +156,20 @@ function sortEndpoints(endpoints: APIEndpoint[], categoryName: string): APIEndpo
       'deployments.findLogs',
       'deployments.findErrors',
     ],
-    'Integrations': [
+    Integrations: [
       'integrations.vercel.projects.create',
       'integrations.vercel.projects.find',
     ],
-    'Hooks': [
+    Hooks: [
       'hooks.find',
       'hooks.create',
       'hooks.getById',
       'hooks.update',
       'hooks.delete',
     ],
-    'Rate Limits': [
-      'rateLimits.find',
-    ],
-    'User': [
-      'user.get',
-      'user.getBilling',
-      'user.getPlan',
-      'user.getScopes',
-    ],
-    'Reports': [
-      'reports.getUsage',
-    ],
+    'Rate Limits': ['rateLimits.find'],
+    User: ['user.get', 'user.getBilling', 'user.getPlan', 'user.getScopes'],
+    Reports: ['reports.getUsage'],
   }
 
   const order = sortOrder[categoryName]
