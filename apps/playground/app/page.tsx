@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAtom } from 'jotai'
+import { Menu } from 'lucide-react'
 import { Sidebar } from '../components/sidebar'
 import { parseOpenAPISpec } from '../lib/openapi-parser'
 import { useRouter } from 'next/navigation'
@@ -17,6 +18,7 @@ export default function Home() {
   const categories = useMemo(() => parseOpenAPISpec(), [])
   const [apiKey] = useAtom(apiKeyAtom)
   const [user, setUser] = useAtom(userAtom)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Load user when API key changes
   useEffect(() => {
@@ -42,7 +44,16 @@ export default function Home() {
 
   return (
     <div className="h-screen flex overflow-hidden bg-background">
-      <div className="w-80 flex-shrink-0 h-full">
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setIsSidebarOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-30 p-2 bg-card border border-border rounded-md shadow-lg"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
+      {/* Sidebar wrapper - only takes space on desktop */}
+      <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
           categories={categories}
           selectedEndpoint={undefined}
@@ -56,10 +67,34 @@ export default function Home() {
             router.push(`/${resource}/${action}`)
           }}
           user={user}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
       </div>
+
+      {/* Mobile sidebar - overlays content */}
+      <div className="lg:hidden">
+        <Sidebar
+          categories={categories}
+          selectedEndpoint={undefined}
+          onSelectEndpoint={(endpoint: APIEndpoint) => {
+            // Navigate to the endpoint route
+            const parts = endpoint.id.split('.')
+            const resource = parts.slice(0, -1).join('/')
+            const action = parts[parts.length - 1]
+              .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+              .toLowerCase()
+            router.push(`/${resource}/${action}`)
+            setIsSidebarOpen(false)
+          }}
+          user={user}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      </div>
+
       <div className="flex-1 flex items-center justify-center bg-muted">
-        <div className="text-center">
+        <div className="text-center px-4">
           <p className="text-muted-foreground">
             Select an endpoint from the sidebar to begin
           </p>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAtom } from 'jotai'
+import { Menu } from 'lucide-react'
 import { Sidebar } from '../../components/sidebar'
 import { RequestPanel } from '../../components/request-panel'
 import { ResponsePanel } from '../../components/response-panel'
@@ -29,6 +30,8 @@ export default function EndpointPage() {
   const [apiKey] = useAtom(apiKeyAtom)
   const [user, setUser] = useAtom(userAtom)
   const [selectedEndpoint, setSelectedEndpoint] = useAtom(selectedEndpointAtom)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'request' | 'response'>('request')
 
   const categories = useMemo(() => parseOpenAPISpec(), [])
 
@@ -80,6 +83,8 @@ export default function EndpointPage() {
 
     setIsLoading(true)
     setResponse(undefined)
+    // Switch to response tab on mobile after sending request
+    setActiveTab('response')
 
     try {
       const v0 = createClient({
@@ -175,7 +180,8 @@ export default function EndpointPage() {
 
   return (
     <div className="h-screen flex overflow-hidden bg-background">
-      <div className="w-80 flex-shrink-0 h-full">
+      {/* Sidebar wrapper - only takes space on desktop */}
+      <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
           categories={categories}
           selectedEndpoint={selectedEndpoint}
@@ -187,11 +193,37 @@ export default function EndpointPage() {
               .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
               .toLowerCase()
             router.push(`/${resource}/${action}`)
+            setIsSidebarOpen(false)
           }}
           user={user}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
       </div>
-      <div className="flex-1 flex overflow-hidden">
+
+      {/* Mobile sidebar - overlays content */}
+      <div className="lg:hidden">
+        <Sidebar
+          categories={categories}
+          selectedEndpoint={selectedEndpoint}
+          onSelectEndpoint={(endpoint) => {
+            // Navigate to the endpoint route instead of selecting
+            const parts = endpoint.id.split('.')
+            const resource = parts.slice(0, -1).join('/')
+            const action = parts[parts.length - 1]
+              .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+              .toLowerCase()
+            router.push(`/${resource}/${action}`)
+            setIsSidebarOpen(false)
+          }}
+          user={user}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      </div>
+
+      {/* Desktop view - side by side */}
+      <div className="hidden lg:flex flex-1 overflow-hidden">
         <div className="w-1/2 border-r border-border">
           <RequestPanel
             endpoint={selectedEndpoint}
@@ -200,6 +232,62 @@ export default function EndpointPage() {
         </div>
         <div className="w-1/2">
           <ResponsePanel />
+        </div>
+      </div>
+
+      {/* Mobile view - tabs */}
+      <div className="flex lg:hidden flex-1 flex-col overflow-hidden">
+        {/* Mobile header with hamburger menu and tabs */}
+        <div className="flex-none border-b border-border bg-card">
+          <div className="flex items-center">
+            {/* Hamburger menu button */}
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-3 hover:bg-muted transition-colors border-r border-border"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Tabs */}
+            <div className="flex flex-1">
+              <button
+                onClick={() => setActiveTab('request')}
+                className={`flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'request'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground'
+                }`}
+              >
+                Request
+              </button>
+              <button
+                onClick={() => setActiveTab('response')}
+                className={`flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'response'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground'
+                }`}
+              >
+                Response
+                {(response || isLoading) && (
+                  <span className="ml-2 inline-block w-2 h-2 bg-primary rounded-full" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab content */}
+        <div className="flex-1 overflow-hidden">
+          {activeTab === 'request' ? (
+            <RequestPanel
+              endpoint={selectedEndpoint}
+              onExecute={executeRequest}
+            />
+          ) : (
+            <ResponsePanel />
+          )}
         </div>
       </div>
     </div>

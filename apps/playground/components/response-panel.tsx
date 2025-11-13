@@ -58,10 +58,10 @@ export function ResponsePanel() {
   return (
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none border-b border-border">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-3 lg:px-4 py-2 lg:py-3">
+          <div className="flex items-center gap-2 lg:gap-4">
             <span
-              className={`px-2 py-1 text-sm font-medium rounded ${
+              className={`px-2 py-1 text-xs lg:text-sm font-medium rounded ${
                 hasError
                   ? 'text-destructive-foreground bg-destructive/10'
                   : 'text-success-foreground bg-success/10'
@@ -72,17 +72,17 @@ export function ResponsePanel() {
           </div>
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
+            className="flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-1 lg:py-1.5 text-xs lg:text-sm text-foreground hover:bg-muted rounded-md transition-colors"
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4" />
-                Copied
+                <Check className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+                <span className="hidden sm:inline">Copied</span>
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4" />
-                Copy
+                <Copy className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+                <span className="hidden sm:inline">Copy</span>
               </>
             )}
           </button>
@@ -91,7 +91,7 @@ export function ResponsePanel() {
         <div className="flex border-t border-border">
           <button
             onClick={() => setActiveTab('body')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'body'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -101,7 +101,7 @@ export function ResponsePanel() {
           </button>
           <button
             onClick={() => setActiveTab('headers')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'headers'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -112,20 +112,20 @@ export function ResponsePanel() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4 bg-background">
+      <div className="flex-1 overflow-auto p-3 lg:p-4 bg-background">
         {activeTab === 'body' && (
-          <pre className="text-sm font-mono">
+          <pre className="text-xs lg:text-sm font-mono">
             <code ref={codeRef} className="language-json block text-foreground">
               {JSON.stringify(displayData, null, 2)}
             </code>
           </pre>
         )}
         {activeTab === 'headers' && response.headers && (
-          <div className="space-y-2 font-mono">
+          <div className="space-y-1.5 lg:space-y-2 font-mono">
             {Object.entries(response.headers).map(([key, value]) => (
-              <div key={key} className="flex gap-2 text-sm">
-                <span className="font-medium text-foreground">{key}:</span>
-                <span className="text-muted-foreground">{value}</span>
+              <div key={key} className="flex gap-1.5 lg:gap-2 text-xs lg:text-sm flex-col sm:flex-row">
+                <span className="font-medium text-foreground break-all">{key}:</span>
+                <span className="text-muted-foreground break-all">{value}</span>
               </div>
             ))}
           </div>

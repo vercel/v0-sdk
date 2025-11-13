@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronRight, Settings } from 'lucide-react'
+import { ChevronDown, ChevronRight, Settings, X } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useAtom } from 'jotai'
 import type { APICategory, APIEndpoint } from '../lib/openapi-parser'
@@ -25,6 +25,8 @@ interface SidebarProps {
     email?: string
     avatar?: string
   }
+  isOpen?: boolean
+  onClose?: () => void
 }
 
 export function Sidebar({
@@ -32,6 +34,8 @@ export function Sidebar({
   selectedEndpoint,
   onSelectEndpoint,
   user,
+  isOpen = true,
+  onClose,
 }: SidebarProps) {
   const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(
     expandedCategoriesAtom,
@@ -110,14 +114,42 @@ export function Sidebar({
   }
 
   return (
-    <div className="h-full border-r border-border bg-card flex flex-col">
-      {/* Header */}
-      <div className="flex-none p-4 border-b border-border">
-        <h1 className="text-xl font-bold text-foreground">v0 SDK Playground</h1>
-        <p className="text-xs text-muted-foreground mt-1">
-          Explore the v0 Platform API
-        </p>
-      </div>
+    <>
+      {/* Mobile overlay */}
+      {isOpen && onClose && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`w-80 h-full border-r border-border bg-card flex flex-col fixed lg:relative inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
+        {/* Header */}
+        <div className="flex-none p-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-foreground">
+                v0 SDK Playground
+              </h1>
+              <p className="text-xs text-muted-foreground mt-1">
+                Explore the v0 Platform API
+              </p>
+            </div>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
 
       <nav ref={navRef} className="p-2 flex-1 overflow-y-auto">
         {categories.map((category) => {
@@ -146,6 +178,7 @@ export function Sidebar({
                       <Link
                         key={endpoint.id}
                         href={href}
+                        onClick={() => onClose?.()}
                         className={`block w-full px-3 py-2 text-sm rounded-md transition-colors ${
                           selectedEndpoint?.id === endpoint.id
                             ? 'bg-primary/10 text-primary'
@@ -256,5 +289,6 @@ export function Sidebar({
         </div>
       </div>
     </div>
+    </>
   )
 }

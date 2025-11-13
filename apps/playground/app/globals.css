@@ -235,3 +235,45 @@ button {
 .markdown-content a:hover {
   opacity: 0.8;
 }
+
+/* Mobile responsive utilities */
+@media (max-width: 1023px) {
+  /* Ensure mobile menu button is visible above content */
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Improve touch targets on mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better scrolling on mobile */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap target sizes for touch devices */
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  /* Remove hover effects on touch devices */
+  button:hover {
+    opacity: 1;
+  }
+}

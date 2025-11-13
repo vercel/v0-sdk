@@ -420,10 +420,10 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
 
   return (
     <div className="h-full flex flex-col bg-card">
-      <div className="flex-none p-4 border-b border-border">
-        <div className="flex items-center gap-3 mb-3">
+      <div className="flex-none p-3 lg:p-4 border-b border-border">
+        <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3 flex-wrap">
           <span
-            className={`px-2 py-1 text-sm font-medium rounded ${
+            className={`px-2 py-1 text-xs lg:text-sm font-medium rounded ${
               endpoint.method === 'GET'
                 ? 'text-success-foreground bg-success/10'
                 : endpoint.method === 'POST'
@@ -437,27 +437,29 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
           >
             {endpoint.method}
           </span>
-          <code className="text-sm text-foreground">{endpoint.path}</code>
+          <code className="text-xs lg:text-sm text-foreground break-all">
+            {endpoint.path}
+          </code>
         </div>
-        <h2 className="text-lg font-semibold text-foreground">
+        <h2 className="text-base lg:text-lg font-semibold text-foreground">
           {endpoint.name}
         </h2>
         {endpoint.description && (
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs lg:text-sm text-muted-foreground mt-1">
             {endpoint.description}
           </p>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-6">
+      <div className="flex-1 overflow-y-auto p-3 lg:p-4">
+        <div className="space-y-4 lg:space-y-6">
           {/* Path Parameters */}
           {pathParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-foreground mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-2 lg:mb-3">
                 Path Parameters
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 {pathParams.map((param) => (
                   <div key={`path-${param.name}`}>
                     <label className="block text-sm text-foreground mb-1">
@@ -481,10 +483,10 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
           {/* Query Parameters */}
           {queryParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-foreground mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-2 lg:mb-3">
                 Query Parameters
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 {queryParams.map((param) => (
                   <div key={`query-${param.name}`}>
                     <label className="block text-sm text-foreground mb-1">
@@ -508,10 +510,10 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
           {/* Body Parameters */}
           {bodyParams.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-foreground mb-3">
+              <h3 className="text-sm font-medium text-foreground mb-2 lg:mb-3">
                 Request Body
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 {bodyParams.map((param) => (
                   <div key={`body-${param.name}`}>
                     <label className="block text-sm text-foreground mb-1">
@@ -534,11 +536,11 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
         </div>
       </div>
 
-      <div className="flex-none p-4 border-t border-border">
+      <div className="flex-none p-3 lg:p-4 border-t border-border">
         <button
           onClick={handleSendRequest}
           disabled={isLoading}
-          className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors font-medium"
+          className="w-full px-4 py-2.5 lg:py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors font-medium text-sm lg:text-base"
         >
           {isLoading ? 'Executing...' : 'Send Request'}
         </button>
