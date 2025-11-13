@@ -422,19 +422,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none p-3 lg:p-4 border-b border-border">
         <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3 flex-wrap">
-          <span
-            className={`px-2 py-1 text-xs lg:text-sm font-medium rounded ${
-              endpoint.method === 'GET'
-                ? 'text-success-foreground bg-success/10'
-                : endpoint.method === 'POST'
-                  ? 'text-info-foreground bg-info/10'
-                  : endpoint.method === 'PATCH'
-                    ? 'text-warning-foreground bg-warning/20'
-                    : endpoint.method === 'PUT'
-                      ? 'text-warning-foreground bg-warning/10'
-                      : 'text-destructive-foreground bg-destructive/10'
-            }`}
-          >
+          <span className="px-2 py-1 text-xs lg:text-sm font-medium rounded bg-secondary text-secondary-foreground">
             {endpoint.method}
           </span>
           <code className="text-xs lg:text-sm text-foreground break-all">

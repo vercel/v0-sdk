@@ -148,7 +148,17 @@ export default function EndpointPage() {
     } catch (error: any) {
       console.error('API Error:', error)
 
+      // Try to extract status code from error message (e.g., "HTTP 404: {json...}")
+      let extractedStatus: number | undefined
+      if (error.message && typeof error.message === 'string') {
+        const statusMatch = error.message.match(/HTTP (\d+):/)
+        if (statusMatch && statusMatch[1]) {
+          extractedStatus = parseInt(statusMatch[1], 10)
+        }
+      }
+
       const status =
+        extractedStatus ||
         error.status ||
         error.response?.status ||
         error.statusCode ||
@@ -164,11 +174,27 @@ export default function EndpointPage() {
             ? 'Client Error'
             : 'Error')
 
+      // Try to extract JSON from error message if it exists
+      let errorData = {
+        message: error.message || 'An error occurred',
+        details: error.response?.data || error.body || error.data || error,
+      }
+
+      // Check if the error message contains JSON (e.g., "HTTP 404: {json...}")
+      if (error.message && typeof error.message === 'string') {
+        const jsonMatch = error.message.match(/HTTP \d+: ({.*})/)
+        if (jsonMatch && jsonMatch[1]) {
+          try {
+            const parsedError = JSON.parse(jsonMatch[1])
+            errorData = parsedError.error || parsedError
+          } catch (e) {
+            // If parsing fails, keep the original error structure
+          }
+        }
+      }
+
       setResponse({
-        error: {
-          message: error.message || 'An error occurred',
-          details: error.response?.data || error.body || error.data || error,
-        },
+        error: errorData,
         status,
         statusText,
         headers: error.response?.headers || error.headers || {},
@@ -279,15 +305,20 @@ export default function EndpointPage() {
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 overflow-hidden">
-          {activeTab === 'request' ? (
+        <div className="flex-1 overflow-hidden relative">
+          <div
+            className={`h-full ${activeTab === 'request' ? 'block' : 'hidden'}`}
+          >
             <RequestPanel
               endpoint={selectedEndpoint}
               onExecute={executeRequest}
             />
-          ) : (
+          </div>
+          <div
+            className={`h-full ${activeTab === 'response' ? 'block' : 'hidden'}`}
+          >
             <ResponsePanel />
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -151,144 +151,149 @@ export function Sidebar({
           </div>
         </div>
 
-      <nav ref={navRef} className="p-2 flex-1 overflow-y-auto">
-        {categories.map((category) => {
-          const isExpanded = expandedCategories.has(category.id)
-          return (
-            <div key={category.id} className="mb-1">
-              <button
-                onClick={() => toggleCategory(category.id)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-md transition-colors"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
+        <nav ref={navRef} className="p-2 flex-1 overflow-y-auto">
+          {categories.map((category) => {
+            const isExpanded = expandedCategories.has(category.id)
+            return (
+              <div key={category.id} className="mb-1">
+                <button
+                  onClick={() => toggleCategory(category.id)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-md transition-colors"
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                  <span>{category.name}</span>
+                </button>
+
+                {isExpanded && (
+                  <div className="ml-2 mt-1 space-y-1">
+                    {category.endpoints.map((endpoint) => {
+                      const { resource, action } = operationIdToRoute(
+                        endpoint.id,
+                      )
+                      const href = `/${resource}/${action}`
+
+                      return (
+                        <Link
+                          key={endpoint.id}
+                          href={href}
+                          onClick={() => onClose?.()}
+                          className={`block w-full px-3 py-2 text-sm rounded-md transition-colors ${
+                            selectedEndpoint?.id === endpoint.id
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-muted-foreground hover:bg-muted'
+                          }`}
+                        >
+                          <span className="truncate">{endpoint.name}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
                 )}
-                <span>{category.name}</span>
-              </button>
+              </div>
+            )
+          })}
+        </nav>
 
-              {isExpanded && (
-                <div className="ml-2 mt-1 space-y-1">
-                  {category.endpoints.map((endpoint) => {
-                    const { resource, action } = operationIdToRoute(endpoint.id)
-                    const href = `/${resource}/${action}`
-
-                    return (
-                      <Link
-                        key={endpoint.id}
-                        href={href}
-                        onClick={() => onClose?.()}
-                        className={`block w-full px-3 py-2 text-sm rounded-md transition-colors ${
-                          selectedEndpoint?.id === endpoint.id
-                            ? 'bg-primary/10 text-primary'
-                            : 'text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        <span className="truncate">{endpoint.name}</span>
-                      </Link>
-                    )
-                  })}
-                </div>
+        {/* User Section */}
+        <div className="flex-none border-t border-border p-3">
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={user?.avatar}
+                      alt={user?.name || 'User'}
+                    />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {user?.name?.charAt(0)?.toUpperCase() ||
+                        user?.email?.charAt(0)?.toUpperCase() ||
+                        'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setApiKey('')
+                    window.location.reload()
+                  }}
+                  className="cursor-pointer"
+                >
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {user?.name || user?.email || 'Anonymous'}
+              </p>
+              {user?.email && user?.name && (
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </p>
               )}
             </div>
-          )
-        })}
-      </nav>
-
-      {/* User Section */}
-      <div className="flex-none border-t border-border p-3">
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user?.name?.charAt(0)?.toUpperCase() ||
-                      user?.email?.charAt(0)?.toUpperCase() ||
-                      'U'}
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuItem
-                onClick={() => {
-                  setApiKey('')
-                  window.location.reload()
-                }}
-                className="cursor-pointer"
-              >
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
-              {user?.name || user?.email || 'Anonymous'}
-            </p>
-            {user?.email && user?.name && (
-              <p className="text-xs text-muted-foreground truncate">
-                {user.email}
-              </p>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors">
+                  <Settings className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {mounted && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => setTheme('light')}
+                      className="cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        {theme === 'light' && (
+                          <span className="text-accent">✓</span>
+                        )}
+                        <span className={theme !== 'light' ? 'ml-6' : ''}>
+                          Light
+                        </span>
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme('dark')}
+                      className="cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        {theme === 'dark' && (
+                          <span className="text-accent">✓</span>
+                        )}
+                        <span className={theme !== 'dark' ? 'ml-6' : ''}>
+                          Dark
+                        </span>
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme('system')}
+                      className="cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        {theme === 'system' && (
+                          <span className="text-accent">✓</span>
+                        )}
+                        <span className={theme !== 'system' ? 'ml-6' : ''}>
+                          System
+                        </span>
+                      </span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors">
-                <Settings className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {mounted && (
-                <>
-                  <DropdownMenuItem
-                    onClick={() => setTheme('light')}
-                    className="cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      {theme === 'light' && (
-                        <span className="text-accent">✓</span>
-                      )}
-                      <span className={theme !== 'light' ? 'ml-6' : ''}>
-                        Light
-                      </span>
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme('dark')}
-                    className="cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      {theme === 'dark' && (
-                        <span className="text-accent">✓</span>
-                      )}
-                      <span className={theme !== 'dark' ? 'ml-6' : ''}>
-                        Dark
-                      </span>
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme('system')}
-                    className="cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      {theme === 'system' && (
-                        <span className="text-accent">✓</span>
-                      )}
-                      <span className={theme !== 'system' ? 'ml-6' : ''}>
-                        System
-                      </span>
-                    </span>
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
-    </div>
     </>
   )
 }
