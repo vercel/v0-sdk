@@ -420,23 +420,29 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   if (endpoint.discriminatedUnion) {
     const discriminator = endpoint.discriminatedUnion.discriminator
     const discriminatorValue = params[discriminator]
-    
+
     // Collect all variant-specific param names to exclude them from common params
     const allVariantParamNames = new Set<string>()
-    Object.values(endpoint.discriminatedUnion.variants).forEach((variantParams: any[]) => {
-      variantParams.forEach((param) => {
-        allVariantParamNames.add(param.name)
-      })
-    })
-    
+    Object.values(endpoint.discriminatedUnion.variants).forEach(
+      (variantParams: any[]) => {
+        variantParams.forEach((param) => {
+          allVariantParamNames.add(param.name)
+        })
+      },
+    )
+
     // Keep common fields (not variant-specific) and the discriminator
     const commonParams = bodyParams.filter(
-      (p) => !allVariantParamNames.has(p.name)
+      (p) => !allVariantParamNames.has(p.name),
     )
-    
+
     // Add variant-specific params if discriminator value is set
-    if (discriminatorValue && endpoint.discriminatedUnion.variants[discriminatorValue]) {
-      const variantParams = endpoint.discriminatedUnion.variants[discriminatorValue]
+    if (
+      discriminatorValue &&
+      endpoint.discriminatedUnion.variants[discriminatorValue]
+    ) {
+      const variantParams =
+        endpoint.discriminatedUnion.variants[discriminatorValue]
       bodyParams = [...commonParams, ...variantParams]
     } else {
       // If no discriminator value, just show common params
