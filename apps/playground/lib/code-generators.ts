@@ -3,8 +3,6 @@ import type { APIEndpoint } from './openapi-parser'
 interface GenerateCodeOptions {
   endpoint: APIEndpoint
   params: Record<string, any>
-  apiKey?: string
-  includeApiKey?: boolean
 }
 
 /**
@@ -13,21 +11,11 @@ interface GenerateCodeOptions {
 export function generateSDKCode({
   endpoint,
   params,
-  apiKey,
-  includeApiKey = false,
 }: GenerateCodeOptions): string {
   const lines: string[] = []
 
-  // Import statement
-  if (includeApiKey && apiKey) {
-    lines.push("import { createClient } from 'v0-sdk'")
-    lines.push('')
-    lines.push('const v0 = createClient({')
-    lines.push(`  apiKey: '${apiKey}',`)
-    lines.push('})')
-  } else {
-    lines.push("import { v0 } from 'v0-sdk'")
-  }
+  // Always use the default v0 import (relies on environment variables)
+  lines.push("import { v0 } from 'v0-sdk'")
   lines.push('')
 
   // Determine the method call based on the operationId
@@ -96,8 +84,6 @@ export function generateSDKCode({
 export function generateCurlCode({
   endpoint,
   params,
-  apiKey,
-  includeApiKey = false,
 }: GenerateCodeOptions): string {
   const lines: string[] = []
 
@@ -133,12 +119,8 @@ export function generateCurlCode({
   // Add headers
   lines.push("  -H 'Content-Type: application/json' \\")
 
-  // Include actual API key if opted in, otherwise use placeholder
-  if (includeApiKey && apiKey) {
-    lines.push(`  -H 'Authorization: Bearer ${apiKey}' \\`)
-  } else {
-    lines.push("  -H 'Authorization: Bearer YOUR_API_KEY' \\")
-  }
+  // Always use placeholder for API key
+  lines.push("  -H 'Authorization: Bearer YOUR_API_KEY' \\")
 
   // Add body if needed
   const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []

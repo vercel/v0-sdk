@@ -38,7 +38,6 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const [isLoading] = useAtom(isLoadingAtom)
   const [showCodeDialog, setShowCodeDialog] = useState(false)
   const [codeType, setCodeType] = useState<'sdk' | 'curl'>('sdk')
-  const [includeApiKey, setIncludeApiKey] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
   useEffect(() => {
@@ -425,11 +424,11 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
 
   const generateCode = () => {
     if (!endpoint) return ''
-
+    
     if (codeType === 'sdk') {
-      return generateSDKCode({ endpoint, params, apiKey, includeApiKey })
+      return generateSDKCode({ endpoint, params })
     } else {
-      return generateCurlCode({ endpoint, params, apiKey, includeApiKey })
+      return generateCurlCode({ endpoint, params })
     }
   }
 
@@ -653,25 +652,6 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                 </button>
               </div>
             </div>
-
-            {/* Include API Key Toggle - only show if user has API key */}
-            {hasApiKey && (
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="includeApiKey"
-                  checked={includeApiKey}
-                  onChange={(e) => setIncludeApiKey(e.target.checked)}
-                  className="rounded border-input text-primary focus:ring-ring"
-                />
-                <label
-                  htmlFor="includeApiKey"
-                  className="text-sm text-foreground cursor-pointer"
-                >
-                  Include my API key
-                </label>
-              </div>
-            )}
 
             {/* Code Textarea */}
             <textarea
