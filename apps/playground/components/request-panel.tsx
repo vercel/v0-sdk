@@ -36,8 +36,10 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const [apiKey, setApiKey] = useAtom(apiKeyAtom)
   const [hasApiKey] = useAtom(hasApiKeyAtom)
   const [isLoading] = useAtom(isLoadingAtom)
-  const [copiedSDK, setCopiedSDK] = useState(false)
-  const [copiedCurl, setCopiedCurl] = useState(false)
+  const [showCodeDialog, setShowCodeDialog] = useState(false)
+  const [codeType, setCodeType] = useState<'sdk' | 'curl'>('sdk')
+  const [includeApiKey, setIncludeApiKey] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -421,20 +423,21 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     }
   }
 
-  const handleCopySDK = () => {
-    if (!endpoint) return
-    const code = generateSDKCode({ endpoint, params })
-    navigator.clipboard.writeText(code)
-    setCopiedSDK(true)
-    setTimeout(() => setCopiedSDK(false), 2000)
+  const generateCode = () => {
+    if (!endpoint) return ''
+    
+    if (codeType === 'sdk') {
+      return generateSDKCode({ endpoint, params, apiKey, includeApiKey })
+    } else {
+      return generateCurlCode({ endpoint, params, apiKey, includeApiKey })
+    }
   }
 
-  const handleCopyCurl = () => {
-    if (!endpoint) return
-    const code = generateCurlCode({ endpoint, params })
+  const handleCopyCode = () => {
+    const code = generateCode()
     navigator.clipboard.writeText(code)
-    setCopiedCurl(true)
-    setTimeout(() => setCopiedCurl(false), 2000)
+    setCopiedCode(true)
+    setTimeout(() => setCopiedCode(false), 2000)
   }
 
   return (
@@ -544,40 +547,13 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
       </div>
 
       <div className="flex-none p-3 lg:p-4 border-t border-border space-y-2">
-        <div className="flex gap-2">
-          <button
-            onClick={handleCopySDK}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
-          >
-            {copiedSDK ? (
-              <>
-                <Check className="w-4 h-4" />
-                <span>Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                <span>Copy as v0 SDK</span>
-              </>
-            )}
-          </button>
-          <button
-            onClick={handleCopyCurl}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
-          >
-            {copiedCurl ? (
-              <>
-                <Check className="w-4 h-4" />
-                <span>Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                <span>Copy as cURL</span>
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          onClick={() => setShowCodeDialog(true)}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
+        >
+          <Copy className="w-4 h-4" />
+          <span>Copy Code</span>
+        </button>
         <button
           onClick={handleSendRequest}
           disabled={isLoading}
@@ -634,6 +610,99 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
             >
               Save & Send
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copy Code Dialog */}
+      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Copy Code</DialogTitle>
+            <DialogDescription>
+              Generate code snippets for your API request
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Code Type Toggle */}
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-foreground">
+                Code Type:
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCodeType('sdk')}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    codeType === 'sdk'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  v0 SDK
+                </button>
+                <button
+                  onClick={() => setCodeType('curl')}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    codeType === 'curl'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  cURL
+                </button>
+              </div>
+            </div>
+
+            {/* Include API Key Toggle - only show if user has API key */}
+            {hasApiKey && (
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="includeApiKey"
+                  checked={includeApiKey}
+                  onChange={(e) => setIncludeApiKey(e.target.checked)}
+                  className="rounded border-input text-primary focus:ring-ring"
+                />
+                <label
+                  htmlFor="includeApiKey"
+                  className="text-sm text-foreground cursor-pointer"
+                >
+                  Include my API key
+                </label>
+              </div>
+            )}
+
+            {/* Code Textarea */}
+            <textarea
+              value={generateCode()}
+              readOnly
+              rows={12}
+              className="w-full px-3 py-2 border border-input bg-muted text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-mono text-sm"
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowCodeDialog(false)}
+              className="px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-colors"
+            >
+              Close
+            </button>
+            <button
+              onClick={handleCopyCode}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              {copiedCode ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  <span>Copy Code</span>
+                </>
+              )}
             </button>
           </DialogFooter>
         </DialogContent>

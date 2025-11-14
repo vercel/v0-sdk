@@ -4,6 +4,7 @@ interface GenerateCodeOptions {
   endpoint: APIEndpoint
   params: Record<string, any>
   apiKey?: string
+  includeApiKey?: boolean
 }
 
 /**
@@ -12,11 +13,21 @@ interface GenerateCodeOptions {
 export function generateSDKCode({
   endpoint,
   params,
+  apiKey,
+  includeApiKey = false,
 }: GenerateCodeOptions): string {
   const lines: string[] = []
 
   // Import statement
-  lines.push("import { v0 } from 'v0-sdk'")
+  if (includeApiKey && apiKey) {
+    lines.push("import { createClient } from 'v0-sdk'")
+    lines.push('')
+    lines.push('const v0 = createClient({')
+    lines.push(`  apiKey: '${apiKey}',`)
+    lines.push('})')
+  } else {
+    lines.push("import { v0 } from 'v0-sdk'")
+  }
   lines.push('')
 
   // Determine the method call based on the operationId
@@ -85,6 +96,8 @@ export function generateSDKCode({
 export function generateCurlCode({
   endpoint,
   params,
+  apiKey,
+  includeApiKey = false,
 }: GenerateCodeOptions): string {
   const lines: string[] = []
 
@@ -120,8 +133,12 @@ export function generateCurlCode({
   // Add headers
   lines.push("  -H 'Content-Type: application/json' \\")
 
-  // Never include actual API key - always use placeholder
-  lines.push("  -H 'Authorization: Bearer YOUR_API_KEY' \\")
+  // Include actual API key if opted in, otherwise use placeholder
+  if (includeApiKey && apiKey) {
+    lines.push(`  -H 'Authorization: Bearer ${apiKey}' \\`)
+  } else {
+    lines.push("  -H 'Authorization: Bearer YOUR_API_KEY' \\")
+  }
 
   // Add body if needed
   const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
