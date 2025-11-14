@@ -157,7 +157,11 @@ export function generateCurlCode({
     })
 
     if (Object.keys(body).length > 0) {
-      lines.push(`  -d '${JSON.stringify(body, null, 2)}'`)
+      // Escape single quotes in the JSON to prevent shell injection
+      // In shell single quotes, we need to close the quote, add an escaped quote, and reopen
+      const jsonBody = JSON.stringify(body, null, 2)
+      const escapedBody = jsonBody.replace(/'/g, "'\\''")
+      lines.push(`  -d '${escapedBody}'`)
     }
   } else {
     // Remove trailing backslash from last line
