@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAtom } from 'jotai'
-import { Menu } from 'lucide-react'
 import { Sidebar } from '../components/sidebar'
 import { parseOpenAPISpec } from '../lib/openapi-parser'
 import { useRouter } from 'next/navigation'
@@ -18,7 +17,6 @@ export default function Home() {
   const categories = useMemo(() => parseOpenAPISpec(), [])
   const [apiKey] = useAtom(apiKeyAtom)
   const [user, setUser] = useAtom(userAtom)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Load user when API key changes
   useEffect(() => {
@@ -59,8 +57,8 @@ export default function Home() {
             router.push(`/${resource}/${action}`)
           }}
           user={user}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+          isOpen={true}
+          onClose={undefined}
         />
       </div>
 
