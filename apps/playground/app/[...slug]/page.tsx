@@ -215,7 +215,7 @@ export default function EndpointPage() {
   }
 
   return (
-    <div 
+    <div
       className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background"
       style={{ paddingBottom: isTwitterBrowser ? '44px' : '0' }}
     >
