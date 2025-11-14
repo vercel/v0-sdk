@@ -159,8 +159,10 @@ function extractPropertiesFromSchema(
 
       schema.anyOf.forEach((variant: any) => {
         const typeValue =
-          variant.properties?.type?.const || variant.properties?.type?.enum?.[0]
-        if (typeValue) {
+          variant.properties?.type?.const !== undefined
+            ? variant.properties?.type?.const
+            : variant.properties?.type?.enum?.[0]
+        if (typeValue !== undefined) {
           enumValues.push(typeValue)
           // Extract all properties except the discriminator
           const variantProps: any[] = []
