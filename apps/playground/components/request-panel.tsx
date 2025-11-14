@@ -424,7 +424,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
 
   const generateCode = () => {
     if (!endpoint) return ''
-    
+
     if (codeType === 'sdk') {
       return generateSDKCode({ endpoint, params })
     } else {
