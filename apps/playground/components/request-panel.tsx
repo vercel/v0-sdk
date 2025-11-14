@@ -462,10 +462,6 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const handleSaveApiKey = () => {
     setApiKey(dialogApiKey)
     setShowApiKeyDialog(false)
-    // Execute request after saving API key
-    if (dialogApiKey) {
-      onExecute(params)
-    }
   }
 
   const generateCode = () => {
