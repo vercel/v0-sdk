@@ -654,7 +654,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
               disabled={!dialogApiKey}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
             >
-              Save & Send
+              Save
             </button>
           </DialogFooter>
         </DialogContent>
