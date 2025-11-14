@@ -83,6 +83,9 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
           initialParams[param.name] = []
         } else if (param.schema?.type === 'object') {
           initialParams[param.name] = {}
+        } else if (param.schema?.enum && param.schema.enum.length > 0) {
+          // For enum fields, default to the first option
+          initialParams[param.name] = param.schema.enum[0]
         } else {
           initialParams[param.name] = ''
         }
@@ -94,6 +97,15 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
           initialParams[param.name],
         )
       })
+
+      // If endpoint has a discriminated union, set default discriminator value
+      if (endpoint.discriminatedUnion) {
+        const discriminator = endpoint.discriminatedUnion.discriminator
+        const variants = Object.keys(endpoint.discriminatedUnion.variants)
+        if (variants.length > 0 && !initialParams[discriminator]) {
+          initialParams[discriminator] = variants[0]
+        }
+      }
 
       setParams(initialParams)
       setExpandedObjects(pathsToExpand)
@@ -402,7 +414,35 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
 
   const pathParams = endpoint.parameters?.filter((p) => p.in === 'path') || []
   const queryParams = endpoint.parameters?.filter((p) => p.in === 'query') || []
-  const bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
+  let bodyParams = endpoint.parameters?.filter((p) => p.in === 'body') || []
+
+  // If endpoint has a discriminated union, filter body params based on discriminator value
+  if (endpoint.discriminatedUnion) {
+    const discriminator = endpoint.discriminatedUnion.discriminator
+    const discriminatorValue = params[discriminator]
+    
+    // Collect all variant-specific param names to exclude them from common params
+    const allVariantParamNames = new Set<string>()
+    Object.values(endpoint.discriminatedUnion.variants).forEach((variantParams: any[]) => {
+      variantParams.forEach((param) => {
+        allVariantParamNames.add(param.name)
+      })
+    })
+    
+    // Keep common fields (not variant-specific) and the discriminator
+    const commonParams = bodyParams.filter(
+      (p) => !allVariantParamNames.has(p.name)
+    )
+    
+    // Add variant-specific params if discriminator value is set
+    if (discriminatorValue && endpoint.discriminatedUnion.variants[discriminatorValue]) {
+      const variantParams = endpoint.discriminatedUnion.variants[discriminatorValue]
+      bodyParams = [...commonParams, ...variantParams]
+    } else {
+      // If no discriminator value, just show common params
+      bodyParams = commonParams
+    }
+  }
 
   const handleSendRequest = () => {
     if (!hasApiKey) {

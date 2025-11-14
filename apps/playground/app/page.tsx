@@ -17,13 +17,6 @@ export default function Home() {
   const categories = useMemo(() => parseOpenAPISpec(), [])
   const [apiKey] = useAtom(apiKeyAtom)
   const [user, setUser] = useAtom(userAtom)
-  const [isTwitterBrowser, setIsTwitterBrowser] = useState(false)
-
-  // Detect Twitter user agent
-  useEffect(() => {
-    const userAgent = navigator.userAgent || ''
-    setIsTwitterBrowser(userAgent.includes('Twitter'))
-  }, [])
 
   // Load user when API key changes
   useEffect(() => {
@@ -48,10 +41,7 @@ export default function Home() {
   }
 
   return (
-    <div
-      className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background"
-      style={{ paddingBottom: isTwitterBrowser ? '44px' : '0' }}
-    >
+    <div className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background">
       {/* Sidebar wrapper - only takes space on desktop */}
       <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
