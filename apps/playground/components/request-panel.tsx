@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
+import { Plus, X, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react'
 import { useAtom } from 'jotai'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import ReactMarkdown from 'react-markdown'
@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { apiKeyAtom, hasApiKeyAtom, isLoadingAtom } from '../lib/atoms'
+import { generateSDKCode, generateCurlCode } from '../lib/code-generators'
 
 interface RequestPanelProps {
   endpoint?: APIEndpoint
@@ -35,6 +36,8 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const [apiKey, setApiKey] = useAtom(apiKeyAtom)
   const [hasApiKey] = useAtom(hasApiKeyAtom)
   const [isLoading] = useAtom(isLoadingAtom)
+  const [copiedSDK, setCopiedSDK] = useState(false)
+  const [copiedCurl, setCopiedCurl] = useState(false)
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -418,6 +421,22 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     }
   }
 
+  const handleCopySDK = () => {
+    if (!endpoint) return
+    const code = generateSDKCode({ endpoint, params })
+    navigator.clipboard.writeText(code)
+    setCopiedSDK(true)
+    setTimeout(() => setCopiedSDK(false), 2000)
+  }
+
+  const handleCopyCurl = () => {
+    if (!endpoint) return
+    const code = generateCurlCode({ endpoint, params })
+    navigator.clipboard.writeText(code)
+    setCopiedCurl(true)
+    setTimeout(() => setCopiedCurl(false), 2000)
+  }
+
   return (
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none p-3 lg:p-4 border-b border-border">
@@ -524,7 +543,41 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
         </div>
       </div>
 
-      <div className="flex-none p-3 lg:p-4 border-t border-border">
+      <div className="flex-none p-3 lg:p-4 border-t border-border space-y-2">
+        <div className="flex gap-2">
+          <button
+            onClick={handleCopySDK}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            {copiedSDK ? (
+              <>
+                <Check className="w-4 h-4" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy as v0 SDK</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleCopyCurl}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            {copiedCurl ? (
+              <>
+                <Check className="w-4 h-4" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy as cURL</span>
+              </>
+            )}
+          </button>
+        </div>
         <button
           onClick={handleSendRequest}
           disabled={isLoading}
