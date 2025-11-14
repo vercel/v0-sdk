@@ -163,7 +163,7 @@ export function Sidebar({
                 v0 SDK Playground
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
-                Try out the v0 Platform API
+                Explore, test, and debug the v0 Platform API
               </p>
             </div>
             {onClose && (

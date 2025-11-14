@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Plus, X, ChevronDown, ChevronRight } from 'lucide-react'
+import { Plus, X, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react'
 import { useAtom } from 'jotai'
 import type { APIEndpoint } from '../lib/openapi-parser'
 import ReactMarkdown from 'react-markdown'
@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { apiKeyAtom, hasApiKeyAtom, isLoadingAtom } from '../lib/atoms'
+import { generateSDKCode, generateCurlCode } from '../lib/code-generators'
 
 interface RequestPanelProps {
   endpoint?: APIEndpoint
@@ -35,6 +36,9 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
   const [apiKey, setApiKey] = useAtom(apiKeyAtom)
   const [hasApiKey] = useAtom(hasApiKeyAtom)
   const [isLoading] = useAtom(isLoadingAtom)
+  const [showCodeDialog, setShowCodeDialog] = useState(false)
+  const [codeType, setCodeType] = useState<'sdk' | 'curl'>('sdk')
+  const [copiedCode, setCopiedCode] = useState(false)
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -418,11 +422,28 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     }
   }
 
+  const generateCode = () => {
+    if (!endpoint) return ''
+
+    if (codeType === 'sdk') {
+      return generateSDKCode({ endpoint, params })
+    } else {
+      return generateCurlCode({ endpoint, params })
+    }
+  }
+
+  const handleCopyCode = () => {
+    const code = generateCode()
+    navigator.clipboard.writeText(code)
+    setCopiedCode(true)
+    setTimeout(() => setCopiedCode(false), 2000)
+  }
+
   return (
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none p-3 lg:p-4 border-b border-border">
         <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3 flex-wrap">
-          <span className="px-2 py-1 text-xs lg:text-sm font-medium rounded bg-secondary text-secondary-foreground">
+          <span className="px-2 py-1 text-xs lg:text-sm font-medium rounded bg-background border border-primary text-primary">
             {endpoint.method}
           </span>
           <code className="text-xs lg:text-sm text-foreground break-all">
@@ -524,7 +545,14 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
         </div>
       </div>
 
-      <div className="flex-none p-3 lg:p-4 border-t border-border">
+      <div className="flex-none p-3 lg:p-4 border-t border-border space-y-2">
+        <button
+          onClick={() => setShowCodeDialog(true)}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-input bg-background text-foreground hover:bg-muted rounded-md transition-colors"
+        >
+          <Copy className="w-4 h-4" />
+          <span>Copy Code</span>
+        </button>
         <button
           onClick={handleSendRequest}
           disabled={isLoading}
@@ -581,6 +609,80 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
             >
               Save & Send
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copy Code Dialog */}
+      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Copy Code</DialogTitle>
+            <DialogDescription>
+              Generate code snippets for your API request
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Code Type Toggle */}
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-foreground">
+                Code Type:
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCodeType('sdk')}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    codeType === 'sdk'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  v0 SDK
+                </button>
+                <button
+                  onClick={() => setCodeType('curl')}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    codeType === 'curl'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  cURL
+                </button>
+              </div>
+            </div>
+
+            {/* Code Textarea */}
+            <textarea
+              value={generateCode()}
+              readOnly
+              rows={12}
+              className="w-full px-3 py-2 border border-input bg-muted text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-mono text-sm"
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowCodeDialog(false)}
+              className="px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-colors"
+            >
+              Close
+            </button>
+            <button
+              onClick={handleCopyCode}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              {copiedCode ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  <span>Copy Code</span>
+                </>
+              )}
             </button>
           </DialogFooter>
         </DialogContent>
