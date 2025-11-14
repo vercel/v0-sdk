@@ -55,12 +55,15 @@ export function Sidebar({
   const expandedCategories = new Set(expandedCategoriesArray)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [isTwitterBrowser, setIsTwitterBrowser] = useState(false)
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false)
   const [dialogApiKey, setDialogApiKey] = useState('')
   const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setMounted(true)
+    const userAgent = navigator.userAgent || ''
+    setIsTwitterBrowser(userAgent.includes('Twitter'))
   }, [])
 
   // Save scroll position to sessionStorage
@@ -154,6 +157,7 @@ export function Sidebar({
                 isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
               }`
         }`}
+        style={{ paddingBottom: isTwitterBrowser ? '44px' : '0' }}
       >
         {/* Header */}
         <div className="flex-none p-4 border-b border-border">
@@ -229,8 +233,8 @@ export function Sidebar({
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
-                  <Avatar className="h-9 w-9">
+                <button className="h-8 w-8 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring flex items-center justify-center shrink-0">
+                  <Avatar className="h-full w-full">
                     <AvatarImage
                       src={user?.avatar}
                       alt={user?.name || 'User'}
@@ -243,7 +247,12 @@ export function Sidebar({
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuContent
+                align="start"
+                side="top"
+                sideOffset={8}
+                className="w-48"
+              >
                 {hasApiKey ? (
                   <DropdownMenuItem
                     onClick={() => {
@@ -280,7 +289,12 @@ export function Sidebar({
                   <Settings className="h-4 w-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent
+                align="end"
+                side="top"
+                sideOffset={8}
+                className="w-48"
+              >
                 {mounted && (
                   <>
                     <DropdownMenuItem
