@@ -32,6 +32,13 @@ export default function EndpointPage() {
   const [selectedEndpoint, setSelectedEndpoint] = useAtom(selectedEndpointAtom)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'request' | 'response'>('request')
+  const [isTwitterBrowser, setIsTwitterBrowser] = useState(false)
+
+  // Detect Twitter user agent
+  useEffect(() => {
+    const userAgent = navigator.userAgent || ''
+    setIsTwitterBrowser(userAgent.includes('Twitter'))
+  }, [])
 
   const categories = useMemo(() => parseOpenAPISpec(), [])
 
@@ -208,7 +215,10 @@ export default function EndpointPage() {
   }
 
   return (
-    <div className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background">
+    <div 
+      className="h-[100dvh] lg:h-screen flex overflow-hidden bg-background"
+      style={{ paddingBottom: isTwitterBrowser ? '44px' : '0' }}
+    >
       {/* Sidebar wrapper - only takes space on desktop */}
       <div className="hidden lg:block w-80 flex-shrink-0 h-full">
         <Sidebar
