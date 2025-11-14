@@ -95,7 +95,7 @@ export function generateCurlCode({
   pathParams.forEach((param) => {
     const value = params[param.name]
     if (value !== undefined && value !== '') {
-      url = url.replace(`{${param.name}}`, String(value))
+      url = url.replace(`{${param.name}}`, encodeURIComponent(String(value)))
     }
   })
 
