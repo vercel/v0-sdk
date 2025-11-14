@@ -162,9 +162,13 @@ export function generateCurlCode({
       const jsonBody = JSON.stringify(body, null, 2)
       const escapedBody = jsonBody.replace(/'/g, "'\\''")
       lines.push(`  -d '${escapedBody}'`)
+    } else {
+      // Body params exist but all are empty - remove trailing backslash
+      const lastLine = lines[lines.length - 1]
+      lines[lines.length - 1] = lastLine.replace(' \\', '')
     }
   } else {
-    // Remove trailing backslash from last line
+    // No body params or wrong method - remove trailing backslash
     const lastLine = lines[lines.length - 1]
     lines[lines.length - 1] = lastLine.replace(' \\', '')
   }
