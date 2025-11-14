@@ -35,6 +35,7 @@ interface SidebarProps {
   }
   isOpen?: boolean
   onClose?: () => void
+  mobileFullWidth?: boolean
 }
 
 export function Sidebar({
@@ -44,6 +45,7 @@ export function Sidebar({
   user,
   isOpen = true,
   onClose,
+  mobileFullWidth = false,
 }: SidebarProps) {
   const [expandedCategoriesArray, setExpandedCategoriesArray] = useAtom(
     expandedCategoriesAtom,
@@ -138,15 +140,19 @@ export function Sidebar({
       {/* Mobile overlay */}
       {isOpen && onClose && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-200 ease-in-out animate-in fade-in"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div
-        className={`w-80 h-full border-r border-border bg-card flex flex-col fixed lg:relative inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`h-full border-r border-border bg-card flex flex-col ${
+          mobileFullWidth
+            ? 'w-full lg:w-80 relative'
+            : `w-80 fixed lg:relative inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out ${
+                isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+              }`
         }`}
       >
         {/* Header */}
@@ -163,7 +169,7 @@ export function Sidebar({
             {onClose && (
               <button
                 onClick={onClose}
-                className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors"
+                className="lg:hidden p-2 hover:bg-muted rounded-md transition-colors flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -270,7 +276,7 @@ export function Sidebar({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors">
+                <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground transition-colors flex items-center justify-center">
                   <Settings className="h-4 w-4" />
                 </button>
               </DropdownMenuTrigger>
@@ -281,39 +287,39 @@ export function Sidebar({
                       onClick={() => setTheme('light')}
                       className="cursor-pointer"
                     >
-                      <span className="flex items-center gap-2">
-                        {theme === 'light' && (
-                          <span className="text-accent">✓</span>
-                        )}
-                        <span className={theme !== 'light' ? 'ml-6' : ''}>
-                          Light
+                      <span className="flex items-center gap-2 w-full">
+                        <span className="w-4 flex items-center justify-center">
+                          {theme === 'light' && (
+                            <span className="text-primary">✓</span>
+                          )}
                         </span>
+                        <span>Light</span>
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setTheme('dark')}
                       className="cursor-pointer"
                     >
-                      <span className="flex items-center gap-2">
-                        {theme === 'dark' && (
-                          <span className="text-accent">✓</span>
-                        )}
-                        <span className={theme !== 'dark' ? 'ml-6' : ''}>
-                          Dark
+                      <span className="flex items-center gap-2 w-full">
+                        <span className="w-4 flex items-center justify-center">
+                          {theme === 'dark' && (
+                            <span className="text-primary">✓</span>
+                          )}
                         </span>
+                        <span>Dark</span>
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setTheme('system')}
                       className="cursor-pointer"
                     >
-                      <span className="flex items-center gap-2">
-                        {theme === 'system' && (
-                          <span className="text-accent">✓</span>
-                        )}
-                        <span className={theme !== 'system' ? 'ml-6' : ''}>
-                          System
+                      <span className="flex items-center gap-2 w-full">
+                        <span className="w-4 flex items-center justify-center">
+                          {theme === 'system' && (
+                            <span className="text-primary">✓</span>
+                          )}
                         </span>
+                        <span>System</span>
                       </span>
                     </DropdownMenuItem>
                   </>

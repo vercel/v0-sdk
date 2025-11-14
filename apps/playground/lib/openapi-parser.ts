@@ -92,6 +92,7 @@ function getCategoryFromTags(tags?: string[]): string {
     hooks: 'Hooks',
     integrations: 'Integrations',
     'rate-limits': 'Rate Limits',
+    rateLimits: 'Rate Limits',
     user: 'User',
     reports: 'Reports',
   }
