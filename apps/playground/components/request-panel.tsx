@@ -425,7 +425,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
 
   const generateCode = () => {
     if (!endpoint) return ''
-    
+
     if (codeType === 'sdk') {
       return generateSDKCode({ endpoint, params, apiKey, includeApiKey })
     } else {
@@ -444,7 +444,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
     <div className="h-full flex flex-col bg-card">
       <div className="flex-none p-3 lg:p-4 border-b border-border">
         <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3 flex-wrap">
-          <span className="px-2 py-1 text-xs lg:text-sm font-medium rounded bg-secondary text-secondary-foreground">
+          <span className="px-2 py-1 text-xs lg:text-sm font-medium rounded bg-background border border-primary text-primary">
             {endpoint.method}
           </span>
           <code className="text-xs lg:text-sm text-foreground break-all">
