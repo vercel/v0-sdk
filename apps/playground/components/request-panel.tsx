@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Plus, X, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react'
 import { useAtom } from 'jotai'
 import type { APIEndpoint } from '../lib/openapi-parser'
-import ReactMarkdown from 'react-markdown'
+import { Streamdown } from 'streamdown'
 import {
   Select,
   SelectContent,
@@ -184,8 +184,8 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                 {isRequired && <span className="text-destructive ml-1">*</span>}
               </label>
               {schema.description && (
-                <div className="text-xs text-muted-foreground mb-2 markdown-content">
-                  <ReactMarkdown>{schema.description}</ReactMarkdown>
+                <div className="text-xs text-muted-foreground mb-2">
+                  <Streamdown>{schema.description}</Streamdown>
                 </div>
               )}
               {renderFieldByType(schema, fieldPath, fieldValue)}
@@ -521,7 +521,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                     </label>
                     {param.description && (
                       <div className="mb-2 text-xs text-muted-foreground markdown-content">
-                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                        <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
                     {renderInput(param)}
@@ -548,7 +548,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                     </label>
                     {param.description && (
                       <div className="mb-2 text-xs text-muted-foreground markdown-content">
-                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                        <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
                     {renderInput(param)}
@@ -575,7 +575,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                     </label>
                     {param.description && (
                       <div className="mb-2 text-xs text-muted-foreground markdown-content">
-                        <ReactMarkdown>{param.description}</ReactMarkdown>
+                        <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
                     {renderInput(param)}
