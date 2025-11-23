@@ -520,7 +520,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                       )}
                     </label>
                     {param.description && (
-                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                      <div className="mb-2 text-xs text-muted-foreground">
                         <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
@@ -547,7 +547,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                       )}
                     </label>
                     {param.description && (
-                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                      <div className="mb-2 text-xs text-muted-foreground">
                         <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
@@ -574,7 +574,7 @@ export function RequestPanel({ endpoint, onExecute }: RequestPanelProps) {
                       )}
                     </label>
                     {param.description && (
-                      <div className="mb-2 text-xs text-muted-foreground markdown-content">
+                      <div className="mb-2 text-xs text-muted-foreground">
                         <Streamdown>{param.description}</Streamdown>
                       </div>
                     )}
