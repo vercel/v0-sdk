@@ -73,8 +73,8 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       streamdown:
-        specifier: ^1.6.4
-        version: 1.6.4(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(react@19.2.0)(unified@11.0.5)
+        specifier: ^1.6.5
+        version: 1.6.5(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(react@19.2.0)(unified@11.0.5)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -5956,8 +5956,8 @@ packages:
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
 
-  streamdown@1.6.4:
-    resolution: {integrity: sha512-RW8oXmXiT0BmOHWvwRDojw8Pz/mOxar4QyIPL5NuS1PqOSevd+jnMYj14SOZupS7uP/guOJmhAp7yKK8GUbPVw==}
+  streamdown@1.6.5:
+    resolution: {integrity: sha512-296rq6KQ2WJgoCNPCTUvM9HeOaZ6P78pXkrtdbUqkyZ8UnpxVZvvPpVOn09HBXTjN1St981cWsJ8vBIspMEXgQ==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
 
@@ -12859,7 +12859,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  streamdown@1.6.4(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(react@19.2.0)(unified@11.0.5):
+  streamdown@1.6.5(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(react@19.2.0)(unified@11.0.5):
     dependencies:
       clsx: 2.1.1
       hast: 1.0.0
