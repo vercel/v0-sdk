@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.15.2
+
+### Patch Changes
+
+- bbb7c2f: adds system to sendMessage operation
+
 ## 0.15.1
 
 ### Patch Changes
