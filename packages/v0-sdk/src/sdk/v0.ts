@@ -90,7 +90,12 @@ export type ChatDetail = {
   text: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    modelId?:
+      | 'v0-1.5-sm'
+      | 'v0-1.5-md'
+      | 'v0-1.5-lg'
+      | 'v0-gpt-5'
+      | 'v0-opus-4.5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -721,7 +726,12 @@ export interface ChatsCreateRequest {
   projectId?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    modelId?:
+      | 'v0-1.5-sm'
+      | 'v0-1.5-md'
+      | 'v0-1.5-lg'
+      | 'v0-gpt-5'
+      | 'v0-opus-4.5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -861,9 +871,15 @@ export interface ChatsSendMessageRequest {
   attachments?: {
     url: string
   }[]
+  system?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-1.5-sm' | 'v0-1.5-md' | 'v0-1.5-lg' | 'v0-gpt-5'
+    modelId?:
+      | 'v0-1.5-sm'
+      | 'v0-1.5-md'
+      | 'v0-1.5-lg'
+      | 'v0-gpt-5'
+      | 'v0-opus-4.5'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -1318,6 +1334,7 @@ export function createClient(config: V0ClientConfig = {}) {
         const body = {
           message: params.message,
           attachments: params.attachments,
+          system: params.system,
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
         }
