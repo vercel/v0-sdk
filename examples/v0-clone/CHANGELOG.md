@@ -1,5 +1,12 @@
 # v0-clone
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [bbb7c2f]
+  - v0-sdk@0.15.2
+
 ## 0.2.1
 
 ### Patch Changes
