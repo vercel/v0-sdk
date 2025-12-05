@@ -59,6 +59,7 @@ export type ChatDetail = {
       | 'fix-with-v0'
       | 'auto-fix-with-v0'
       | 'sync-git'
+      | 'fix-cve'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -327,6 +328,7 @@ export type MessageDetail = {
     | 'fix-with-v0'
     | 'auto-fix-with-v0'
     | 'sync-git'
+    | 'fix-cve'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -374,6 +376,7 @@ export type MessageSummary = {
     | 'fix-with-v0'
     | 'auto-fix-with-v0'
     | 'sync-git'
+    | 'fix-cve'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -422,6 +425,7 @@ export type MessageSummaryList = {
       | 'fix-with-v0'
       | 'auto-fix-with-v0'
       | 'sync-git'
+      | 'fix-cve'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'

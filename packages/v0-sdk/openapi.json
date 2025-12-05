@@ -7521,7 +7521,8 @@
                     "reverted-block",
                     "fix-with-v0",
                     "auto-fix-with-v0",
-                    "sync-git"
+                    "sync-git",
+                    "fix-cve"
                   ]
                 },
                 "role": {
@@ -8780,7 +8781,8 @@
               "reverted-block",
               "fix-with-v0",
               "auto-fix-with-v0",
-              "sync-git"
+              "sync-git",
+              "fix-cve"
             ]
           },
           "role": {
@@ -9164,7 +9166,8 @@
               "reverted-block",
               "fix-with-v0",
               "auto-fix-with-v0",
-              "sync-git"
+              "sync-git",
+              "fix-cve"
             ]
           },
           "role": {
@@ -9555,7 +9558,8 @@
                     "reverted-block",
                     "fix-with-v0",
                     "auto-fix-with-v0",
-                    "sync-git"
+                    "sync-git",
+                    "fix-cve"
                   ]
                 },
                 "role": {
