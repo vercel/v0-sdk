@@ -1,5 +1,15 @@
 # ai-tools-example
 
+## 0.2.3
+
+### Patch Changes
+
+- c9a79cd: upgrade to latest next
+- c20a71c: upgrade react to fix CVE-2025-55182
+- Updated dependencies [c9a79cd]
+- Updated dependencies [c20a71c]
+  - @v0-sdk/ai-tools@0.3.3
+
 ## 0.2.2
 
 ### Patch Changes
