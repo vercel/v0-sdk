@@ -600,8 +600,8 @@ importers:
         specifier: ^0.7.3
         version: 0.7.3
       react:
-        specifier: ^18.0.0 || ^19.0.0
-        version: 19.1.1
+        specifier: ^18.0.0 || >=19.2.1
+        version: 19.2.1
     devDependencies:
       '@types/react':
         specifier: ^19
@@ -5357,10 +5357,6 @@ packages:
     resolution: {integrity: sha512-DgXrc+AZF47+HvAPEmn7Ua/1p10jNoVZVI/LoPiYdtY+OM+/nG5yefLHKJwdKqY1adMuHFbeyBaG9j64ML7vTw==}
     peerDependencies:
       react: '>= 0.14.0'
-
-  react@19.1.1:
-    resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
-    engines: {node: '>=0.10.0'}
 
   react@19.1.2:
     resolution: {integrity: sha512-MdWVitvLbQULD+4DP8GYjZUrepGW7d+GQkNVqJEzNxE+e9WIa4egVFE/RDfVb1u9u/Jw7dNMmPB4IqxzbFYJ0w==}
@@ -11890,8 +11886,6 @@ snapshots:
       prismjs: 1.30.0
       react: 19.1.2
       refractor: 3.6.0
-
-  react@19.1.1: {}
 
   react@19.1.2: {}
 
