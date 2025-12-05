@@ -1,5 +1,16 @@
 # v0-clone
 
+## 0.2.3
+
+### Patch Changes
+
+- c9a79cd: upgrade to latest next
+- c20a71c: upgrade react to fix CVE-2025-55182
+- Updated dependencies [c9a79cd]
+- Updated dependencies [c20a71c]
+  - @v0-sdk/react@0.4.1
+  - v0-sdk@0.15.3
+
 ## 0.2.2
 
 ### Patch Changes

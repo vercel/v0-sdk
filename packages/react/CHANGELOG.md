@@ -1,5 +1,12 @@
 # @v0-sdk/react
 
+## 0.4.1
+
+### Patch Changes
+
+- c9a79cd: upgrade to latest next
+- c20a71c: upgrade react to fix CVE-2025-55182
+
 ## 0.4.0
 
 ### Minor Changes
