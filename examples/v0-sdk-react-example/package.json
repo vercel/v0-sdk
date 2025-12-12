@@ -21,7 +21,7 @@
     "lucide-react": "^0.540.0",
     "prismjs": "^1.29.0",
     "react-katex": "^3.0.1",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "react": "19.1.2",
     "react-dom": "19.1.2",
     "tailwind-merge": "^2.5.5"
