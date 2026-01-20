@@ -1,5 +1,17 @@
 # v0-clone
 
+## 0.3.0
+
+### Minor Changes
+
+- a1f8953: Updated API fields
+
+### Patch Changes
+
+- Updated dependencies [a1f8953]
+  - @v0-sdk/react@0.5.0
+  - v0-sdk@0.16.0
+
 ## 0.2.3
 
 ### Patch Changes
