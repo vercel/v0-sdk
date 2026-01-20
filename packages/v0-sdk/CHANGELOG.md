@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.1
+
+### Patch Changes
+
+- c50eef6: Fixed deleteAllChats
+
 ## 0.16.0
 
 ### Minor Changes
