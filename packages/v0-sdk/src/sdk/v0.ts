@@ -59,6 +59,9 @@ export type ChatDetail = {
       | 'fix-with-v0'
       | 'auto-fix-with-v0'
       | 'sync-git'
+      | 'pull-changes'
+      | 'fix-cve'
+      | 'answered-questions'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -90,12 +93,7 @@ export type ChatDetail = {
   text: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?:
-      | 'v0-1.5-sm'
-      | 'v0-1.5-md'
-      | 'v0-1.5-lg'
-      | 'v0-gpt-5'
-      | 'v0-opus-4.5'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -327,6 +325,9 @@ export type MessageDetail = {
     | 'fix-with-v0'
     | 'auto-fix-with-v0'
     | 'sync-git'
+    | 'pull-changes'
+    | 'fix-cve'
+    | 'answered-questions'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -374,6 +375,9 @@ export type MessageSummary = {
     | 'fix-with-v0'
     | 'auto-fix-with-v0'
     | 'sync-git'
+    | 'pull-changes'
+    | 'fix-cve'
+    | 'answered-questions'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -422,6 +426,9 @@ export type MessageSummaryList = {
       | 'fix-with-v0'
       | 'auto-fix-with-v0'
       | 'sync-git'
+      | 'pull-changes'
+      | 'fix-cve'
+      | 'answered-questions'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -726,12 +733,7 @@ export interface ChatsCreateRequest {
   projectId?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?:
-      | 'v0-1.5-sm'
-      | 'v0-1.5-md'
-      | 'v0-1.5-lg'
-      | 'v0-gpt-5'
-      | 'v0-opus-4.5'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -874,12 +876,7 @@ export interface ChatsSendMessageRequest {
   system?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?:
-      | 'v0-1.5-sm'
-      | 'v0-1.5-md'
-      | 'v0-1.5-lg'
-      | 'v0-gpt-5'
-      | 'v0-opus-4.5'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -1115,6 +1112,12 @@ export interface RateLimitsFindResponse {
   remaining?: number
   reset?: number
   limit: number
+  dailyLimit?: {
+    limit: number
+    remaining: number
+    reset: number
+    isWithinGracePeriod: boolean
+  }
 }
 
 export type UserGetResponse = UserSummarySchema
@@ -1183,6 +1186,9 @@ export type ReportsGetUsageResponse = {
       | 'manual_debit'
       | 'api_request'
       | 'inline-edit'
+      | 'buy-template'
+      | 'reverse_template_sale'
+      | 'refund_template_purchase'
     promptCost?: string
     completionCost?: string
     totalCost: string
@@ -1530,10 +1536,18 @@ export function createClient(config: V0ClientConfig = {}) {
 
       async delete(params: {
         projectId: string
+        deleteAllChats?: boolean
       }): Promise<ProjectsDeleteResponse> {
         const pathParams = { projectId: params.projectId }
+        const query = Object.fromEntries(
+          Object.entries({
+            deleteAllChats: params.deleteAllChats,
+          }).filter(([_, value]) => value !== undefined),
+        ) as Record<string, string>
+        const hasQuery = Object.keys(query).length > 0
         return fetcher(`/projects/${pathParams.projectId}`, 'DELETE', {
           pathParams,
+          ...(hasQuery ? { query } : {}),
         })
       },
 
