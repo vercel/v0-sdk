@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.0
+
+### Minor Changes
+
+- a1f8953: Updated API fields
+
 ## 0.15.3
 
 ### Patch Changes

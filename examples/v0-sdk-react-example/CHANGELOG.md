@@ -1,5 +1,16 @@
 # v0-sdk-react-example
 
+## 0.3.0
+
+### Minor Changes
+
+- a1f8953: Updated API fields
+
+### Patch Changes
+
+- Updated dependencies [a1f8953]
+  - @v0-sdk/react@0.5.0
+
 ## 0.2.1
 
 ### Patch Changes

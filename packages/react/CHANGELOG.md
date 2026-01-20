@@ -1,5 +1,11 @@
 # @v0-sdk/react
 
+## 0.5.0
+
+### Minor Changes
+
+- a1f8953: Updated API fields
+
 ## 0.4.1
 
 ### Patch Changes
