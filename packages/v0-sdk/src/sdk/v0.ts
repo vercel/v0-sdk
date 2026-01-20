@@ -1541,7 +1541,10 @@ export function createClient(config: V0ClientConfig = {}) {
         const pathParams = { projectId: params.projectId }
         const query = Object.fromEntries(
           Object.entries({
-            deleteAllChats: params.deleteAllChats,
+            deleteAllChats:
+              params.deleteAllChats !== undefined
+                ? String(params.deleteAllChats)
+                : undefined,
           }).filter(([_, value]) => value !== undefined),
         ) as Record<string, string>
         const hasQuery = Object.keys(query).length > 0
