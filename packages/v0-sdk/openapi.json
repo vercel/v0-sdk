@@ -5108,9 +5108,10 @@
             "in": "query",
             "required": false,
             "schema": {
-              "default": false,
+              "default": "false",
               "description": "If true, deletes all the chats associated with the given project ID. Deleting is permanent. Defaults to false.",
-              "type": "boolean"
+              "type": "string",
+              "enum": ["true", "false"]
             },
             "description": "If true, deletes all the chats associated with the given project ID. Deleting is permanent. Defaults to false."
           }
