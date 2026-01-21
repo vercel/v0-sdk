@@ -46,7 +46,8 @@
                       "type": "object",
                       "properties": {
                         "url": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The URL or data URI of the file or asset to include with the message."
                         }
                       },
                       "required": ["url"],
@@ -1657,7 +1658,8 @@
                       "type": "object",
                       "properties": {
                         "url": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The URL or data URI of the file or asset to include with the message."
                         }
                       },
                       "required": ["url"],
