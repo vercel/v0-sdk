@@ -3412,9 +3412,6 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "type": "string"
-                    },
                     "fullErrorText": {
                       "type": "string"
                     },
@@ -7564,7 +7561,8 @@
                     "sync-git",
                     "pull-changes",
                     "fix-cve",
-                    "answered-questions"
+                    "answered-questions",
+                    "cloned-repo"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
@@ -8834,7 +8832,8 @@
               "sync-git",
               "pull-changes",
               "fix-cve",
-              "answered-questions"
+              "answered-questions",
+              "cloned-repo"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -9233,7 +9232,8 @@
               "sync-git",
               "pull-changes",
               "fix-cve",
-              "answered-questions"
+              "answered-questions",
+              "cloned-repo"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -9637,7 +9637,8 @@
                     "sync-git",
                     "pull-changes",
                     "fix-cve",
-                    "answered-questions"
+                    "answered-questions",
+                    "cloned-repo"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
