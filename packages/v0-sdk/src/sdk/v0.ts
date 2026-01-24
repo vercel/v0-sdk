@@ -62,6 +62,7 @@ export type ChatDetail = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -328,6 +329,7 @@ export type MessageDetail = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -378,6 +380,7 @@ export type MessageSummary = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -429,6 +432,7 @@ export type MessageSummaryList = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -949,7 +953,6 @@ export type DeploymentsFindLogsResponse = {
 }
 
 export interface DeploymentsFindErrorsResponse {
-  error?: string
   fullErrorText?: string
   errorType?: string
   formattedError?: string
