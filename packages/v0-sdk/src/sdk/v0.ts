@@ -1211,6 +1211,7 @@ export type ReportsGetUsageResponse = {
 export interface V0ClientConfig {
   apiKey?: string
   baseUrl?: string
+  headers?: Record<string, string>
 }
 
 export function createClient(config: V0ClientConfig = {}) {
