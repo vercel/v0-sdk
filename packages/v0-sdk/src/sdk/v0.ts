@@ -62,6 +62,7 @@ export type ChatDetail = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -93,7 +94,7 @@ export type ChatDetail = {
   text: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -328,6 +329,7 @@ export type MessageDetail = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -378,6 +380,7 @@ export type MessageSummary = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -429,6 +432,7 @@ export type MessageSummaryList = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -733,7 +737,7 @@ export interface ChatsCreateRequest {
   projectId?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -876,7 +880,7 @@ export interface ChatsSendMessageRequest {
   system?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -949,7 +953,6 @@ export type DeploymentsFindLogsResponse = {
 }
 
 export interface DeploymentsFindErrorsResponse {
-  error?: string
   fullErrorText?: string
   errorType?: string
   formattedError?: string
