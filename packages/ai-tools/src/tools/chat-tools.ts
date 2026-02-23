@@ -32,7 +32,7 @@ export function createChatTools(config: V0ClientConfig = {}) {
       modelConfiguration: z
         .object({
           modelId: z
-            .enum(['v0-1.5-sm', 'v0-1.5-md', 'v0-1.5-lg', 'v0-gpt-5'])
+            .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
             .describe('Model to use for the chat'),
           imageGenerations: z
             .boolean()
@@ -109,7 +109,7 @@ export function createChatTools(config: V0ClientConfig = {}) {
       modelConfiguration: z
         .object({
           modelId: z
-            .enum(['v0-1.5-sm', 'v0-1.5-md', 'v0-1.5-lg', 'v0-gpt-5'])
+            .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
             .describe('Model to use'),
           imageGenerations: z
             .boolean()
