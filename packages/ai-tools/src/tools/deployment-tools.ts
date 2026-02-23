@@ -131,7 +131,6 @@ export function createDeploymentTools(config: V0ClientConfig = {}) {
       const result = await client.deployments.findErrors({ deploymentId })
 
       return {
-        error: result.error,
         fullErrorText: result.fullErrorText,
         errorType: result.errorType,
         formattedError: result.formattedError,
