@@ -82,7 +82,7 @@
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
                         "deprecated": true,
                         "type": "string",
-                        "enum": ["v0-mini", "v0-pro", "v0-max"]
+                        "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
                       },
                       "imageGenerations": {
                         "default": false,
@@ -1677,7 +1677,7 @@
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
                         "deprecated": true,
                         "type": "string",
-                        "enum": ["v0-mini", "v0-pro", "v0-max"]
+                        "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
                       },
                       "imageGenerations": {
                         "default": false,
@@ -1979,9 +1979,19 @@
                       },
                       "required": ["hasMore"],
                       "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "totalCount": {
+                          "type": "number"
+                        }
+                      },
+                      "required": ["totalCount"],
+                      "additionalProperties": false
                     }
                   },
-                  "required": ["object", "data", "pagination"],
+                  "required": ["object", "data", "pagination", "meta"],
                   "additionalProperties": false
                 }
               }
@@ -2553,6 +2563,152 @@
               "enum": ["true", "false"]
             },
             "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/versions/{versionId}/files/delete": {
+      "post": {
+        "summary": "Delete Chat Version Files",
+        "description": "Deletes source files from a specific chat version (block). Files are removed from the version and a new source version is created.",
+        "operationId": "chats.deleteVersionFiles",
+        "tags": ["chats"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filePaths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of file paths to delete (e.g., [\"components/test.tsx\", \"lib/utils.ts\"])"
+                  }
+                },
+                "required": ["filePaths"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the version to delete files from."
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the version (block) to delete files from."
           }
         ],
         "security": [
@@ -3412,9 +3568,6 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "type": "string"
-                    },
                     "fullErrorText": {
                       "type": "string"
                     },
@@ -6938,7 +7091,8 @@
                       "type": "object",
                       "properties": {
                         "totalCount": {
-                          "type": "number"
+                          "type": "number",
+                          "description": "Number of events in this response"
                         }
                       },
                       "required": ["totalCount"],
@@ -7564,7 +7718,9 @@
                     "sync-git",
                     "pull-changes",
                     "fix-cve",
-                    "answered-questions"
+                    "answered-questions",
+                    "cloned-repo",
+                    "manual-commit"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
@@ -7582,8 +7738,7 @@
                     "content-filter",
                     "tool-calls",
                     "error",
-                    "other",
-                    "unknown"
+                    "other"
                   ]
                 },
                 "apiUrl": {
@@ -7695,7 +7850,7 @@
                 "description": "Deprecated Model ID field preserved for backward compatibility.",
                 "deprecated": true,
                 "type": "string",
-                "enum": ["v0-mini", "v0-pro", "v0-max"]
+                "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
               },
               "imageGenerations": {
                 "default": false,
@@ -8834,7 +8989,9 @@
               "sync-git",
               "pull-changes",
               "fix-cve",
-              "answered-questions"
+              "answered-questions",
+              "cloned-repo",
+              "manual-commit"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -8852,8 +9009,7 @@
               "content-filter",
               "tool-calls",
               "error",
-              "other",
-              "unknown"
+              "other"
             ]
           },
           "apiUrl": {
@@ -9233,7 +9389,9 @@
               "sync-git",
               "pull-changes",
               "fix-cve",
-              "answered-questions"
+              "answered-questions",
+              "cloned-repo",
+              "manual-commit"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -9251,8 +9409,7 @@
               "content-filter",
               "tool-calls",
               "error",
-              "other",
-              "unknown"
+              "other"
             ]
           },
           "apiUrl": {
@@ -9637,7 +9794,9 @@
                     "sync-git",
                     "pull-changes",
                     "fix-cve",
-                    "answered-questions"
+                    "answered-questions",
+                    "cloned-repo",
+                    "manual-commit"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
@@ -9655,8 +9814,7 @@
                     "content-filter",
                     "tool-calls",
                     "error",
-                    "other",
-                    "unknown"
+                    "other"
                   ]
                 },
                 "apiUrl": {
