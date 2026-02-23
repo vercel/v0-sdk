@@ -62,6 +62,8 @@ export type ChatDetail = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
+      | 'manual-commit'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -70,7 +72,6 @@ export type ChatDetail = {
       | 'tool-calls'
       | 'error'
       | 'other'
-      | 'unknown'
     apiUrl: string
     authorId: string | null
     parentId?: string | null
@@ -93,7 +94,7 @@ export type ChatDetail = {
   text: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -328,6 +329,8 @@ export type MessageDetail = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
+    | 'manual-commit'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -336,7 +339,6 @@ export type MessageDetail = {
     | 'tool-calls'
     | 'error'
     | 'other'
-    | 'unknown'
   apiUrl: string
   authorId: string | null
   parentId?: string | null
@@ -378,6 +380,8 @@ export type MessageSummary = {
     | 'pull-changes'
     | 'fix-cve'
     | 'answered-questions'
+    | 'cloned-repo'
+    | 'manual-commit'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -386,7 +390,6 @@ export type MessageSummary = {
     | 'tool-calls'
     | 'error'
     | 'other'
-    | 'unknown'
   apiUrl: string
   authorId: string | null
   parentId?: string | null
@@ -429,6 +432,8 @@ export type MessageSummaryList = {
       | 'pull-changes'
       | 'fix-cve'
       | 'answered-questions'
+      | 'cloned-repo'
+      | 'manual-commit'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -437,7 +442,6 @@ export type MessageSummaryList = {
       | 'tool-calls'
       | 'error'
       | 'other'
-      | 'unknown'
     apiUrl: string
     authorId: string | null
     parentId?: string | null
@@ -733,7 +737,7 @@ export interface ChatsCreateRequest {
   projectId?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -876,7 +880,7 @@ export interface ChatsSendMessageRequest {
   system?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max'
+    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -897,6 +901,9 @@ export interface ChatsFindVersionsResponse {
     nextCursor?: string
     nextUrl?: string
   }
+  meta: {
+    totalCount: number
+  }
 }
 
 export type ChatsGetVersionResponse = VersionDetail
@@ -910,6 +917,12 @@ export interface ChatsUpdateVersionRequest {
 }
 
 export type ChatsUpdateVersionResponse = VersionDetail
+
+export interface ChatsDeleteVersionFilesRequest {
+  filePaths: string[]
+}
+
+export type ChatsDeleteVersionFilesResponse = VersionDetail
 
 export type ChatsResumeResponse = MessageDetail
 
@@ -949,7 +962,6 @@ export type DeploymentsFindLogsResponse = {
 }
 
 export interface DeploymentsFindErrorsResponse {
-  error?: string
   fullErrorText?: string
   errorType?: string
   formattedError?: string
@@ -1461,6 +1473,24 @@ export function createClient(config: V0ClientConfig = {}) {
           `/chats/${pathParams.chatId}/versions/${pathParams.versionId}/download`,
           'GET',
           { pathParams, ...(hasQuery ? { query } : {}) },
+        )
+      },
+
+      async deleteVersionFiles(
+        params: {
+          chatId: string
+          versionId: string
+        } & ChatsDeleteVersionFilesRequest,
+      ): Promise<ChatsDeleteVersionFilesResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        const body = { filePaths: params.filePaths }
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}/files/delete`,
+          'POST',
+          { pathParams, body },
         )
       },
 

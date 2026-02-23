@@ -47,6 +47,7 @@ export type {
 
   // Request types
   ChatsCreateRequest,
+  ChatsDeleteVersionFilesRequest,
   ChatsFavoriteRequest,
   ChatsForkRequest,
   ChatsInitRequest,
@@ -68,6 +69,7 @@ export type {
   ChatsCreateResponse,
   ChatsCreateStreamResponse,
   ChatsDeleteResponse,
+  ChatsDeleteVersionFilesResponse,
   ChatsFavoriteResponse,
   ChatsFindMessagesResponse,
   ChatsFindResponse,
