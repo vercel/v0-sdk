@@ -1,5 +1,13 @@
 # @v0-sdk/ai-tools
 
+## 0.3.6
+
+### Patch Changes
+
+- da782c5: Add chats.deleteVersionFiles
+- Updated dependencies [da782c5]
+  - v0-sdk@0.16.2
+
 ## 0.3.5
 
 ### Patch Changes

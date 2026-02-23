@@ -1,5 +1,12 @@
 # v0-clone
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [da782c5]
+  - v0-sdk@0.16.2
+
 ## 0.3.1
 
 ### Patch Changes

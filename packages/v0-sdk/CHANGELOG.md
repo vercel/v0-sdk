@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.2
+
+### Patch Changes
+
+- da782c5: Add chats.deleteVersionFiles
+
 ## 0.16.1
 
 ### Patch Changes
