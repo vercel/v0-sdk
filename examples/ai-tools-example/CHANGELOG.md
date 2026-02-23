@@ -1,5 +1,12 @@
 # ai-tools-example
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [da782c5]
+  - @v0-sdk/ai-tools@0.3.6
+
 ## 0.2.5
 
 ### Patch Changes
