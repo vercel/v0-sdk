@@ -111,6 +111,7 @@ export type {
   ProjectsUpdateResponse,
   RateLimitsFindResponse,
   ReportsGetUsageResponse,
+  ReportsGetUserActivityResponse,
   UserGetBillingResponse,
   UserGetPlanResponse,
   UserGetResponse,
