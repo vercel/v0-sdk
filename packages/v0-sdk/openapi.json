@@ -82,7 +82,13 @@
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
                         "deprecated": true,
                         "type": "string",
-                        "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
+                        "enum": [
+                          "v0-auto",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ]
                       },
                       "imageGenerations": {
                         "default": false,
@@ -106,6 +112,20 @@
                   "designSystemId": {
                     "description": "The ID of a design system to apply to this chat. Design systems provide consistent styling and components for generated UI.",
                     "type": ["string", "null"]
+                  },
+                  "metadata": {
+                    "default": {},
+                    "description": "Arbitrary key-value data to attach to the chat. Useful for storing additional data about the chat, such as external user IDs.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": ["message"],
@@ -400,6 +420,20 @@
                       "projectId": {
                         "description": "Associates the chat with a specific project. Useful for organizing and grouping chats in a workspace.",
                         "type": "string"
+                      },
+                      "metadata": {
+                        "default": {},
+                        "description": "Arbitrary key-value data to attach to the chat. Useful for storing additional data about the chat, such as external user IDs.",
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
+                        "additionalProperties": {
+                          "type": "string",
+                          "maxLength": 500
+                        }
                       }
                     },
                     "additionalProperties": false
@@ -937,6 +971,33 @@
                       "team",
                       "team-edit",
                       "unlisted"
+                    ]
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat. Useful for storing additional data about the chat, such as external user IDs. Metadata added will be merged with existing attributes. Pass `null` as the value to delete a specific key, or pass `null` instead of an object to delete all existing metadata.",
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "maxLength": 500
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   }
                 },
@@ -1677,7 +1738,13 @@
                         "description": "Deprecated Model ID field preserved for backward compatibility.",
                         "deprecated": true,
                         "type": "string",
-                        "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
+                        "enum": [
+                          "v0-auto",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ]
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7265,6 +7332,251 @@
           }
         ]
       }
+    },
+    "/reports/user-activity": {
+      "get": {
+        "summary": "Get User Activity Report",
+        "description": "Retrieves aggregated user activity data for team members, including chat counts, message counts, and activity timestamps. Only available for Enterprise teams with OWNER or BILLING role. Shows the same data as displayed in the Usage settings for Enterprise teams.",
+        "operationId": "reports.getUserActivity",
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "object": {
+                            "type": "string",
+                            "const": "user_activity"
+                          },
+                          "user": {
+                            "$ref": "#/components/schemas/UserSummarySchema"
+                          },
+                          "chatCount": {
+                            "type": "number",
+                            "description": "Total number of chats created by the user"
+                          },
+                          "messageCount": {
+                            "type": "number",
+                            "description": "Total number of messages sent by the user"
+                          },
+                          "activeDays": {
+                            "type": "number",
+                            "description": "Number of distinct days the user was active"
+                          },
+                          "firstActivity": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Timestamp of the user's first activity"
+                          },
+                          "lastActivity": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Timestamp of the user's last activity"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "object",
+                          "user",
+                          "chatCount",
+                          "messageCount",
+                          "activeDays",
+                          "firstActivity",
+                          "lastActivity"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "dateRange": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "end": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["start", "end"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["totalCount", "dateRange"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["object", "data", "meta"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "description": "Query parameter \"startDate\""
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "description": "Query parameter \"endDate\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -7720,7 +8032,8 @@
                     "fix-cve",
                     "answered-questions",
                     "cloned-repo",
-                    "manual-commit"
+                    "manual-commit",
+                    "design-mode"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
@@ -7850,7 +8163,13 @@
                 "description": "Deprecated Model ID field preserved for backward compatibility.",
                 "deprecated": true,
                 "type": "string",
-                "enum": ["v0-mini", "v0-pro", "v0-max", "v0-max-fast"]
+                "enum": [
+                  "v0-auto",
+                  "v0-mini",
+                  "v0-pro",
+                  "v0-max",
+                  "v0-max-fast"
+                ]
               },
               "imageGenerations": {
                 "default": false,
@@ -7876,6 +8195,16 @@
             },
             "required": ["write"],
             "additionalProperties": false
+          },
+          "metadata": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Arbitrary key-value data associated with this chat."
           }
         },
         "required": [
@@ -7891,7 +8220,8 @@
           "url",
           "messages",
           "text",
-          "permissions"
+          "permissions",
+          "metadata"
         ],
         "additionalProperties": false,
         "description": "Detailed representation of a chat, including its messages, files, versions, and model configuration."
@@ -8991,7 +9321,8 @@
               "fix-cve",
               "answered-questions",
               "cloned-repo",
-              "manual-commit"
+              "manual-commit",
+              "design-mode"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -9391,7 +9722,8 @@
               "fix-cve",
               "answered-questions",
               "cloned-repo",
-              "manual-commit"
+              "manual-commit",
+              "design-mode"
             ],
             "description": "Indicates the format or category of the message, such as plain text or code."
           },
@@ -9796,7 +10128,8 @@
                     "fix-cve",
                     "answered-questions",
                     "cloned-repo",
-                    "manual-commit"
+                    "manual-commit",
+                    "design-mode"
                   ],
                   "description": "Indicates the format or category of the message, such as plain text or code."
                 },
