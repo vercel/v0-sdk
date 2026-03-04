@@ -115,7 +115,9 @@ export function PreviewPanel({
             tooltip="Refresh preview"
             disabled={isRefreshing}
           >
-            <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
+            <RefreshCw
+              className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
+            />
           </WebPreviewNavigationButton>
           <WebPreviewUrl
             readOnly

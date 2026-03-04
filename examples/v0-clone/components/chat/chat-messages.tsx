@@ -98,7 +98,10 @@ export function ChatMessages({
                         onChatData={onChatData}
                         onChunk={() => {
                           // Hide external loader once we start receiving content (only once)
-                          if (onStreamingStarted && !streamingStartedRef.current) {
+                          if (
+                            onStreamingStarted &&
+                            !streamingStartedRef.current
+                          ) {
                             streamingStartedRef.current = true
                             onStreamingStarted()
                           }
