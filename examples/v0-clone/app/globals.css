@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,6 +45,10 @@
 
 :root {
   --radius: 0.625rem;
+  --app-cursor-default: auto;
+  --app-cursor-pointer: pointer;
+  --app-background-start: #1db3f4;
+  --app-background-end: #cff6fb;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -76,6 +80,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+@media (color-gamut: p3) {
+  :root {
+    --app-background-start: color(display-p3 0.1137 0.702 0.9569);
+    --app-background-end: color(display-p3 0.8118 0.9647 0.9843);
+  }
 }
 
 .dark {
@@ -118,9 +129,31 @@
   }
   body {
     @apply bg-background text-foreground;
+    cursor: var(--app-cursor-default);
+  }
+
+  a,
+  button,
+  [role='button'],
+  summary,
+  label[for],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'] {
+    cursor: var(--app-cursor-pointer);
   }
 }
 
-button {
-  cursor: pointer;
+@layer components {
+  .app-page-background {
+    background-image: linear-gradient(
+      90deg,
+      var(--app-background-start) 0%,
+      var(--app-background-end) 100%
+    );
+  }
+}
+
+.cursor-pointer {
+  cursor: var(--app-cursor-pointer) !important;
 }

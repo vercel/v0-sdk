@@ -18,7 +18,7 @@ interface ResizableLayoutProps {
 export function ResizableLayout({
   leftPanel,
   rightPanel,
-  defaultLeftWidth = 30,
+  defaultLeftWidth = 50,
   minLeftWidth = 20,
   maxLeftWidth = 60,
   className,
@@ -104,14 +104,14 @@ export function ResizableLayout({
 
       <div
         className={cn(
-          'w-px bg-border dark:bg-input cursor-col-resize transition-all relative group',
-          isDragging && 'bg-blue-500 dark:bg-blue-400',
+          'w-px bg-border/40 dark:bg-input/40 cursor-col-resize transition-all relative group',
+          isDragging && 'bg-blue-500/15 dark:bg-blue-400/15',
         )}
         onMouseDown={handleMouseDown}
       >
         <div
           className={cn(
-            'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500 dark:bg-blue-400 transition-all duration-200',
+            'absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 bg-blue-500/10 dark:bg-blue-400/10 transition-all duration-200',
             'group-hover:w-[3px]',
             isDragging && 'w-[3px]',
           )}

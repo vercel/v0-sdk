@@ -16,7 +16,7 @@ export function BottomToolbar({
   hasPreview,
 }: BottomToolbarProps) {
   return (
-    <div className="bg-white dark:bg-black py-4 px-2">
+    <div className="py-4 px-2">
       <div className="flex items-center justify-center max-w-xs mx-auto">
         <div className="flex bg-secondary rounded-lg p-1 w-full">
           <button

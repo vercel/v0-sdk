@@ -65,7 +65,10 @@ export const WebPreview = ({
   return (
     <WebPreviewContext.Provider value={contextValue}>
       <div
-        className={cn('flex size-full flex-col bg-card', className)}
+        className={cn(
+          'flex size-full flex-col overflow-hidden rounded-[24px] bg-card',
+          className,
+        )}
         {...props}
       >
         {children}
@@ -98,6 +101,7 @@ export const WebPreviewNavigationButton = ({
   disabled,
   tooltip,
   children,
+  type = 'button',
   ...props
 }: WebPreviewNavigationButtonProps) => (
   <TooltipProvider>
@@ -107,6 +111,7 @@ export const WebPreviewNavigationButton = ({
           className="h-8 w-8 p-0 hover:text-foreground"
           disabled={disabled}
           onClick={onClick}
+          type={type}
           size="sm"
           variant="ghost"
           {...props}

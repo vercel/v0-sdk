@@ -42,6 +42,7 @@ export function ChatInput({
   textareaRef,
 }: ChatInputProps) {
   const [isDragOver, setIsDragOver] = useState(false)
+  const hasMessage = message.trim().length > 0
 
   const handleImageFiles = useCallback(
     async (files: File[]) => {
@@ -116,12 +117,18 @@ export function ChatInput({
     [onSubmit, attachments],
   )
 
+  const toolButtonClassName =
+    '!rounded-none !border-0 !bg-transparent p-0 shadow-none hover:!bg-transparent disabled:opacity-100 [&>svg]:hidden'
+  const toolbarButtonSystemClassName =
+    '[&_button]:h-[35px] [&_button]:min-h-0 [&_button]:rounded-[19.5px]'
+  const toolbarToolsClassName = `gap-1 ${toolbarButtonSystemClassName}`
+
   return (
-    <div className="px-4 md:pb-4">
-      <div className="flex gap-2">
+    <div className="px-4 pb-4">
+      <div className="flex w-full items-start justify-center py-6">
         <PromptInput
           onSubmit={handleSubmit}
-          className="w-full max-w-2xl mx-auto relative"
+          className="relative w-full !divide-y-0 !rounded-[24px] !border-[5px] !border-[#E9E9E9] !bg-[#F4F4F4] !px-4 !pt-4 !pb-3 !shadow-none"
           onImageDrop={handleImageFiles}
           isDragOver={isDragOver}
           onDragOver={handleDragOver}
@@ -136,25 +143,57 @@ export function ChatInput({
             ref={textareaRef}
             onChange={(e) => setMessage(e.target.value)}
             value={message}
-            className="min-h-[60px]"
-            placeholder="Continue the conversation..."
+            className="min-h-[58px] !p-0 text-[18px] leading-[28px] placeholder:text-[#B0B0B0]"
+            placeholder="Message..."
+            disabled={isLoading}
           />
-          <PromptInputToolbar>
-            <PromptInputTools>
-              <PromptInputImageButton onImageSelect={handleImageFiles} />
-            </PromptInputTools>
-            <PromptInputTools>
+          <PromptInputToolbar className="mt-[10px] w-full items-start p-0">
+            <PromptInputTools
+              className={`w-[134px] ${toolbarToolsClassName} [&_button]:w-[49px] [&_button]:min-w-0`}
+            >
+              <PromptInputImageButton
+                className={toolButtonClassName}
+                disabled={isLoading}
+                onImageSelect={handleImageFiles}
+                style={{
+                  backgroundImage:
+                    "url('https://workers.paper.design/file-assets/01KJWJQFPA2CPT6DJ0K41AT1QA/7N10KTNWFM0F34T01ZM9MPSPRY.svg')",
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '100% 100%',
+                }}
+              />
               <PromptInputMicButton
+                className={toolButtonClassName}
+                disabled={isLoading}
                 onTranscript={(transcript) => {
                   setMessage(message + (message ? ' ' : '') + transcript)
                 }}
                 onError={(error) => {
                   console.error('Speech recognition error:', error)
                 }}
+                style={{
+                  backgroundImage:
+                    "url('https://workers.paper.design/file-assets/01KJWJQFPA2CPT6DJ0K41AT1QA/1ZRVAHRCWTF58DFZPD6GNV5C98.svg')",
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '100% 100%',
+                }}
               />
+            </PromptInputTools>
+            <PromptInputTools
+              className={`w-[49px] ${toolbarToolsClassName} [&_button]:w-[49px] [&_button]:min-w-0`}
+            >
               <PromptInputSubmit
-                disabled={!message}
+                className={`!border-[4px] !border-[#E9E9E9] !text-white !shadow-none transition-colors disabled:!opacity-100 ${
+                  hasMessage
+                    ? '!bg-[#9B9B9B] hover:!bg-[#9B9B9B]'
+                    : '!bg-[#BEBEBE] hover:!bg-[#BEBEBE]'
+                }`}
+                disabled={!hasMessage || isLoading}
                 status={isLoading ? 'streaming' : 'ready'}
+                size="icon"
+                variant="ghost"
               />
             </PromptInputTools>
           </PromptInputToolbar>

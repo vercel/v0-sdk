@@ -17,6 +17,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Allow static assets from /public (e.g. /character.png)
+  if (/\.[^/]+$/.test(pathname)) {
+    return NextResponse.next()
+  }
+
   // Check for required environment variables
   if (!process.env.AUTH_SECRET) {
     console.error(

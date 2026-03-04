@@ -49,6 +49,32 @@ type Chat = {
   demo?: string
 }
 
+type CursorPreset = 'system' | 'frutiger-aero' | 'roundy-normal'
+
+const CURSOR_PRESET_OPTIONS: Record<string, CursorPreset> = {
+  System: 'system',
+  'Frutiger Aero': 'frutiger-aero',
+  'Roundy Normal': 'roundy-normal',
+}
+
+const CURSOR_PRESETS: Record<
+  CursorPreset,
+  { defaultCursor: string; pointerCursor: string }
+> = {
+  system: {
+    defaultCursor: 'auto',
+    pointerCursor: 'pointer',
+  },
+  'frutiger-aero': {
+    defaultCursor: "url('/cursors/frutiger-aero-default.cur') 0 0, auto",
+    pointerCursor: "url('/cursors/frutiger-aero-pointer.cur') 0 0, pointer",
+  },
+  'roundy-normal': {
+    defaultCursor: "url('/cursors/roundy-normal.cur') 0 0, auto",
+    pointerCursor: "url('/cursors/roundy-normal.cur') 0 0, pointer",
+  },
+}
+
 const MOCK_CHAT_BY_STATE: Record<
   Exclude<UIStateMode, 'auto' | 'landing'>,
   ChatMessage[]
@@ -122,7 +148,7 @@ export function HomeClient() {
       },
     },
     uiState: {
-      value: 'auto',
+      value: 'chat-messages',
       options: {
         Auto: 'auto',
         Landing: 'landing',
@@ -132,6 +158,13 @@ export function HomeClient() {
         'Chat Error': 'chat-error',
         'Chat + Preview': 'chat-preview',
       },
+    },
+  })
+  const { cursorPreset } = useControls('Cursor', {
+    cursorPreset: {
+      value: 'system',
+      options: CURSOR_PRESET_OPTIONS,
+      label: 'Preset',
     },
   })
   const [message, setMessage] = useState('')
@@ -163,7 +196,9 @@ export function HomeClient() {
       ? chatHistory
       : uiState === 'landing'
         ? []
-        : MOCK_CHAT_BY_STATE[uiState]
+        : MOCK_CHAT_BY_STATE[
+            uiState as Exclude<UIStateMode, 'auto' | 'landing'>
+          ]
   const displayCurrentChat =
     uiState === 'auto'
       ? currentChat
@@ -179,6 +214,20 @@ export function HomeClient() {
       setActivePanel(forcedPanel)
     }
   }, [isSinglePanelMode, forcedPanel])
+
+  useEffect(() => {
+    const preset =
+      CURSOR_PRESETS[cursorPreset as CursorPreset] ?? CURSOR_PRESETS.system
+    const root = document.documentElement
+
+    root.style.setProperty('--app-cursor-default', preset.defaultCursor)
+    root.style.setProperty('--app-cursor-pointer', preset.pointerCursor)
+
+    return () => {
+      root.style.removeProperty('--app-cursor-default')
+      root.style.removeProperty('--app-cursor-pointer')
+    }
+  }, [cursorPreset])
 
   const handleReset = () => {
     // Reset all chat-related state
@@ -260,12 +309,18 @@ export function HomeClient() {
     setIsDragOver(false)
   }
 
-  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendMessage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    attachmentUrls?: Array<{ url: string }>,
+  ) => {
     e.preventDefault()
     if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()
-    const currentAttachments = [...attachments]
+    const currentAttachmentUrls =
+      attachmentUrls && attachmentUrls.length > 0
+        ? attachmentUrls
+        : attachments.map((att) => ({ url: att.dataUrl }))
 
     // Clear sessionStorage immediately upon submission
     clearPromptFromStorage()
@@ -292,7 +347,9 @@ export function HomeClient() {
         body: JSON.stringify({
           message: userMessage,
           streaming: true,
-          attachments: currentAttachments.map((att) => ({ url: att.dataUrl })),
+          ...(currentAttachmentUrls.length > 0 && {
+            attachments: currentAttachmentUrls,
+          }),
         }),
       })
 
@@ -443,12 +500,21 @@ export function HomeClient() {
     })
   }
 
-  const handleChatSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChatSendMessage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    attachmentUrls?: Array<{ url: string }>,
+  ) => {
+    if (!currentChatId) {
+      return handleSendMessage(e, attachmentUrls)
+    }
+
     e.preventDefault()
-    if (!message.trim() || isLoading || !currentChatId) return
+    if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()
+    const currentAttachmentUrls = attachmentUrls ?? []
     setMessage('')
+    setAttachments([])
     setIsLoading(true)
 
     // Add user message to chat history
@@ -464,6 +530,9 @@ export function HomeClient() {
           message: userMessage,
           chatId: currentChatId,
           streaming: true,
+          ...(currentAttachmentUrls.length > 0 && {
+            attachments: currentAttachmentUrls,
+          }),
         }),
       })
 
@@ -527,7 +596,7 @@ export function HomeClient() {
 
   if (displayShowChatInterface) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+      <div className="min-h-screen app-page-background flex flex-col">
         {/* Handle search params with Suspense boundary */}
         <Suspense fallback={null}>
           <SearchParamsHandler onReset={handleReset} />
@@ -541,20 +610,31 @@ export function HomeClient() {
             singlePanelMode={isSinglePanelMode}
             activePanel={activeResizablePanel}
             leftPanel={
-              <div className="flex flex-col h-full">
-                <div className="flex-1 overflow-y-auto">
-                  <ChatMessages
-                    chatHistory={displayChatHistory}
-                    isLoading={displayIsLoading}
-                    currentChat={displayCurrentChat}
-                    onStreamingComplete={handleStreamingComplete}
-                    onChatData={handleChatData}
-                    onStreamingStarted={() => {
-                      if (!isUIStateControlled) {
-                        setIsLoading(false)
-                      }
-                    }}
-                  />
+              <div className="flex h-full min-w-0 flex-col">
+                <div className="relative flex-1 overflow-y-auto">
+                  <div className="pointer-events-none absolute bottom-2 left-0 z-0 flex items-end pl-1 sm:pl-2 md:pl-3 lg:pl-4">
+                    <img
+                      src="/character.png"
+                      alt=""
+                      aria-hidden="true"
+                      className="h-auto w-[130px] sm:w-[150px] md:w-[180px] lg:w-[210px] opacity-100"
+                    />
+                  </div>
+
+                  <div className="relative z-10 pl-[84px] sm:pl-[102px] md:pl-[124px] lg:pl-[146px]">
+                    <ChatMessages
+                      chatHistory={displayChatHistory}
+                      isLoading={displayIsLoading}
+                      currentChat={displayCurrentChat}
+                      onStreamingComplete={handleStreamingComplete}
+                      onChatData={handleChatData}
+                      onStreamingStarted={() => {
+                        if (!isUIStateControlled) {
+                          setIsLoading(false)
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <ChatInput
@@ -563,6 +643,9 @@ export function HomeClient() {
                   onSubmit={handleChatSendMessage}
                   isLoading={displayIsLoading}
                   showSuggestions={false}
+                  attachments={attachments}
+                  onAttachmentsChange={setAttachments}
+                  textareaRef={textareaRef}
                 />
               </div>
             }
@@ -592,7 +675,7 @@ export function HomeClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+    <div className="min-h-screen app-page-background flex flex-col">
       {/* Handle search params with Suspense boundary */}
       <Suspense fallback={null}>
         <SearchParamsHandler onReset={handleReset} />
