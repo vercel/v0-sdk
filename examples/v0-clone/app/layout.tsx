@@ -4,7 +4,7 @@ import './globals.css'
 import { StreamingProvider } from '@/contexts/streaming-context'
 import { SWRProvider } from '@/components/providers/swr-provider'
 import { SessionProvider } from '@/components/providers/session-provider'
-import { DevTools } from '@/components/shared/dev-tools'
+import { DevToolsLoader } from '@/components/shared/dev-tools-loader'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -60,7 +60,9 @@ export default function RootLayout({
           <SWRProvider>
             <StreamingProvider>
               {children}
-              <DevTools />
+              {process.env.NODE_ENV === 'development' ? (
+                <DevToolsLoader />
+              ) : null}
             </StreamingProvider>
           </SWRProvider>
         </SessionProvider>

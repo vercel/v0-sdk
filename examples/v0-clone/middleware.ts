@@ -17,8 +17,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Allow static assets from /public (e.g. /character.png)
-  if (/\.[^/]+$/.test(pathname)) {
+  const hasFileExtension = /\.[^/]+$/.test(pathname)
+  const isPublicFileRequest =
+    hasFileExtension &&
+    !pathname.startsWith('/api/') &&
+    !pathname.startsWith('/chats/') &&
+    !pathname.startsWith('/projects/')
+  const isPublicDottedSharePath = /^\/(?:chats|projects)\/[^/]+\.[^/]+$/.test(
+    pathname,
+  )
+
+  // Allow static assets from /public and dotted share slugs under /chats and /projects.
+  if (isPublicFileRequest || isPublicDottedSharePath) {
     return NextResponse.next()
   }
 

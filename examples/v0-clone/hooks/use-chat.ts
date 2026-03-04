@@ -19,6 +19,7 @@ interface ChatMessage {
   type: 'user' | 'assistant'
   content: string | any
   isStreaming?: boolean
+  isError?: boolean
   stream?: ReadableStream<Uint8Array> | null
 }
 
@@ -171,6 +172,7 @@ export function useChat(chatId: string) {
         ...prev,
         {
           type: 'assistant',
+          isError: true,
           content: errorMessage,
         },
       ])

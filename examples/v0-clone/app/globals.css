@@ -127,6 +127,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  img {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+  }
   body {
     @apply bg-background text-foreground;
     cursor: var(--app-cursor-default);
@@ -152,8 +157,88 @@
       var(--app-background-end) 100%
     );
   }
+
+  .chat-message-bubble-error {
+    background-image: linear-gradient(
+        in oklab 180deg,
+        oklab(100% 0 0 / 50%) 0%,
+        oklab(100% 0 0 / 0%) 100%
+      ),
+      linear-gradient(
+        in oklab 90deg,
+        oklab(92% 0.085 0.04) 0%,
+        oklab(92% 0.085 0.04) 100%
+      );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    animation: chat-error-vibrate 3.3s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+@keyframes chat-error-vibrate {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  2% {
+    transform: translate(-3px, -2px) rotate(-0.8deg);
+  }
+  4% {
+    transform: translate(3px, 2px) rotate(0.8deg);
+  }
+  6% {
+    transform: translate(-2px, 3px) rotate(-0.8deg);
+  }
+  8% {
+    transform: translate(2px, -3px) rotate(0.8deg);
+  }
+  10% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-message-bubble-error {
+    animation: none;
+  }
 }
 
 .cursor-pointer {
   cursor: var(--app-cursor-pointer) !important;
+}
+
+/* Global native scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(29, 179, 244, 0.9) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-track:hover {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(29, 179, 244, 0.9);
+  border-radius: 9999px;
+  border: none;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active {
+  background: rgba(29, 179, 244, 0.9);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }

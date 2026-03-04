@@ -118,9 +118,9 @@ export function ChatInput({
   )
 
   const toolButtonClassName =
-    '!rounded-none !border-0 !bg-transparent p-0 shadow-none hover:!bg-transparent disabled:opacity-100 [&>svg]:hidden'
+    '!rounded-[99999px] !border-0 !bg-transparent p-0 shadow-none hover:!bg-transparent disabled:opacity-100 [&>svg]:hidden'
   const toolbarButtonSystemClassName =
-    '[&_button]:h-[35px] [&_button]:min-h-0 [&_button]:rounded-[19.5px]'
+    '[&_button]:h-[35px] [&_button]:min-h-0 [&_button]:rounded-[99999px] [&_button:first-child]:rounded-[99999px]'
   const toolbarToolsClassName = `gap-1 ${toolbarButtonSystemClassName}`
 
   return (
@@ -157,7 +157,7 @@ export function ChatInput({
                 onImageSelect={handleImageFiles}
                 style={{
                   backgroundImage:
-                    "url('https://workers.paper.design/file-assets/01KJWJQFPA2CPT6DJ0K41AT1QA/7N10KTNWFM0F34T01ZM9MPSPRY.svg')",
+                    "url('/icons/prompt-input-image-button.svg')",
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: '100% 100%',
@@ -174,7 +174,7 @@ export function ChatInput({
                 }}
                 style={{
                   backgroundImage:
-                    "url('https://workers.paper.design/file-assets/01KJWJQFPA2CPT6DJ0K41AT1QA/1ZRVAHRCWTF58DFZPD6GNV5C98.svg')",
+                    "url('/icons/prompt-input-mic-button.svg')",
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: '100% 100%',

@@ -43,7 +43,8 @@ export function ResponsePanel() {
             <img
               src="/busyroundywheeeee.webp"
               alt="Loading"
-              className="h-12 w-12 mx-auto mb-4"
+              className="h-12 w-12 mx-auto mb-4 select-none"
+              draggable={false}
               onError={() => setBusyIconFailed(true)}
             />
           )}

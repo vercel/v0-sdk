@@ -14,6 +14,7 @@ interface ChatMessage {
   type: 'user' | 'assistant'
   content: string | any
   isStreaming?: boolean
+  isError?: boolean
   stream?: ReadableStream<Uint8Array> | null
 }
 
@@ -73,6 +74,7 @@ export function ChatMessages({
         <ConversationContent>
           {chatHistory.map((msg, index) => {
             const isUser = msg.type === 'user'
+            const isError = !isUser && Boolean(msg.isError)
 
             return (
               <Message from={msg.type} key={index}>
@@ -80,12 +82,18 @@ export function ChatMessages({
                   className={cn(
                     isUser
                       ? 'text-right text-[#5E405D]'
-                      : 'text-left text-[#162C12B3]',
+                      : 'text-left',
+                    !isUser &&
+                      (isError
+                        ? 'chat-message-bubble-error text-[#5B1111]'
+                        : 'text-[#162C12B3]'),
                   )}
                   style={{
                     backgroundImage: isUser
                       ? USER_BUBBLE_BACKGROUND
-                      : ASSISTANT_BUBBLE_BACKGROUND,
+                      : isError
+                        ? undefined
+                        : ASSISTANT_BUBBLE_BACKGROUND,
                   }}
                 >
                   <div>
