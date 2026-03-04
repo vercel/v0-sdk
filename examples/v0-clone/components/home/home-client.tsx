@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useControls } from 'leva'
 import {
   PromptInput,
   PromptInputImageButton,
@@ -48,6 +49,16 @@ function SearchParamsHandler({ onReset }: { onReset: () => void }) {
 }
 
 export function HomeClient() {
+  const { layoutMode } = useControls('Page Layout', {
+    layoutMode: {
+      value: 'chat+artifact',
+      options: {
+        'Chat + Artifact': 'chat+artifact',
+        Chat: 'chat',
+        Artifact: 'artifact',
+      },
+    },
+  })
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showChatInterface, setShowChatInterface] = useState(false)
@@ -71,6 +82,18 @@ export function HomeClient() {
   const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const forcedPanel = layoutMode === 'artifact' ? 'preview' : 'chat'
+  const isSinglePanelMode = layoutMode !== 'chat+artifact'
+  const activeResizablePanel =
+    (isSinglePanelMode ? forcedPanel : activePanel) === 'chat'
+      ? 'left'
+      : 'right'
+
+  useEffect(() => {
+    if (isSinglePanelMode) {
+      setActivePanel(forcedPanel)
+    }
+  }, [isSinglePanelMode, forcedPanel])
 
   const handleReset = () => {
     // Reset all chat-related state
@@ -430,8 +453,8 @@ export function HomeClient() {
         <div className="flex flex-col h-[calc(100vh-64px-40px)] md:h-[calc(100vh-64px)]">
           <ResizableLayout
             className="flex-1 min-h-0"
-            singlePanelMode={false}
-            activePanel={activePanel === 'chat' ? 'left' : 'right'}
+            singlePanelMode={isSinglePanelMode}
+            activePanel={activeResizablePanel}
             leftPanel={
               <div className="flex flex-col h-full">
                 <div className="flex-1 overflow-y-auto">
@@ -465,13 +488,15 @@ export function HomeClient() {
             }
           />
 
-          <div className="md:hidden">
-            <BottomToolbar
-              activePanel={activePanel}
-              onPanelChange={setActivePanel}
-              hasPreview={!!currentChat}
-            />
-          </div>
+          {!isSinglePanelMode && (
+            <div className="md:hidden">
+              <BottomToolbar
+                activePanel={activePanel}
+                onPanelChange={setActivePanel}
+                hasPreview={!!currentChat}
+              />
+            </div>
+          )}
         </div>
       </div>
     )
