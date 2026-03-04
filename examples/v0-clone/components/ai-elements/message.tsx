@@ -14,7 +14,7 @@ export const Message = ({ className, from, ...props }: MessageProps) => (
       from === 'user' ? 'is-user justify-end' : 'is-assistant justify-start',
       from === 'user'
         ? '[&>div]:w-fit [&>div]:max-w-[284px]'
-        : '[&>div]:w-fit [&>div]:max-w-[361px]',
+        : '[&>div]:w-full [&>div]:max-w-full',
       className,
     )}
     {...props}
@@ -30,7 +30,7 @@ export const MessageContent = ({
 }: MessageContentProps) => (
   <div
     className={cn(
-      'flex flex-col gap-2 overflow-hidden rounded-[24px] px-[14px] py-[10px] text-sm leading-[22px] text-current',
+      'flex min-w-0 flex-col gap-2 overflow-x-auto overflow-y-visible rounded-[24px] px-[14px] py-[10px] text-sm leading-[22px] text-current',
       className,
     )}
     {...props}

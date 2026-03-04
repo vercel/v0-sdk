@@ -80,9 +80,7 @@ export function ChatMessages({
               <Message from={msg.type} key={index}>
                 <MessageContent
                   className={cn(
-                    isUser
-                      ? 'text-right text-[#5E405D]'
-                      : 'text-left',
+                    isUser ? 'text-right text-[#5E405D]' : 'text-left',
                     !isUser &&
                       (isError
                         ? 'chat-message-bubble-error text-[#5B1111]'

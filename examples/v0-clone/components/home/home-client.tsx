@@ -61,10 +61,13 @@ type DevControlsState = {
 }
 
 const HomeDevControls =
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
     ? dynamic(
         () =>
-          import('./home-dev-controls').then((module) => module.HomeDevControls),
+          import('./home-dev-controls').then(
+            (module) => module.HomeDevControls,
+          ),
         { ssr: false },
       )
     : null
@@ -163,7 +166,8 @@ const MOCK_CHAT_BY_STATE: Record<
     },
     {
       type: 'user',
-      content: 'Show a simple footer with links for pricing, docs, and support.',
+      content:
+        'Show a simple footer with links for pricing, docs, and support.',
     },
     {
       type: 'assistant',
@@ -228,13 +232,17 @@ function SearchParamsHandler({ onReset }: { onReset: () => void }) {
 }
 
 export function HomeClient() {
-  const isLocalDesignDebug = process.env.NODE_ENV === 'development'
+  const isLocalDesignDebug =
+    process.env.NODE_ENV === 'development' &&
+    process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
   const [devControls, setDevControls] = useState<DevControlsState>({
     layoutMode: 'chat+artifact',
-    uiState: 'chat-messages',
+    uiState: 'auto',
     cursorPreset: 'system',
   })
-  const layoutMode = isLocalDesignDebug ? devControls.layoutMode : 'chat+artifact'
+  const layoutMode = isLocalDesignDebug
+    ? devControls.layoutMode
+    : 'chat+artifact'
   const uiState = isLocalDesignDebug ? devControls.uiState : 'auto'
   const cursorPreset = isLocalDesignDebug ? devControls.cursorPreset : 'system'
   const [message, setMessage] = useState('')
@@ -575,11 +583,14 @@ export function HomeClient() {
     e: React.FormEvent<HTMLFormElement>,
     attachmentUrls?: Array<{ url: string }>,
   ) => {
+    e.preventDefault()
+
     if (!currentChatId) {
-      return handleSendMessage(e, attachmentUrls)
+      // Prevent creating a second chat while the first streamed response has not
+      // produced chat metadata yet.
+      return
     }
 
-    e.preventDefault()
     if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()

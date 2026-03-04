@@ -173,8 +173,7 @@ export function ChatInput({
                   console.error('Speech recognition error:', error)
                 }}
                 style={{
-                  backgroundImage:
-                    "url('/icons/prompt-input-mic-button.svg')",
+                  backgroundImage: "url('/icons/prompt-input-mic-button.svg')",
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: '100% 100%',

@@ -43,7 +43,7 @@ export function HomeDevControls({ onChange }: HomeDevControlsProps) {
       },
     },
     uiState: {
-      value: 'chat-messages',
+      value: 'auto',
       options: {
         Auto: 'auto',
         Landing: 'landing',

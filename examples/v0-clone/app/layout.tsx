@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+const shouldShowDevTools =
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
+
 export const metadata: Metadata = {
   title: 'v0 Clone',
   description:
@@ -60,9 +64,7 @@ export default function RootLayout({
           <SWRProvider>
             <StreamingProvider>
               {children}
-              {process.env.NODE_ENV === 'development' ? (
-                <DevToolsLoader />
-              ) : null}
+              {shouldShowDevTools ? <DevToolsLoader /> : null}
             </StreamingProvider>
           </SWRProvider>
         </SessionProvider>
