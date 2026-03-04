@@ -28,6 +28,69 @@ import { PreviewPanel } from '@/components/chat/preview-panel'
 import { ResizableLayout } from '@/components/shared/resizable-layout'
 import { BottomToolbar } from '@/components/shared/bottom-toolbar'
 
+type UIStateMode =
+  | 'auto'
+  | 'landing'
+  | 'chat-empty'
+  | 'chat-messages'
+  | 'chat-loading'
+  | 'chat-error'
+  | 'chat-preview'
+
+type ChatMessage = {
+  type: 'user' | 'assistant'
+  content: string | any
+  isStreaming?: boolean
+  stream?: ReadableStream<Uint8Array> | null
+}
+
+type Chat = {
+  id: string
+  demo?: string
+}
+
+const MOCK_CHAT_BY_STATE: Record<
+  Exclude<UIStateMode, 'auto' | 'landing'>,
+  ChatMessage[]
+> = {
+  'chat-empty': [],
+  'chat-messages': [
+    { type: 'user', content: 'Build a pricing page for my SaaS app.' },
+    {
+      type: 'assistant',
+      content:
+        'I created a responsive pricing layout with Starter, Pro, and Enterprise tiers.',
+    },
+  ],
+  'chat-loading': [
+    {
+      type: 'user',
+      content: 'Generate a dashboard with analytics cards and charts.',
+    },
+  ],
+  'chat-error': [
+    {
+      type: 'user',
+      content: 'Create an admin panel with user management.',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Sorry, there was an error processing your message. Please try again.',
+    },
+  ],
+  'chat-preview': [
+    {
+      type: 'user',
+      content: 'Build a hero section for a fintech landing page.',
+    },
+    {
+      type: 'assistant',
+      content: 'Done. I prepared a preview with a clean hero and CTA.',
+    },
+  ],
+}
+
 // Component that uses useSearchParams - needs to be wrapped in Suspense
 function SearchParamsHandler({ onReset }: { onReset: () => void }) {
   const searchParams = useSearchParams()
@@ -49,7 +112,7 @@ function SearchParamsHandler({ onReset }: { onReset: () => void }) {
 }
 
 export function HomeClient() {
-  const { layoutMode } = useControls('Page Layout', {
+  const { layoutMode, uiState } = useControls('Page Layout', {
     layoutMode: {
       value: 'chat+artifact',
       options: {
@@ -58,36 +121,58 @@ export function HomeClient() {
         Artifact: 'artifact',
       },
     },
+    uiState: {
+      value: 'auto',
+      options: {
+        Auto: 'auto',
+        Landing: 'landing',
+        'Chat Empty': 'chat-empty',
+        'Chat Messages': 'chat-messages',
+        'Chat Loading': 'chat-loading',
+        'Chat Error': 'chat-error',
+        'Chat + Preview': 'chat-preview',
+      },
+    },
   })
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showChatInterface, setShowChatInterface] = useState(false)
   const [attachments, setAttachments] = useState<ImageAttachment[]>([])
   const [isDragOver, setIsDragOver] = useState(false)
-  const [chatHistory, setChatHistory] = useState<
-    Array<{
-      type: 'user' | 'assistant'
-      content: string | any
-      isStreaming?: boolean
-      stream?: ReadableStream<Uint8Array> | null
-    }>
-  >([])
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
-  const [currentChat, setCurrentChat] = useState<{
-    id: string
-    demo?: string
-  } | null>(null)
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const isUIStateControlled = uiState !== 'auto'
   const forcedPanel = layoutMode === 'artifact' ? 'preview' : 'chat'
   const isSinglePanelMode = layoutMode !== 'chat+artifact'
   const activeResizablePanel =
     (isSinglePanelMode ? forcedPanel : activePanel) === 'chat'
       ? 'left'
       : 'right'
+  const displayShowChatInterface =
+    uiState === 'auto' ? showChatInterface : uiState !== 'landing'
+  const displayIsLoading =
+    uiState === 'auto' ? isLoading : uiState === 'chat-loading'
+  const displayChatHistory =
+    uiState === 'auto'
+      ? chatHistory
+      : uiState === 'landing'
+        ? []
+        : MOCK_CHAT_BY_STATE[uiState]
+  const displayCurrentChat =
+    uiState === 'auto'
+      ? currentChat
+      : uiState === 'chat-preview'
+        ? {
+            id: 'preview-mock-chat',
+            demo: 'https://example.com',
+          }
+        : null
 
   useEffect(() => {
     if (isSinglePanelMode) {
@@ -440,7 +525,7 @@ export function HomeClient() {
     }
   }
 
-  if (showChatInterface) {
+  if (displayShowChatInterface) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
         {/* Handle search params with Suspense boundary */}
@@ -459,12 +544,16 @@ export function HomeClient() {
               <div className="flex flex-col h-full">
                 <div className="flex-1 overflow-y-auto">
                   <ChatMessages
-                    chatHistory={chatHistory}
-                    isLoading={isLoading}
-                    currentChat={currentChat}
+                    chatHistory={displayChatHistory}
+                    isLoading={displayIsLoading}
+                    currentChat={displayCurrentChat}
                     onStreamingComplete={handleStreamingComplete}
                     onChatData={handleChatData}
-                    onStreamingStarted={() => setIsLoading(false)}
+                    onStreamingStarted={() => {
+                      if (!isUIStateControlled) {
+                        setIsLoading(false)
+                      }
+                    }}
                   />
                 </div>
 
@@ -472,14 +561,14 @@ export function HomeClient() {
                   message={message}
                   setMessage={setMessage}
                   onSubmit={handleChatSendMessage}
-                  isLoading={isLoading}
+                  isLoading={displayIsLoading}
                   showSuggestions={false}
                 />
               </div>
             }
             rightPanel={
               <PreviewPanel
-                currentChat={currentChat}
+                currentChat={displayCurrentChat}
                 isFullscreen={isFullscreen}
                 setIsFullscreen={setIsFullscreen}
                 refreshKey={refreshKey}
@@ -493,7 +582,7 @@ export function HomeClient() {
               <BottomToolbar
                 activePanel={activePanel}
                 onPanelChange={setActivePanel}
-                hasPreview={!!currentChat}
+                hasPreview={!!displayCurrentChat}
               />
             </div>
           )}
