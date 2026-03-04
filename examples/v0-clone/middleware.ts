@@ -17,6 +17,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  const hasFileExtension = /\.[^/]+$/.test(pathname)
+  const fetchDestination = request.headers.get('sec-fetch-dest')
+  const acceptHeader = request.headers.get('accept') ?? ''
+  const isAssetRequestDestination =
+    fetchDestination !== null &&
+    fetchDestination !== 'document' &&
+    fetchDestination !== 'empty'
+  const isAssetAcceptHeader =
+    acceptHeader.includes('image/') ||
+    acceptHeader.includes('text/css') ||
+    acceptHeader.includes('javascript') ||
+    acceptHeader.includes('font/') ||
+    acceptHeader.includes('application/manifest+json')
+  const isPublicFileRequest =
+    hasFileExtension &&
+    !pathname.startsWith('/api/') &&
+    !pathname.startsWith('/chats/') &&
+    !pathname.startsWith('/projects/') &&
+    (isAssetRequestDestination || isAssetAcceptHeader)
+
+  // Allow static assets from /public, but keep route-like document requests auth-gated.
+  if (isPublicFileRequest) {
+    return NextResponse.next()
+  }
+
   // Check for required environment variables
   if (!process.env.AUTH_SECRET) {
     console.error(

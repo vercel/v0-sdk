@@ -5,13 +5,17 @@ import {
   WebPreviewUrl,
   WebPreviewBody,
 } from '@/components/ai-elements/web-preview'
-import { RefreshCw, Monitor, Maximize, Minimize } from 'lucide-react'
+import { RefreshCw, Maximize, Minimize } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useEffect, useMemo, useState } from 'react'
 
 interface Chat {
   id: string
   demo?: string
   url?: string
+  latestVersion?: {
+    demoUrl?: string
+  }
 }
 
 interface PreviewPanelProps {
@@ -29,15 +33,76 @@ export function PreviewPanel({
   refreshKey,
   setRefreshKey,
 }: PreviewPanelProps) {
+  const chatPreviewUrl =
+    currentChat?.latestVersion?.demoUrl ||
+    currentChat?.demo ||
+    currentChat?.url ||
+    ''
+  const [previewUrl, setPreviewUrl] = useState(chatPreviewUrl)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  useEffect(() => {
+    setPreviewUrl(chatPreviewUrl)
+  }, [chatPreviewUrl, currentChat?.id])
+
+  const previewSrc = useMemo(() => {
+    if (!previewUrl) return ''
+
+    try {
+      const url = new URL(previewUrl)
+      url.searchParams.set('_refresh', String(refreshKey))
+      return url.toString()
+    } catch {
+      const separator = previewUrl.includes('?') ? '&' : '?'
+      return `${previewUrl}${separator}_refresh=${refreshKey}`
+    }
+  }, [previewUrl, refreshKey])
+
+  const handleRefresh = async () => {
+    if (isRefreshing) {
+      return
+    }
+
+    if (!currentChat?.id) {
+      setRefreshKey((prev) => prev + 1)
+      return
+    }
+
+    setIsRefreshing(true)
+
+    try {
+      const response = await fetch(`/api/chats/${currentChat.id}`)
+      if (!response.ok) {
+        console.warn('Failed to refresh chat details:', response.status)
+      } else {
+        const chatDetails = await response.json()
+        const latestPreviewUrl =
+          chatDetails?.latestVersion?.demoUrl ||
+          chatDetails?.demo ||
+          chatDetails?.url ||
+          ''
+
+        if (latestPreviewUrl) {
+          setPreviewUrl(latestPreviewUrl)
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing preview URL:', error)
+    } finally {
+      setRefreshKey((prev) => prev + 1)
+      setIsRefreshing(false)
+    }
+  }
+
   return (
     <div
       className={cn(
-        'flex flex-col h-full transition-all duration-300',
+        'flex flex-col h-full transition-all duration-300 p-8',
         isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-black' : 'flex-1',
       )}
     >
       <WebPreview
-        defaultUrl={currentChat?.demo || ''}
+        defaultUrl={previewUrl}
         onUrlChange={(url) => {
           // Optional: Handle URL changes if needed
           console.log('Preview URL changed:', url)
@@ -45,24 +110,23 @@ export function PreviewPanel({
       >
         <WebPreviewNavigation>
           <WebPreviewNavigationButton
-            onClick={() => {
-              // Force refresh the iframe by updating the refresh key
-              setRefreshKey((prev) => prev + 1)
-            }}
+            className="text-muted-foreground"
+            onClick={() => void handleRefresh()}
             tooltip="Refresh preview"
-            disabled={!currentChat?.demo}
+            disabled={isRefreshing}
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw
+              className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
+            />
           </WebPreviewNavigationButton>
           <WebPreviewUrl
             readOnly
             placeholder="Your app will appear here..."
-            value={currentChat?.demo || ''}
+            value={previewUrl}
           />
           <WebPreviewNavigationButton
             onClick={() => setIsFullscreen(!isFullscreen)}
             tooltip={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-            disabled={!currentChat?.demo}
           >
             {isFullscreen ? (
               <Minimize className="h-4 w-4" />
@@ -71,8 +135,8 @@ export function PreviewPanel({
             )}
           </WebPreviewNavigationButton>
         </WebPreviewNavigation>
-        {currentChat?.demo ? (
-          <WebPreviewBody key={refreshKey} src={currentChat.demo} />
+        {previewUrl ? (
+          <WebPreviewBody key={refreshKey} src={previewSrc} />
         ) : (
           <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-black">
             <div className="text-center">

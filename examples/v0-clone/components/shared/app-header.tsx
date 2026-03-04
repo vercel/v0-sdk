@@ -8,19 +8,39 @@ import { MobileMenu } from './mobile-menu'
 import { useSession } from 'next-auth/react'
 import { UserNav } from '@/components/user-nav'
 import { Button } from '@/components/ui/button'
-import { VercelIcon, GitHubIcon } from '@/components/ui/icons'
+import { VercelIcon } from '@/components/ui/icons'
 import { DEPLOY_URL } from '@/lib/constants'
-import { Info } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 
 interface AppHeaderProps {
   className?: string
+}
+
+function AppLogo() {
+  return (
+    <span className="inline-flex items-center gap-3">
+      <svg
+        aria-hidden="true"
+        width="33"
+        height="28"
+        viewBox="0 0 33 28"
+        className="shrink-0 text-white"
+      >
+        <path
+          d="M22.1053 0L13.5579 10.9053L1.76842 11.4947L7.9579 17.0947L0 28L12.6737 21.2211L19.1579 27.4105L20.3368 17.0947L32.4211 10.3158H21.2211L22.1053 0Z"
+          fill="currentColor"
+        />
+      </svg>
+      <span className="text-2xl font-semibold leading-none text-white">
+        Frutiger Zero
+      </span>
+    </span>
+  )
 }
 
 // Component that uses useSearchParams - needs to be wrapped in Suspense
@@ -49,8 +69,14 @@ function SearchParamsHandler() {
 export function AppHeader({ className = '' }: AppHeaderProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const [isHydrated, setIsHydrated] = useState(false)
   const isHomepage = pathname === '/'
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false)
+  const sessionForUI = isHydrated ? session : null
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   // Handle logo click - reset UI if on homepage, otherwise navigate to homepage
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -63,9 +89,7 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
   }
 
   return (
-    <div
-      className={`${!isHomepage ? 'border-b border-border dark:border-input' : ''} ${className}`}
-    >
+    <div className={className}>
       {/* Handle search params with Suspense boundary */}
       <Suspense fallback={null}>
         <SearchParamsHandler />
@@ -78,41 +102,19 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
             <Link
               href="/"
               onClick={handleLogoClick}
-              className="text-lg font-semibold text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300"
+              aria-label="Home"
+              className="transition-opacity hover:opacity-80"
             >
-              v0 Clone
+              <AppLogo />
             </Link>
             {/* Hide ChatSelector on mobile */}
             <div className="hidden lg:block">
-              <ChatSelector />
+              {isHydrated ? <ChatSelector /> : null}
             </div>
           </div>
 
-          {/* Desktop right side - What's This, GitHub, Deploy, and User */}
+          {/* Desktop right side - Deploy and User */}
           <div className="hidden lg:flex items-center gap-4">
-            <Button
-              variant="outline"
-              className="py-1.5 px-2 h-fit text-sm"
-              onClick={() => setIsInfoDialogOpen(true)}
-            >
-              <Info size={16} />
-              What's This?
-            </Button>
-            <Button
-              variant="outline"
-              className="py-1.5 px-2 h-fit text-sm"
-              asChild
-            >
-              <Link
-                href="https://github.com/vercel/v0-sdk"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <GitHubIcon size={16} />
-                vercel/v0-sdk
-              </Link>
-            </Button>
-
             {/* Deploy with Vercel button - hidden on mobile */}
             <Button
               className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 py-1.5 px-2 h-fit text-sm"
@@ -123,12 +125,12 @@ export function AppHeader({ className = '' }: AppHeaderProps) {
                 Deploy with Vercel
               </Link>
             </Button>
-            <UserNav session={session} />
+            <UserNav session={sessionForUI} />
           </div>
 
           {/* Mobile right side - Only menu button and user avatar */}
           <div className="flex lg:hidden items-center gap-2">
-            <UserNav session={session} />
+            <UserNav session={sessionForUI} />
             <MobileMenu onInfoDialogOpen={() => setIsInfoDialogOpen(true)} />
           </div>
         </div>

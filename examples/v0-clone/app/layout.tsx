@@ -4,6 +4,7 @@ import './globals.css'
 import { StreamingProvider } from '@/contexts/streaming-context'
 import { SWRProvider } from '@/components/providers/swr-provider'
 import { SessionProvider } from '@/components/providers/session-provider'
+import { DevToolsLoader } from '@/components/shared/dev-tools-loader'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,6 +15,10 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
 })
+
+const shouldShowDevTools =
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
 
 export const metadata: Metadata = {
   title: 'v0 Clone',
@@ -57,7 +62,10 @@ export default function RootLayout({
       >
         <SessionProvider>
           <SWRProvider>
-            <StreamingProvider>{children}</StreamingProvider>
+            <StreamingProvider>
+              {children}
+              {shouldShowDevTools ? <DevToolsLoader /> : null}
+            </StreamingProvider>
           </SWRProvider>
         </SessionProvider>
       </body>

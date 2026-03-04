@@ -11,8 +11,10 @@ export const Message = ({ className, from, ...props }: MessageProps) => (
   <div
     className={cn(
       'group flex w-full items-end justify-end gap-2 py-4',
-      from === 'user' ? 'is-user' : 'is-assistant flex-row-reverse justify-end',
-      from === 'user' ? '[&>div]:max-w-[80%]' : '[&>div]:max-w-full',
+      from === 'user' ? 'is-user justify-end' : 'is-assistant justify-start',
+      from === 'user'
+        ? '[&>div]:w-fit [&>div]:max-w-[284px]'
+        : '[&>div]:w-full [&>div]:max-w-full',
       className,
     )}
     {...props}
@@ -28,14 +30,12 @@ export const MessageContent = ({
 }: MessageContentProps) => (
   <div
     className={cn(
-      'flex flex-col gap-2 overflow-hidden rounded-lg px-4 py-3 text-foreground text-sm',
-      'group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground',
-      'group-[.is-assistant]:bg-secondary group-[.is-assistant]:text-foreground',
+      'flex min-w-0 flex-col gap-2 overflow-x-auto overflow-y-visible rounded-[24px] px-[14px] py-[10px] text-sm leading-[22px] text-current',
       className,
     )}
     {...props}
   >
-    <div className="is-user:dark">{children}</div>
+    <div>{children}</div>
   </div>
 )
 

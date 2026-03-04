@@ -14,6 +14,7 @@ export function ResponsePanel() {
   const [response] = useAtom(responseAtom)
   const [isLoading] = useAtom(isLoadingAtom)
   const [copied, setCopied] = useState(false)
+  const [busyIconFailed, setBusyIconFailed] = useState(false)
   const [activeTab, setActiveTab] = useState<'body' | 'headers'>('body')
   const codeRef = useRef<HTMLElement>(null)
 
@@ -36,7 +37,17 @@ export function ResponsePanel() {
     return (
       <div className="h-full flex items-center justify-center bg-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          {busyIconFailed ? (
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          ) : (
+            <img
+              src="/busyroundywheeeee.webp"
+              alt="Loading"
+              className="h-12 w-12 mx-auto mb-4 select-none"
+              draggable={false}
+              onError={() => setBusyIconFailed(true)}
+            />
+          )}
           <p className="text-muted-foreground">Executing request...</p>
         </div>
       </div>

@@ -35,6 +35,9 @@ coverage/
 # nyc test coverage
 .nyc_output
 
+# Test runner outputs
+test-results/
+
 # Dependency directories
 jspm_packages/
 

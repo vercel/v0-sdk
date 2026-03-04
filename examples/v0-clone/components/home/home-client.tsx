@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   PromptInput,
   PromptInputImageButton,
@@ -27,6 +28,189 @@ import { PreviewPanel } from '@/components/chat/preview-panel'
 import { ResizableLayout } from '@/components/shared/resizable-layout'
 import { BottomToolbar } from '@/components/shared/bottom-toolbar'
 
+type UIStateMode =
+  | 'auto'
+  | 'landing'
+  | 'chat-empty'
+  | 'chat-messages'
+  | 'chat-messages-filled'
+  | 'chat-loading'
+  | 'chat-error'
+  | 'chat-preview'
+
+type ChatMessage = {
+  type: 'user' | 'assistant'
+  content: string | any
+  isStreaming?: boolean
+  isError?: boolean
+  stream?: ReadableStream<Uint8Array> | null
+}
+
+type Chat = {
+  id: string
+  demo?: string
+}
+
+type CursorPreset = 'system' | 'frutiger-aero' | 'roundy-normal'
+type LayoutMode = 'chat+artifact' | 'chat' | 'artifact'
+
+type DevControlsState = {
+  layoutMode: LayoutMode
+  uiState: UIStateMode
+  cursorPreset: CursorPreset
+}
+
+const HomeDevControls =
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
+    ? dynamic(
+        () =>
+          import('./home-dev-controls').then(
+            (module) => module.HomeDevControls,
+          ),
+        { ssr: false },
+      )
+    : null
+
+const CURSOR_PRESETS: Record<
+  CursorPreset,
+  { defaultCursor: string; pointerCursor: string }
+> = {
+  system: {
+    defaultCursor: 'auto',
+    pointerCursor: 'pointer',
+  },
+  'frutiger-aero': {
+    defaultCursor: "url('/cursors/frutiger-aero-default.cur') 0 0, auto",
+    pointerCursor: "url('/cursors/frutiger-aero-pointer.cur') 0 0, pointer",
+  },
+  'roundy-normal': {
+    defaultCursor: "url('/cursors/roundy-normal.cur') 0 0, auto",
+    pointerCursor: "url('/cursors/roundy-normal.cur') 0 0, pointer",
+  },
+}
+
+const MOCK_CHAT_BY_STATE: Record<
+  Exclude<UIStateMode, 'auto' | 'landing'>,
+  ChatMessage[]
+> = {
+  'chat-empty': [],
+  'chat-messages': [
+    { type: 'user', content: 'Build a pricing page for my SaaS app.' },
+    {
+      type: 'assistant',
+      content:
+        'I created a responsive pricing layout with Starter, Pro, and Enterprise tiers.',
+    },
+  ],
+  'chat-messages-filled': [
+    { type: 'user', content: 'Help me design a todo app landing page.' },
+    {
+      type: 'assistant',
+      content:
+        'Started with a bold hero, concise feature bullets, and a focused call to action.',
+    },
+    { type: 'user', content: 'Can you make the hero copy shorter?' },
+    {
+      type: 'assistant',
+      content:
+        'Updated. New headline: "Plan less. Finish more." with a one-line subheading.',
+    },
+    { type: 'user', content: 'Add a testimonials section under features.' },
+    {
+      type: 'assistant',
+      content:
+        'Added three testimonials with names, roles, and compact profile cards.',
+    },
+    {
+      type: 'user',
+      content: 'Switch the accent color from blue to emerald.',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Color tokens now use emerald shades for buttons, badges, and links.',
+    },
+    {
+      type: 'user',
+      content: 'Make sure the pricing cards stack nicely on mobile.',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Adjusted breakpoints so cards become a single-column stack below 768px.',
+    },
+    {
+      type: 'user',
+      content: 'Please include one highlighted "Pro" plan.',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Pro plan now has a stronger border, subtle glow, and "Most Popular" badge.',
+    },
+    {
+      type: 'user',
+      content: 'Can we add a FAQ with six common questions?',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Added an accordion FAQ section with six entries and smooth open/close states.',
+    },
+    { type: 'user', content: 'Tighten spacing between feature rows.' },
+    {
+      type: 'assistant',
+      content:
+        'Reduced vertical gaps and aligned icon-text rows for better scan speed.',
+    },
+    {
+      type: 'user',
+      content:
+        'Show a simple footer with links for pricing, docs, and support.',
+    },
+    {
+      type: 'assistant',
+      content:
+        'Footer added with three links, copyright text, and a compact mobile layout.',
+    },
+    { type: 'user', content: 'Looks good. Final pass for readability?' },
+    {
+      type: 'assistant',
+      content:
+        'Complete. Increased body contrast slightly and normalized heading line lengths for easier reading.',
+    },
+  ],
+  'chat-loading': [
+    {
+      type: 'user',
+      content: 'Generate a dashboard with analytics cards and charts.',
+    },
+  ],
+  'chat-error': [
+    {
+      type: 'user',
+      content: 'Create an admin panel with user management.',
+    },
+    {
+      type: 'assistant',
+      isError: true,
+      content:
+        'Sorry, there was an error processing your message. Please try again.',
+    },
+  ],
+  'chat-preview': [
+    {
+      type: 'user',
+      content: 'Build a hero section for a fintech landing page.',
+    },
+    {
+      type: 'assistant',
+      content: 'Done. I prepared a preview with a clean hero and CTA.',
+    },
+  ],
+}
+
 // Component that uses useSearchParams - needs to be wrapped in Suspense
 function SearchParamsHandler({ onReset }: { onReset: () => void }) {
   const searchParams = useSearchParams()
@@ -48,29 +232,80 @@ function SearchParamsHandler({ onReset }: { onReset: () => void }) {
 }
 
 export function HomeClient() {
+  const isLocalDesignDebug =
+    process.env.NODE_ENV === 'development' &&
+    process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
+  const [devControls, setDevControls] = useState<DevControlsState>({
+    layoutMode: 'chat+artifact',
+    uiState: 'auto',
+    cursorPreset: 'system',
+  })
+  const layoutMode = isLocalDesignDebug
+    ? devControls.layoutMode
+    : 'chat+artifact'
+  const uiState = isLocalDesignDebug ? devControls.uiState : 'auto'
+  const cursorPreset = isLocalDesignDebug ? devControls.cursorPreset : 'system'
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showChatInterface, setShowChatInterface] = useState(false)
   const [attachments, setAttachments] = useState<ImageAttachment[]>([])
   const [isDragOver, setIsDragOver] = useState(false)
-  const [chatHistory, setChatHistory] = useState<
-    Array<{
-      type: 'user' | 'assistant'
-      content: string | any
-      isStreaming?: boolean
-      stream?: ReadableStream<Uint8Array> | null
-    }>
-  >([])
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
-  const [currentChat, setCurrentChat] = useState<{
-    id: string
-    demo?: string
-  } | null>(null)
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [activePanel, setActivePanel] = useState<'chat' | 'preview'>('chat')
   const router = useRouter()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const isUIStateControlled = uiState !== 'auto'
+  const forcedPanel = layoutMode === 'artifact' ? 'preview' : 'chat'
+  const isSinglePanelMode = layoutMode !== 'chat+artifact'
+  const activeResizablePanel =
+    (isSinglePanelMode ? forcedPanel : activePanel) === 'chat'
+      ? 'left'
+      : 'right'
+  const displayShowChatInterface =
+    uiState === 'auto' ? showChatInterface : uiState !== 'landing'
+  const displayIsLoading =
+    uiState === 'auto' ? isLoading : uiState === 'chat-loading'
+  const displayChatHistory =
+    uiState === 'auto'
+      ? chatHistory
+      : uiState === 'landing'
+        ? []
+        : MOCK_CHAT_BY_STATE[
+            uiState as Exclude<UIStateMode, 'auto' | 'landing'>
+          ]
+  const displayCurrentChat =
+    uiState === 'auto'
+      ? currentChat
+      : uiState === 'chat-preview'
+        ? {
+            id: 'preview-mock-chat',
+            demo: 'https://example.com',
+          }
+        : null
+
+  useEffect(() => {
+    if (isSinglePanelMode) {
+      setActivePanel(forcedPanel)
+    }
+  }, [isSinglePanelMode, forcedPanel])
+
+  useEffect(() => {
+    const preset =
+      CURSOR_PRESETS[cursorPreset as CursorPreset] ?? CURSOR_PRESETS.system
+    const root = document.documentElement
+
+    root.style.setProperty('--app-cursor-default', preset.defaultCursor)
+    root.style.setProperty('--app-cursor-pointer', preset.pointerCursor)
+
+    return () => {
+      root.style.removeProperty('--app-cursor-default')
+      root.style.removeProperty('--app-cursor-pointer')
+    }
+  }, [cursorPreset])
 
   const handleReset = () => {
     // Reset all chat-related state
@@ -152,12 +387,18 @@ export function HomeClient() {
     setIsDragOver(false)
   }
 
-  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendMessage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    attachmentUrls?: Array<{ url: string }>,
+  ) => {
     e.preventDefault()
     if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()
-    const currentAttachments = [...attachments]
+    const currentAttachmentUrls =
+      attachmentUrls && attachmentUrls.length > 0
+        ? attachmentUrls
+        : attachments.map((att) => ({ url: att.dataUrl }))
 
     // Clear sessionStorage immediately upon submission
     clearPromptFromStorage()
@@ -184,7 +425,9 @@ export function HomeClient() {
         body: JSON.stringify({
           message: userMessage,
           streaming: true,
-          attachments: currentAttachments.map((att) => ({ url: att.dataUrl })),
+          ...(currentAttachmentUrls.length > 0 && {
+            attachments: currentAttachmentUrls,
+          }),
         }),
       })
 
@@ -240,6 +483,7 @@ export function HomeClient() {
         ...prev,
         {
           type: 'assistant',
+          isError: true,
           content: errorMessage,
         },
       ])
@@ -335,12 +579,24 @@ export function HomeClient() {
     })
   }
 
-  const handleChatSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChatSendMessage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    attachmentUrls?: Array<{ url: string }>,
+  ) => {
     e.preventDefault()
-    if (!message.trim() || isLoading || !currentChatId) return
+
+    if (!currentChatId) {
+      // Prevent creating a second chat while the first streamed response has not
+      // produced chat metadata yet.
+      return
+    }
+
+    if (!message.trim() || isLoading) return
 
     const userMessage = message.trim()
+    const currentAttachmentUrls = attachmentUrls ?? []
     setMessage('')
+    setAttachments([])
     setIsLoading(true)
 
     // Add user message to chat history
@@ -356,6 +612,9 @@ export function HomeClient() {
           message: userMessage,
           chatId: currentChatId,
           streaming: true,
+          ...(currentAttachmentUrls.length > 0 && {
+            attachments: currentAttachmentUrls,
+          }),
         }),
       })
 
@@ -410,6 +669,7 @@ export function HomeClient() {
         ...prev,
         {
           type: 'assistant',
+          isError: true,
           content: errorMessage,
         },
       ])
@@ -417,9 +677,10 @@ export function HomeClient() {
     }
   }
 
-  if (showChatInterface) {
+  if (displayShowChatInterface) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+      <div className="min-h-screen app-page-background flex flex-col">
+        {HomeDevControls ? <HomeDevControls onChange={setDevControls} /> : null}
         {/* Handle search params with Suspense boundary */}
         <Suspense fallback={null}>
           <SearchParamsHandler onReset={handleReset} />
@@ -430,33 +691,51 @@ export function HomeClient() {
         <div className="flex flex-col h-[calc(100vh-64px-40px)] md:h-[calc(100vh-64px)]">
           <ResizableLayout
             className="flex-1 min-h-0"
-            singlePanelMode={false}
-            activePanel={activePanel === 'chat' ? 'left' : 'right'}
+            singlePanelMode={isSinglePanelMode}
+            activePanel={activeResizablePanel}
             leftPanel={
-              <div className="flex flex-col h-full">
-                <div className="flex-1 overflow-y-auto">
-                  <ChatMessages
-                    chatHistory={chatHistory}
-                    isLoading={isLoading}
-                    currentChat={currentChat}
-                    onStreamingComplete={handleStreamingComplete}
-                    onChatData={handleChatData}
-                    onStreamingStarted={() => setIsLoading(false)}
-                  />
+              <div className="flex h-full min-w-0 flex-col">
+                <div className="relative flex-1 min-h-0">
+                  <div className="pointer-events-none absolute bottom-2 left-0 z-0 flex items-end pl-1 sm:pl-2 md:pl-3 lg:pl-4">
+                    <img
+                      src="/character.png"
+                      alt=""
+                      aria-hidden="true"
+                      className="h-auto w-[130px] sm:w-[150px] md:w-[180px] lg:w-[210px] opacity-100"
+                    />
+                  </div>
+
+                  <div className="relative z-10 flex h-full min-h-0 flex-col pl-[84px] sm:pl-[102px] md:pl-[124px] lg:pl-[146px]">
+                    <ChatMessages
+                      chatHistory={displayChatHistory}
+                      isLoading={displayIsLoading}
+                      currentChat={displayCurrentChat}
+                      onStreamingComplete={handleStreamingComplete}
+                      onChatData={handleChatData}
+                      onStreamingStarted={() => {
+                        if (!isUIStateControlled) {
+                          setIsLoading(false)
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <ChatInput
                   message={message}
                   setMessage={setMessage}
                   onSubmit={handleChatSendMessage}
-                  isLoading={isLoading}
+                  isLoading={displayIsLoading}
                   showSuggestions={false}
+                  attachments={attachments}
+                  onAttachmentsChange={setAttachments}
+                  textareaRef={textareaRef}
                 />
               </div>
             }
             rightPanel={
               <PreviewPanel
-                currentChat={currentChat}
+                currentChat={displayCurrentChat}
                 isFullscreen={isFullscreen}
                 setIsFullscreen={setIsFullscreen}
                 refreshKey={refreshKey}
@@ -465,20 +744,23 @@ export function HomeClient() {
             }
           />
 
-          <div className="md:hidden">
-            <BottomToolbar
-              activePanel={activePanel}
-              onPanelChange={setActivePanel}
-              hasPreview={!!currentChat}
-            />
-          </div>
+          {!isSinglePanelMode && (
+            <div className="md:hidden">
+              <BottomToolbar
+                activePanel={activePanel}
+                onPanelChange={setActivePanel}
+                hasPreview={!!displayCurrentChat}
+              />
+            </div>
+          )}
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+    <div className="min-h-screen app-page-background flex flex-col">
+      {HomeDevControls ? <HomeDevControls onChange={setDevControls} /> : null}
       {/* Handle search params with Suspense boundary */}
       <Suspense fallback={null}>
         <SearchParamsHandler onReset={handleReset} />

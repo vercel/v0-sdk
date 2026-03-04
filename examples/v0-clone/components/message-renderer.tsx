@@ -57,7 +57,7 @@ export function MessageRenderer({
   if (typeof content === 'string') {
     return (
       <div className={className}>
-        <p className="mb-4 text-gray-700 dark:text-gray-200 leading-relaxed">
+        <p className="leading-[22px] whitespace-pre-wrap text-current">
           {content}
         </p>
       </div>

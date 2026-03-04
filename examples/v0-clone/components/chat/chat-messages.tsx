@@ -5,6 +5,7 @@ import {
   ConversationContent,
 } from '@/components/ai-elements/conversation'
 import { Loader } from '@/components/ai-elements/loader'
+import { cn } from '@/lib/utils'
 import { MessageRenderer } from '@/components/message-renderer'
 import { sharedComponents } from '@/components/shared-components'
 import { StreamingMessage } from '@v0-sdk/react'
@@ -13,6 +14,7 @@ interface ChatMessage {
   type: 'user' | 'assistant'
   content: string | any
   isStreaming?: boolean
+  isError?: boolean
   stream?: ReadableStream<Uint8Array> | null
 }
 
@@ -30,6 +32,12 @@ interface ChatMessagesProps {
   onChatData: (chatData: any) => void
   onStreamingStarted?: () => void
 }
+
+const USER_BUBBLE_BACKGROUND =
+  'linear-gradient(in oklab 180deg, oklab(100% 0 0 / 50%) 0%, oklab(100% 0 0 / 0%) 100%), linear-gradient(in oklab 90deg, oklab(85.2% 0.091 -0.077 / 90%) 0%, oklab(85.2% 0.091 -0.077 / 90%) 100%)'
+
+const ASSISTANT_BUBBLE_BACKGROUND =
+  'linear-gradient(in oklab 180deg, oklab(100% 0 0 / 50%) 0%, oklab(100% 0 0 / 0%) 100%), linear-gradient(in oklab 90deg, oklab(92% -0.071 0.158) 0%, oklab(92% -0.071 0.158) 100%)'
 
 export function ChatMessages({
   chatHistory,
@@ -64,35 +72,64 @@ export function ChatMessages({
     <>
       <Conversation>
         <ConversationContent>
-          {chatHistory.map((msg, index) => (
-            <Message from={msg.type} key={index}>
-              {msg.isStreaming && msg.stream ? (
-                <StreamingMessage
-                  stream={msg.stream}
-                  messageId={`msg-${index}`}
-                  role={msg.type}
-                  onComplete={onStreamingComplete}
-                  onChatData={onChatData}
-                  onChunk={(chunk) => {
-                    // Hide external loader once we start receiving content (only once)
-                    if (onStreamingStarted && !streamingStartedRef.current) {
-                      streamingStartedRef.current = true
-                      onStreamingStarted()
-                    }
+          {chatHistory.map((msg, index) => {
+            const isUser = msg.type === 'user'
+            const isError = !isUser && Boolean(msg.isError)
+
+            return (
+              <Message from={msg.type} key={index}>
+                <MessageContent
+                  className={cn(
+                    isUser ? 'text-right text-[#5E405D]' : 'text-left',
+                    !isUser &&
+                      (isError
+                        ? 'chat-message-bubble-error text-[#5B1111]'
+                        : 'text-[#162C12B3]'),
+                  )}
+                  style={{
+                    backgroundImage: isUser
+                      ? USER_BUBBLE_BACKGROUND
+                      : isError
+                        ? undefined
+                        : ASSISTANT_BUBBLE_BACKGROUND,
                   }}
-                  onError={(error) => console.error('Streaming error:', error)}
-                  components={sharedComponents}
-                  showLoadingIndicator={false}
-                />
-              ) : (
-                <MessageRenderer
-                  content={msg.content}
-                  role={msg.type}
-                  messageId={`msg-${index}`}
-                />
-              )}
-            </Message>
-          ))}
+                >
+                  <div>
+                    {msg.isStreaming && msg.stream ? (
+                      <StreamingMessage
+                        stream={msg.stream}
+                        messageId={`msg-${index}`}
+                        role={msg.type}
+                        onComplete={onStreamingComplete}
+                        onChatData={onChatData}
+                        onChunk={() => {
+                          // Hide external loader once we start receiving content (only once)
+                          if (
+                            onStreamingStarted &&
+                            !streamingStartedRef.current
+                          ) {
+                            streamingStartedRef.current = true
+                            onStreamingStarted()
+                          }
+                        }}
+                        onError={(error) =>
+                          console.error('Streaming error:', error)
+                        }
+                        components={sharedComponents}
+                        showLoadingIndicator={false}
+                      />
+                    ) : (
+                      <MessageRenderer
+                        content={msg.content}
+                        role={msg.type}
+                        messageId={`msg-${index}`}
+                      />
+                    )}
+                  </div>
+                </MessageContent>
+              </Message>
+            )
+          })}
           {isLoading && (
             <div className="flex justify-center py-4">
               <Loader size={16} className="text-gray-500 dark:text-gray-400" />
