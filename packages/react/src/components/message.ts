@@ -247,11 +247,14 @@ function MessageRenderer({
             props?.className,
             componentOrConfig.className,
           )
-          return React.createElement(
-            tagName,
-            { key: element.key, ...props, className: mergedClassName },
-            renderedChildren,
-          )
+          const elementProps = {
+            key: element.key,
+            ...props,
+            className: mergedClassName,
+          }
+          return renderedChildren?.length
+            ? React.createElement(tagName, elementProps, renderedChildren)
+            : React.createElement(tagName, elementProps)
         } else {
           // Default HTML element rendering
           const elementProps: Record<string, any> = {
@@ -268,7 +271,9 @@ function MessageRenderer({
             elementProps.rel = 'noopener noreferrer'
           }
 
-          return React.createElement(tagName, elementProps, renderedChildren)
+          return renderedChildren?.length
+            ? React.createElement(tagName, elementProps, renderedChildren)
+            : React.createElement(tagName, elementProps)
         }
 
       case 'component':
