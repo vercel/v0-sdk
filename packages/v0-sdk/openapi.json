@@ -113,6 +113,13 @@
                     "description": "The ID of a design system to apply to this chat. Design systems provide consistent styling and components for generated UI.",
                     "type": ["string", "null"]
                   },
+                  "mcpServerIds": {
+                    "description": "Array of MCP server IDs to enable for this chat. When provided, only the specified servers will be used. When omitted, falls back to the user's enabled MCP servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "metadata": {
                     "default": {},
                     "description": "Arbitrary key-value data to attach to the chat. Useful for storing additional data about the chat, such as external user IDs.",
@@ -1784,6 +1791,13 @@
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "type": "string",
                     "enum": ["sync", "async", "experimental_stream"]
+                  },
+                  "mcpServerIds": {
+                    "description": "Array of MCP server IDs to enable for this message. When provided, only the specified servers will be used. When omitted, falls back to the user's enabled MCP servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 },
                 "required": ["message"],
@@ -7782,6 +7796,1077 @@
               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
             },
             "description": "Query parameter \"endDate\""
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/mcp-servers": {
+      "get": {
+        "summary": "List MCP Servers",
+        "description": "Retrieves all MCP servers configured for the authenticated user.",
+        "operationId": "mcpServers.find",
+        "tags": ["mcpServers"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "object": {
+                            "type": "string",
+                            "const": "mcp_server",
+                            "description": "The object type."
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "The unique identifier for the MCP server."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The display name of the MCP server."
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URL of the MCP server."
+                          },
+                          "description": {
+                            "description": "An optional description of the MCP server.",
+                            "type": "string"
+                          },
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the MCP server is enabled for use in chats."
+                          },
+                          "auth": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "none",
+                                  "bearer",
+                                  "custom-headers",
+                                  "oauth"
+                                ],
+                                "description": "The type of authentication configured."
+                              }
+                            },
+                            "required": ["type"],
+                            "additionalProperties": false,
+                            "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
+                          },
+                          "scope": {
+                            "type": "string",
+                            "enum": ["user", "team"],
+                            "description": "The scope of the MCP server (user or team)."
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                            "description": "The ISO timestamp when the MCP server was created."
+                          },
+                          "updatedAt": {
+                            "description": "The ISO timestamp when the MCP server was last updated.",
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "object",
+                          "id",
+                          "name",
+                          "url",
+                          "enabled",
+                          "auth",
+                          "scope",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Summary information about an MCP server."
+                      }
+                    }
+                  },
+                  "required": ["object", "data"],
+                  "additionalProperties": false,
+                  "description": "List of MCP servers for the authenticated user."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create MCP Server",
+        "description": "Creates a new MCP server configuration for the authenticated user.",
+        "operationId": "mcpServers.create",
+        "tags": ["mcpServers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "The display name of the MCP server."
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "format": "uri",
+                    "description": "The URL of the MCP server. Must be HTTPS in production."
+                  },
+                  "description": {
+                    "description": "An optional description of the MCP server.",
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "enabled": {
+                    "default": true,
+                    "description": "Whether the MCP server is enabled. Defaults to true.",
+                    "type": "boolean"
+                  },
+                  "auth": {
+                    "default": {
+                      "type": "none"
+                    },
+                    "description": "Authentication configuration. Defaults to no authentication.",
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "none",
+                            "description": "No authentication required."
+                          }
+                        },
+                        "required": ["type"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "bearer",
+                            "description": "Bearer token authentication."
+                          },
+                          "token": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000,
+                            "description": "The bearer token for authentication."
+                          }
+                        },
+                        "required": ["type", "token"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "custom-headers",
+                            "description": "Custom headers authentication."
+                          },
+                          "headers": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string",
+                              "maxLength": 100
+                            },
+                            "additionalProperties": {
+                              "type": "string",
+                              "maxLength": 500
+                            },
+                            "description": "Key-value pairs of custom headers to include in requests."
+                          }
+                        },
+                        "required": ["type", "headers"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "scope": {
+                    "default": "user",
+                    "description": "The scope of the MCP server. Defaults to user.",
+                    "type": "string",
+                    "enum": ["user", "team"]
+                  }
+                },
+                "required": ["name", "url"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "mcp_server",
+                      "description": "The object type."
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier for the MCP server."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the MCP server."
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "The URL of the MCP server."
+                    },
+                    "description": {
+                      "description": "An optional description of the MCP server.",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the MCP server is enabled for use in chats."
+                    },
+                    "auth": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
+                          "description": "The type of authentication configured."
+                        }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false,
+                      "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": ["user", "team"],
+                      "description": "The scope of the MCP server (user or team)."
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                      "description": "The ISO timestamp when the MCP server was created."
+                    },
+                    "updatedAt": {
+                      "description": "The ISO timestamp when the MCP server was last updated.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "id",
+                    "name",
+                    "url",
+                    "enabled",
+                    "auth",
+                    "scope",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Summary information about an MCP server."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/mcp-servers/{mcpServerId}": {
+      "get": {
+        "summary": "Get MCP Server",
+        "description": "Retrieves the details of a specific MCP server by its ID.",
+        "operationId": "mcpServers.getById",
+        "tags": ["mcpServers"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "mcp_server",
+                      "description": "The object type."
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier for the MCP server."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the MCP server."
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "The URL of the MCP server."
+                    },
+                    "description": {
+                      "description": "An optional description of the MCP server.",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the MCP server is enabled for use in chats."
+                    },
+                    "auth": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
+                          "description": "The type of authentication configured."
+                        }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false,
+                      "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": ["user", "team"],
+                      "description": "The scope of the MCP server (user or team)."
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                      "description": "The ISO timestamp when the MCP server was created."
+                    },
+                    "updatedAt": {
+                      "description": "The ISO timestamp when the MCP server was last updated.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "id",
+                    "name",
+                    "url",
+                    "enabled",
+                    "auth",
+                    "scope",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Summary information about an MCP server."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mcpServerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the MCP server to retrieve."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update MCP Server",
+        "description": "Updates the configuration of an existing MCP server, including its name, URL, description, enabled status, and authentication settings.",
+        "operationId": "mcpServers.update",
+        "tags": ["mcpServers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "The display name of the MCP server.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "url": {
+                    "description": "The URL of the MCP server.",
+                    "type": "string",
+                    "maxLength": 500,
+                    "format": "uri"
+                  },
+                  "description": {
+                    "description": "An optional description of the MCP server.",
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "enabled": {
+                    "description": "Whether the MCP server is enabled.",
+                    "type": "boolean"
+                  },
+                  "auth": {
+                    "description": "Authentication configuration.",
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "none",
+                            "description": "No authentication required."
+                          }
+                        },
+                        "required": ["type"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "bearer",
+                            "description": "Bearer token authentication."
+                          },
+                          "token": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000,
+                            "description": "The bearer token for authentication."
+                          }
+                        },
+                        "required": ["type", "token"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "custom-headers",
+                            "description": "Custom headers authentication."
+                          },
+                          "headers": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string",
+                              "maxLength": 100
+                            },
+                            "additionalProperties": {
+                              "type": "string",
+                              "maxLength": 500
+                            },
+                            "description": "Key-value pairs of custom headers to include in requests."
+                          }
+                        },
+                        "required": ["type", "headers"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "scope": {
+                    "description": "The scope of the MCP server.",
+                    "type": "string",
+                    "enum": ["user", "team"]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "mcp_server",
+                      "description": "The object type."
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "The unique identifier for the MCP server."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The display name of the MCP server."
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "The URL of the MCP server."
+                    },
+                    "description": {
+                      "description": "An optional description of the MCP server.",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the MCP server is enabled for use in chats."
+                    },
+                    "auth": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
+                          "description": "The type of authentication configured."
+                        }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false,
+                      "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": ["user", "team"],
+                      "description": "The scope of the MCP server (user or team)."
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                      "description": "The ISO timestamp when the MCP server was created."
+                    },
+                    "updatedAt": {
+                      "description": "The ISO timestamp when the MCP server was last updated.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "id",
+                    "name",
+                    "url",
+                    "enabled",
+                    "auth",
+                    "scope",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Summary information about an MCP server."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mcpServerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the MCP server to update."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete MCP Server",
+        "description": "Deletes an MCP server based on its ID. This action is irreversible and will also remove any associated OAuth tokens.",
+        "operationId": "mcpServers.delete",
+        "tags": ["mcpServers"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "mcp_server"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the deleted MCP server."
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates the server was deleted."
+                    }
+                  },
+                  "required": ["object", "id", "deleted"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mcpServerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the MCP server to delete."
           }
         ],
         "security": [
