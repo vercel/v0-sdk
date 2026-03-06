@@ -1,5 +1,12 @@
 # playground
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [38142c8]
+  - v0-sdk@0.16.3
+
 ## 0.1.5
 
 ### Patch Changes
