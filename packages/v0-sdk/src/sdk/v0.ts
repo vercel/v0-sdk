@@ -64,6 +64,7 @@ export type ChatDetail = {
       | 'answered-questions'
       | 'cloned-repo'
       | 'manual-commit'
+      | 'design-mode'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -94,13 +95,14 @@ export type ChatDetail = {
   text: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+    modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
   permissions: {
     write: boolean
   }
+  metadata: Record<string, unknown>
 }
 
 export type ChatSummary = {
@@ -331,6 +333,7 @@ export type MessageDetail = {
     | 'answered-questions'
     | 'cloned-repo'
     | 'manual-commit'
+    | 'design-mode'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -382,6 +385,7 @@ export type MessageSummary = {
     | 'answered-questions'
     | 'cloned-repo'
     | 'manual-commit'
+    | 'design-mode'
   role: 'user' | 'assistant'
   finishReason?:
     | 'stop'
@@ -434,6 +438,7 @@ export type MessageSummaryList = {
       | 'answered-questions'
       | 'cloned-repo'
       | 'manual-commit'
+      | 'design-mode'
     role: 'user' | 'assistant'
     finishReason?:
       | 'stop'
@@ -737,12 +742,13 @@ export interface ChatsCreateRequest {
   projectId?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+    modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   designSystemId?: string | null
+  metadata?: Record<string, unknown>
 }
 
 export type ChatsCreateResponse = ChatDetail
@@ -758,6 +764,7 @@ export type ChatsInitRequest = {
   name?: string
   chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
   projectId?: string
+  metadata?: Record<string, unknown>
 } & (
   | {
       type: 'files'
@@ -839,6 +846,7 @@ export type ChatsGetByIdResponse = ChatDetail
 export interface ChatsUpdateRequest {
   name?: string
   privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+  metadata?: Record<string, unknown> | unknown
 }
 
 export type ChatsUpdateResponse = ChatDetail
@@ -880,7 +888,7 @@ export interface ChatsSendMessageRequest {
   system?: string
   modelConfiguration?: {
     /** @deprecated */
-    modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+    modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -925,6 +933,10 @@ export interface ChatsDeleteVersionFilesRequest {
 export type ChatsDeleteVersionFilesResponse = VersionDetail
 
 export type ChatsResumeResponse = MessageDetail
+
+export interface ChatsStopResponse {
+  success: true
+}
 
 export interface DeploymentsFindResponse {
   object: 'list'
@@ -1220,6 +1232,36 @@ export type ReportsGetUsageResponse = {
   }
 }
 
+export type ReportsGetUserActivityResponse = {
+  object: 'list'
+  data: Array<{
+    id: string
+    object: 'user_activity'
+    user: {
+      id: string
+      object: 'user'
+      name?: string
+      email: string
+      avatar: string
+      createdAt: string
+      updatedAt?: string
+      teamV0Role: 'V0Builder' | 'V0Chatter' | 'V0Viewer' | unknown
+    }
+    chatCount: number
+    messageCount: number
+    activeDays: number
+    firstActivity: string | unknown
+    lastActivity: string | unknown
+  }>
+  meta: {
+    totalCount: number
+    dateRange: {
+      start: string | unknown
+      end: string | unknown
+    }
+  }
+}
+
 export interface V0ClientConfig {
   apiKey?: string
   baseUrl?: string
@@ -1243,6 +1285,7 @@ export function createClient(config: V0ClientConfig = {}) {
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
           designSystemId: params.designSystemId,
+          metadata: params.metadata,
         }
 
         if (params.responseMode === 'experimental_stream') {
@@ -1256,6 +1299,8 @@ export function createClient(config: V0ClientConfig = {}) {
         limit?: number
         offset?: number
         isFavorite?: boolean
+        vercelProjectId?: string
+        branch?: string
       }): Promise<ChatsFindResponse> {
         const query = params
           ? (Object.fromEntries(
@@ -1270,6 +1315,8 @@ export function createClient(config: V0ClientConfig = {}) {
                   params.isFavorite !== undefined
                     ? String(params.isFavorite)
                     : undefined,
+                vercelProjectId: params.vercelProjectId,
+                branch: params.branch,
               }).filter(([_, value]) => value !== undefined),
             ) as Record<string, string>)
           : {}
@@ -1296,7 +1343,11 @@ export function createClient(config: V0ClientConfig = {}) {
         params: { chatId: string } & ChatsUpdateRequest,
       ): Promise<ChatsUpdateResponse> {
         const pathParams = { chatId: params.chatId }
-        const body = { name: params.name, privacy: params.privacy }
+        const body = {
+          name: params.name,
+          privacy: params.privacy,
+          metadata: params.metadata,
+        }
         return fetcher(`/chats/${pathParams.chatId}`, 'PATCH', {
           pathParams,
           body,
@@ -1504,6 +1555,21 @@ export function createClient(config: V0ClientConfig = {}) {
         }
         return fetcher(
           `/chats/${pathParams.chatId}/messages/${pathParams.messageId}/resume`,
+          'POST',
+          { pathParams },
+        )
+      },
+
+      async stop(params: {
+        chatId: string
+        messageId: string
+      }): Promise<ChatsStopResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          messageId: params.messageId,
+        }
+        return fetcher(
+          `/chats/${pathParams.chatId}/messages/${pathParams.messageId}/stop`,
           'POST',
           { pathParams },
         )
@@ -1909,6 +1975,24 @@ export function createClient(config: V0ClientConfig = {}) {
           : {}
         const hasQuery = Object.keys(query).length > 0
         return fetcher(`/reports/usage`, 'GET', {
+          ...(hasQuery ? { query } : {}),
+        })
+      },
+
+      async getUserActivity(params?: {
+        startDate?: string
+        endDate?: string
+      }): Promise<ReportsGetUserActivityResponse> {
+        const query = params
+          ? (Object.fromEntries(
+              Object.entries({
+                startDate: params.startDate,
+                endDate: params.endDate,
+              }).filter(([_, value]) => value !== undefined),
+            ) as Record<string, string>)
+          : {}
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/reports/user-activity`, 'GET', {
           ...(hasQuery ? { query } : {}),
         })
       },
