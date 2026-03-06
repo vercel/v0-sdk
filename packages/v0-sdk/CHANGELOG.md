@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.4
+
+### Patch Changes
+
+- 5e7d77c: Add MCP support
+
 ## 0.16.3
 
 ### Patch Changes

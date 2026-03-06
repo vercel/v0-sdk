@@ -1,5 +1,12 @@
 # @v0-sdk/ai-tools
 
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies [5e7d77c]
+  - v0-sdk@0.16.4
+
 ## 0.3.7
 
 ### Patch Changes
