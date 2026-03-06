@@ -748,6 +748,7 @@ export interface ChatsCreateRequest {
   }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   designSystemId?: string | null
+  mcpServerIds?: string[]
   metadata?: Record<string, unknown>
 }
 
@@ -893,6 +894,7 @@ export interface ChatsSendMessageRequest {
     thinking?: boolean
   }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
+  mcpServerIds?: string[]
 }
 
 export type ChatsSendMessageResponse = ChatDetail
@@ -1262,6 +1264,123 @@ export type ReportsGetUserActivityResponse = {
   }
 }
 
+export type McpServersFindResponse = {
+  object: 'list'
+  data: Array<{
+    object: 'mcp_server'
+    id: string
+    name: string
+    url: string
+    description?: string
+    enabled: boolean
+    auth: {
+      type: 'none' | 'bearer' | 'custom-headers' | 'oauth'
+    }
+    scope: 'user' | 'team'
+    createdAt: string
+    updatedAt?: string
+  }>
+}
+
+export interface McpServersCreateRequest {
+  name: string
+  url: string
+  description?: string
+  enabled?: boolean
+  auth?:
+    | {
+        type: 'none'
+        token?: never
+        headers?: never
+      }
+    | {
+        type: 'bearer'
+        token: string
+        headers?: never
+      }
+    | {
+        type: 'custom-headers'
+        headers: Record<string, unknown>
+        token?: never
+      }
+  scope?: 'user' | 'team'
+}
+
+export type McpServersCreateResponse = {
+  object: 'mcp_server'
+  id: string
+  name: string
+  url: string
+  description?: string
+  enabled: boolean
+  auth: {
+    type: 'none' | 'bearer' | 'custom-headers' | 'oauth'
+  }
+  scope: 'user' | 'team'
+  createdAt: string
+  updatedAt?: string
+}
+
+export type McpServersGetByIdResponse = {
+  object: 'mcp_server'
+  id: string
+  name: string
+  url: string
+  description?: string
+  enabled: boolean
+  auth: {
+    type: 'none' | 'bearer' | 'custom-headers' | 'oauth'
+  }
+  scope: 'user' | 'team'
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface McpServersUpdateRequest {
+  name?: string
+  url?: string
+  description?: string
+  enabled?: boolean
+  auth?:
+    | {
+        type: 'none'
+        token?: never
+        headers?: never
+      }
+    | {
+        type: 'bearer'
+        token: string
+        headers?: never
+      }
+    | {
+        type: 'custom-headers'
+        headers: Record<string, unknown>
+        token?: never
+      }
+  scope?: 'user' | 'team'
+}
+
+export type McpServersUpdateResponse = {
+  object: 'mcp_server'
+  id: string
+  name: string
+  url: string
+  description?: string
+  enabled: boolean
+  auth: {
+    type: 'none' | 'bearer' | 'custom-headers' | 'oauth'
+  }
+  scope: 'user' | 'team'
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface McpServersDeleteResponse {
+  object: 'mcp_server'
+  id: string
+  deleted: true
+}
+
 export interface V0ClientConfig {
   apiKey?: string
   baseUrl?: string
@@ -1285,6 +1404,7 @@ export function createClient(config: V0ClientConfig = {}) {
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
           designSystemId: params.designSystemId,
+          mcpServerIds: params.mcpServerIds,
           metadata: params.metadata,
         }
 
@@ -1406,6 +1526,7 @@ export function createClient(config: V0ClientConfig = {}) {
           system: params.system,
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
+          mcpServerIds: params.mcpServerIds,
         }
 
         if (params.responseMode === 'experimental_stream') {
@@ -1994,6 +2115,62 @@ export function createClient(config: V0ClientConfig = {}) {
         const hasQuery = Object.keys(query).length > 0
         return fetcher(`/reports/user-activity`, 'GET', {
           ...(hasQuery ? { query } : {}),
+        })
+      },
+    },
+
+    mcpServers: {
+      async find(): Promise<McpServersFindResponse> {
+        return fetcher(`/mcp-servers`, 'GET', {})
+      },
+
+      async create(
+        params: McpServersCreateRequest,
+      ): Promise<McpServersCreateResponse> {
+        const body = {
+          name: params.name,
+          url: params.url,
+          description: params.description,
+          enabled: params.enabled,
+          auth: params.auth,
+          scope: params.scope,
+        }
+        return fetcher(`/mcp-servers`, 'POST', { body })
+      },
+
+      async getById(params: {
+        mcpServerId: string
+      }): Promise<McpServersGetByIdResponse> {
+        const pathParams = { mcpServerId: params.mcpServerId }
+        return fetcher(`/mcp-servers/${pathParams.mcpServerId}`, 'GET', {
+          pathParams,
+        })
+      },
+
+      async update(
+        params: { mcpServerId: string } & McpServersUpdateRequest,
+      ): Promise<McpServersUpdateResponse> {
+        const pathParams = { mcpServerId: params.mcpServerId }
+        const body = {
+          name: params.name,
+          url: params.url,
+          description: params.description,
+          enabled: params.enabled,
+          auth: params.auth,
+          scope: params.scope,
+        }
+        return fetcher(`/mcp-servers/${pathParams.mcpServerId}`, 'PATCH', {
+          pathParams,
+          body,
+        })
+      },
+
+      async delete(params: {
+        mcpServerId: string
+      }): Promise<McpServersDeleteResponse> {
+        const pathParams = { mcpServerId: params.mcpServerId }
+        return fetcher(`/mcp-servers/${pathParams.mcpServerId}`, 'DELETE', {
+          pathParams,
         })
       },
     },
