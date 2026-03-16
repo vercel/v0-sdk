@@ -1,6 +1,7 @@
 export interface ClientConfig {
   apiKey?: string
   baseUrl?: string
+  headers?: Record<string, string>
 }
 
 export function createFetcher(config: ClientConfig = {}) {
@@ -35,6 +36,7 @@ export function createFetcher(config: ClientConfig = {}) {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${apiKey}`,
       'User-Agent': 'v0-sdk/0.1.0',
+      ...config.headers,
       ...params.headers,
     }
 
@@ -163,6 +165,7 @@ export function createStreamingFetcher(config: ClientConfig = {}) {
       'User-Agent': 'v0-sdk/0.1.0',
       Accept: 'text/event-stream',
       'Cache-Control': 'no-cache',
+      ...config.headers,
       ...params.headers,
     }
 
