@@ -16,6 +16,7 @@ export type ChatDetail = {
   favorite: boolean
   authorId: string
   projectId?: string
+  vercelProjectId?: string
   webUrl: string
   apiUrl: string
   latestVersion?: {
@@ -118,6 +119,7 @@ export type ChatSummary = {
   favorite: boolean
   authorId: string
   projectId?: string
+  vercelProjectId?: string
   webUrl: string
   apiUrl: string
   latestVersion?: {
@@ -527,6 +529,7 @@ export type ProjectDetail = {
     favorite: boolean
     authorId: string
     projectId?: string
+    vercelProjectId?: string
     webUrl: string
     apiUrl: string
     latestVersion?: {
@@ -749,6 +752,7 @@ export interface ChatsCreateRequest {
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   designSystemId?: string | null
   mcpServerIds?: string[]
+  attachedSkillIds?: string[]
   metadata?: Record<string, unknown>
 }
 
@@ -895,6 +899,10 @@ export interface ChatsSendMessageRequest {
   }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   mcpServerIds?: string[]
+  attachedSkillIds?: string[]
+  action?: {
+    type: 'fix-with-v0'
+  }
 }
 
 export type ChatsSendMessageResponse = ChatDetail
@@ -1405,6 +1413,7 @@ export function createClient(config: V0ClientConfig = {}) {
           responseMode: params.responseMode,
           designSystemId: params.designSystemId,
           mcpServerIds: params.mcpServerIds,
+          attachedSkillIds: params.attachedSkillIds,
           metadata: params.metadata,
         }
 
@@ -1527,6 +1536,8 @@ export function createClient(config: V0ClientConfig = {}) {
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
           mcpServerIds: params.mcpServerIds,
+          attachedSkillIds: params.attachedSkillIds,
+          action: params.action,
         }
 
         if (params.responseMode === 'experimental_stream') {

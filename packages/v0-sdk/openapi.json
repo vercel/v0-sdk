@@ -120,6 +120,13 @@
                       "type": "string"
                     }
                   },
+                  "attachedSkillIds": {
+                    "description": "Array of skill IDs (from skills.sh) to attach to this chat. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "metadata": {
                     "default": {},
                     "description": "Arbitrary key-value data to attach to the chat. Useful for storing additional data about the chat, such as external user IDs.",
@@ -1798,6 +1805,25 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "attachedSkillIds": {
+                    "description": "Array of skill IDs (from skills.sh) to attach to this message. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "action": {
+                    "description": "An optional action to perform. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error logs or context to fix.",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "fix-with-v0"
+                      }
+                    },
+                    "required": ["type"],
+                    "additionalProperties": false
                   }
                 },
                 "required": ["message"],
@@ -8931,6 +8957,10 @@
             "description": "Optional ID of the v0 project associated with this chat.",
             "type": "string"
           },
+          "vercelProjectId": {
+            "description": "Optional ID of the linked Vercel project, if connected.",
+            "type": "string"
+          },
           "webUrl": {
             "type": "string",
             "description": "Web URL to view this chat in the browser."
@@ -9574,6 +9604,10 @@
           },
           "projectId": {
             "description": "Optional ID of the v0 project associated with this chat.",
+            "type": "string"
+          },
+          "vercelProjectId": {
+            "description": "Optional ID of the linked Vercel project, if connected.",
             "type": "string"
           },
           "webUrl": {
@@ -11792,6 +11826,10 @@
                 },
                 "projectId": {
                   "description": "Optional ID of the v0 project associated with this chat.",
+                  "type": "string"
+                },
+                "vercelProjectId": {
+                  "description": "Optional ID of the linked Vercel project, if connected.",
                   "type": "string"
                 },
                 "webUrl": {
