@@ -84,6 +84,7 @@
                         "type": "string",
                         "enum": [
                           "v0-auto",
+                          "v0-opus-4.7",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
@@ -115,6 +116,13 @@
                   },
                   "mcpServerIds": {
                     "description": "Array of MCP server IDs to enable for this chat. When provided, only the specified servers will be used. When omitted, falls back to the user's enabled MCP servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "attachedSkillIds": {
+                    "description": "Array of skill IDs (from skills.sh) to attach to this chat. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
                     "type": "array",
                     "items": {
                       "type": "string"
@@ -1767,6 +1775,7 @@
                         "type": "string",
                         "enum": [
                           "v0-auto",
+                          "v0-opus-4.7",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
@@ -1798,6 +1807,25 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "attachedSkillIds": {
+                    "description": "Array of skill IDs (from skills.sh) to attach to this message. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "action": {
+                    "description": "An optional action to perform. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error logs or context to fix.",
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "fix-with-v0"
+                      }
+                    },
+                    "required": ["type"],
+                    "additionalProperties": false
                   }
                 },
                 "required": ["message"],
@@ -3068,6 +3096,400 @@
               "type": "string"
             },
             "description": "The identifier of the specific message to stop. Provided as a path parameter."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/chats/{chatId}/tasks/resolve": {
+      "post": {
+        "summary": "Resolve Task",
+        "description": "Resolves a pending task in a chat, continuing the conversation. The latest message in the active chat fork must be an assistant message currently blocked on a matching task (integration setup, plan approval, question answers, or permission grants).",
+        "operationId": "chats.resolveTask",
+        "tags": ["chats"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "task": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "confirmed-steps"
+                          },
+                          "connectedIntegrationNames": {
+                            "default": [],
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "Upstash for Redis",
+                                "Upstash Search",
+                                "Neon",
+                                "Supabase",
+                                "Amazon Aurora DSQL",
+                                "Amazon Aurora PostgreSQL",
+                                "Amazon DynamoDB",
+                                "firebase",
+                                "Groq",
+                                "Grok",
+                                "fal",
+                                "Deep Infra",
+                                "Stripe",
+                                "Clerk",
+                                "Convex",
+                                "Blob",
+                                "Edge Config",
+                                "Vercel AI Gateway",
+                                "Snowflake"
+                              ]
+                            }
+                          },
+                          "connectedMcpPresetNames": {
+                            "default": [],
+                            "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "Linear",
+                                "Notion",
+                                "Context7",
+                                "Sentry",
+                                "Zapier",
+                                "Glean",
+                                "Hex",
+                                "Sanity",
+                                "Granola",
+                                "PostHog",
+                                "Contentful",
+                                "Slack"
+                              ]
+                            }
+                          },
+                          "appliedScripts": {
+                            "default": [],
+                            "description": "Names of scripts that were applied.",
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "addedEnvVars": {
+                            "default": [],
+                            "description": "Names of environment variables that were added.",
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "required": ["type"],
+                        "additionalProperties": false,
+                        "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "plan-exit-response"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": ["approved", "rejected", "request-changes"],
+                            "description": "Whether the plan is approved, rejected, or needs changes."
+                          },
+                          "content": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Feedback or instructions for the agent."
+                          }
+                        },
+                        "required": ["type", "status", "content"],
+                        "additionalProperties": false,
+                        "description": "Resolves a plan review task. The agent proposed an implementation plan and is waiting for approval."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "answered-questions"
+                          },
+                          "answers": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "questionId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "The ID of the question being answered."
+                                },
+                                "questionText": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "The text of the question being answered."
+                                },
+                                "selectedLabels": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "description": "The labels of the selected options. For single-select questions, pass one item."
+                                },
+                                "customText": {
+                                  "description": "Free-form text input, used when the user selects \"Other\" or wants to add context.",
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required": [
+                                "questionId",
+                                "questionText",
+                                "selectedLabels"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "description": "Answers to the questions the agent asked."
+                          }
+                        },
+                        "required": ["type", "answers"],
+                        "additionalProperties": false,
+                        "description": "Resolves a question task. The agent asked the user one or more multiple-choice questions."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "confirmed-permissions"
+                          },
+                          "permissions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                },
+                                "toolName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "The name of the tool being permitted."
+                                },
+                                "input": {
+                                  "description": "The tool call input arguments. Pass the exact input from the stopped task."
+                                },
+                                "taskNameActive": {
+                                  "description": "Label shown while the tool is running (e.g. \"Running migration\").",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "taskNameComplete": {
+                                  "description": "Label shown after the tool completes (e.g. \"Migration complete\").",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "userMessage": {
+                                  "description": "Optional message from the user about this permission.",
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required": ["type", "toolName", "input"],
+                              "additionalProperties": false
+                            },
+                            "description": "The permissions to grant. Pass the suggestedPermissions from the stopped task."
+                          },
+                          "userMessage": {
+                            "description": "Optional message from the user about the permission grant.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["type", "permissions"],
+                        "additionalProperties": false,
+                        "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      }
+                    ],
+                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                  },
+                  "responseMode": {
+                    "default": "sync",
+                    "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
+                    "type": "string",
+                    "enum": ["sync", "async", "experimental_stream"]
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
+                    "type": "object",
+                    "properties": {
+                      "modelId": {
+                        "default": "v0-pro",
+                        "description": "Deprecated Model ID field preserved for backward compatibility.",
+                        "deprecated": true,
+                        "type": "string",
+                        "enum": [
+                          "v0-auto",
+                          "v0-opus-4.7",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ]
+                      },
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
+                      },
+                      "thinking": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables thinking to generate a response in multiple steps."
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["task"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier of the chat containing the pending task. Provided as a path parameter."
           }
         ],
         "security": [
@@ -7500,6 +7922,258 @@
         ]
       }
     },
+    "/reports/usage/ai": {
+      "get": {
+        "summary": "Get AI Usage Report",
+        "description": "Retrieves v0 AI usage events for the authenticated user or active team scope.",
+        "operationId": "reports.getAIUsage",
+        "tags": ["reports"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "eventId": {
+                            "type": "string"
+                          },
+                          "modelId": {
+                            "type": "string"
+                          },
+                          "inputTokens": {
+                            "type": "number"
+                          },
+                          "outputTokens": {
+                            "type": "number"
+                          },
+                          "totalTokens": {
+                            "type": "number"
+                          },
+                          "cacheCreationInputTokens": {
+                            "type": "number"
+                          },
+                          "cacheReadInputTokens": {
+                            "type": "number"
+                          },
+                          "timestamp": {
+                            "type": "string"
+                          },
+                          "requestId": {
+                            "type": "string"
+                          },
+                          "useCase": {
+                            "type": "string"
+                          },
+                          "chatId": {
+                            "type": "string"
+                          },
+                          "messageId": {
+                            "type": "string"
+                          },
+                          "userId": {
+                            "type": "string"
+                          },
+                          "userEmail": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "eventId",
+                          "modelId",
+                          "inputTokens",
+                          "outputTokens",
+                          "totalTokens",
+                          "cacheCreationInputTokens",
+                          "cacheReadInputTokens",
+                          "timestamp",
+                          "requestId",
+                          "useCase",
+                          "chatId",
+                          "messageId",
+                          "userId",
+                          "userEmail"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "nextCursor": {
+                          "type": ["string", "null"]
+                        }
+                      },
+                      "required": ["nextCursor"],
+                      "additionalProperties": false
+                    },
+                    "dateRange": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": ["string", "null"]
+                        },
+                        "end": {
+                          "type": ["string", "null"]
+                        }
+                      },
+                      "required": ["start", "end"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["object", "data", "pagination", "dateRange"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Inclusive start datetime filter.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            },
+            "description": "Inclusive start datetime filter."
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Exclusive end datetime filter.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            },
+            "description": "Exclusive end datetime filter."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Opaque cursor returned by a previous request for forward pagination.",
+              "type": "string"
+            },
+            "description": "Opaque cursor returned by a previous request for forward pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1000,
+              "description": "Maximum number of rows to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "description": "Maximum number of rows to return."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/reports/user-activity": {
       "get": {
         "summary": "Get User Activity Report",
@@ -8931,6 +9605,10 @@
             "description": "Optional ID of the v0 project associated with this chat.",
             "type": "string"
           },
+          "vercelProjectId": {
+            "description": "Optional ID of the linked Vercel project, if connected.",
+            "type": "string"
+          },
           "webUrl": {
             "type": "string",
             "description": "Web URL to view this chat in the browser."
@@ -9463,6 +10141,7 @@
                 "type": "string",
                 "enum": [
                   "v0-auto",
+                  "v0-opus-4.7",
                   "v0-mini",
                   "v0-pro",
                   "v0-max",
@@ -9574,6 +10253,10 @@
           },
           "projectId": {
             "description": "Optional ID of the v0 project associated with this chat.",
+            "type": "string"
+          },
+          "vercelProjectId": {
+            "description": "Optional ID of the linked Vercel project, if connected.",
             "type": "string"
           },
           "webUrl": {
@@ -11792,6 +12475,10 @@
                 },
                 "projectId": {
                   "description": "Optional ID of the v0 project associated with this chat.",
+                  "type": "string"
+                },
+                "vercelProjectId": {
+                  "description": "Optional ID of the linked Vercel project, if connected.",
                   "type": "string"
                 },
                 "webUrl": {
