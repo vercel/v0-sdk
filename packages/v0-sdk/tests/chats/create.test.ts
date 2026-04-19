@@ -26,7 +26,7 @@ describe('v0.chats.create', () => {
       url: 'https://v0.dev/chat/chat-123',
       text: 'Hello, world!',
       modelConfiguration: {
-        modelId: 'v0-1.5-md',
+        modelId: 'v0-auto',
       },
     }
 
@@ -44,6 +44,10 @@ describe('v0.chats.create', () => {
         chatPrivacy: undefined,
         projectId: undefined,
         modelConfiguration: undefined,
+        responseMode: undefined,
+        designSystemId: undefined,
+        mcpServerIds: undefined,
+        metadata: undefined,
       },
     })
 
@@ -64,7 +68,7 @@ describe('v0.chats.create', () => {
         chatId: 'test',
         url: 'test',
         text: 'test',
-        modelConfiguration: { modelId: 'v0-1.5-md' },
+        modelConfiguration: { modelId: 'v0-auto' },
       })
 
       await v0.chats.create({
@@ -81,7 +85,13 @@ describe('v0.chats.create', () => {
   })
 
   it('should handle different model configurations', async () => {
-    const modelIds = ['v0-1.5-sm', 'v0-1.5-md', 'v0-1.5-lg'] as const
+    const modelIds = [
+      'v0-auto',
+      'v0-mini',
+      'v0-pro',
+      'v0-max',
+      'v0-max-fast',
+    ] as const
 
     for (const modelId of modelIds) {
       mockFetcher.mockResolvedValue({
@@ -115,7 +125,7 @@ describe('v0.chats.create', () => {
       chatId: 'test',
       url: 'test',
       text: 'test',
-      modelConfiguration: { modelId: 'v0-1.5-md' },
+      modelConfiguration: { modelId: 'v0-auto' },
     })
 
     await v0.chats.create({
