@@ -27,9 +27,7 @@
         "summary": "Create Chat",
         "description": "Creates a new chat using a user message, optional system context, and model configuration. Useful for prompting the model within the scope of a specific project.",
         "operationId": "chats.create",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -51,9 +49,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "url"
-                      ],
+                      "required": ["url"],
                       "additionalProperties": false
                     }
                   },
@@ -110,18 +106,11 @@
                     "default": "sync",
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "type": "string",
-                    "enum": [
-                      "sync",
-                      "async",
-                      "experimental_stream"
-                    ]
+                    "enum": ["sync", "async", "experimental_stream"]
                   },
                   "designSystemId": {
                     "description": "The ID of a design system to apply to this chat. Design systems provide consistent styling and components for generated UI.",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
+                    "type": ["string", "null"]
                   },
                   "mcpServerIds": {
                     "description": "Array of MCP server IDs to enable for this chat. When provided, only the specified servers will be used. When omitted, falls back to the user's enabled MCP servers.",
@@ -152,9 +141,7 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
+                "required": ["message"],
                 "additionalProperties": false
               }
             }
@@ -262,9 +249,7 @@
         "summary": "Find Chats",
         "description": "Retrieves a list of existing chats, with support for pagination and filtering by favorite status, Vercel project, or Git branch. Helps manage and navigate chat history.",
         "operationId": "chats.find",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -284,10 +269,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -405,10 +387,7 @@
             "schema": {
               "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Filters chats by their \"favorite\" status. Accepts `\"true\"` or `\"false\"` (as strings, not booleans).\n\n- `\"true\"`: returns only chats marked as favorites.\n- `\"false\"`: returns only non-favorite chats."
           },
@@ -445,9 +424,7 @@
         "summary": "Initialize Chat",
         "description": "Initializes a new chat from source content such as files, repositories, registries, or zip archives. Enables context-rich conversations based on code or assets.",
         "operationId": "chats.init",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -522,10 +499,7 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": [
-                                    "name",
-                                    "url"
-                                  ],
+                                  "required": ["name", "url"],
                                   "additionalProperties": false
                                 },
                                 {
@@ -542,10 +516,7 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": [
-                                    "name",
-                                    "content"
-                                  ],
+                                  "required": ["name", "content"],
                                   "additionalProperties": false
                                 }
                               ]
@@ -553,10 +524,7 @@
                             "description": "An array of inline file objects used to initialize the chat. Each object must contain a file `name` and its `content`."
                           }
                         },
-                        "required": [
-                          "type",
-                          "files"
-                        ],
+                        "required": ["type", "files"],
                         "additionalProperties": false
                       },
                       {
@@ -578,9 +546,7 @@
                                 "maxLength": 250
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false,
                             "description": "Specifies a repository source for initialization. Supports both public and private GitHub repositories. For private repositories, ensure your GitHub account is connected through Vercel."
                           },
@@ -589,10 +555,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "repo"
-                        ],
+                        "required": ["type", "repo"],
                         "additionalProperties": false
                       },
                       {
@@ -610,9 +573,7 @@
                                 "type": "string"
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false,
                             "description": "Allows initialization from a predefined component or code registry. Includes the registry source and identifier for the desired component/module."
                           },
@@ -621,10 +582,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "registry"
-                        ],
+                        "required": ["type", "registry"],
                         "additionalProperties": false
                       },
                       {
@@ -643,9 +601,7 @@
                                 "format": "uri"
                               }
                             },
-                            "required": [
-                              "url"
-                            ],
+                            "required": ["url"],
                             "additionalProperties": false,
                             "description": "Provides a zipped bundle of files as the input source. Typically includes a base64-encoded archive or a remote URL reference."
                           },
@@ -654,10 +610,7 @@
                             "type": "boolean"
                           }
                         },
-                        "required": [
-                          "type",
-                          "zip"
-                        ],
+                        "required": ["type", "zip"],
                         "additionalProperties": false
                       },
                       {
@@ -673,10 +626,7 @@
                             "description": "The ID of the template to initialize the chat from. This should be a valid template ID from the v0 template system."
                           }
                         },
-                        "required": [
-                          "type",
-                          "templateId"
-                        ],
+                        "required": ["type", "templateId"],
                         "additionalProperties": false
                       }
                     ]
@@ -790,9 +740,7 @@
         "summary": "Delete Chat",
         "description": "Deletes a specific chat based on the provided chatId. This operation is irreversible and permanently removes the chat and its contents.",
         "operationId": "chats.delete",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -813,11 +761,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -925,9 +869,7 @@
         "summary": "Get Chat",
         "description": "Retrieves the full details of a specific chat using its `chatId`. Includes messages, metadata, and associated configuration.",
         "operationId": "chats.getById",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1041,9 +983,7 @@
         "summary": "Update Chat",
         "description": "Updates the metadata of an existing chat using its `chatId`. Supports changes to the chat name and privacy setting.",
         "operationId": "chats.update",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1214,9 +1154,7 @@
         "summary": "Favorite Chat",
         "description": "Marks or unmarks a chat as a favorite using its `chatId`. This helps with organizing and quickly accessing important chats.",
         "operationId": "chats.favorite",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1229,9 +1167,7 @@
                     "description": "Specifies whether the chat should be marked as a favorite.\n\n- `\"true\"`: mark as favorite\n- `\"false\"`: remove from favorites"
                   }
                 },
-                "required": [
-                  "isFavorite"
-                ],
+                "required": ["isFavorite"],
                 "additionalProperties": false
               }
             }
@@ -1256,11 +1192,7 @@
                       "type": "boolean"
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "favorited"
-                  ],
+                  "required": ["id", "object", "favorited"],
                   "additionalProperties": false
                 }
               }
@@ -1370,9 +1302,7 @@
         "summary": "Fork Chat",
         "description": "Creates a new chat fork (duplicate) from a specific version within an existing chat. Useful for branching off alternate directions without modifying the original conversation.",
         "operationId": "chats.fork",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1518,9 +1448,7 @@
         "summary": "Get Project by Chat ID",
         "description": "Retrieves the v0 project associated with a given chat. Useful for determining the context or scope of a chat session.",
         "operationId": "projects.getByChatId",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1636,9 +1564,7 @@
         "summary": "Find Chat Messages",
         "description": "Retrieves a list of all messages for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes message content, role, and type information.",
         "operationId": "chats.findMessages",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1670,17 +1596,11 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination"
-                  ],
+                  "required": ["object", "data", "pagination"],
                   "additionalProperties": false
                 }
               }
@@ -1811,9 +1731,7 @@
         "summary": "Send Message",
         "description": "Creates a new message in an existing chat. Triggers a model response using the provided prompt, with optional attachments and configuration settings.",
         "operationId": "chats.sendMessage",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1836,9 +1754,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "url"
-                      ],
+                      "required": ["url"],
                       "additionalProperties": false
                     }
                   },
@@ -1879,11 +1795,7 @@
                     "default": "sync",
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "type": "string",
-                    "enum": [
-                      "sync",
-                      "async",
-                      "experimental_stream"
-                    ]
+                    "enum": ["sync", "async", "experimental_stream"]
                   },
                   "mcpServerIds": {
                     "description": "Array of MCP server IDs to enable for this message. When provided, only the specified servers will be used. When omitted, falls back to the user's enabled MCP servers.",
@@ -1908,15 +1820,11 @@
                         "const": "fix-with-v0"
                       }
                     },
-                    "required": [
-                      "type"
-                    ],
+                    "required": ["type"],
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "message"
-                ],
+                "required": ["message"],
                 "additionalProperties": false
               }
             }
@@ -2037,9 +1945,7 @@
         "summary": "Get Chat Message",
         "description": "Retrieves detailed information about a specific message within a chat, including content, files, model configuration, and demo URLs.",
         "operationId": "chats.getMessage",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2164,9 +2070,7 @@
         "summary": "Find Chat Versions",
         "description": "Retrieves a list of all versions (iterations) for a specific chat, ordered by creation date (newest first). Supports cursor-based pagination and includes version status and demo URLs.",
         "operationId": "chats.findVersions",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2198,9 +2102,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -2210,18 +2112,11 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "totalCount"
-                      ],
+                      "required": ["totalCount"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination",
-                    "meta"
-                  ],
+                  "required": ["object", "data", "pagination", "meta"],
                   "additionalProperties": false
                 }
               }
@@ -2354,9 +2249,7 @@
         "summary": "Get Chat Version",
         "description": "Retrieves detailed information about a specific version of a chat, including all files with their content and lock status.",
         "operationId": "chats.getVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2475,10 +2368,7 @@
             "schema": {
               "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a ZIP download. When false or omitted, returns only the generated source files."
           }
@@ -2493,9 +2383,7 @@
         "summary": "Update Chat Version Files",
         "description": "Updates the source files of a specific chat version (block) manually. This allows editing generated files directly through the API.",
         "operationId": "chats.updateVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2521,18 +2409,13 @@
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "name",
-                        "content"
-                      ],
+                      "required": ["name", "content"],
                       "additionalProperties": false
                     },
                     "description": "Array of files to update with their new content"
                   }
                 },
-                "required": [
-                  "files"
-                ],
+                "required": ["files"],
                 "additionalProperties": false
               }
             }
@@ -2662,9 +2545,7 @@
         "summary": "Download version files",
         "description": "Download all files for a specific chat version as a zip or tarball archive. Use includeDefaultFiles=true to include all deployment files (package.json, configuration files, etc.) or false/omitted to return only the generated source files.",
         "operationId": "chats.downloadVersion",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2793,10 +2674,7 @@
               "default": "zip",
               "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems.",
               "type": "string",
-              "enum": [
-                "zip",
-                "tarball"
-              ]
+              "enum": ["zip", "tarball"]
             },
             "description": "The archive format for the download. Choose \"zip\" for broad compatibility or \"tarball\" for Unix/Linux systems."
           },
@@ -2807,10 +2685,7 @@
             "schema": {
               "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "When true, includes all default files (package.json, configuration files, etc.) that would be part of a complete deployment. When false or omitted, returns only the generated source files."
           }
@@ -2827,9 +2702,7 @@
         "summary": "Delete Chat Version Files",
         "description": "Deletes source files from a specific chat version (block). Files are removed from the version and a new source version is created.",
         "operationId": "chats.deleteVersionFiles",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2845,9 +2718,7 @@
                     "description": "Array of file paths to delete (e.g., [\"components/test.tsx\", \"lib/utils.ts\"])"
                   }
                 },
-                "required": [
-                  "filePaths"
-                ],
+                "required": ["filePaths"],
                 "additionalProperties": false
               }
             }
@@ -2977,9 +2848,7 @@
         "summary": "Resume Message",
         "description": "Resumes processing of a previously interrupted or incomplete message in a chat. Useful for continuing generation when a message was paused or stopped.",
         "operationId": "chats.resume",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3104,9 +2973,7 @@
         "summary": "Stop Message",
         "description": "Stops an in-flight message generation in a chat. Useful for cancelling a streaming response that is still being generated.",
         "operationId": "chats.stop",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3120,9 +2987,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "success"
-                  ],
+                  "required": ["success"],
                   "additionalProperties": false
                 }
               }
@@ -3241,9 +3106,7 @@
         "summary": "Resolve Task",
         "description": "Resolves a pending task in a chat, continuing the conversation. The latest message in the active chat fork must be an assistant message currently blocked on a matching task (integration setup, plan approval, question answers, or permission grants).",
         "operationId": "chats.resolveTask",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "requestBody": {
           "required": true,
           "content": {
@@ -3330,9 +3193,7 @@
                             }
                           }
                         },
-                        "required": [
-                          "type"
-                        ],
+                        "required": ["type"],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
                       },
@@ -3345,11 +3206,7 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "approved",
-                              "rejected",
-                              "request-changes"
-                            ],
+                            "enum": ["approved", "rejected", "request-changes"],
                             "description": "Whether the plan is approved, rejected, or needs changes."
                           },
                           "content": {
@@ -3358,11 +3215,7 @@
                             "description": "Feedback or instructions for the agent."
                           }
                         },
-                        "required": [
-                          "type",
-                          "status",
-                          "content"
-                        ],
+                        "required": ["type", "status", "content"],
                         "additionalProperties": false,
                         "description": "Resolves a plan review task. The agent proposed an implementation plan and is waiting for approval."
                       },
@@ -3412,10 +3265,7 @@
                             "description": "Answers to the questions the agent asked."
                           }
                         },
-                        "required": [
-                          "type",
-                          "answers"
-                        ],
+                        "required": ["type", "answers"],
                         "additionalProperties": false,
                         "description": "Resolves a question task. The agent asked the user one or more multiple-choice questions."
                       },
@@ -3473,11 +3323,7 @@
                                   "minLength": 1
                                 }
                               },
-                              "required": [
-                                "type",
-                                "toolName",
-                                "input"
-                              ],
+                              "required": ["type", "toolName", "input"],
                               "additionalProperties": false
                             },
                             "description": "The permissions to grant. Pass the suggestedPermissions from the stopped task."
@@ -3488,10 +3334,7 @@
                             "minLength": 1
                           }
                         },
-                        "required": [
-                          "type",
-                          "permissions"
-                        ],
+                        "required": ["type", "permissions"],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
@@ -3502,11 +3345,7 @@
                     "default": "sync",
                     "description": "Controls how the response is delivered.\n\n- `\"sync\"`: The response is returned immediately with the HTTP request.\n- `\"async\"`: Returns a message placeholder immediately; use getById to poll for completion status and final output.\n- `\"experimental_stream\"`: Returns content parts as Server-Sent Events for real-time streaming.",
                     "type": "string",
-                    "enum": [
-                      "sync",
-                      "async",
-                      "experimental_stream"
-                    ]
+                    "enum": ["sync", "async", "experimental_stream"]
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -3538,9 +3377,7 @@
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "task"
-                ],
+                "required": ["task"],
                 "additionalProperties": false
               }
             }
@@ -3661,9 +3498,7 @@
         "summary": "Find Deployments",
         "description": "Find deployments by project and chat IDs. This will return a list of deployments for the given project and chat IDs.",
         "operationId": "deployments.find",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3683,10 +3518,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -3815,9 +3647,7 @@
         "summary": "Create Deployment",
         "description": "Create a new deployment for a specific chat and version. This will trigger a deployment to Vercel.",
         "operationId": "deployments.create",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "requestBody": {
           "required": true,
           "content": {
@@ -3835,11 +3665,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "projectId",
-                  "chatId",
-                  "versionId"
-                ],
+                "required": ["projectId", "chatId", "versionId"],
                 "additionalProperties": false
               }
             }
@@ -3949,9 +3775,7 @@
         "summary": "Get Deployment",
         "description": "Get a deployment by ID. This will return the details of the deployment, including the inspector URL, chat ID, project ID, version ID, API URL, and web URL.",
         "operationId": "deployments.getById",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4065,9 +3889,7 @@
         "summary": "Delete Deployment",
         "description": "Delete a deployment by ID. This will delete the deployment from Vercel.",
         "operationId": "deployments.delete",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4088,11 +3910,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -4202,9 +4020,7 @@
         "summary": "Find Deployment Logs",
         "description": "Retrieves logs for a specific deployment. Supports filtering by timestamp to fetch only recent logs.",
         "operationId": "deployments.findLogs",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4236,21 +4052,14 @@
                           },
                           "type": {
                             "type": "string",
-                            "enum": [
-                              "stdout",
-                              "stderr"
-                            ],
+                            "enum": ["stdout", "stderr"],
                             "description": "Output stream type."
                           },
                           "level": {
                             "default": "info",
                             "description": "Log severity level.",
                             "type": "string",
-                            "enum": [
-                              "error",
-                              "warning",
-                              "info"
-                            ]
+                            "enum": ["error", "warning", "info"]
                           },
                           "object": {
                             "type": "string",
@@ -4280,10 +4089,7 @@
                       "description": "Object type identifier."
                     }
                   },
-                  "required": [
-                    "logs",
-                    "object"
-                  ],
+                  "required": ["logs", "object"],
                   "additionalProperties": false
                 }
               }
@@ -4403,9 +4209,7 @@
         "summary": "Find Deployment Errors",
         "description": "Retrieves a list of errors that occurred during a specific deployment. Useful for diagnosing and debugging deployment issues.",
         "operationId": "deployments.findErrors",
-        "tags": [
-          "deployments"
-        ],
+        "tags": ["deployments"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4533,9 +4337,7 @@
         "summary": "Find Hooks",
         "description": "Retrieves a list of existing hooks in your workspace. Useful for managing active webhooks tied to chat events or deployments.",
         "operationId": "hooks.find",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4555,10 +4357,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -4655,9 +4454,7 @@
         "summary": "Create Hook",
         "description": "Creates a new webhook that listens for specific events. Supports optional association with a chat.",
         "operationId": "hooks.create",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "requestBody": {
           "required": true,
           "content": {
@@ -4695,11 +4492,7 @@
                     "description": "The target URL to receive the webhook payloads."
                   }
                 },
-                "required": [
-                  "name",
-                  "events",
-                  "url"
-                ],
+                "required": ["name", "events", "url"],
                 "additionalProperties": false
               }
             }
@@ -4809,9 +4602,7 @@
         "summary": "Get Hook",
         "description": "Retrieves the details of a specific webhook using its ID.",
         "operationId": "hooks.getById",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4925,9 +4716,7 @@
         "summary": "Update Hook",
         "description": "Updates the configuration of an existing webhook, including its name, event subscriptions, or target URL.",
         "operationId": "hooks.update",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5079,9 +4868,7 @@
         "summary": "Delete Hook",
         "description": "Deletes a webhook based on its ID. This action is irreversible.",
         "operationId": "hooks.delete",
-        "tags": [
-          "hooks"
-        ],
+        "tags": ["hooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5102,11 +4889,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -5216,9 +4999,7 @@
         "summary": "Find Vercel Projects",
         "description": "Retrieves a list of Vercel projects linked to your integration. Useful for associating chats, deployments, or hooks with specific Vercel projects.",
         "operationId": "integrations.vercel.projects.find",
-        "tags": [
-          "integrations"
-        ],
+        "tags": ["integrations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5238,10 +5019,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -5338,9 +5116,7 @@
         "summary": "Create Vercel Project",
         "description": "Links a Vercel project to an existing v0 project. Enables Vercel-related features and deployment integration within the v0 workspace.",
         "operationId": "integrations.vercel.projects.create",
-        "tags": [
-          "integrations"
-        ],
+        "tags": ["integrations"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5357,10 +5133,7 @@
                     "description": "The name to assign to the new Vercel project."
                   }
                 },
-                "required": [
-                  "projectId",
-                  "name"
-                ],
+                "required": ["projectId", "name"],
                 "additionalProperties": false
               }
             }
@@ -5470,9 +5243,7 @@
         "summary": "Find Projects",
         "description": "Returns a list of all v0 projects in your workspace. Useful for browsing or managing projects across different chats or use cases.",
         "operationId": "projects.find",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5492,10 +5263,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -5592,9 +5360,7 @@
         "summary": "Create Project",
         "description": "Creates a new v0 project with an optional description, icon, environment variables, and instructions. Projects help organize chats and manage context.",
         "operationId": "projects.create",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5632,10 +5398,7 @@
                           "maxLength": 1000
                         }
                       },
-                      "required": [
-                        "key",
-                        "value"
-                      ],
+                      "required": ["key", "value"],
                       "additionalProperties": false
                     }
                   },
@@ -5651,15 +5414,10 @@
                   "privacy": {
                     "description": "The privacy setting for the project. For user accounts, this is always \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\".",
                     "type": "string",
-                    "enum": [
-                      "private",
-                      "team"
-                    ]
+                    "enum": ["private", "team"]
                   }
                 },
-                "required": [
-                  "name"
-                ],
+                "required": ["name"],
                 "additionalProperties": false
               }
             }
@@ -5769,9 +5527,7 @@
         "summary": "Get Project by ID",
         "description": "Retrieves the details of a specific v0 project by its ID.",
         "operationId": "projects.getById",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5885,9 +5641,7 @@
         "summary": "Update Project",
         "description": "Updates the metadata of an existing project using its `projectId`. Supports changes to the project name and privacy setting.",
         "operationId": "projects.update",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -5910,10 +5664,7 @@
                   "privacy": {
                     "description": "The privacy setting for the project. For user accounts, this must be \"private\". For team/enterprise accounts, this can be either \"private\" or \"team\".",
                     "type": "string",
-                    "enum": [
-                      "private",
-                      "team"
-                    ]
+                    "enum": ["private", "team"]
                   }
                 },
                 "additionalProperties": false
@@ -6034,9 +5785,7 @@
         "summary": "Delete Project",
         "description": "Deletes a specific project based on the provided projectId. This operation marks the project as deleted and is irreversible.",
         "operationId": "projects.delete",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6060,11 +5809,7 @@
                       "description": "Confirmation that the project has been deleted."
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "deleted"
-                  ],
+                  "required": ["id", "object", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -6169,10 +5914,7 @@
               "default": "false",
               "description": "If true, deletes all the chats associated with the given project ID. Deleting is permanent. Defaults to false.",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "If true, deletes all the chats associated with the given project ID. Deleting is permanent. Defaults to false."
           }
@@ -6189,9 +5931,7 @@
         "summary": "Assign Project to Chat",
         "description": "Links an existing v0 project to a specific chat. Helps group conversations under a shared project context.",
         "operationId": "projects.assign",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -6204,9 +5944,7 @@
                     "description": "The ID of the chat to assign the project to."
                   }
                 },
-                "required": [
-                  "chatId"
-                ],
+                "required": ["chatId"],
                 "additionalProperties": false
               }
             }
@@ -6232,11 +5970,7 @@
                       "const": true
                     }
                   },
-                  "required": [
-                    "object",
-                    "id",
-                    "assigned"
-                  ],
+                  "required": ["object", "id", "assigned"],
                   "additionalProperties": false
                 }
               }
@@ -6346,9 +6080,7 @@
         "summary": "Find Environment Variables",
         "description": "Retrieves all environment variables for a given project.",
         "operationId": "projects.findEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -6368,10 +6100,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -6475,10 +6204,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -6493,9 +6219,7 @@
         "summary": "Create Environment Variables",
         "description": "Creates new environment variables for a given project. This endpoint will fail if any of the specified environment variable keys already exist, unless upsert is set to true.",
         "operationId": "projects.createEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -6518,10 +6242,7 @@
                           "description": "The value of the environment variable."
                         }
                       },
-                      "required": [
-                        "key",
-                        "value"
-                      ],
+                      "required": ["key", "value"],
                       "additionalProperties": false
                     },
                     "description": "An array of environment variables to create with key and value fields."
@@ -6531,9 +6252,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "environmentVariables"
-                ],
+                "required": ["environmentVariables"],
                 "additionalProperties": false
               }
             }
@@ -6558,10 +6277,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -6665,10 +6381,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -6683,9 +6396,7 @@
         "summary": "Update Environment Variables",
         "description": "Updates multiple environment variables for a given project. Only the value of each environment variable can be updated.",
         "operationId": "projects.updateEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -6707,18 +6418,13 @@
                           "description": "The new value of the environment variable."
                         }
                       },
-                      "required": [
-                        "id",
-                        "value"
-                      ],
+                      "required": ["id", "value"],
                       "additionalProperties": false
                     },
                     "description": "An array of environment variables to update with id and value fields."
                   }
                 },
-                "required": [
-                  "environmentVariables"
-                ],
+                "required": ["environmentVariables"],
                 "additionalProperties": false
               }
             }
@@ -6743,10 +6449,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -6850,10 +6553,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -6870,9 +6570,7 @@
         "summary": "Delete Environment Variables",
         "description": "Deletes multiple environment variables for a given project by their IDs.",
         "operationId": "projects.deleteEnvVars",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "requestBody": {
           "required": true,
           "content": {
@@ -6889,9 +6587,7 @@
                     "description": "An array of environment variable IDs to delete."
                   }
                 },
-                "required": [
-                  "environmentVariableIds"
-                ],
+                "required": ["environmentVariableIds"],
                 "additionalProperties": false
               }
             }
@@ -6926,19 +6622,12 @@
                             "const": true
                           }
                         },
-                        "required": [
-                          "id",
-                          "object",
-                          "deleted"
-                        ],
+                        "required": ["id", "object", "deleted"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -7048,9 +6737,7 @@
         "summary": "Get Environment Variable",
         "description": "Retrieves a specific environment variable for a given project by its ID, including its value.",
         "operationId": "projects.getEnvVar",
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7067,10 +6754,7 @@
                       "$ref": "#/components/schemas/EnvironmentVariableDetailSchema"
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -7183,10 +6867,7 @@
             "schema": {
               "description": "Whether to return decrypted values. Defaults to false (encrypted).",
               "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
+              "enum": ["true", "false"]
             },
             "description": "Whether to return decrypted values. Defaults to false (encrypted)."
           }
@@ -7203,9 +6884,7 @@
         "summary": "Find Rate Limit",
         "description": "Retrieves rate limit information for a given scope. Useful for monitoring usage limits and avoiding throttling.",
         "operationId": "rateLimits.find",
-        "tags": [
-          "rateLimits"
-        ],
+        "tags": ["rateLimits"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7253,9 +6932,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "limit"
-                  ],
+                  "required": ["limit"],
                   "additionalProperties": false
                 }
               }
@@ -7366,9 +7043,7 @@
         "summary": "Get User",
         "description": "Retrieves information about the authenticated user, including their ID, name, email, and account metadata.",
         "operationId": "user.get",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7473,9 +7148,7 @@
         "summary": "Get Billing",
         "description": "Fetches billing usage and quota information for the authenticated user. Can be scoped to a specific context (e.g. project or namespace).",
         "operationId": "user.getBilling",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7513,10 +7186,7 @@
                                   "type": "number"
                                 }
                               },
-                              "required": [
-                                "start",
-                                "end"
-                              ],
+                              "required": ["start", "end"],
                               "additionalProperties": false
                             },
                             "balance": {
@@ -7529,10 +7199,7 @@
                                   "type": "number"
                                 }
                               },
-                              "required": [
-                                "remaining",
-                                "total"
-                              ],
+                              "required": ["remaining", "total"],
                               "additionalProperties": false
                             },
                             "onDemand": {
@@ -7568,9 +7235,7 @@
                                   }
                                 }
                               },
-                              "required": [
-                                "balance"
-                              ],
+                              "required": ["balance"],
                               "additionalProperties": false
                             }
                           },
@@ -7584,10 +7249,7 @@
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "billingType",
-                        "data"
-                      ],
+                      "required": ["billingType", "data"],
                       "additionalProperties": false
                     },
                     {
@@ -7610,16 +7272,11 @@
                               "type": "number"
                             }
                           },
-                          "required": [
-                            "limit"
-                          ],
+                          "required": ["limit"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "billingType",
-                        "data"
-                      ],
+                      "required": ["billingType", "data"],
                       "additionalProperties": false
                     }
                   ]
@@ -7732,9 +7389,7 @@
         "summary": "Get Plan",
         "description": "Returns the current subscription plan for the authenticated user, including tier details and feature limits.",
         "operationId": "user.getPlan",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7760,10 +7415,7 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "start",
-                        "end"
-                      ],
+                      "required": ["start", "end"],
                       "additionalProperties": false
                     },
                     "balance": {
@@ -7776,19 +7428,11 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "remaining",
-                        "total"
-                      ],
+                      "required": ["remaining", "total"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "plan",
-                    "billingCycle",
-                    "balance"
-                  ],
+                  "required": ["object", "plan", "billingCycle", "balance"],
                   "additionalProperties": false
                 }
               }
@@ -7887,9 +7531,7 @@
         "summary": "Get User Scopes",
         "description": "Retrieves all accessible scopes for the authenticated user, such as personal workspaces or shared teams.",
         "operationId": "user.getScopes",
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Success",
@@ -7909,10 +7551,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false
                 }
               }
@@ -8011,9 +7650,7 @@
         "summary": "Restore Block",
         "description": "Restores a block to a specific version.",
         "operationId": "chats.restore",
-        "tags": [
-          "chats"
-        ],
+        "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
@@ -8138,9 +7775,7 @@
         "summary": "Get Usage Report",
         "description": "Retrieves detailed usage events for the authenticated user or team, including costs, event types, models used, and metadata. Shows the same data as displayed in the usage dashboard. Can be filtered by chatId to show usage for a specific chat, or by userId to show usage for a specific user.",
         "operationId": "reports.getUsage",
-        "tags": [
-          "reports"
-        ],
+        "tags": ["reports"],
         "responses": {
           "200": {
             "description": "Success",
@@ -8207,12 +7842,7 @@
                             "description": "The ISO timestamp representing when the usage event was created."
                           }
                         },
-                        "required": [
-                          "id",
-                          "object",
-                          "totalCost",
-                          "createdAt"
-                        ],
+                        "required": ["id", "object", "totalCost", "createdAt"],
                         "additionalProperties": false
                       }
                     },
@@ -8229,9 +7859,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "hasMore"
-                      ],
+                      "required": ["hasMore"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -8242,18 +7870,11 @@
                           "description": "Number of events in this response"
                         }
                       },
-                      "required": [
-                        "totalCount"
-                      ],
+                      "required": ["totalCount"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination",
-                    "meta"
-                  ],
+                  "required": ["object", "data", "pagination", "meta"],
                   "additionalProperties": false
                 }
               }
@@ -8425,9 +8046,7 @@
         "summary": "Get AI Usage Report",
         "description": "Retrieves v0 AI usage events for the authenticated user or active team scope.",
         "operationId": "reports.getAIUsage",
-        "tags": [
-          "reports"
-        ],
+        "tags": ["reports"],
         "responses": {
           "200": {
             "description": "Success",
@@ -8511,46 +8130,27 @@
                       "type": "object",
                       "properties": {
                         "nextCursor": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
-                      "required": [
-                        "nextCursor"
-                      ],
+                      "required": ["nextCursor"],
                       "additionalProperties": false
                     },
                     "dateRange": {
                       "type": "object",
                       "properties": {
                         "start": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "end": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
-                      "required": [
-                        "start",
-                        "end"
-                      ],
+                      "required": ["start", "end"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "pagination",
-                    "dateRange"
-                  ],
+                  "required": ["object", "data", "pagination", "dateRange"],
                   "additionalProperties": false
                 }
               }
@@ -8698,9 +8298,7 @@
         "summary": "Get User Activity Report",
         "description": "Retrieves aggregated user activity data for team members, including chat counts, message counts, and activity timestamps. Only available for Enterprise teams with OWNER or BILLING role. Shows the same data as displayed in the Usage settings for Enterprise teams.",
         "operationId": "reports.getUserActivity",
-        "tags": [
-          "reports"
-        ],
+        "tags": ["reports"],
         "responses": {
           "200": {
             "description": "Success",
@@ -8874,25 +8472,15 @@
                               ]
                             }
                           },
-                          "required": [
-                            "start",
-                            "end"
-                          ],
+                          "required": ["start", "end"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "totalCount",
-                        "dateRange"
-                      ],
+                      "required": ["totalCount", "dateRange"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "object",
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["object", "data", "meta"],
                   "additionalProperties": false
                 }
               }
@@ -9015,9 +8603,7 @@
         "summary": "List MCP Servers",
         "description": "Retrieves all MCP servers configured for the authenticated user.",
         "operationId": "mcpServers.find",
-        "tags": [
-          "mcpServers"
-        ],
+        "tags": ["mcpServers"],
         "responses": {
           "200": {
             "description": "Success",
@@ -9075,18 +8661,13 @@
                                 "description": "The type of authentication configured."
                               }
                             },
-                            "required": [
-                              "type"
-                            ],
+                            "required": ["type"],
                             "additionalProperties": false,
                             "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
                           },
                           "scope": {
                             "type": "string",
-                            "enum": [
-                              "user",
-                              "team"
-                            ],
+                            "enum": ["user", "team"],
                             "description": "The scope of the MCP server (user or team)."
                           },
                           "createdAt": {
@@ -9117,10 +8698,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "object",
-                    "data"
-                  ],
+                  "required": ["object", "data"],
                   "additionalProperties": false,
                   "description": "List of MCP servers for the authenticated user."
                 }
@@ -9218,9 +8796,7 @@
         "summary": "Create MCP Server",
         "description": "Creates a new MCP server configuration for the authenticated user.",
         "operationId": "mcpServers.create",
-        "tags": [
-          "mcpServers"
-        ],
+        "tags": ["mcpServers"],
         "requestBody": {
           "required": true,
           "content": {
@@ -9265,9 +8841,7 @@
                             "description": "No authentication required."
                           }
                         },
-                        "required": [
-                          "type"
-                        ],
+                        "required": ["type"],
                         "additionalProperties": false
                       },
                       {
@@ -9285,10 +8859,7 @@
                             "description": "The bearer token for authentication."
                           }
                         },
-                        "required": [
-                          "type",
-                          "token"
-                        ],
+                        "required": ["type", "token"],
                         "additionalProperties": false
                       },
                       {
@@ -9312,10 +8883,7 @@
                             "description": "Key-value pairs of custom headers to include in requests."
                           }
                         },
-                        "required": [
-                          "type",
-                          "headers"
-                        ],
+                        "required": ["type", "headers"],
                         "additionalProperties": false
                       }
                     ]
@@ -9324,16 +8892,10 @@
                     "default": "user",
                     "description": "The scope of the MCP server. Defaults to user.",
                     "type": "string",
-                    "enum": [
-                      "user",
-                      "team"
-                    ]
+                    "enum": ["user", "team"]
                   }
                 },
-                "required": [
-                  "name",
-                  "url"
-                ],
+                "required": ["name", "url"],
                 "additionalProperties": false
               }
             }
@@ -9378,27 +8940,17 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": [
-                            "none",
-                            "bearer",
-                            "custom-headers",
-                            "oauth"
-                          ],
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
                           "description": "The type of authentication configured."
                         }
                       },
-                      "required": [
-                        "type"
-                      ],
+                      "required": ["type"],
                       "additionalProperties": false,
                       "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
                     },
                     "scope": {
                       "type": "string",
-                      "enum": [
-                        "user",
-                        "team"
-                      ],
+                      "enum": ["user", "team"],
                       "description": "The scope of the MCP server (user or team)."
                     },
                     "createdAt": {
@@ -9523,9 +9075,7 @@
         "summary": "Get MCP Server",
         "description": "Retrieves the details of a specific MCP server by its ID.",
         "operationId": "mcpServers.getById",
-        "tags": [
-          "mcpServers"
-        ],
+        "tags": ["mcpServers"],
         "responses": {
           "200": {
             "description": "Success",
@@ -9565,27 +9115,17 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": [
-                            "none",
-                            "bearer",
-                            "custom-headers",
-                            "oauth"
-                          ],
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
                           "description": "The type of authentication configured."
                         }
                       },
-                      "required": [
-                        "type"
-                      ],
+                      "required": ["type"],
                       "additionalProperties": false,
                       "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
                     },
                     "scope": {
                       "type": "string",
-                      "enum": [
-                        "user",
-                        "team"
-                      ],
+                      "enum": ["user", "team"],
                       "description": "The scope of the MCP server (user or team)."
                     },
                     "createdAt": {
@@ -9719,9 +9259,7 @@
         "summary": "Update MCP Server",
         "description": "Updates the configuration of an existing MCP server, including its name, URL, description, enabled status, and authentication settings.",
         "operationId": "mcpServers.update",
-        "tags": [
-          "mcpServers"
-        ],
+        "tags": ["mcpServers"],
         "requestBody": {
           "required": true,
           "content": {
@@ -9762,9 +9300,7 @@
                             "description": "No authentication required."
                           }
                         },
-                        "required": [
-                          "type"
-                        ],
+                        "required": ["type"],
                         "additionalProperties": false
                       },
                       {
@@ -9782,10 +9318,7 @@
                             "description": "The bearer token for authentication."
                           }
                         },
-                        "required": [
-                          "type",
-                          "token"
-                        ],
+                        "required": ["type", "token"],
                         "additionalProperties": false
                       },
                       {
@@ -9809,10 +9342,7 @@
                             "description": "Key-value pairs of custom headers to include in requests."
                           }
                         },
-                        "required": [
-                          "type",
-                          "headers"
-                        ],
+                        "required": ["type", "headers"],
                         "additionalProperties": false
                       }
                     ]
@@ -9820,10 +9350,7 @@
                   "scope": {
                     "description": "The scope of the MCP server.",
                     "type": "string",
-                    "enum": [
-                      "user",
-                      "team"
-                    ]
+                    "enum": ["user", "team"]
                   }
                 },
                 "additionalProperties": false
@@ -9870,27 +9397,17 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": [
-                            "none",
-                            "bearer",
-                            "custom-headers",
-                            "oauth"
-                          ],
+                          "enum": ["none", "bearer", "custom-headers", "oauth"],
                           "description": "The type of authentication configured."
                         }
                       },
-                      "required": [
-                        "type"
-                      ],
+                      "required": ["type"],
                       "additionalProperties": false,
                       "description": "Authentication type for the MCP server. Sensitive values like tokens and headers are not returned."
                     },
                     "scope": {
                       "type": "string",
-                      "enum": [
-                        "user",
-                        "team"
-                      ],
+                      "enum": ["user", "team"],
                       "description": "The scope of the MCP server (user or team)."
                     },
                     "createdAt": {
@@ -10024,9 +9541,7 @@
         "summary": "Delete MCP Server",
         "description": "Deletes an MCP server based on its ID. This action is irreversible and will also remove any associated OAuth tokens.",
         "operationId": "mcpServers.delete",
-        "tags": [
-          "mcpServers"
-        ],
+        "tags": ["mcpServers"],
         "responses": {
           "200": {
             "description": "Success",
@@ -10049,11 +9564,7 @@
                       "description": "Indicates the server was deleted."
                     }
                   },
-                  "required": [
-                    "object",
-                    "id",
-                    "deleted"
-                  ],
+                  "required": ["object", "id", "deleted"],
                   "additionalProperties": false
                 }
               }
@@ -10179,13 +9690,7 @@
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "public",
-              "private",
-              "team",
-              "team-edit",
-              "unlisted"
-            ],
+            "enum": ["public", "private", "team", "team-edit", "unlisted"],
             "description": "Defines the visibility of the chat—private, team-only, or public."
           },
           "name": {
@@ -10246,11 +9751,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ],
+                "enum": ["pending", "completed", "failed"],
                 "description": "The current status of the version generation process."
               },
               "demoUrl": {
@@ -10296,25 +9797,14 @@
                       "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
                     }
                   },
-                  "required": [
-                    "object",
-                    "name",
-                    "content",
-                    "locked"
-                  ],
+                  "required": ["object", "name", "content", "locked"],
                   "additionalProperties": false,
                   "description": "Detailed representation of a file, including its content and lock status."
                 },
                 "description": "A list of files that were generated or included in this version."
               }
             },
-            "required": [
-              "id",
-              "object",
-              "status",
-              "createdAt",
-              "files"
-            ],
+            "required": ["id", "object", "status", "createdAt", "files"],
             "additionalProperties": false
           },
           "url": {
@@ -10644,10 +10134,7 @@
                 },
                 "role": {
                   "type": "string",
-                  "enum": [
-                    "user",
-                    "assistant"
-                  ],
+                  "enum": ["user", "assistant"],
                   "description": "Specifies whether the message was sent by the user or the assistant."
                 },
                 "finishReason": {
@@ -10668,17 +10155,11 @@
                 },
                 "authorId": {
                   "description": "The ID of the user who sent the message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "parentId": {
                   "description": "The ID of the parent message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "attachments": {
                   "type": "array",
@@ -10708,17 +10189,10 @@
                       "type": {
                         "description": "Optional v0-specific attachment type for enhanced processing.",
                         "type": "string",
-                        "enum": [
-                          "screenshot",
-                          "figma",
-                          "zip"
-                        ]
+                        "enum": ["screenshot", "figma", "zip"]
                       }
                     },
-                    "required": [
-                      "url",
-                      "size"
-                    ],
+                    "required": ["url", "size"],
                     "additionalProperties": false
                   }
                 }
@@ -10763,11 +10237,7 @@
                   "description": "The origin or identifier of the file source (e.g., path or upload label)."
                 }
               },
-              "required": [
-                "lang",
-                "meta",
-                "source"
-              ],
+              "required": ["lang", "meta", "source"],
               "additionalProperties": false
             }
           },
@@ -10818,9 +10288,7 @@
                 "description": "If true, the user has write access to the chat."
               }
             },
-            "required": [
-              "write"
-            ],
+            "required": ["write"],
             "additionalProperties": false
           },
           "metadata": {
@@ -10871,13 +10339,7 @@
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "public",
-              "private",
-              "team",
-              "team-edit",
-              "unlisted"
-            ],
+            "enum": ["public", "private", "team", "team-edit", "unlisted"],
             "description": "Defines the visibility of the chat—private, team-only, or public."
           },
           "name": {
@@ -10938,11 +10400,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "completed",
-                  "failed"
-                ],
+                "enum": ["pending", "completed", "failed"],
                 "description": "The current status of the version generation process."
               },
               "demoUrl": {
@@ -10966,12 +10424,7 @@
                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
               }
             },
-            "required": [
-              "id",
-              "object",
-              "status",
-              "createdAt"
-            ],
+            "required": ["id", "object", "status", "createdAt"],
             "additionalProperties": false
           }
         },
@@ -11124,14 +10577,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "key",
-          "value",
-          "decrypted",
-          "createdAt"
-        ],
+        "required": ["id", "object", "key", "value", "decrypted", "createdAt"],
         "additionalProperties": false,
         "description": "Detailed information for an environment variable including its value."
       },
@@ -11168,14 +10614,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "key",
-          "value",
-          "decrypted",
-          "createdAt"
-        ],
+        "required": ["id", "object", "key", "value", "decrypted", "createdAt"],
         "additionalProperties": false,
         "description": "Summary information for an environment variable."
       },
@@ -11236,10 +10675,7 @@
             "description": "Array of environment variable details."
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false,
         "description": "List response containing environment variables."
       },
@@ -11264,12 +10700,7 @@
             "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
           }
         },
-        "required": [
-          "object",
-          "name",
-          "content",
-          "locked"
-        ],
+        "required": ["object", "name", "content", "locked"],
         "additionalProperties": false,
         "description": "Detailed representation of a file, including its content and lock status."
       },
@@ -11286,10 +10717,7 @@
             "description": "The name of the file, including its extension."
           }
         },
-        "required": [
-          "object",
-          "name"
-        ],
+        "required": ["object", "name"],
         "additionalProperties": false,
         "description": "Basic metadata about a file, such as its type and name."
       },
@@ -11334,13 +10762,7 @@
             "description": "Target URL that receives event payloads for this webhook."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name",
-          "events",
-          "url"
-        ],
+        "required": ["id", "object", "name", "events", "url"],
         "additionalProperties": false,
         "description": "Full configuration details for a webhook, including its scope and subscription."
       },
@@ -11373,11 +10795,7 @@
             "default": "pending",
             "description": "The delivery status of the webhook (e.g., delivered, failed).",
             "type": "string",
-            "enum": [
-              "pending",
-              "success",
-              "error"
-            ]
+            "enum": ["pending", "success", "error"]
           },
           "createdAt": {
             "type": "string",
@@ -11386,12 +10804,7 @@
             "description": "Timestamp of when the webhook event was triggered."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "event",
-          "createdAt"
-        ],
+        "required": ["id", "object", "event", "createdAt"],
         "additionalProperties": false,
         "description": "Detailed record of a webhook event, including its type, status, and timestamp."
       },
@@ -11412,11 +10825,7 @@
             "description": "A user-defined name to label the webhook."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false,
         "description": "Summary of a webhook, including its ID and display name."
       },
@@ -11457,12 +10866,7 @@
                 "description": "The name of the integration."
               }
             },
-            "required": [
-              "id",
-              "object",
-              "slug",
-              "name"
-            ],
+            "required": ["id", "object", "slug", "name"],
             "additionalProperties": false,
             "description": "Information about the connected integration."
           },
@@ -11475,12 +10879,7 @@
             "additionalProperties": {}
           }
         },
-        "required": [
-          "object",
-          "id",
-          "connected",
-          "integration"
-        ],
+        "required": ["object", "id", "connected", "integration"],
         "additionalProperties": false,
         "description": "Detailed information about an integration connection to a project."
       },
@@ -11531,32 +10930,19 @@
                       "description": "The name of the integration."
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "slug",
-                    "name"
-                  ],
+                  "required": ["id", "object", "slug", "name"],
                   "additionalProperties": false,
                   "description": "Information about the connected integration."
                 }
               },
-              "required": [
-                "object",
-                "id",
-                "connected",
-                "integration"
-              ],
+              "required": ["object", "id", "connected", "integration"],
               "additionalProperties": false,
               "description": "Summary information about an integration connection to a project."
             },
             "description": "Array of integration connection summaries."
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false,
         "description": "List response containing integration connections."
       },
@@ -11597,22 +10983,12 @@
                 "description": "The name of the integration."
               }
             },
-            "required": [
-              "id",
-              "object",
-              "slug",
-              "name"
-            ],
+            "required": ["id", "object", "slug", "name"],
             "additionalProperties": false,
             "description": "Information about the connected integration."
           }
         },
-        "required": [
-          "object",
-          "id",
-          "connected",
-          "integration"
-        ],
+        "required": ["object", "id", "connected", "integration"],
         "additionalProperties": false,
         "description": "Summary information about an integration connection to a project."
       },
@@ -11645,14 +11021,7 @@
             "description": "URL to the integration icon."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["id", "object", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false,
         "description": "Detailed information about an integration."
       },
@@ -11709,10 +11078,7 @@
             "description": "Array of integration details."
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false,
         "description": "List of available integrations."
       },
@@ -11737,12 +11103,7 @@
             "description": "The name of the integration."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "slug",
-          "name"
-        ],
+        "required": ["id", "object", "slug", "name"],
         "additionalProperties": false,
         "description": "Basic information about an integration."
       },
@@ -12066,10 +11427,7 @@
           },
           "role": {
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
             "description": "Specifies whether the message was sent by the user or the assistant."
           },
           "finishReason": {
@@ -12090,17 +11448,11 @@
           },
           "authorId": {
             "description": "The ID of the user who sent the message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "parentId": {
             "description": "The ID of the parent message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "attachments": {
             "type": "array",
@@ -12130,17 +11482,10 @@
                 "type": {
                   "description": "Optional v0-specific attachment type for enhanced processing.",
                   "type": "string",
-                  "enum": [
-                    "screenshot",
-                    "figma",
-                    "zip"
-                  ]
+                  "enum": ["screenshot", "figma", "zip"]
                 }
               },
-              "required": [
-                "url",
-                "size"
-              ],
+              "required": ["url", "size"],
               "additionalProperties": false
             }
           },
@@ -12483,10 +11828,7 @@
           },
           "role": {
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
             "description": "Specifies whether the message was sent by the user or the assistant."
           },
           "finishReason": {
@@ -12507,17 +11849,11 @@
           },
           "authorId": {
             "description": "The ID of the user who sent the message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "parentId": {
             "description": "The ID of the parent message.",
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "attachments": {
             "type": "array",
@@ -12547,17 +11883,10 @@
                 "type": {
                   "description": "Optional v0-specific attachment type for enhanced processing.",
                   "type": "string",
-                  "enum": [
-                    "screenshot",
-                    "figma",
-                    "zip"
-                  ]
+                  "enum": ["screenshot", "figma", "zip"]
                 }
               },
-              "required": [
-                "url",
-                "size"
-              ],
+              "required": ["url", "size"],
               "additionalProperties": false
             }
           }
@@ -12905,10 +12234,7 @@
                 },
                 "role": {
                   "type": "string",
-                  "enum": [
-                    "user",
-                    "assistant"
-                  ],
+                  "enum": ["user", "assistant"],
                   "description": "Specifies whether the message was sent by the user or the assistant."
                 },
                 "finishReason": {
@@ -12929,17 +12255,11 @@
                 },
                 "authorId": {
                   "description": "The ID of the user who sent the message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "parentId": {
                   "description": "The ID of the parent message.",
-                  "type": [
-                    "string",
-                    "null"
-                  ]
+                  "type": ["string", "null"]
                 },
                 "attachments": {
                   "type": "array",
@@ -12969,17 +12289,10 @@
                       "type": {
                         "description": "Optional v0-specific attachment type for enhanced processing.",
                         "type": "string",
-                        "enum": [
-                          "screenshot",
-                          "figma",
-                          "zip"
-                        ]
+                        "enum": ["screenshot", "figma", "zip"]
                       }
                     },
-                    "required": [
-                      "url",
-                      "size"
-                    ],
+                    "required": ["url", "size"],
                     "additionalProperties": false
                   }
                 }
@@ -13015,18 +12328,12 @@
                 "type": "string"
               }
             },
-            "required": [
-              "hasMore"
-            ],
+            "required": ["hasMore"],
             "additionalProperties": false,
             "description": "Pagination metadata for navigating through multiple pages of results."
           }
         },
-        "required": [
-          "object",
-          "data",
-          "pagination"
-        ],
+        "required": ["object", "data", "pagination"],
         "additionalProperties": false,
         "description": "List response containing multiple message summaries with cursor-based pagination."
       },
@@ -13042,10 +12349,7 @@
             "description": "Whether the user wants to receive push notifications."
           }
         },
-        "required": [
-          "liveActivity",
-          "pushNotifications"
-        ],
+        "required": ["liveActivity", "pushNotifications"],
         "additionalProperties": false,
         "description": "User preference for notification delivery methods."
       },
@@ -13082,14 +12386,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "object",
-          "id",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["object", "id", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false,
         "description": "Detailed information about a marketplace or store product."
       },
@@ -13146,10 +12443,7 @@
             "description": "Array of product summaries."
           }
         },
-        "required": [
-          "object",
-          "data"
-        ],
+        "required": ["object", "data"],
         "additionalProperties": false,
         "description": "List of available marketplace and store products."
       },
@@ -13182,14 +12476,7 @@
             "description": "URL to the product icon."
           }
         },
-        "required": [
-          "object",
-          "id",
-          "slug",
-          "name",
-          "description",
-          "iconUrl"
-        ],
+        "required": ["object", "id", "slug", "name", "description", "iconUrl"],
         "additionalProperties": false,
         "description": "Summary information about a marketplace or store product."
       },
@@ -13211,10 +12498,7 @@
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "private",
-              "team"
-            ],
+            "enum": ["private", "team"],
             "description": "The privacy setting for the project - either private or team."
           },
           "vercelProjectId": {
@@ -13338,11 +12622,7 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "completed",
-                        "failed"
-                      ],
+                      "enum": ["pending", "completed", "failed"],
                       "description": "The current status of the version generation process."
                     },
                     "demoUrl": {
@@ -13366,12 +12646,7 @@
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                     }
                   },
-                  "required": [
-                    "id",
-                    "object",
-                    "status",
-                    "createdAt"
-                  ],
+                  "required": ["id", "object", "status", "createdAt"],
                   "additionalProperties": false
                 }
               },
@@ -13423,10 +12698,7 @@
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "private",
-              "team"
-            ],
+            "enum": ["private", "team"],
             "description": "The privacy setting for the project - either private or team."
           },
           "vercelProjectId": {
@@ -13485,10 +12757,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "object"
-        ],
+        "required": ["id", "object"],
         "additionalProperties": false,
         "description": "Basic information about a workspace or identity context for projects and chats."
       },
@@ -13502,10 +12771,7 @@
           "object": {
             "description": "Type of item returned, either 'chat' or 'project'.",
             "type": "string",
-            "enum": [
-              "chat",
-              "project"
-            ]
+            "enum": ["chat", "project"]
           },
           "name": {
             "type": "string",
@@ -13532,14 +12798,7 @@
             "description": "Web URL for viewing the item in the interface."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name",
-          "createdAt",
-          "apiUrl",
-          "webUrl"
-        ],
+        "required": ["id", "object", "name", "createdAt", "apiUrl", "webUrl"],
         "additionalProperties": false,
         "description": "Generic result returned from a search query, representing either a chat or a project."
       },
@@ -13580,13 +12839,7 @@
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "email",
-          "avatar",
-          "createdAt"
-        ],
+        "required": ["id", "object", "email", "avatar", "createdAt"],
         "additionalProperties": false
       },
       "UserPreferencesPostResponseSchema": {
@@ -13614,17 +12867,12 @@
                         "description": "Whether the user wants to receive push notifications."
                       }
                     },
-                    "required": [
-                      "liveActivity",
-                      "pushNotifications"
-                    ],
+                    "required": ["liveActivity", "pushNotifications"],
                     "additionalProperties": false,
                     "description": "The user's preferred method for receiving notifications."
                   }
                 },
-                "required": [
-                  "notifications"
-                ],
+                "required": ["notifications"],
                 "additionalProperties": false,
                 "description": "User preferences configuration including notification settings."
               },
@@ -13635,10 +12883,7 @@
             "description": "The updated preferences if successful, or null if failed."
           }
         },
-        "required": [
-          "object",
-          "preferences"
-        ],
+        "required": ["object", "preferences"],
         "additionalProperties": false,
         "description": "Response schema for updating user preferences."
       },
@@ -13667,17 +12912,12 @@
                         "description": "Whether the user wants to receive push notifications."
                       }
                     },
-                    "required": [
-                      "liveActivity",
-                      "pushNotifications"
-                    ],
+                    "required": ["liveActivity", "pushNotifications"],
                     "additionalProperties": false,
                     "description": "The user's preferred method for receiving notifications."
                   }
                 },
-                "required": [
-                  "notifications"
-                ],
+                "required": ["notifications"],
                 "additionalProperties": false,
                 "description": "User preferences configuration including notification settings."
               },
@@ -13688,10 +12928,7 @@
             "description": "The user's current preferences, or null if errored."
           }
         },
-        "required": [
-          "object",
-          "preferences"
-        ],
+        "required": ["object", "preferences"],
         "additionalProperties": false,
         "description": "Response schema for retrieving user preferences."
       },
@@ -13710,17 +12947,12 @@
                 "description": "Whether the user wants to receive push notifications."
               }
             },
-            "required": [
-              "liveActivity",
-              "pushNotifications"
-            ],
+            "required": ["liveActivity", "pushNotifications"],
             "additionalProperties": false,
             "description": "The user's preferred method for receiving notifications."
           }
         },
-        "required": [
-          "notifications"
-        ],
+        "required": ["notifications"],
         "additionalProperties": false,
         "description": "User preferences configuration including notification settings."
       },
@@ -13761,13 +12993,7 @@
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "email",
-          "avatar",
-          "createdAt"
-        ],
+        "required": ["id", "object", "email", "avatar", "createdAt"],
         "additionalProperties": false,
         "description": "Details of the authenticated user, including profile and contact information."
       },
@@ -13788,11 +13014,7 @@
             "description": "The name of the Vercel project."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false
       },
       "VercelProjectSummary": {
@@ -13812,11 +13034,7 @@
             "description": "The name of the Vercel project."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "name"
-        ],
+        "required": ["id", "object", "name"],
         "additionalProperties": false,
         "description": "Basic metadata about a Vercel project connected to a v0 project."
       },
@@ -13834,11 +13052,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "pending",
-              "completed",
-              "failed"
-            ],
+            "enum": ["pending", "completed", "failed"],
             "description": "The current status of the version generation process."
           },
           "demoUrl": {
@@ -13884,25 +13098,14 @@
                   "description": "Whether the file is locked to prevent AI from overwriting it during new version generation."
                 }
               },
-              "required": [
-                "object",
-                "name",
-                "content",
-                "locked"
-              ],
+              "required": ["object", "name", "content", "locked"],
               "additionalProperties": false,
               "description": "Detailed representation of a file, including its content and lock status."
             },
             "description": "A list of files that were generated or included in this version."
           }
         },
-        "required": [
-          "id",
-          "object",
-          "status",
-          "createdAt",
-          "files"
-        ],
+        "required": ["id", "object", "status", "createdAt", "files"],
         "additionalProperties": false,
         "description": "Detailed version data including file contents."
       },
@@ -13920,11 +13123,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "pending",
-              "completed",
-              "failed"
-            ],
+            "enum": ["pending", "completed", "failed"],
             "description": "The current status of the version generation process."
           },
           "demoUrl": {
@@ -13948,12 +13147,7 @@
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
           }
         },
-        "required": [
-          "id",
-          "object",
-          "status",
-          "createdAt"
-        ],
+        "required": ["id", "object", "status", "createdAt"],
         "additionalProperties": false,
         "description": "Summary of a generated version of a chat, including its status and optional demo link."
       },
@@ -13981,11 +13175,7 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "pending",
-                    "completed",
-                    "failed"
-                  ],
+                  "enum": ["pending", "completed", "failed"],
                   "description": "The current status of the version generation process."
                 },
                 "demoUrl": {
@@ -14009,12 +13199,7 @@
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                 }
               },
-              "required": [
-                "id",
-                "object",
-                "status",
-                "createdAt"
-              ],
+              "required": ["id", "object", "status", "createdAt"],
               "additionalProperties": false,
               "description": "Summary of a generated version of a chat, including its status and optional demo link."
             },
@@ -14036,18 +13221,12 @@
                 "type": "string"
               }
             },
-            "required": [
-              "hasMore"
-            ],
+            "required": ["hasMore"],
             "additionalProperties": false,
             "description": "Pagination metadata for navigating through multiple pages of results."
           }
         },
-        "required": [
-          "object",
-          "data",
-          "pagination"
-        ],
+        "required": ["object", "data", "pagination"],
         "additionalProperties": false,
         "description": "List response containing multiple version summaries with cursor-based pagination."
       },
@@ -14065,16 +13244,11 @@
                 "const": "unauthorized_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "ForbiddenError": {
@@ -14091,16 +13265,11 @@
                 "const": "forbidden_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "NotFoundError": {
@@ -14117,16 +13286,11 @@
                 "const": "not_found_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "ConflictError": {
@@ -14143,16 +13307,11 @@
                 "const": "conflict_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "PayloadTooLargeError": {
@@ -14169,16 +13328,11 @@
                 "const": "payload_too_large_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "UnprocessableEntityError": {
@@ -14195,16 +13349,11 @@
                 "const": "unprocessable_entity_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "TooManyRequestsError": {
@@ -14221,16 +13370,11 @@
                 "const": "too_many_requests_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "InternalServerError": {
@@ -14247,16 +13391,11 @@
                 "const": "internal_server_error"
               }
             },
-            "required": [
-              "message",
-              "type"
-            ],
+            "required": ["message", "type"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       }
     },
