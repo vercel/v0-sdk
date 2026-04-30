@@ -16,6 +16,7 @@ export type ChatDetail = {
   favorite: boolean
   authorId: string
   projectId?: string
+  vercelProjectId?: string
   webUrl: string
   apiUrl: string
   latestVersion?: {
@@ -94,8 +95,13 @@ export type ChatDetail = {
   demo?: string
   text: string
   modelConfiguration?: {
-    /** @deprecated */
-    modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+    modelId?:
+      | 'v0-auto'
+      | 'v0-opus-4.7'
+      | 'v0-mini'
+      | 'v0-pro'
+      | 'v0-max'
+      | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
@@ -118,6 +124,7 @@ export type ChatSummary = {
   favorite: boolean
   authorId: string
   projectId?: string
+  vercelProjectId?: string
   webUrl: string
   apiUrl: string
   latestVersion?: {
@@ -527,6 +534,7 @@ export type ProjectDetail = {
     favorite: boolean
     authorId: string
     projectId?: string
+    vercelProjectId?: string
     webUrl: string
     apiUrl: string
     latestVersion?: {
@@ -741,7 +749,6 @@ export interface ChatsCreateRequest {
   chatPrivacy?: 'public' | 'private' | 'team-edit' | 'team' | 'unlisted'
   projectId?: string
   modelConfiguration?: {
-    /** @deprecated */
     modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
@@ -749,6 +756,7 @@ export interface ChatsCreateRequest {
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   designSystemId?: string | null
   mcpServerIds?: string[]
+  attachedSkillIds?: string[]
   metadata?: Record<string, unknown>
 }
 
@@ -888,13 +896,16 @@ export interface ChatsSendMessageRequest {
   }[]
   system?: string
   modelConfiguration?: {
-    /** @deprecated */
     modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
     imageGenerations?: boolean
     thinking?: boolean
   }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   mcpServerIds?: string[]
+  attachedSkillIds?: string[]
+  action?: {
+    type: 'fix-with-v0'
+  }
 }
 
 export type ChatsSendMessageResponse = ChatDetail
@@ -939,6 +950,113 @@ export type ChatsResumeResponse = MessageDetail
 export interface ChatsStopResponse {
   success: true
 }
+
+export interface ChatsResolveTaskRequest {
+  task:
+    | {
+        type: 'confirmed-steps'
+        connectedIntegrationNames?: Array<
+          | 'Upstash for Redis'
+          | 'Upstash Search'
+          | 'Neon'
+          | 'Supabase'
+          | 'Amazon Aurora DSQL'
+          | 'Amazon Aurora PostgreSQL'
+          | 'Amazon DynamoDB'
+          | 'firebase'
+          | 'Groq'
+          | 'Grok'
+          | 'fal'
+          | 'Deep Infra'
+          | 'Stripe'
+          | 'Clerk'
+          | 'Convex'
+          | 'Blob'
+          | 'Edge Config'
+          | 'Vercel AI Gateway'
+          | 'Snowflake'
+        >
+        connectedMcpPresetNames?: Array<
+          | 'Linear'
+          | 'Notion'
+          | 'Context7'
+          | 'Sentry'
+          | 'Zapier'
+          | 'Glean'
+          | 'Hex'
+          | 'Sanity'
+          | 'Granola'
+          | 'PostHog'
+          | 'Contentful'
+          | 'Slack'
+        >
+        appliedScripts?: string[]
+        addedEnvVars?: string[]
+        status?: never
+        content?: never
+        answers?: never
+        permissions?: never
+        userMessage?: never
+      }
+    | {
+        type: 'plan-exit-response'
+        status: 'approved' | 'rejected' | 'request-changes'
+        content: string
+        connectedIntegrationNames?: never
+        connectedMcpPresetNames?: never
+        appliedScripts?: never
+        addedEnvVars?: never
+        answers?: never
+        permissions?: never
+        userMessage?: never
+      }
+    | {
+        type: 'answered-questions'
+        answers: {
+          questionId: string
+          questionText: string
+          selectedLabels: string[]
+          customText?: string
+        }[]
+        connectedIntegrationNames?: never
+        connectedMcpPresetNames?: never
+        appliedScripts?: never
+        addedEnvVars?: never
+        status?: never
+        content?: never
+        permissions?: never
+        userMessage?: never
+      }
+    | {
+        type: 'confirmed-permissions'
+        permissions: Array<{
+          type: 'ALLOW_DYNAMIC_TOOL_STRICT'
+          toolName: string
+          input: unknown
+          taskNameActive?: string | unknown
+          taskNameComplete?: string | unknown
+          userMessage?: string
+        }>
+        userMessage?: string
+        connectedIntegrationNames?: never
+        connectedMcpPresetNames?: never
+        appliedScripts?: never
+        addedEnvVars?: never
+        status?: never
+        content?: never
+        answers?: never
+      }
+  responseMode?: 'sync' | 'async' | 'experimental_stream'
+  modelConfiguration?: {
+    modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+    imageGenerations?: boolean
+    thinking?: boolean
+  }
+}
+
+export type ChatsResolveTaskResponse = ChatDetail
+
+export type ChatsResolveTaskStreamResponse = ReadableStream<Uint8Array>
 
 export interface DeploymentsFindResponse {
   object: 'list'
@@ -1201,6 +1319,8 @@ export interface UserGetScopesResponse {
   data: ScopeSummary[]
 }
 
+export type ChatsRestoreResponse = VersionDetail
+
 export type ReportsGetUsageResponse = {
   object: 'list'
   data: Array<{
@@ -1231,6 +1351,33 @@ export type ReportsGetUsageResponse = {
   }
   meta: {
     totalCount: number
+  }
+}
+
+export type ReportsGetAIUsageResponse = {
+  object: 'list'
+  data: {
+    eventId: string
+    modelId: string
+    inputTokens: number
+    outputTokens: number
+    totalTokens: number
+    cacheCreationInputTokens: number
+    cacheReadInputTokens: number
+    timestamp: string
+    requestId: string
+    useCase: string
+    chatId: string
+    messageId: string
+    userId: string
+    userEmail: string
+  }[]
+  pagination: {
+    nextCursor: string | null
+  }
+  dateRange: {
+    start: string | null
+    end: string | null
   }
 }
 
@@ -1405,6 +1552,7 @@ export function createClient(config: V0ClientConfig = {}) {
           responseMode: params.responseMode,
           designSystemId: params.designSystemId,
           mcpServerIds: params.mcpServerIds,
+          attachedSkillIds: params.attachedSkillIds,
           metadata: params.metadata,
         }
 
@@ -1527,6 +1675,8 @@ export function createClient(config: V0ClientConfig = {}) {
           modelConfiguration: params.modelConfiguration,
           responseMode: params.responseMode,
           mcpServerIds: params.mcpServerIds,
+          attachedSkillIds: params.attachedSkillIds,
+          action: params.action,
         }
 
         if (params.responseMode === 'experimental_stream') {
@@ -1691,6 +1841,45 @@ export function createClient(config: V0ClientConfig = {}) {
         }
         return fetcher(
           `/chats/${pathParams.chatId}/messages/${pathParams.messageId}/stop`,
+          'POST',
+          { pathParams },
+        )
+      },
+
+      async resolveTask(
+        params: { chatId: string } & ChatsResolveTaskRequest,
+      ): Promise<ChatsResolveTaskResponse | ChatsResolveTaskStreamResponse> {
+        const pathParams = { chatId: params.chatId }
+        const body = {
+          task: params.task,
+          responseMode: params.responseMode,
+          modelConfiguration: params.modelConfiguration,
+        }
+
+        if (params.responseMode === 'experimental_stream') {
+          return await streamingFetcher(
+            `/chats/${pathParams.chatId}/tasks/resolve`,
+            'POST',
+            { pathParams, body },
+          )
+        }
+
+        return fetcher(`/chats/${pathParams.chatId}/tasks/resolve`, 'POST', {
+          pathParams,
+          body,
+        })
+      },
+
+      async restore(params: {
+        chatId: string
+        versionId: string
+      }): Promise<ChatsRestoreResponse> {
+        const pathParams = {
+          chatId: params.chatId,
+          versionId: params.versionId,
+        }
+        return fetcher(
+          `/chats/${pathParams.chatId}/versions/${pathParams.versionId}/restore`,
           'POST',
           { pathParams },
         )
@@ -2096,6 +2285,29 @@ export function createClient(config: V0ClientConfig = {}) {
           : {}
         const hasQuery = Object.keys(query).length > 0
         return fetcher(`/reports/usage`, 'GET', {
+          ...(hasQuery ? { query } : {}),
+        })
+      },
+
+      async getAIUsage(params?: {
+        start?: string
+        end?: string
+        cursor?: string
+        limit?: number
+      }): Promise<ReportsGetAIUsageResponse> {
+        const query = params
+          ? (Object.fromEntries(
+              Object.entries({
+                start: params.start,
+                end: params.end,
+                cursor: params.cursor,
+                limit:
+                  params.limit !== undefined ? String(params.limit) : undefined,
+              }).filter(([_, value]) => value !== undefined),
+            ) as Record<string, string>)
+          : {}
+        const hasQuery = Object.keys(query).length > 0
+        return fetcher(`/reports/usage/ai`, 'GET', {
           ...(hasQuery ? { query } : {}),
         })
       },
