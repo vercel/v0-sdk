@@ -1,9 +1,9 @@
+/* Dark theme syntax highlighting for Prism.js */
+@import 'prismjs/themes/prism-dark.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Dark theme syntax highlighting for Prism.js */
-@import 'prismjs/themes/prism-dark.css';
 
 :root {
   --background: 33 5% 13%; /* #212121 - Dark background like ChatGPT */

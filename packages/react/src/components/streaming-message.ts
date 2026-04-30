@@ -8,7 +8,8 @@ import {
 import { MessageProps } from '../types'
 
 export interface StreamingMessageProps
-  extends Omit<MessageProps, 'content' | 'streaming' | 'isLastMessage'>,
+  extends
+    Omit<MessageProps, 'content' | 'streaming' | 'isLastMessage'>,
     UseStreamingMessageOptions {
   /**
    * The streaming response from v0.chats.create() with responseMode: 'experimental_stream'
