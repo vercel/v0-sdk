@@ -44,7 +44,7 @@
     "@types/prompts": "^2.4.2",
     "@types/validate-npm-package-name": "^4.0.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=22",

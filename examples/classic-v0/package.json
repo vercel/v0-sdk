@@ -18,10 +18,10 @@
     "clsx": "^2.1.1",
     "jotai": "^2.13.1",
     "lucide-react": "^0.540.0",
-    "next": "15.5.9",
+    "next": "16.2.4",
     "playwright": "^1.55.0",
-    "react": "19.1.2",
-    "react-dom": "19.1.2",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
     "react-syntax-highlighter": "^15.6.6",
     "tailwind-merge": "^2.5.5",
     "v0-sdk": "workspace:*"
@@ -34,6 +34,6 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.7",
-    "typescript": "^5"
+    "typescript": "^6.0.3"
   }
 }
