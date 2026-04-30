@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
           throw new Error('Screenshot appears to be blank')
         }
 
-        return new NextResponse(screenshot, {
+        return new NextResponse(new Uint8Array(screenshot), {
           headers: {
             'Content-Type': 'image/png',
             'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
