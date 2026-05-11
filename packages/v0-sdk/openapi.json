@@ -3611,10 +3611,10 @@
           {
             "name": "projectId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "string",
-              "description": "The ID of the project to find deployments for"
+              "description": "The ID of the project to find deployments for",
+              "type": "string"
             },
             "description": "The ID of the project to find deployments for"
           },
@@ -3667,7 +3667,7 @@
                     "type": "string"
                   }
                 },
-                "required": ["projectId", "chatId", "versionId"],
+                "required": ["chatId", "versionId"],
                 "additionalProperties": false
               }
             }
@@ -5407,7 +5407,7 @@
                   "instructions": {
                     "description": "Guidance or goals that provide context for the model when working within the project.",
                     "type": "string",
-                    "maxLength": 1000
+                    "maxLength": 2000
                   },
                   "vercelProjectId": {
                     "description": "The ID of an existing Vercel project to link to. If not provided, a new Vercel project will be created.",
@@ -8796,7 +8796,7 @@
       },
       "post": {
         "summary": "Create MCP Server",
-        "description": "Creates a new MCP server configuration for the authenticated user.",
+        "description": "Creates a new MCP server configuration for the authenticated user. Supports OAuth, bearer token, custom headers, and unauthenticated servers.",
         "operationId": "mcpServers.create",
         "tags": ["mcpServers"],
         "requestBody": {
@@ -8886,6 +8886,79 @@
                           }
                         },
                         "required": ["type", "headers"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "oauth",
+                            "description": "OAuth 2.1 authentication."
+                          },
+                          "config": {
+                            "type": "object",
+                            "properties": {
+                              "authorizationUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The OAuth authorization endpoint URL."
+                              },
+                              "tokenUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The OAuth token endpoint URL."
+                              },
+                              "registrationUrl": {
+                                "description": "The optional dynamic client registration endpoint URL.",
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "The OAuth client ID."
+                              },
+                              "clientSecret": {
+                                "description": "The optional OAuth client secret. This value is stored securely and is never returned by the API.",
+                                "type": "string"
+                              },
+                              "scopes": {
+                                "default": [],
+                                "description": "OAuth scopes to request during authorization.",
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "usePKCE": {
+                                "default": true,
+                                "description": "Whether to use PKCE for the authorization code flow.",
+                                "type": "boolean"
+                              },
+                              "issuer": {
+                                "description": "The optional issuer identifier for mix-up protection.",
+                                "type": "string"
+                              },
+                              "resource": {
+                                "description": "The optional RFC 8707 resource indicator. For MCP servers, this is usually the MCP server URL.",
+                                "type": "string"
+                              },
+                              "clientIdMetadataDocumentSupported": {
+                                "description": "Whether the authorization server supports Client ID Metadata Documents.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "authorizationUrl",
+                              "tokenUrl",
+                              "clientId"
+                            ],
+                            "additionalProperties": false,
+                            "description": "OAuth configuration for the MCP server."
+                          }
+                        },
+                        "required": ["type", "config"],
                         "additionalProperties": false
                       }
                     ]
@@ -9346,6 +9419,79 @@
                         },
                         "required": ["type", "headers"],
                         "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "oauth",
+                            "description": "OAuth 2.1 authentication."
+                          },
+                          "config": {
+                            "type": "object",
+                            "properties": {
+                              "authorizationUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The OAuth authorization endpoint URL."
+                              },
+                              "tokenUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The OAuth token endpoint URL."
+                              },
+                              "registrationUrl": {
+                                "description": "The optional dynamic client registration endpoint URL.",
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "The OAuth client ID."
+                              },
+                              "clientSecret": {
+                                "description": "The optional OAuth client secret. This value is stored securely and is never returned by the API.",
+                                "type": "string"
+                              },
+                              "scopes": {
+                                "default": [],
+                                "description": "OAuth scopes to request during authorization.",
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "usePKCE": {
+                                "default": true,
+                                "description": "Whether to use PKCE for the authorization code flow.",
+                                "type": "boolean"
+                              },
+                              "issuer": {
+                                "description": "The optional issuer identifier for mix-up protection.",
+                                "type": "string"
+                              },
+                              "resource": {
+                                "description": "The optional RFC 8707 resource indicator. For MCP servers, this is usually the MCP server URL.",
+                                "type": "string"
+                              },
+                              "clientIdMetadataDocumentSupported": {
+                                "description": "Whether the authorization server supports Client ID Metadata Documents.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "authorizationUrl",
+                              "tokenUrl",
+                              "clientId"
+                            ],
+                            "additionalProperties": false,
+                            "description": "OAuth configuration for the MCP server."
+                          }
+                        },
+                        "required": ["type", "config"],
+                        "additionalProperties": false
                       }
                     ]
                   },
@@ -9662,6 +9808,175 @@
               "type": "string"
             },
             "description": "The ID of the MCP server to delete."
+          }
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/mcp-servers/{mcpServerId}/oauth/authorize": {
+      "post": {
+        "summary": "Create MCP Server OAuth Authorization URL",
+        "description": "Creates an OAuth authorization URL for an OAuth MCP server. Redirect the user to the returned URL, and the Platform API OAuth callback will store the resulting tokens before redirecting to your returnUrl.",
+        "operationId": "mcpServers.createOAuthAuthorizationUrl",
+        "tags": ["mcpServers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "returnUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "An absolute URL in your application where v0 redirects after OAuth completes. HTTPS is required in production."
+                  }
+                },
+                "required": ["returnUrl"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "const": "mcp_server_oauth_authorization",
+                      "description": "The object type."
+                    },
+                    "mcpServerId": {
+                      "type": "string",
+                      "description": "The MCP server being authorized."
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "The provider authorization URL to redirect the user to."
+                    },
+                    "state": {
+                      "type": "string",
+                      "description": "The OAuth state value. This expires after 5 minutes."
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                      "description": "The ISO timestamp when the authorization URL expires."
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "mcpServerId",
+                    "url",
+                    "state",
+                    "expiresAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayloadTooLargeError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mcpServerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the OAuth MCP server to authorize."
           }
         ],
         "security": [
@@ -10465,8 +10780,8 @@
             "description": "The ID of the chat that this deployment is scoped to."
           },
           "projectId": {
-            "type": "string",
-            "description": "The ID of the project that this deployment is scoped to."
+            "description": "The ID of the project that this deployment is scoped to.",
+            "type": "string"
           },
           "versionId": {
             "type": "string",
@@ -10488,7 +10803,6 @@
           "object",
           "inspectorUrl",
           "chatId",
-          "projectId",
           "versionId",
           "apiUrl",
           "webUrl"
@@ -10516,8 +10830,8 @@
             "description": "The ID of the chat that this deployment is scoped to."
           },
           "projectId": {
-            "type": "string",
-            "description": "The ID of the project that this deployment is scoped to."
+            "description": "The ID of the project that this deployment is scoped to.",
+            "type": "string"
           },
           "versionId": {
             "type": "string",
@@ -10539,7 +10853,6 @@
           "object",
           "inspectorUrl",
           "chatId",
-          "projectId",
           "versionId",
           "apiUrl",
           "webUrl"
