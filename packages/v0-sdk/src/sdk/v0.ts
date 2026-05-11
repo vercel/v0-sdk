@@ -143,7 +143,7 @@ export interface DeploymentDetail {
   object: 'deployment'
   inspectorUrl: string
   chatId: string
-  projectId: string
+  projectId?: string
   versionId: string
   apiUrl: string
   webUrl: string
@@ -154,7 +154,7 @@ export interface DeploymentSummary {
   object: 'deployment'
   inspectorUrl: string
   chatId: string
-  projectId: string
+  projectId?: string
   versionId: string
   apiUrl: string
   webUrl: string
@@ -1064,7 +1064,7 @@ export interface DeploymentsFindResponse {
 }
 
 export interface DeploymentsCreateRequest {
-  projectId: string
+  projectId?: string
   chatId: string
   versionId: string
 }
@@ -1439,16 +1439,36 @@ export interface McpServersCreateRequest {
         type: 'none'
         token?: never
         headers?: never
+        config?: never
       }
     | {
         type: 'bearer'
         token: string
         headers?: never
+        config?: never
       }
     | {
         type: 'custom-headers'
         headers: Record<string, unknown>
         token?: never
+        config?: never
+      }
+    | {
+        type: 'oauth'
+        config: {
+          authorizationUrl: string
+          tokenUrl: string
+          registrationUrl?: string
+          clientId: string
+          clientSecret?: string
+          scopes?: string[]
+          usePKCE?: boolean
+          issuer?: string
+          resource?: string
+          clientIdMetadataDocumentSupported?: boolean
+        }
+        token?: never
+        headers?: never
       }
   scope?: 'user' | 'team'
 }
@@ -1493,16 +1513,36 @@ export interface McpServersUpdateRequest {
         type: 'none'
         token?: never
         headers?: never
+        config?: never
       }
     | {
         type: 'bearer'
         token: string
         headers?: never
+        config?: never
       }
     | {
         type: 'custom-headers'
         headers: Record<string, unknown>
         token?: never
+        config?: never
+      }
+    | {
+        type: 'oauth'
+        config: {
+          authorizationUrl: string
+          tokenUrl: string
+          registrationUrl?: string
+          clientId: string
+          clientSecret?: string
+          scopes?: string[]
+          usePKCE?: boolean
+          issuer?: string
+          resource?: string
+          clientIdMetadataDocumentSupported?: boolean
+        }
+        token?: never
+        headers?: never
       }
   scope?: 'user' | 'team'
 }
@@ -1526,6 +1566,18 @@ export interface McpServersDeleteResponse {
   object: 'mcp_server'
   id: string
   deleted: true
+}
+
+export interface McpServersCreateOAuthAuthorizationUrlRequest {
+  returnUrl: string
+}
+
+export interface McpServersCreateOAuthAuthorizationUrlResponse {
+  object: 'mcp_server_oauth_authorization'
+  mcpServerId: string
+  url: string
+  state: string
+  expiresAt: string
 }
 
 export interface V0ClientConfig {
@@ -2082,7 +2134,7 @@ export function createClient(config: V0ClientConfig = {}) {
 
     deployments: {
       async find(params: {
-        projectId: string
+        projectId?: string
         chatId: string
         versionId: string
       }): Promise<DeploymentsFindResponse> {
@@ -2384,6 +2436,20 @@ export function createClient(config: V0ClientConfig = {}) {
         return fetcher(`/mcp-servers/${pathParams.mcpServerId}`, 'DELETE', {
           pathParams,
         })
+      },
+
+      async createOAuthAuthorizationUrl(
+        params: {
+          mcpServerId: string
+        } & McpServersCreateOAuthAuthorizationUrlRequest,
+      ): Promise<McpServersCreateOAuthAuthorizationUrlResponse> {
+        const pathParams = { mcpServerId: params.mcpServerId }
+        const body = { returnUrl: params.returnUrl }
+        return fetcher(
+          `/mcp-servers/${pathParams.mcpServerId}/oauth/authorize`,
+          'POST',
+          { pathParams, body },
+        )
       },
     },
   }
