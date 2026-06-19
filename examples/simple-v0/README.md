@@ -15,7 +15,7 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 1. **Install dependencies:**
 
    ```bash
-   pnpm install
+   bun install
    ```
 
 2. **Configure environment:**
@@ -29,13 +29,13 @@ You can deploy your own version of Simple v0 to Vercel with one click:
    KV_REST_API_TOKEN=your_kv_rest_api_token
    ```
 
-   - Get your v0 API key from [v0.dev/settings](https://v0.dev/settings)
+   - Get your v0 API key from [v0.app/settings](https://v0.app/settings)
    - Optionally get your Upstash Redis credentials from [upstash.com](https://upstash.com) for rate limiting
 
 3. **Run development server:**
 
    ```bash
-   pnpm dev
+   bun run dev
    ```
 
    Open [http://localhost:3000](http://localhost:3000) to view the application.
@@ -43,23 +43,22 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 ## Features
 
 - **AI App Generation**: Create applications from natural language prompts using v0's AI
-- **Project Management**: Organize your work into projects with multiple chat conversations
-- **Live Preview**: Instantly preview generated applications in an embedded iframe
+- **Live Preview**: Starts the v0 preview VM and embeds the returned preview URL
 - **Chat Management**: Continue conversations, fork chats, rename, and delete as needed
 - **One-Click Deployment**: Deploy generated apps directly to Vercel
 - **File Attachments**: Upload images and files to enhance your prompts
 - **Voice Input**: Use speech-to-text for hands-free prompt creation
 - **Rate Limiting**: Built-in rate limiting (3 AI generations per 12 hours) to prevent abuse
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Session Caching**: Improved performance with intelligent caching of projects and chats
+- **Session Caching**: Improved performance with intelligent caching of chats
 
 ## API Routes
 
 - `GET /api/validate` - Validate API key
-- `GET /api/projects` - List all projects
-- `GET /api/projects/[id]` - Get project details with associated chats
+- `GET /api/chats` - List chats
 - `POST /api/generate` - Generate or continue app conversation
 - `GET /api/chats/[id]` - Retrieve chat details and history
+- `GET /api/chats/[id]/preview` - Start/check the VM-backed preview URL
 - `DELETE /api/chats/[id]` - Delete a chat conversation
 - `PATCH /api/chats/[id]` - Update chat (rename)
 - `POST /api/chats/fork` - Create a new chat from an existing one
@@ -67,11 +66,11 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 with App Router
+- **Framework:** Next.js 16 with App Router
 - **Runtime:** React 19 with TypeScript
 - **Styling:** Tailwind CSS 4
 - **UI Components:** Radix UI primitives with custom styling
-- **API Integration:** v0-sdk for Platform API communication
+- **API Integration:** v0 for Platform API communication
 - **Rate Limiting:** Upstash Redis with sliding window algorithm
 - **Fonts:** Geist Sans and Geist Mono via next/font
 - **Build Tool:** Turbopack for fast development
@@ -81,7 +80,7 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 This application implements optional rate limiting to prevent abuse and ensure fair usage:
 
 - **Limit:** 3 AI generations per 12 hours per IP address
-- **What counts as 1 generation:** Each call to `v0.chats.create()` or `v0.chats.sendMessage()`
+- **What counts as 1 generation:** Each call to `v0.chats.create()` or `v0.messages.send()`
 - **Scope:** Applies to all AI generation requests regardless of chat type
 - **Implementation:** Uses Upstash Redis with a sliding window algorithm
 - **Optional:** If Upstash credentials are not provided, rate limiting is disabled
@@ -89,7 +88,7 @@ This application implements optional rate limiting to prevent abuse and ensure f
 
 When the rate limit is exceeded, users receive a 429 status code with information about when they can try again.
 
-## Project Structure
+## File Structure
 
 ```
 ├── app/
@@ -97,11 +96,9 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 │   │   ├── chats/[chatId]/     # Chat CRUD operations
 │   │   ├── deployments/        # Vercel deployment handling
 │   │   ├── generate/           # AI app generation
-│   │   ├── projects/           # Project management
 │   │   └── validate/           # API key validation
 │   ├── components/             # App-specific components
-│   ├── projects/[projectId]/   # Dynamic project pages
-│   │   └── chats/[chatId]/     # Individual chat pages
+│   ├── chats/[chatId]/         # Individual chat pages
 │   ├── globals.css             # Global styles and Tailwind config
 │   ├── layout.tsx              # Root layout with metadata
 │   └── page.tsx                # Homepage with main interface
@@ -117,7 +114,7 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 
 | Variable            | Required | Description                                                                             |
 | ------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `V0_API_KEY`        | Yes      | Your v0 Platform API key from [v0.dev/settings](https://v0.dev/settings)                |
+| `V0_API_KEY`        | Yes      | Your v0 Platform API key from [v0.app/settings](https://v0.app/settings)                |
 | `KV_REST_API_URL`   | No       | Upstash Redis REST URL for rate limiting (if not provided, rate limiting is disabled)   |
 | `KV_REST_API_TOKEN` | No       | Upstash Redis REST token for rate limiting (if not provided, rate limiting is disabled) |
 
@@ -125,38 +122,37 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Start development server with Turbopack
-pnpm dev
+bun run dev
 
 # Build for production
-pnpm build
+bun run build
 
 # Start production server
-pnpm start
+bun run start
 
 # Run linting
-pnpm lint
+bun run lint
 
 # Format code
-pnpm format
+bun run format
 
 # Check formatting
-pnpm format:check
+bun run format:check
 ```
 
 ## Usage
 
 1. **Start Creating**: Enter a prompt describing the app you want to build
-2. **Organize Work**: Create projects to group related conversations
-3. **Iterate**: Continue conversations to refine and improve your apps
-4. **Deploy**: One-click deployment to Vercel for sharing and testing
-5. **Manage**: Rename, delete, or fork chats as your projects evolve
+2. **Iterate**: Continue conversations to refine and improve your apps
+3. **Deploy**: One-click deployment to Vercel for sharing and testing
+4. **Manage**: Rename, delete, or fork chats as your ideas evolve
 
 ## Learn More
 
-- [v0 Platform API Documentation](https://v0.dev/docs/api/platform)
+- [v0 Platform API Documentation](https://v0.app/docs/api/platform)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Radix UI](https://www.radix-ui.com)

@@ -1,56 +1,22 @@
 {
-  "name": "v0-sdk-monorepo",
-  "version": "0.8.0",
+  "name": "v0-sdk",
   "private": true,
-  "description": "Monorepo for v0 Platform SDKs",
-  "homepage": "https://v0.dev/docs/api",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vercel/v0-sdk.git"
-  },
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "type": "module",
   "scripts": {
-    "build": "turbo build",
-    "build:packages": "turbo build --filter=@v0-sdk/* --filter=v0-sdk",
-    "dev": "turbo dev",
-    "lint": "turbo lint --filter=@v0-sdk/* --filter=v0-sdk --filter=create-v0-sdk-app",
-    "test": "turbo test --filter=@v0-sdk/* --filter=v0-sdk",
-    "test:watch": "turbo test:watch",
-    "type-check": "turbo type-check --filter=@v0-sdk/* --filter=v0-sdk --filter=create-v0-sdk-app",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
-    "sdk:generate": "turbo run sdk:generate",
-    "changeset": "changeset",
-    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
-    "ci:release": "turbo clean && turbo build && changeset publish",
-    "prepare": "husky"
+    "generate": "bun --filter v0 generate",
+    "build": "bun --filter v0 build",
+    "typecheck": "bun --filter v0 typecheck",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.9",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
-    "prettier": "^3.3.3",
-    "turbo": "^2.3.3",
-    "typescript": "^6.0.3"
-  },
-  "packageManager": "pnpm@9.15.0",
-  "engines": {
-    "node": ">=22",
-    "pnpm": ">=9"
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx,js,jsx,json,md}": [
-      "prettier --write"
-    ]
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "all"
-  },
-  "pnpm": {
-    "overrides": {
-      "esbuild@<=0.24.2": ">=0.25.0",
-      "prismjs@<1.30.0": ">=1.30.0"
-    }
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0"
   }
 }

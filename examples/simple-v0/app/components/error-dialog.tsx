@@ -28,9 +28,7 @@ export default function ErrorDialog({
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription className="text-left">
-            {message}
-          </AlertDialogDescription>
+          <AlertDialogDescription className="text-left">{message}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <Button onClick={onClose}>Close</Button>

@@ -1,48 +1,202 @@
-name: Release
+name: release
 
 on:
   push:
     branches:
       - main
-    paths:
-      - '.changeset/**'
-      - '.github/workflows/release.yml'
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+    inputs:
+      task:
+        description: 'Release task'
+        required: true
+        default: version-pr
+        type: choice
+        options:
+          - canary
+          - version-pr
+          - latest
+      bump:
+        description: 'Version bump type for release PRs'
+        required: true
+        default: patch
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
 
 jobs:
-  release:
-    name: Release
+  canary:
+    if: ${{ github.event_name == 'push' || github.event.inputs.task == 'canary' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
+      - uses: actions/setup-node@v6
         with:
-          version: 9.15.0
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Resolve canary version
+        id: version
+        run: |
+          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
+          BASE_VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
+          SHA=$(git rev-parse --short HEAD)
+          VERSION="${BASE_VERSION}-canary.${SHA}"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Check published canary
+        id: published
+        run: |
+          if npm view "${{ steps.version.outputs.name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.published.outputs.skip != 'true'
+        run: bun --cwd packages/v0-sdk pm pkg set "version=${{ steps.version.outputs.version }}"
+      - if: steps.published.outputs.skip != 'true'
+        run: npm publish --tag canary --workspace packages/v0-sdk
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+  version-pr:
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.task == 'version-pr' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
         with:
-          node-version: '22'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
+          ref: main
+      - uses: actions/setup-node@v6
         with:
-          version: pnpm ci:version
-          publish: pnpm ci:release
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+          node-version: '24'
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Bump package version
+        id: bump
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
+          BUMP: ${{ github.event.inputs.bump || 'patch' }}
+        run: |
+          bun --cwd packages/v0-sdk pm version "$BUMP" --no-git-tag-version
+          bun install --lockfile-only
+          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
+          VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Check published latest
+        id: published
+        run: |
+          if npm view "${{ steps.bump.outputs.name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check for existing release PR
+        id: existing
+        if: steps.published.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          PR=$(gh pr list --state open --search "Release v${{ steps.bump.outputs.version }} in:title" --json number --jq '.[0].number // ""')
+          if [ -n "$PR" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open release PR
+        if: steps.published.outputs.skip != 'true' && steps.existing.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.bump.outputs.version }}"
+          NAME="${{ steps.bump.outputs.name }}"
+          BRANCH="release/v${VERSION}-${GITHUB_RUN_ID}"
+
+          git config user.name "v0[bot]"
+          git config user.email "v0[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add packages/v0-sdk/package.json bun.lock
+          if git diff --cached --quiet; then
+            echo "No release changes to commit."
+            exit 0
+          fi
+          git commit -m "Release v${VERSION}"
+          git push --set-upstream origin "$BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Release v${VERSION}" \
+            --body "Bumps ${NAME} to v${VERSION}. Merge this PR to publish it from main."
+
+  latest:
+    if: ${{ github.event_name == 'push' || github.event.inputs.task == 'latest' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Resolve latest version
+        id: version
+        run: |
+          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
+          VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
+          COMMIT=$(git rev-parse HEAD)
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commit=${COMMIT}" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check published latest
+        id: published
+        if: steps.version.outputs.prerelease != 'true'
+        run: |
+          if npm view "${{ steps.version.outputs.name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.skip != 'true'
+        run: npm publish --tag latest --workspace packages/v0-sdk
+      - name: Check GitHub release
+        id: release
+        if: steps.version.outputs.prerelease != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ steps.version.outputs.version }}" > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.prerelease != 'true' && steps.release.outputs.skip != 'true'
+        run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ steps.version.outputs.commit }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,60 +1,50 @@
 {
-  "name": "v0-sdk",
-  "version": "0.16.4",
+  "name": "v0",
+  "version": "1.0.0",
   "description": "TypeScript SDK for the v0 Platform API",
-  "homepage": "https://v0.dev/docs/api",
+  "keywords": [
+    "ai",
+    "sdk",
+    "v0",
+    "vercel"
+  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vercel/v0-sdk.git"
-  },
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+    "url": "git+https://github.com/vercel/v0-sdk.git",
+    "directory": "packages/v0-sdk"
   },
   "files": [
     "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "type-check:go": "tsgo --noEmit",
-    "build": "bunchee",
-    "clean": "rm -rf dist *.tsbuildinfo",
-    "sdk:generate": "tsx src/scripts/generate.ts && pnpm format",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "echo 'No linting configured for v0-sdk package'",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "generate": "openapi-ts",
+    "build": "tsdown",
+    "typecheck": "tsc",
+    "prepublishOnly": "bun run generate && bun run build"
   },
-  "keywords": [
-    "v0",
-    "vercel",
-    "ai",
-    "chat",
-    "sdk"
-  ],
-  "license": "Apache-2.0",
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.13.1",
+    "@vercel/oidc": "^3.5.0",
+    "jsondiffpatch": "^0.6.0"
+  },
   "devDependencies": {
-    "@types/node": "^22.12.0",
-    "@typescript/native-preview": "7.0.0-dev.20250613.1",
-    "bunchee": "^6.5.2",
-    "prettier": "^3.3.3",
-    "tsx": "^4.19.2",
-    "typescript": "^6.0.3",
-    "vitest": "^3.2.4"
-  },
-  "engines": {
-    "node": ">=22",
-    "pnpm": ">=9"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "all"
+    "@arethetypeswrong/core": "^0.18.2",
+    "@hey-api/openapi-ts": "0.94.3",
+    "@tsconfig/strictest": "^2.0.8",
+    "publint": "^0.3.18",
+    "tsdown": "^0.21.4",
+    "typescript": "^5.9.3"
   }
 }

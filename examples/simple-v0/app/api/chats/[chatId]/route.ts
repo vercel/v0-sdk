@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from 'v0-sdk'
+import { getV0Client, normalizeChat, unwrapV0Response } from '@/lib/v0'
 
 export async function GET(
   request: NextRequest,
@@ -9,26 +9,23 @@ export async function GET(
     const { chatId } = await params
 
     if (!chatId) {
-      return NextResponse.json(
-        { error: 'Chat ID is required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 })
     }
 
-    const v0 = createClient({
-      apiKey: process.env.V0_API_KEY,
+    const v0 = getV0Client()
+    const response = await v0.chats.get({
+      path: { chatId },
     })
+    const chat = unwrapV0Response(response)
 
-    // Get chat details by ID
-    const response = await v0.chats.getById({ chatId: chatId })
-
-    return NextResponse.json(response)
+    return NextResponse.json(normalizeChat(chat))
   } catch (error) {
     if (error instanceof Error) {
       const errorMessage = error.message.toLowerCase()
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey')
       ) {
         return NextResponse.json(
@@ -37,10 +34,7 @@ export async function GET(
         )
       }
 
-      return NextResponse.json(
-        { error: `Failed to get chat: ${error.message}` },
-        { status: 500 },
-      )
+      return NextResponse.json({ error: `Failed to get chat: ${error.message}` }, { status: 500 })
     }
 
     return NextResponse.json({ error: 'Failed to get chat' }, { status: 500 })
@@ -55,18 +49,15 @@ export async function DELETE(
     const { chatId } = await params
 
     if (!chatId) {
-      return NextResponse.json(
-        { error: 'Chat ID is required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 })
     }
 
-    const v0 = createClient({
-      apiKey: process.env.V0_API_KEY,
+    const v0 = getV0Client()
+    const response = await v0.chats.delete({
+      path: { chatId },
     })
 
-    // Delete chat using v0 SDK
-    await v0.chats.delete({ chatId })
+    unwrapV0Response(response)
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -76,6 +67,7 @@ export async function DELETE(
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey')
       ) {
         return NextResponse.json(
@@ -85,10 +77,7 @@ export async function DELETE(
       }
     }
 
-    return NextResponse.json(
-      { error: 'Failed to delete chat' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to delete chat' }, { status: 500 })
   }
 }
 
@@ -101,10 +90,7 @@ export async function PATCH(
     const { name } = await request.json()
 
     if (!chatId) {
-      return NextResponse.json(
-        { error: 'Chat ID is required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 })
     }
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -114,23 +100,22 @@ export async function PATCH(
       )
     }
 
-    const v0 = createClient({
-      apiKey: process.env.V0_API_KEY,
-    })
-
-    // Update chat name using v0 SDK
+    const v0 = getV0Client()
     const response = await v0.chats.update({
-      chatId: chatId,
-      name: name.trim(),
+      path: { chatId },
+      body: {
+        title: name.trim(),
+      },
     })
 
-    return NextResponse.json(response)
+    return NextResponse.json(normalizeChat(unwrapV0Response(response)))
   } catch (error) {
     if (error instanceof Error) {
       const errorMessage = error.message.toLowerCase()
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey')
       ) {
         return NextResponse.json(
@@ -145,9 +130,6 @@ export async function PATCH(
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update chat' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to update chat' }, { status: 500 })
   }
 }

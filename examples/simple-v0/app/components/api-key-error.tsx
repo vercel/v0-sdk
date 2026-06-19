@@ -23,40 +23,29 @@ export default function ApiKeyError() {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          API Key Required
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">API Key Required</h1>
 
         {/* Description */}
         <p className="text-gray-600 mb-6 leading-relaxed">
-          To use this app, you need to configure your v0 API key. You can get
-          one from v0.dev and set it as an environment variable.
+          To use this app, you need to configure your v0 API key. You can get one from v0.app and
+          set it as an environment variable.
         </p>
 
         {/* Instructions */}
         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-          <h3 className="font-semibold text-gray-900 mb-2">
-            Setup Instructions:
-          </h3>
+          <h3 className="font-semibold text-gray-900 mb-2">Setup Instructions:</h3>
           <ol className="text-sm text-gray-700 space-y-1">
             <li>
               1. Get your API key from{' '}
-              <span className="font-mono bg-gray-200 px-1 rounded">
-                v0.dev/settings
-              </span>
+              <span className="font-mono bg-gray-200 px-1 rounded">v0.app/settings</span>
             </li>
             <li>
-              2. Create a{' '}
-              <span className="font-mono bg-gray-200 px-1 rounded">
-                .env.local
-              </span>{' '}
+              2. Create a <span className="font-mono bg-gray-200 px-1 rounded">.env.local</span>{' '}
               file
             </li>
             <li>
               3. Add:{' '}
-              <span className="font-mono bg-gray-200 px-1 rounded">
-                V0_API_KEY=your_key_here
-              </span>
+              <span className="font-mono bg-gray-200 px-1 rounded">V0_API_KEY=your_key_here</span>
             </li>
             <li>4. Restart the development server</li>
           </ol>
@@ -83,13 +72,13 @@ export default function ApiKeyError() {
           </button>
 
           <a
-            href="https://v0.dev/settings"
+            href="https://v0.app/settings"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-gray-100 text-gray-900 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 flex items-center justify-center gap-2"
           >
             <ExternalLink className="w-4 h-4" />
-            Get API Key from v0.dev
+            Get API Key from v0.app
           </a>
         </div>
 
