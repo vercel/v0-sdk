@@ -1,20 +1,20 @@
-import { v0 } from 'v0-sdk'
 import { NextResponse } from 'next/server'
+import { getV0Client, unwrapV0Response } from '@/lib/v0'
 
 export async function GET() {
   try {
-    // Use v0.user.get() to verify they are authenticated correctly
-    // This is more accurate than projects.find() for authentication verification
-    const user = await v0.user.get()
+    const v0 = getV0Client()
+    const response = await v0.chats.list({
+      query: {
+        limit: 1,
+      },
+    })
+
+    unwrapV0Response(response)
 
     return NextResponse.json({
       valid: true,
       message: 'API key is configured correctly',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
     })
   } catch (error) {
     if (error instanceof Error) {
@@ -24,6 +24,7 @@ export async function GET() {
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey') ||
         errorMessage.includes('unauthorized') ||
         errorMessage.includes('invalid api key') ||

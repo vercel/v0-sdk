@@ -1,69 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { v0 } from 'v0-sdk'
+import { getV0Client, unwrapV0Response } from '@/lib/v0'
 
 export async function POST(request: NextRequest) {
   try {
-    const { projectId, chatId, versionId } = await request.json()
+    const { chatId } = await request.json()
 
-    if (!projectId || !chatId || !versionId) {
+    if (!chatId) {
       return NextResponse.json(
         {
-          error: 'projectId, chatId, and versionId are required',
+          error: 'chatId is required',
           details: {
-            projectId: !!projectId,
             chatId: !!chatId,
-            versionId: !!versionId,
           },
         },
         { status: 400 },
       )
     }
 
-    // Create deployment using v0 SDK
-    try {
-      const result = await v0.deployments.create({
-        projectId,
-        chatId,
-        versionId,
-      })
+    const v0 = getV0Client()
+    const result = await v0.chats.deploy({
+      path: { chatId },
+    })
 
-      return NextResponse.json(result)
-    } catch (deployError) {
-      // Check if the error is about missing Vercel project ID
-      if (
-        deployError instanceof Error &&
-        deployError.message.includes('Project has no Vercel project ID')
-      ) {
-        // Try to create a Vercel project first
-        try {
-          // Get project details to use as the Vercel project name
-          const project = await v0.projects.getById({ projectId })
-          const vercelProjectName = project.name || `v0-project-${projectId}`
-
-          await v0.integrations.vercel.projects.create({
-            projectId,
-            name: vercelProjectName,
-          })
-
-          // Retry deployment after creating Vercel project
-          const result = await v0.deployments.create({
-            projectId,
-            chatId,
-            versionId,
-          })
-
-          return NextResponse.json(result)
-        } catch (vercelError) {
-          // If Vercel project creation fails, return that error
-          throw new Error(
-            `Failed to create Vercel project: ${vercelError instanceof Error ? vercelError.message : 'Unknown error'}`,
-          )
-        }
-      }
-
-      // Re-throw the original deployment error if it's not about Vercel project ID
-      throw deployError
-    }
+    return NextResponse.json(unwrapV0Response(result))
   } catch (error) {
     if (error instanceof Error) {
       const errorMessage = error.message.toLowerCase()
@@ -72,6 +31,7 @@ export async function POST(request: NextRequest) {
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey') ||
         errorMessage.includes('unauthorized') ||
         errorMessage.includes('invalid api key') ||
@@ -91,9 +51,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create deployment' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to create deployment' }, { status: 500 })
   }
 }

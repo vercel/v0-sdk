@@ -1,39 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { v0 } from 'v0-sdk'
-import { getUserIP, associateProjectWithIP } from '@/lib/rate-limiter'
+import { getV0Client, normalizeChat, unwrapV0Response } from '@/lib/v0'
 
 export async function POST(request: NextRequest) {
   try {
-    const { chatId, projectId } = await request.json()
+    const { chatId } = await request.json()
 
     if (!chatId) {
-      return NextResponse.json(
-        { error: 'Chat ID is required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 })
     }
 
-    // Get user's IP
-    const userIP = getUserIP(request)
+    const v0 = getV0Client()
 
-    // Fork the chat using v0 SDK
-    const forkedChat = await v0.chats.fork({
-      chatId: chatId,
-      ...(projectId && { projectId }), // Include projectId if provided
+    const response = await v0.chats.duplicate({
+      path: { chatId },
+      body: {
+        privacy: 'private',
+        title: 'Fork',
+      },
     })
+    const forkedChat = unwrapV0Response(response)
 
-    // If a project was created/returned, associate it with the user's IP
-    if (forkedChat.projectId) {
-      await associateProjectWithIP(forkedChat.projectId, userIP)
-    }
-
-    return NextResponse.json(forkedChat)
+    return NextResponse.json(normalizeChat(forkedChat))
   } catch (error) {
     if (error instanceof Error) {
       const errorMessage = error.message.toLowerCase()
       if (
         errorMessage.includes('api key is required') ||
         errorMessage.includes('v0_api_key') ||
+        errorMessage.includes('v0_api_key is required') ||
         errorMessage.includes('config.apikey')
       ) {
         return NextResponse.json(
@@ -42,10 +36,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      return NextResponse.json(
-        { error: `Failed to fork chat: ${error.message}` },
-        { status: 500 },
-      )
+      return NextResponse.json({ error: `Failed to fork chat: ${error.message}` }, { status: 500 })
     }
 
     return NextResponse.json({ error: 'Failed to fork chat' }, { status: 500 })
