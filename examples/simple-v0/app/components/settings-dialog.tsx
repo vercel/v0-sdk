@@ -50,25 +50,33 @@ export default function SettingsDialog({ trigger }: SettingsDialogProps) {
 
   const modelOptions = [
     {
-      value: 'v0-1.5-sm' as ModelType,
-      label: 'v0-1.5-sm',
-      description: 'Fast and efficient for simple apps',
+      value: 'v0-auto' as ModelType,
+      label: 'v0-auto',
+      description: 'Let v0 pick the right model for the prompt',
     },
     {
-      value: 'v0-1.5-md' as ModelType,
-      label: 'v0-1.5-md',
+      value: 'v0-pro' as ModelType,
+      label: 'v0-pro',
       description: 'Balanced performance and quality (default)',
     },
     {
-      value: 'v0-1.5-lg' as ModelType,
-      label: 'v0-1.5-lg',
+      value: 'v0-max' as ModelType,
+      label: 'v0-max',
       description: 'Best quality for complex applications',
+    },
+    {
+      value: 'v0-max-fast' as ModelType,
+      label: 'v0-max-fast',
+      description: 'High capability with lower latency',
+    },
+    {
+      value: 'v0-mini' as ModelType,
+      label: 'v0-mini',
+      description: 'Fast and efficient for simple apps',
     },
   ]
 
-  const currentModel = modelOptions.find(
-    (option) => option.value === tempSettings.model,
-  )
+  const currentModel = modelOptions.find((option) => option.value === tempSettings.model)
 
   const defaultTrigger = (
     <DialogDropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -85,9 +93,7 @@ export default function SettingsDialog({ trigger }: SettingsDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            Configure your preferences for app generation.
-          </DialogDescription>
+          <DialogDescription>Configure your preferences for app generation.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -115,9 +121,7 @@ export default function SettingsDialog({ trigger }: SettingsDialogProps) {
                     <div className="flex items-center justify-between w-full">
                       <div className="flex flex-col">
                         <span className="font-medium">{option.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {option.description}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{option.description}</span>
                       </div>
                       {tempSettings.model === option.value && (
                         <CheckIcon className="h-4 w-4 text-primary" />

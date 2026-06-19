@@ -106,10 +106,7 @@ export default function RenameChatDialog({
 
         <div className="space-y-4">
           <div>
-            <label
-              htmlFor="chat-name"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="chat-name" className="block text-sm font-medium text-gray-700 mb-2">
               Chat Name
             </label>
             <input
@@ -128,11 +125,7 @@ export default function RenameChatDialog({
         </div>
 
         <div className="flex justify-end space-x-2 pt-4">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={isSubmitting}>

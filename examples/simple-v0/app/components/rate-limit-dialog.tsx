@@ -42,16 +42,11 @@ export default function RateLimitDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Rate Limit Reached</AlertDialogTitle>
           <AlertDialogDescription className="text-left">
-            You've reached the rate limit. Deploy your own copy of this demo to
-            continue.
+            You've reached the rate limit. Deploy your own copy of this demo to continue.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="w-full sm:w-auto"
-          >
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Close
           </Button>
           <Button asChild className="w-full sm:w-auto">
