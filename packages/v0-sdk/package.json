@@ -1,6 +1,6 @@
 {
   "name": "v0",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "TypeScript SDK for the v0 Platform API",
   "keywords": [
     "ai",
