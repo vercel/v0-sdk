@@ -58,7 +58,7 @@
     },
     "packages/v0-sdk": {
       "name": "v0",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "dependencies": {
         "@hey-api/client-fetch": "^0.13.1",
         "@vercel/oidc": "^3.5.0",
