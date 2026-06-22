@@ -4,32 +4,16 @@ on:
   push:
     branches:
       - main
+      - v2
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch:
-    inputs:
-      task:
-        description: 'Release task'
-        required: true
-        default: version-pr
-        type: choice
-        options:
-          - canary
-          - version-pr
-          - latest
-      bump:
-        description: 'Version bump type for release PRs'
-        required: true
-        default: patch
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
 
 jobs:
+  # Temporary v2 canary lane: backend automation pushes updated openapi.json and
+  # generated SDK changes to v2, then this verifies the checked-in SDK is current
+  # and publishes a commit-specific npm canary.
   canary:
-    if: ${{ github.event_name == 'push' || github.event.inputs.task == 'canary' }}
+    if: ${{ github.ref == 'refs/heads/v2' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -38,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -46,11 +30,25 @@ jobs:
           package-manager-cache: false
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - name: Build SDK
+        run: |
+          bun run generate
+          bun run build
+      - name: Check generated SDK is up to date
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Generated SDK is out of date. Run 'bun run generate && bun run build' and commit the changes."
+            git status --short
+            git diff --stat
+            git diff
+            exit 1
+          fi
       - name: Resolve canary version
         id: version
         run: |
-          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
-          BASE_VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
+          cd packages/v0-sdk
+          NAME=$(bun pm pkg get name | tr -d '"')
+          BASE_VERSION=$(bun pm pkg get version | tr -d '"')
           SHA=$(git rev-parse --short HEAD)
           VERSION="${BASE_VERSION}-canary.${SHA}"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
@@ -64,12 +62,18 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.published.outputs.skip != 'true'
-        run: bun --cwd packages/v0-sdk pm pkg set "version=${{ steps.version.outputs.version }}"
+        run: |
+          cd packages/v0-sdk
+          bun pm pkg set "version=${{ steps.version.outputs.version }}"
       - if: steps.published.outputs.skip != 'true'
         run: npm publish --tag canary --workspace packages/v0-sdk
 
+  # Nightly stable release lane: main remains the source for latest releases.
+  # If main has commits since the last version tag, this opens one PR containing
+  # only the package version and lockfile bump; an existing PR for that version
+  # is left in place while more main changes can continue landing.
   version-pr:
-    if: ${{ github.event_name == 'schedule' || github.event.inputs.task == 'version-pr' }}
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -79,25 +83,55 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: main
+          fetch-depth: 0
+      - name: Check commits since last version
+        id: changes
+        run: |
+          LAST_VERSION=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --match 'v0-sdk@*' 2>/dev/null || true)
+
+          if [ -z "$LAST_VERSION" ]; then
+            echo "No version tag found; continuing with release PR."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          COMMITS=$(git rev-list "${LAST_VERSION}..HEAD" --count)
+          echo "last_version=${LAST_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commits=${COMMITS}" >> "$GITHUB_OUTPUT"
+
+          if [ "$COMMITS" -eq 0 ]; then
+            echo "No commits since ${LAST_VERSION}; skipping release PR."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "${COMMITS} commits since ${LAST_VERSION}; continuing with release PR."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v6
+        if: steps.changes.outputs.skip != 'true'
         with:
           node-version: '24'
           package-manager-cache: false
       - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
+        if: steps.changes.outputs.skip != 'true'
+      - if: steps.changes.outputs.skip != 'true'
+        run: bun install --frozen-lockfile
       - name: Bump package version
         id: bump
+        if: steps.changes.outputs.skip != 'true'
         env:
-          BUMP: ${{ github.event.inputs.bump || 'patch' }}
+          BUMP: patch
         run: |
-          bun --cwd packages/v0-sdk pm version "$BUMP" --no-git-tag-version
+          cd packages/v0-sdk
+          bun pm version "$BUMP" --no-git-tag-version
+          NAME=$(bun pm pkg get name | tr -d '"')
+          VERSION=$(bun pm pkg get version | tr -d '"')
+          cd ../..
           bun install --lockfile-only
-          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
-          VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
       - name: Check published latest
         id: published
+        if: steps.changes.outputs.skip != 'true'
         run: |
           if npm view "${{ steps.bump.outputs.name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -106,7 +140,7 @@ jobs:
           fi
       - name: Check for existing release PR
         id: existing
-        if: steps.published.outputs.skip != 'true'
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
@@ -117,7 +151,7 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Open release PR
-        if: steps.published.outputs.skip != 'true' && steps.existing.outputs.skip != 'true'
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true' && steps.existing.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
@@ -142,8 +176,12 @@ jobs:
             --title "Release v${VERSION}" \
             --body "Bumps ${NAME} to v${VERSION}. Merge this PR to publish it from main."
 
+  # Stable publish lane: when a release PR is manually merged to main, the bumped
+  # package version is unpublished, so this publishes it to npm as latest and
+  # creates the GitHub release. Other main pushes with an already-published
+  # version skip release side effects.
   latest:
-    if: ${{ github.event_name == 'push' || github.event.inputs.task == 'latest' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -152,7 +190,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -163,8 +201,9 @@ jobs:
       - name: Resolve latest version
         id: version
         run: |
-          NAME=$(bun --cwd packages/v0-sdk pm pkg get name | tr -d '"')
-          VERSION=$(bun --cwd packages/v0-sdk pm pkg get version | tr -d '"')
+          cd packages/v0-sdk
+          NAME=$(bun pm pkg get name | tr -d '"')
+          VERSION=$(bun pm pkg get version | tr -d '"')
           COMMIT=$(git rev-parse HEAD)
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
@@ -187,7 +226,7 @@ jobs:
         run: npm publish --tag latest --workspace packages/v0-sdk
       - name: Check GitHub release
         id: release
-        if: steps.version.outputs.prerelease != 'true'
+        if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -196,7 +235,7 @@ jobs:
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.version.outputs.prerelease != 'true' && steps.release.outputs.skip != 'true'
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.skip != 'true' && steps.release.outputs.skip != 'true'
         run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ steps.version.outputs.commit }}" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
