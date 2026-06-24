@@ -28,7 +28,7 @@
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "tailwind-merge": "^3.3.1",
-    "v0-sdk": "workspace:*",
+    "v0": "workspace:*",
     "vaul": "^1.1.2"
   },
   "devDependencies": {

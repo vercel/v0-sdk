@@ -2,21 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  MoreVerticalIcon,
-  TrashIcon,
-  XIcon,
-  PaperclipIcon,
-  MicIcon,
-} from 'lucide-react'
+import { MoreVerticalIcon, TrashIcon, XIcon, PaperclipIcon, MicIcon } from 'lucide-react'
 import { V0Logo } from '../../components/v0-logo'
 import SettingsDialog from './settings-dialog'
 import RenameChatDialog from './rename-chat-dialog'
 import { useSettings } from '../../lib/hooks/useSettings'
-import {
-  ProjectDropdown,
-  ChatDropdown,
-} from '../projects/[projectId]/chats/[chatId]/components'
+import { ChatDropdown } from './chat-dropdown'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +27,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 
 interface Attachment {
   url: string
@@ -86,12 +76,10 @@ interface PromptComponentProps {
   initialExpanded?: boolean
 
   // Data for dropdowns (optional)
-  projects?: any[]
-  projectChats?: any[]
-  currentProjectId?: string
+  chats?: any[]
   currentChatId?: string
 
-  // Optional chat data for v0.dev link
+  // Optional chat data for v0.app link
   chatData?: any
 
   // Submit handler - different behavior for homepage vs chat pages
@@ -114,7 +102,6 @@ interface PromptComponentProps {
   showDropdowns?: boolean
 
   // Callbacks for dropdown changes
-  onProjectChange?: (projectId: string) => void
   onChatChange?: (chatId: string) => void
 
   // Delete callbacks
@@ -127,9 +114,7 @@ interface PromptComponentProps {
 export default function PromptComponent({
   initialPrompt = '',
   initialExpanded = true,
-  projects = [],
-  projectChats = [],
-  currentProjectId,
+  chats = [],
   currentChatId,
   chatData,
   onSubmit,
@@ -137,7 +122,6 @@ export default function PromptComponent({
   error,
   placeholder = 'Describe your app...',
   showDropdowns = false,
-  onProjectChange,
   onChatChange,
   onDeleteChat,
   onRenameChat,
@@ -214,10 +198,7 @@ export default function PromptComponent({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        sessionStorage.setItem(
-          ATTACHMENTS_STORAGE_KEY,
-          JSON.stringify(attachments),
-        )
+        sessionStorage.setItem(ATTACHMENTS_STORAGE_KEY, JSON.stringify(attachments))
       } catch (error) {
         // Silently handle sessionStorage errors
         console.warn('Failed to save attachments to sessionStorage:', error)
@@ -242,8 +223,7 @@ export default function PromptComponent({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition =
-        (window as any).SpeechRecognition ||
-        (window as any).webkitSpeechRecognition
+        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
       setSpeechSupported(!!SpeechRecognition)
 
       if (SpeechRecognition) {
@@ -335,14 +315,7 @@ export default function PromptComponent({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [
-    isPromptExpanded,
-    isLoading,
-    router,
-    currentProjectId,
-    isDialogOpen,
-    isDragging,
-  ])
+  }, [isPromptExpanded, isLoading, router, isDialogOpen, isDragging])
 
   // Listen for drag operations being cancelled (e.g. by pressing Escape)
   useEffect(() => {
@@ -378,7 +351,7 @@ export default function PromptComponent({
       setIsListening(false)
     }
 
-    setIsPromptExpanded(false) // Hide prompt bar on submit
+    setIsPromptExpanded(true) // Keep prompt bar visible while streaming
     setShouldAnimate(false) // Reset animation state
 
     try {
@@ -433,10 +406,7 @@ export default function PromptComponent({
     const attachmentToRemove = attachments[index]
 
     // Clear preview if it's showing the attachment being removed
-    if (
-      previewState.isVisible &&
-      previewState.src === attachmentToRemove?.url
-    ) {
+    if (previewState.isVisible && previewState.src === attachmentToRemove?.url) {
       setPreviewState((prev) => ({
         ...prev,
         isVisible: false,
@@ -474,12 +444,7 @@ export default function PromptComponent({
       const x = e.clientX
       const y = e.clientY
 
-      if (
-        x < rect.left ||
-        x >= rect.right ||
-        y < rect.top ||
-        y >= rect.bottom
-      ) {
+      if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
         setIsOverPrompt(false)
       }
     }
@@ -521,11 +486,7 @@ export default function PromptComponent({
             }}
             className="text-foreground bg-background border border-border w-14 h-14 rounded-full shadow-lg transition-all duration-200 cursor-pointer hover:opacity-80 flex items-center justify-center"
           >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-foreground border-t-transparent"></div>
-            ) : (
-              <V0Logo size={24} className="text-foreground" />
-            )}
+            <V0Logo size={24} className="text-foreground" />
           </button>
         </div>
       )}
@@ -562,9 +523,7 @@ export default function PromptComponent({
           <div className="mx-auto max-w-4xl px-3 sm:px-6 pb-4 sm:pb-8 pointer-events-auto">
             <div
               className={`relative bg-card/80 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border transition-all duration-200 ${
-                isDragging
-                  ? 'border-primary border-2 bg-primary/5'
-                  : 'border-border/50'
+                isDragging ? 'border-primary border-2 bg-primary/5' : 'border-border/50'
               }`}
               data-drag-container="prompt"
               onDragEnter={handleDragEnter}
@@ -578,9 +537,7 @@ export default function PromptComponent({
                 <div className="absolute inset-0 bg-primary/5 z-10 flex items-center justify-center rounded-2xl">
                   <div className="flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-primary/20">
                     <PaperclipIcon className="w-4 h-4 text-primary" />
-                    <span className="text-primary font-medium text-sm">
-                      Drop files
-                    </span>
+                    <span className="text-primary font-medium text-sm">Drop files</span>
                   </div>
                 </div>
               )}
@@ -615,8 +572,7 @@ export default function PromptComponent({
                             className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg text-sm text-muted-foreground relative"
                             onMouseEnter={(e) => {
                               if (isImage) {
-                                const rect =
-                                  e.currentTarget.getBoundingClientRect()
+                                const rect = e.currentTarget.getBoundingClientRect()
                                 setPreviewState({
                                   isVisible: true,
                                   src: attachment.url,
@@ -658,23 +614,12 @@ export default function PromptComponent({
                     {/* Input field */}
                     <textarea
                       ref={(textarea) => {
-                        if (
-                          textarea &&
-                          isPromptExpanded &&
-                          prompt.length === 1
-                        ) {
+                        if (textarea && isPromptExpanded && prompt.length === 1) {
                           setTimeout(() => {
                             textarea.focus()
-                            textarea.setSelectionRange(
-                              textarea.value.length,
-                              textarea.value.length,
-                            )
+                            textarea.setSelectionRange(textarea.value.length, textarea.value.length)
                           }, 0)
-                        } else if (
-                          textarea &&
-                          isPromptExpanded &&
-                          prompt.length === 0
-                        ) {
+                        } else if (textarea && isPromptExpanded && prompt.length === 0) {
                           setTimeout(() => textarea.focus(), 0)
                         }
                       }}
@@ -693,8 +638,7 @@ export default function PromptComponent({
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement
                         target.style.height = 'auto'
-                        target.style.height =
-                          Math.min(target.scrollHeight, 200) + 'px' // Max height of 200px
+                        target.style.height = Math.min(target.scrollHeight, 200) + 'px' // Max height of 200px
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
@@ -762,36 +706,13 @@ export default function PromptComponent({
                   <div className="mt-2 sm:mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
                     <div className="flex items-center justify-between sm:flex-1">
                       <div className="flex items-center gap-0 flex-1 max-w-[300px] sm:max-w-[400px]">
-                        {/* Project and Chat Dropdowns */}
-                        {showDropdowns && currentProjectId ? (
-                          <>
-                            <ProjectDropdown
-                              currentProjectId={currentProjectId}
-                              currentChatId={currentChatId || 'new'}
-                              projects={projects}
-                              onProjectChange={onProjectChange}
-                            />
-                            <ChatDropdown
-                              projectId={currentProjectId}
-                              currentChatId={currentChatId || 'new'}
-                              chats={projectChats}
-                              onChatChange={onChatChange}
-                            />
-                          </>
-                        ) : currentProjectId &&
-                          (projects.length === 0 ||
-                            projectChats.length === 0) ? (
-                          // Show skeleton loading states when dropdowns should be shown but data is loading
-                          <div className="flex items-center gap-2">
-                            <Skeleton className="h-8 w-32" />
-                            <Skeleton className="h-8 w-24" />
-                          </div>
-                        ) : currentProjectId ? (
-                          // Placeholder to prevent layout shift when dropdowns are hidden
-                          <div className="flex gap-0">
-                            <div className="h-8 w-24 bg-transparent"></div>
-                            <div className="h-8 w-20 bg-transparent"></div>
-                          </div>
+                        {/* Chat Dropdown */}
+                        {showDropdowns ? (
+                          <ChatDropdown
+                            currentChatId={currentChatId || 'new'}
+                            chats={chats}
+                            onChatChange={onChatChange}
+                          />
                         ) : null}
                       </div>
 
@@ -813,10 +734,10 @@ export default function PromptComponent({
                               {/* Settings - Always available */}
                               <SettingsDialog />
 
-                              {/* View on v0.dev - available on both mobile and desktop */}
+                              {/* View on v0.app - available on both mobile and desktop */}
                               <DropdownMenuItem asChild>
                                 <a
-                                  href={chatData?.url || 'https://v0.dev'}
+                                  href={chatData?.url || 'https://v0.app'}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center"
@@ -834,65 +755,45 @@ export default function PromptComponent({
                                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                                     />
                                   </svg>
-                                  View on v0.dev
+                                  View on v0.app
                                 </a>
                               </DropdownMenuItem>
 
-                              {/* Deploy - Only show when we have project context, chat is loaded, and there's a completed version */}
+                              {/* Deploy - Only show when the chat has a completed version */}
                               {showDropdowns &&
-                                currentProjectId &&
                                 currentChatId &&
                                 currentChatId !== 'new' &&
+                                currentChatId !== 'new-chat' &&
                                 chatData &&
                                 chatData.latestVersion &&
-                                chatData.latestVersion.status ===
-                                  'completed' && (
+                                chatData.latestVersion.status === 'completed' && (
                                   <>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                       onClick={async () => {
                                         try {
-                                          const response = await fetch(
-                                            '/api/deployments',
-                                            {
-                                              method: 'POST',
-                                              headers: {
-                                                'Content-Type':
-                                                  'application/json',
-                                              },
-                                              body: JSON.stringify({
-                                                projectId: currentProjectId,
-                                                chatId: currentChatId,
-                                                versionId:
-                                                  chatData.latestVersion.id,
-                                              }),
+                                          const response = await fetch('/api/deployments', {
+                                            method: 'POST',
+                                            headers: {
+                                              'Content-Type': 'application/json',
                                             },
-                                          )
+                                            body: JSON.stringify({
+                                              chatId: currentChatId,
+                                            }),
+                                          })
 
                                           if (!response.ok) {
-                                            const errorData =
-                                              await response.json()
-                                            throw new Error(
-                                              errorData.error ||
-                                                'Failed to deploy',
-                                            )
+                                            const errorData = await response.json()
+                                            throw new Error(errorData.error || 'Failed to deploy')
                                           }
 
-                                          const deployment =
-                                            await response.json()
+                                          const deployment = await response.json()
 
-                                          // Show success message or open deployment URL
-                                          if (deployment.webUrl) {
-                                            window.open(
-                                              deployment.webUrl,
-                                              '_blank',
-                                            )
+                                          if (deployment.deploymentId) {
+                                            window.open(chatData.url, '_blank')
                                           }
                                         } catch (error) {
-                                          console.error(
-                                            'Deployment failed:',
-                                            error,
-                                          )
+                                          console.error('Deployment failed:', error)
                                           // You could add a toast notification here
                                         }
                                       }}
@@ -915,57 +816,49 @@ export default function PromptComponent({
                                   </>
                                 )}
 
-                              {/* Rename Chat - Only show when we have project context and chat is loaded */}
+                              {/* Rename Chat - Only show when chat is loaded */}
                               {showDropdowns &&
-                                currentProjectId &&
                                 currentChatId &&
                                 currentChatId !== 'new' &&
+                                currentChatId !== 'new-chat' &&
                                 onRenameChat &&
                                 chatData && (
                                   <>
                                     <DropdownMenuSeparator />
                                     <RenameChatDialog
                                       chatId={currentChatId}
-                                      currentName={
-                                        chatData.name || 'Untitled Chat'
-                                      }
+                                      currentName={chatData.title || 'Untitled Chat'}
                                       onRename={handleRenameChat}
                                       onOpenChange={setIsDialogOpen}
                                     />
                                   </>
                                 )}
 
-                              {/* Delete Chat - Only show when we have project context and chat is loaded */}
+                              {/* Delete Chat - Only show when chat is loaded */}
                               {showDropdowns &&
-                                currentProjectId &&
                                 currentChatId &&
                                 currentChatId !== 'new' &&
+                                currentChatId !== 'new-chat' &&
                                 onDeleteChat &&
                                 chatData && (
                                   <>
                                     <AlertDialog>
                                       <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem
-                                          onSelect={(e) => e.preventDefault()}
-                                        >
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                           <TrashIcon className="mr-2 h-4 w-4" />
                                           Delete Chat
                                         </DropdownMenuItem>
                                       </AlertDialogTrigger>
                                       <AlertDialogContent>
                                         <AlertDialogHeader>
-                                          <AlertDialogTitle>
-                                            Delete Chat
-                                          </AlertDialogTitle>
+                                          <AlertDialogTitle>Delete Chat</AlertDialogTitle>
                                           <AlertDialogDescription>
-                                            Are you sure you want to delete this
-                                            chat? This action cannot be undone.
+                                            Are you sure you want to delete this chat? This action
+                                            cannot be undone.
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                          <AlertDialogCancel>
-                                            Cancel
-                                          </AlertDialogCancel>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                                           <AlertDialogAction
                                             onClick={onDeleteChat}
                                             className="bg-destructive text-white hover:bg-destructive/90"
