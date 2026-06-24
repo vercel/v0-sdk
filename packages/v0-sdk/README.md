@@ -1,10 +1,10 @@
 # v0
 
-TypeScript SDK for the v0 Platform API.
+TypeScript SDK for the v0 API.
 
 ## Install
 
-```bash
+```sh
 npm install v0
 ```
 
@@ -31,6 +31,4 @@ if (response.error) {
 console.log(response.data.chat.id)
 ```
 
-For server-side code deployed on Vercel with OIDC enabled, `auth` can be omitted.
-
-See the repository README for streaming and development examples.
+See https://v0.app/docs/api/v2 for full documentation and API reference.
