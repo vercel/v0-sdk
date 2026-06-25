@@ -77,9 +77,9 @@ export async function createApp({
         if (version === 'workspace:*') {
           // Map workspace packages to their published versions
           const packageVersions: Record<string, string> = {
-            'v0-sdk': '^0.11.0',
-            '@v0-sdk/react': '^0.3.0',
-            '@v0-sdk/ai-tools': '^0.1.0',
+            'v0-sdk': '^0.16.4',
+            '@v0-sdk/react': '^0.5.0',
+            '@v0-sdk/ai-tools': '^0.3.8',
           }
 
           if (packageVersions[name]) {

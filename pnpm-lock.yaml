@@ -113,7 +113,7 @@ importers:
   examples/ai-tools-example:
     dependencies:
       '@v0-sdk/ai-tools':
-        specifier: workspace:*
+        specifier: ^0.3.8
         version: link:../../packages/ai-tools
       ai:
         specifier: ^5.0.22
@@ -186,7 +186,7 @@ importers:
         specifier: ^2.5.5
         version: 2.6.1
       v0-sdk:
-        specifier: workspace:*
+        specifier: ^0.16.4
         version: link:../../packages/v0-sdk
     devDependencies:
       '@tailwindcss/postcss':
@@ -268,7 +268,7 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0
       v0-sdk:
-        specifier: workspace:*
+        specifier: ^0.16.4
         version: link:../../packages/v0-sdk
       vaul:
         specifier: ^1.1.2
@@ -335,7 +335,7 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.2.14)(react@19.2.5)
       '@v0-sdk/react':
-        specifier: workspace:*
+        specifier: ^0.5.0
         version: link:../../packages/react
       '@vercel/postgres':
         specifier: ^0.10.0
@@ -407,7 +407,7 @@ importers:
         specifier: ^1.1.1
         version: 1.1.4(react@19.2.5)
       v0-sdk:
-        specifier: workspace:*
+        specifier: ^0.16.4
         version: link:../../packages/v0-sdk
       zod:
         specifier: ^4.1.1
@@ -450,7 +450,7 @@ importers:
         specifier: ^1.2.3
         version: 1.2.4(@types/react@19.2.14)(react@19.2.5)
       '@v0-sdk/react':
-        specifier: workspace:*
+        specifier: ^0.5.0
         version: link:../../packages/react
       class-variance-authority:
         specifier: ^0.7.0

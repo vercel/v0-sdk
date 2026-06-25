@@ -14,7 +14,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@v0-sdk/ai-tools": "workspace:*",
+    "@v0-sdk/ai-tools": "^0.3.8",
     "ai": "^5.0.22",
     "dotenv": "^16.4.5",
     "zod": "^3.25.76"
