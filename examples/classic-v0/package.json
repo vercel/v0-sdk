@@ -24,7 +24,7 @@
     "react-dom": "19.2.5",
     "react-syntax-highlighter": "^15.6.6",
     "tailwind-merge": "^2.5.5",
-    "v0-sdk": "workspace:*"
+    "v0-sdk": "^0.16.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
