@@ -1,5 +1,6 @@
 import { type ClientOptions, V0Sdk } from './generated'
 import { createClient, createConfig } from './generated/client'
+import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
 import { vercelOidcAuth } from './vercel-oidc'
 
@@ -12,7 +13,8 @@ type CreateV0ClientConfig = CreateClientConfig & {
   /**
    * v0 API key, or a callback returning a token. A string is sent as-is on
    * every request; a callback is invoked per request, for tokens that have to
-   * be fetched or refreshed. Defaults to {@link vercelOidcAuth} when omitted.
+   * be fetched or refreshed. Defaults to `V0_API_KEY`, then
+   * {@link vercelOidcAuth}, when omitted.
    */
   auth?: CreateClientConfig['auth']
 }
@@ -24,6 +26,12 @@ type ChatsCreateStreamOptions = Parameters<GeneratedChats['createStream']>[0]
 type ChatsCreateStreamRequestOptions = Parameters<GeneratedChats['createStream']>[1]
 type MessagesSendStreamOptions = Parameters<GeneratedMessages['sendStream']>[0]
 type MessagesSendStreamRequestOptions = Parameters<GeneratedMessages['sendStream']>[1]
+
+type ProcessWithEnv = {
+  env?: {
+    V0_API_KEY?: string
+  }
+}
 
 /** The v0 client returned by {@link createV0Client}. */
 export type V0Client = Omit<GeneratedV0Client, 'chats' | 'messages'> & {
@@ -44,19 +52,35 @@ export type V0Client = Omit<GeneratedV0Client, 'chats' | 'messages'> & {
 /**
  * Creates a v0 client. To authenticate:
  * - pass your v0 API key as `auth`; or
- * - omit `auth` for server-side code deployed on Vercel with OIDC enabled,
- *   which uses project-scoped Vercel OIDC auth automatically.
+ * - omit `auth` to use the `V0_API_KEY` environment variable when present, or
+ *   project-scoped Vercel OIDC auth for server-side code deployed on Vercel.
  */
 export function createV0Client(config: CreateV0ClientConfig = {}): V0Client {
+  const { auth = defaultV0Auth, ...clientConfig } = config
+
   const client = createClient(
     createConfig<ClientOptions>({
       baseUrl: 'https://v0.app',
-      auth: vercelOidcAuth(),
-      ...config,
+      ...clientConfig,
+      auth,
     }),
   )
 
   return wrapV0Client(new V0Sdk({ client }))
+}
+
+/** Default v0 client using `V0_API_KEY` or Vercel OIDC auth. */
+export const v0 = createV0Client()
+
+const defaultVercelOidcAuth = vercelOidcAuth()
+
+async function defaultV0Auth(auth: Auth): Promise<AuthToken> {
+  return getV0ApiKeyFromEnv() ?? defaultVercelOidcAuth(auth)
+}
+
+function getV0ApiKeyFromEnv(): string | undefined {
+  const maybeProcess = (globalThis as typeof globalThis & { process?: ProcessWithEnv }).process
+  return maybeProcess?.env?.V0_API_KEY
 }
 
 function wrapV0Client(raw: V0Sdk): V0Client {

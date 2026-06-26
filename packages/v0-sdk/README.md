@@ -11,11 +11,7 @@ npm install v0
 ## Usage
 
 ```ts
-import { createV0Client } from 'v0'
-
-const v0 = createV0Client({
-  auth: process.env.V0_API_KEY!,
-})
+import { v0 } from 'v0'
 
 const response = await v0.chats.create({
   message: 'Build me a personal website',
@@ -27,5 +23,7 @@ if (response.error) {
 
 console.log(response.data.chat.id)
 ```
+
+The default `v0` client uses `V0_API_KEY` when present, otherwise it falls back to Vercel OIDC auth for server-side code deployed on Vercel. Use `createV0Client` when you need custom auth or client options.
 
 See https://v0.app/docs/api/v2 for full documentation and API reference.
