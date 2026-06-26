@@ -5,10 +5,7 @@ const v0 = createV0Client({
 })
 
 const response = await v0.chats.create({
-  body: {
-    type: 'prompt',
-    message: 'Build me a cool personal website',
-  },
+  message: 'Build me a cool personal website',
 })
 
 if (response.error) throw new Error(response.error.message)

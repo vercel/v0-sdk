@@ -162,11 +162,11 @@ export type AsyncChat = {
     /**
      * Object type identifier.
      */
-    object: string;
+    object: 'chat';
     /**
      * The chat is being processed in the background. Poll for the chat to check for completion.
      */
-    status: string;
+    status: 'queued';
 };
 
 /**
@@ -1332,15 +1332,15 @@ export type McpServer = {
      * Authentication configuration for the MCP server.
      */
     auth: {
-        type: string;
+        type: 'none';
     } | {
-        type: string;
+        type: 'bearer';
         /**
          * Bearer token for authentication.
          */
         token: string;
     } | {
-        type: string;
+        type: 'custom-headers';
         /**
          * Custom headers to include in requests.
          */
@@ -1348,7 +1348,7 @@ export type McpServer = {
             [key: string]: string;
         };
     } | {
-        type: string;
+        type: 'oauth';
         /**
          * OAuth configuration discovered or manually set.
          */
@@ -1621,10 +1621,6 @@ export type ChatsCreateData = {
          */
         skillIds?: Array<string>;
         /**
-         * Initialize the chat by sending a prompt to the model.
-         */
-        type: string;
-        /**
          * Visibility setting for the new chat.
          */
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
@@ -1638,37 +1634,6 @@ export type ChatsCreateData = {
         metadata?: {
             [key: string]: string;
         };
-        /**
-         * Design system ID to apply to this chat.
-         */
-        designSystemId?: string;
-    } | {
-        /**
-         * Initialize the chat from a zip archive.
-         */
-        type: string;
-        /**
-         * Zip archive used to seed the new chat.
-         */
-        url: string;
-        /**
-         * Visibility setting for the new chat.
-         */
-        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
-        /**
-         * Title for the new chat.
-         */
-        title?: string;
-        /**
-         * Arbitrary key-value data to attach to the chat.
-         */
-        metadata?: {
-            [key: string]: string;
-        };
-        /**
-         * Design system ID to apply to this chat.
-         */
-        designSystemId?: string;
     };
     path?: never;
     query?: never;
@@ -1708,6 +1673,135 @@ export type ChatsCreateResponses = {
 };
 
 export type ChatsCreateResponse = ChatsCreateResponses[keyof ChatsCreateResponses];
+
+export type ChatsCreateFromZipData = {
+    body: {
+        /**
+         * Zip archive used to seed the new chat.
+         */
+        url: string;
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v2/chats/from-zip';
+};
+
+export type ChatsCreateFromZipErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromZipError = ChatsCreateFromZipErrors[keyof ChatsCreateFromZipErrors];
+
+export type ChatsCreateFromZipResponses = {
+    /**
+     * A chat response that also reports the usage.
+     */
+    200: ChatWithUsage;
+};
+
+export type ChatsCreateFromZipResponse = ChatsCreateFromZipResponses[keyof ChatsCreateFromZipResponses];
+
+export type ChatsCreateFromRepoData = {
+    body: {
+        /**
+         * Repository source for initialization. Supports public GitHub repositories and private repositories connected through Vercel.
+         */
+        repo: {
+            /**
+             * GitHub repository URL, for example https://github.com/vercel/next.js.
+             */
+            url: string;
+            /**
+             * Branch to import. If omitted, v0 uses the repository default branch.
+             */
+            branch?: string;
+        };
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v2/chats/from-repo';
+};
+
+export type ChatsCreateFromRepoErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromRepoError = ChatsCreateFromRepoErrors[keyof ChatsCreateFromRepoErrors];
+
+export type ChatsCreateFromRepoResponses = {
+    /**
+     * A chat response that also reports the usage.
+     */
+    200: ChatWithUsage;
+};
+
+export type ChatsCreateFromRepoResponse = ChatsCreateFromRepoResponses[keyof ChatsCreateFromRepoResponses];
 
 export type ChatsCreateStreamData = {
     body: {
@@ -1750,10 +1844,6 @@ export type ChatsCreateStreamData = {
          */
         skillIds?: Array<string>;
         /**
-         * Initialize the chat by sending a prompt to the model.
-         */
-        type: string;
-        /**
          * Visibility setting for the new chat.
          */
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
@@ -1767,10 +1857,6 @@ export type ChatsCreateStreamData = {
         metadata?: {
             [key: string]: string;
         };
-        /**
-         * Design system ID to apply to this chat.
-         */
-        designSystemId?: string;
     };
     path?: never;
     query?: never;
@@ -1852,10 +1938,6 @@ export type ChatsCreateAsyncData = {
          */
         skillIds?: Array<string>;
         /**
-         * Initialize the chat by sending a prompt to the model.
-         */
-        type: string;
-        /**
          * Visibility setting for the new chat.
          */
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
@@ -1869,10 +1951,6 @@ export type ChatsCreateAsyncData = {
         metadata?: {
             [key: string]: string;
         };
-        /**
-         * Design system ID to apply to this chat.
-         */
-        designSystemId?: string;
     };
     path?: never;
     query?: never;
@@ -1977,7 +2055,7 @@ export type MessagesSendData = {
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
-        system?: string;
+        systemPrompt?: string;
         /**
          * Overrides for the model behavior.
          */
@@ -1990,10 +2068,6 @@ export type MessagesSendData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2011,12 +2085,12 @@ export type MessagesSendData = {
         /**
          * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
          */
-        attachedSkillIds?: Array<string>;
+        skillIds?: Array<string>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
         action?: {
-            type: string;
+            type: 'fix-with-v0';
         };
     };
     path: {
@@ -2118,7 +2192,7 @@ export type MessagesSendStreamData = {
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
-        system?: string;
+        systemPrompt?: string;
         /**
          * Overrides for the model behavior.
          */
@@ -2131,10 +2205,6 @@ export type MessagesSendStreamData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2152,12 +2222,12 @@ export type MessagesSendStreamData = {
         /**
          * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
          */
-        attachedSkillIds?: Array<string>;
+        skillIds?: Array<string>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
         action?: {
-            type: string;
+            type: 'fix-with-v0';
         };
     };
     path: {
@@ -2213,7 +2283,7 @@ export type MessagesSendAsyncData = {
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
-        system?: string;
+        systemPrompt?: string;
         /**
          * Overrides for the model behavior.
          */
@@ -2226,10 +2296,6 @@ export type MessagesSendAsyncData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2247,12 +2313,12 @@ export type MessagesSendAsyncData = {
         /**
          * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
          */
-        attachedSkillIds?: Array<string>;
+        skillIds?: Array<string>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
         action?: {
-            type: string;
+            type: 'fix-with-v0';
         };
     };
     path: {
@@ -2305,11 +2371,11 @@ export type MessagesResolveData = {
          * The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.
          */
         task: {
-            type: string;
+            type: 'confirmed-steps';
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2323,7 +2389,7 @@ export type MessagesResolveData = {
              */
             addedEnvVars: Array<string>;
         } | {
-            type: string;
+            type: 'plan-exit-response';
             /**
              * Whether the plan is approved, rejected, or needs changes.
              */
@@ -2333,7 +2399,7 @@ export type MessagesResolveData = {
              */
             content: string;
         } | {
-            type: string;
+            type: 'answered-questions';
             /**
              * Answers to the questions the agent asked.
              */
@@ -2356,12 +2422,12 @@ export type MessagesResolveData = {
                 customText?: string;
             }>;
         } | {
-            type: string;
+            type: 'confirmed-permissions';
             /**
              * The permissions to grant. Pass the suggestedPermissions from the stopped task.
              */
             permissions: Array<{
-                type: string;
+                type: 'ALLOW_DYNAMIC_TOOL_STRICT';
                 /**
                  * The name of the tool being permitted.
                  */
@@ -2400,10 +2466,6 @@ export type MessagesResolveData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
     };
     path: {
@@ -2460,11 +2522,11 @@ export type MessagesResolveStreamData = {
          * The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.
          */
         task: {
-            type: string;
+            type: 'confirmed-steps';
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2478,7 +2540,7 @@ export type MessagesResolveStreamData = {
              */
             addedEnvVars: Array<string>;
         } | {
-            type: string;
+            type: 'plan-exit-response';
             /**
              * Whether the plan is approved, rejected, or needs changes.
              */
@@ -2488,7 +2550,7 @@ export type MessagesResolveStreamData = {
              */
             content: string;
         } | {
-            type: string;
+            type: 'answered-questions';
             /**
              * Answers to the questions the agent asked.
              */
@@ -2511,12 +2573,12 @@ export type MessagesResolveStreamData = {
                 customText?: string;
             }>;
         } | {
-            type: string;
+            type: 'confirmed-permissions';
             /**
              * The permissions to grant. Pass the suggestedPermissions from the stopped task.
              */
             permissions: Array<{
-                type: string;
+                type: 'ALLOW_DYNAMIC_TOOL_STRICT';
                 /**
                  * The name of the tool being permitted.
                  */
@@ -2555,10 +2617,6 @@ export type MessagesResolveStreamData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
     };
     path: {
@@ -2615,11 +2673,11 @@ export type MessagesResolveAsyncData = {
          * The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.
          */
         task: {
-            type: string;
+            type: 'confirmed-steps';
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2633,7 +2691,7 @@ export type MessagesResolveAsyncData = {
              */
             addedEnvVars: Array<string>;
         } | {
-            type: string;
+            type: 'plan-exit-response';
             /**
              * Whether the plan is approved, rejected, or needs changes.
              */
@@ -2643,7 +2701,7 @@ export type MessagesResolveAsyncData = {
              */
             content: string;
         } | {
-            type: string;
+            type: 'answered-questions';
             /**
              * Answers to the questions the agent asked.
              */
@@ -2666,12 +2724,12 @@ export type MessagesResolveAsyncData = {
                 customText?: string;
             }>;
         } | {
-            type: string;
+            type: 'confirmed-permissions';
             /**
              * The permissions to grant. Pass the suggestedPermissions from the stopped task.
              */
             permissions: Array<{
-                type: string;
+                type: 'ALLOW_DYNAMIC_TOOL_STRICT';
                 /**
                  * The name of the tool being permitted.
                  */
@@ -2710,10 +2768,6 @@ export type MessagesResolveAsyncData = {
              * Enables image generations to generate up to 5 images per version.
              */
             imageGenerations: boolean;
-            /**
-             * Enables thinking to generate a response in multiple steps.
-             */
-            thinking: boolean;
         };
     };
     path: {
@@ -2813,7 +2867,7 @@ export type MessagesStopResponses = {
         /**
          * Always true when the stop signal was successfully sent.
          */
-        success: boolean;
+        success: true;
     };
 };
 
@@ -2861,7 +2915,7 @@ export type ChatsDeleteResponses = {
          * The ID of the deleted chat.
          */
         chatId: string;
-        success: boolean;
+        success: true;
     };
 };
 
@@ -3135,7 +3189,7 @@ export type ChatsUpdateFilesErrors = {
      * Response for status 422
      */
     422: {
-        message: string;
+        message: 'Invalid file contents';
         /**
          * All file content validation issues.
          */
@@ -3197,7 +3251,7 @@ export type ChatsUpdateFilesResponses = {
              * A single entry in the ordered narrative of a message. Iterate `parts` in order to render the full transcript.
              */
             parts: Array<{
-                type: string;
+                type: 'text';
                 /**
                  * Markdown prose written by the agent or user.
                  */
@@ -3211,7 +3265,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'thinking';
                 /**
                  * The agent's reasoning trace.
                  */
@@ -3225,7 +3279,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'file-read';
                 /**
                  * The file paths the agent read in this step.
                  */
@@ -3239,7 +3293,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'file-edit';
                 /**
                  * The type of file edit performed.
                  */
@@ -3261,7 +3315,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'search';
                 /**
                  * Whether the agent searched the repository or the web.
                  */
@@ -3279,7 +3333,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'bash';
                 /**
                  * The shell command that was executed.
                  */
@@ -3309,7 +3363,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'tool-call';
                 /**
                  * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
                  */
@@ -3335,7 +3389,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'agent-action';
                 /**
                  * Stable identifier for the action (e.g. "generate_image", "manage_todos", "diagnostics"). See documentation for the registry of known names.
                  */
@@ -3578,7 +3632,7 @@ export type ChatsRestoreMessageResponses = {
              * A single entry in the ordered narrative of a message. Iterate `parts` in order to render the full transcript.
              */
             parts: Array<{
-                type: string;
+                type: 'text';
                 /**
                  * Markdown prose written by the agent or user.
                  */
@@ -3592,7 +3646,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'thinking';
                 /**
                  * The agent's reasoning trace.
                  */
@@ -3606,7 +3660,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'file-read';
                 /**
                  * The file paths the agent read in this step.
                  */
@@ -3620,7 +3674,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'file-edit';
                 /**
                  * The type of file edit performed.
                  */
@@ -3642,7 +3696,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'search';
                 /**
                  * Whether the agent searched the repository or the web.
                  */
@@ -3660,7 +3714,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'bash';
                 /**
                  * The shell command that was executed.
                  */
@@ -3690,7 +3744,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'tool-call';
                 /**
                  * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
                  */
@@ -3716,7 +3770,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 finishedAt?: Date;
             } | {
-                type: string;
+                type: 'agent-action';
                 /**
                  * Stable identifier for the action (e.g. "generate_image", "manage_todos", "diagnostics"). See documentation for the registry of known names.
                  */
@@ -4101,15 +4155,15 @@ export type McpServersListResponses = {
          * Authentication configuration for the MCP server.
          */
         auth: {
-            type: string;
+            type: 'none';
         } | {
-            type: string;
+            type: 'bearer';
             /**
              * Bearer token for authentication.
              */
             token: string;
         } | {
-            type: string;
+            type: 'custom-headers';
             /**
              * Custom headers to include in requests.
              */
@@ -4117,7 +4171,7 @@ export type McpServersListResponses = {
                 [key: string]: string;
             };
         } | {
-            type: string;
+            type: 'oauth';
             /**
              * OAuth configuration discovered or manually set.
              */
@@ -4173,17 +4227,17 @@ export type McpServersCreateData = {
          * Authentication configuration.
          */
         auth: {
-            type: string;
+            type: 'none';
         } | {
-            type: string;
+            type: 'bearer';
             token: string;
         } | {
-            type: string;
+            type: 'custom-headers';
             headers: {
                 [key: string]: string;
             };
         } | {
-            type: string;
+            type: 'oauth';
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -4277,7 +4331,7 @@ export type McpServersDeleteResponses = {
      * Response for status 200
      */
     200: {
-        success: boolean;
+        success: true;
     };
 };
 
@@ -4347,17 +4401,17 @@ export type McpServersUpdateData = {
          * New authentication configuration.
          */
         auth?: {
-            type: string;
+            type: 'none';
         } | {
-            type: string;
+            type: 'bearer';
             token: string;
         } | {
-            type: string;
+            type: 'custom-headers';
             headers: {
                 [key: string]: string;
             };
         } | {
-            type: string;
+            type: 'oauth';
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -4742,7 +4796,7 @@ export type OrganizationsTeamsDeleteSpendLimitResponses = {
      * Response for status 200
      */
     200: {
-        success: boolean;
+        success: true;
     };
 };
 
@@ -4984,7 +5038,7 @@ export type WebhooksDeleteResponses = {
      */
     200: {
         id: string;
-        deleted: boolean;
+        deleted: true;
     };
 };
 
