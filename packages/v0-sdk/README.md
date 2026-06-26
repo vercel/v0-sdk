@@ -18,10 +18,7 @@ const v0 = createV0Client({
 })
 
 const response = await v0.chats.create({
-  body: {
-    type: 'prompt',
-    message: 'Build me a personal website',
-  },
+  message: 'Build me a personal website',
 })
 
 if (response.error) {

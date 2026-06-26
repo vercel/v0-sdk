@@ -15,7 +15,7 @@ const SYSTEM_PROMPT =
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { message, chatId, modelId = 'v0-pro', imageGenerations = false, thinking = false } = body
+    const { message, chatId, modelId = 'v0-pro', imageGenerations = false } = body
     const attachments = normalizeAttachments(body.attachments)
 
     if (!message || typeof message !== 'string') {
@@ -66,26 +66,26 @@ export async function POST(request: NextRequest) {
           let latestChat: Chat | null = null
 
           const streamResult = chatId
-            ? await v0.messages.sendStream({
-                path: { chatId },
-                body: {
+            ? await v0.messages.sendStream(
+                {
+                  chatId,
                   message: message.trim(),
                   modelConfiguration: {
                     modelId: resolvedModelId,
                     imageGenerations: Boolean(imageGenerations),
-                    thinking: Boolean(thinking),
                   },
                   ...(attachments.length > 0 && { attachments }),
                 },
-                signal: abortController.signal,
-                sseMaxRetryAttempts: 1,
-                onSseError: (error) => {
-                  upstreamError = error
+                {
+                  signal: abortController.signal,
+                  sseMaxRetryAttempts: 1,
+                  onSseError: (error) => {
+                    upstreamError = error
+                  },
                 },
-              })
-            : await v0.chats.createStream({
-                body: {
-                  type: 'prompt',
+              )
+            : await v0.chats.createStream(
+                {
                   systemPrompt: SYSTEM_PROMPT,
                   message: message.trim(),
                   modelConfiguration: {
@@ -94,12 +94,14 @@ export async function POST(request: NextRequest) {
                   },
                   ...(attachments.length > 0 && { attachments }),
                 },
-                signal: abortController.signal,
-                sseMaxRetryAttempts: 1,
-                onSseError: (error) => {
-                  upstreamError = error
+                {
+                  signal: abortController.signal,
+                  sseMaxRetryAttempts: 1,
+                  onSseError: (error) => {
+                    upstreamError = error
+                  },
                 },
-              })
+              )
 
           for await (const update of streamResult.stream) {
             if (abortController.signal.aborted) {

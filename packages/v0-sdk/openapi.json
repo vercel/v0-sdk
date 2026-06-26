@@ -266,12 +266,16 @@
           },
           "object": {
             "type": "string",
-            "const": "chat",
+            "enum": [
+              "chat"
+            ],
             "description": "Object type identifier."
           },
           "status": {
             "type": "string",
-            "const": "queued",
+            "enum": [
+              "queued"
+            ],
             "description": "The chat is being processed in the background. Poll for the chat to check for completion."
           }
         },
@@ -2485,7 +2489,9 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "const": "none"
+                    "enum": [
+                      "none"
+                    ]
                   }
                 },
                 "required": [
@@ -2498,7 +2504,9 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "const": "bearer"
+                    "enum": [
+                      "bearer"
+                    ]
                   },
                   "token": {
                     "type": "string",
@@ -2516,7 +2524,9 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "const": "custom-headers"
+                    "enum": [
+                      "custom-headers"
+                    ]
                   },
                   "headers": {
                     "type": "object",
@@ -2540,7 +2550,9 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "const": "oauth"
+                    "enum": [
+                      "oauth"
+                    ]
                   },
                   "config": {
                     "description": "OAuth configuration discovered or manually set.",
@@ -2837,7 +2849,7 @@
           "Chats"
         ],
         "summary": "Create Chat",
-        "description": "Creates a new chat with a user message. Blocks until the model response is complete and returns the chat.",
+        "description": "Creates a new chat from a prompt. The request blocks until the model response is complete and returns the chat.",
         "operationId": "chats.create",
         "requestBody": {
           "required": true,
@@ -2845,523 +2857,325 @@
             "application/json": {
               "schema": {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "oneOf": [
-                  {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "systemPrompt": {
+                    "description": "System-level context for the chat, such as frameworks or development environment details.",
+                    "type": "string"
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
                     "type": "object",
                     "properties": {
-                      "message": {
-                        "type": "string",
-                        "description": "The prompt or instruction to send to the model."
-                      },
-                      "systemPrompt": {
-                        "description": "System-level context for the chat, such as frameworks or development environment details.",
-                        "type": "string"
-                      },
-                      "modelConfiguration": {
-                        "description": "Overrides for the model behavior.",
-                        "type": "object",
-                        "properties": {
-                          "modelId": {
-                            "default": "v0-pro",
-                            "type": "string",
-                            "enum": [
-                              "v0-auto",
-                              "v0-mini",
-                              "v0-pro",
-                              "v0-max",
-                              "v0-max-fast"
-                            ],
-                            "description": "Model to use for the generation."
-                          },
-                          "imageGenerations": {
-                            "default": false,
-                            "type": "boolean",
-                            "description": "Enables image generations to generate up to 5 images per version."
-                          }
-                        },
-                        "required": [
-                          "modelId",
-                          "imageGenerations"
-                        ],
-                        "additionalProperties": false
-                      },
-                      "attachments": {
-                        "description": "Files or assets to include with the message.",
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL of the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        }
-                      },
-                      "mcpServerIds": {
-                        "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "skillIds": {
-                        "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "prompt",
-                        "description": "Initialize the chat by sending a prompt to the model."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
+                      "modelId": {
+                        "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
+                          "v0-auto",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ],
+                        "description": "Model to use for the generation."
                       },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
-                        }
-                      },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
                     "required": [
-                      "message",
-                      "type"
+                      "modelId",
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "const": "zip",
-                        "description": "Initialize the chat from a zip archive."
-                      },
-                      "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "Zip archive used to seed the new chat."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
-                        "type": "string",
-                        "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
-                      },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
+                  "attachments": {
+                    "description": "Files or assets to include with the message.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
                           "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
+                          "description": "URL of the attachment."
                         }
                       },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
-                      }
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "mcpServerIds": {
+                    "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "skillIds": {
+                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
                     },
-                    "required": [
-                      "type",
-                      "url"
-                    ],
-                    "additionalProperties": false
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
-                ]
+                },
+                "required": [
+                  "message"
+                ],
+                "additionalProperties": false
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "oneOf": [
-                  {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "systemPrompt": {
+                    "description": "System-level context for the chat, such as frameworks or development environment details.",
+                    "type": "string"
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
                     "type": "object",
                     "properties": {
-                      "message": {
-                        "type": "string",
-                        "description": "The prompt or instruction to send to the model."
-                      },
-                      "systemPrompt": {
-                        "description": "System-level context for the chat, such as frameworks or development environment details.",
-                        "type": "string"
-                      },
-                      "modelConfiguration": {
-                        "description": "Overrides for the model behavior.",
-                        "type": "object",
-                        "properties": {
-                          "modelId": {
-                            "default": "v0-pro",
-                            "type": "string",
-                            "enum": [
-                              "v0-auto",
-                              "v0-mini",
-                              "v0-pro",
-                              "v0-max",
-                              "v0-max-fast"
-                            ],
-                            "description": "Model to use for the generation."
-                          },
-                          "imageGenerations": {
-                            "default": false,
-                            "type": "boolean",
-                            "description": "Enables image generations to generate up to 5 images per version."
-                          }
-                        },
-                        "required": [
-                          "modelId",
-                          "imageGenerations"
-                        ],
-                        "additionalProperties": false
-                      },
-                      "attachments": {
-                        "description": "Files or assets to include with the message.",
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL of the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        }
-                      },
-                      "mcpServerIds": {
-                        "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "skillIds": {
-                        "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "prompt",
-                        "description": "Initialize the chat by sending a prompt to the model."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
+                      "modelId": {
+                        "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
+                          "v0-auto",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ],
+                        "description": "Model to use for the generation."
                       },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
-                        }
-                      },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
                     "required": [
-                      "message",
-                      "type"
+                      "modelId",
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "const": "zip",
-                        "description": "Initialize the chat from a zip archive."
-                      },
-                      "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "Zip archive used to seed the new chat."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
-                        "type": "string",
-                        "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
-                      },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
+                  "attachments": {
+                    "description": "Files or assets to include with the message.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
                           "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
+                          "description": "URL of the attachment."
                         }
                       },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
-                      }
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "mcpServerIds": {
+                    "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "skillIds": {
+                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
                     },
-                    "required": [
-                      "type",
-                      "url"
-                    ],
-                    "additionalProperties": false
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
-                ]
+                },
+                "required": [
+                  "message"
+                ],
+                "additionalProperties": false
               }
             },
             "multipart/form-data": {
               "schema": {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "oneOf": [
-                  {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "systemPrompt": {
+                    "description": "System-level context for the chat, such as frameworks or development environment details.",
+                    "type": "string"
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
                     "type": "object",
                     "properties": {
-                      "message": {
-                        "type": "string",
-                        "description": "The prompt or instruction to send to the model."
-                      },
-                      "systemPrompt": {
-                        "description": "System-level context for the chat, such as frameworks or development environment details.",
-                        "type": "string"
-                      },
-                      "modelConfiguration": {
-                        "description": "Overrides for the model behavior.",
-                        "type": "object",
-                        "properties": {
-                          "modelId": {
-                            "default": "v0-pro",
-                            "type": "string",
-                            "enum": [
-                              "v0-auto",
-                              "v0-mini",
-                              "v0-pro",
-                              "v0-max",
-                              "v0-max-fast"
-                            ],
-                            "description": "Model to use for the generation."
-                          },
-                          "imageGenerations": {
-                            "default": false,
-                            "type": "boolean",
-                            "description": "Enables image generations to generate up to 5 images per version."
-                          }
-                        },
-                        "required": [
-                          "modelId",
-                          "imageGenerations"
-                        ],
-                        "additionalProperties": false
-                      },
-                      "attachments": {
-                        "description": "Files or assets to include with the message.",
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL of the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        }
-                      },
-                      "mcpServerIds": {
-                        "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "skillIds": {
-                        "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "type": {
-                        "type": "string",
-                        "const": "prompt",
-                        "description": "Initialize the chat by sending a prompt to the model."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
+                      "modelId": {
+                        "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
+                          "v0-auto",
+                          "v0-mini",
+                          "v0-pro",
+                          "v0-max",
+                          "v0-max-fast"
+                        ],
+                        "description": "Model to use for the generation."
                       },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
-                        }
-                      },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
                     "required": [
-                      "message",
-                      "type"
+                      "modelId",
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "const": "zip",
-                        "description": "Initialize the chat from a zip archive."
-                      },
-                      "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "Zip archive used to seed the new chat."
-                      },
-                      "privacy": {
-                        "description": "Visibility setting for the new chat.",
-                        "type": "string",
-                        "enum": [
-                          "public",
-                          "private",
-                          "team",
-                          "team-edit",
-                          "unlisted"
-                        ]
-                      },
-                      "title": {
-                        "description": "Title for the new chat.",
-                        "type": "string"
-                      },
-                      "metadata": {
-                        "description": "Arbitrary key-value data to attach to the chat.",
-                        "type": "object",
-                        "propertyNames": {
+                  "attachments": {
+                    "description": "Files or assets to include with the message.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
                           "type": "string",
-                          "minLength": 1,
-                          "maxLength": 40
-                        },
-                        "additionalProperties": {
-                          "type": "string",
-                          "maxLength": 500
+                          "description": "URL of the attachment."
                         }
                       },
-                      "designSystemId": {
-                        "description": "Design system ID to apply to this chat.",
-                        "type": "string"
-                      }
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "mcpServerIds": {
+                    "description": "MCP server IDs to enable. When omitted, uses default enabled servers.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "skillIds": {
+                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
                     },
-                    "required": [
-                      "type",
-                      "url"
-                    ],
-                    "additionalProperties": false
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
-                ]
+                },
+                "required": [
+                  "message"
+                ],
+                "additionalProperties": false
               }
             }
           }
@@ -3626,6 +3440,475 @@
         }
       }
     },
+    "/api/v2/chats/from-zip": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create Chat From ZIP",
+        "description": "Creates a new chat from a zip archive.",
+        "operationId": "chats.createFromZip",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Zip archive used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Zip archive used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Zip archive used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A chat response that also reports the usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatWithUsage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/chats/from-repo": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create Chat From Repository",
+        "description": "Creates a new chat from a GitHub repository.",
+        "operationId": "chats.createFromRepo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "repo": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Repository source for initialization. Supports public GitHub repositories and private repositories connected through Vercel."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "repo"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "repo": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Repository source for initialization. Supports public GitHub repositories and private repositories connected through Vercel."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "repo"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "repo": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Repository source for initialization. Supports public GitHub repositories and private repositories connected through Vercel."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "repo"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A chat response that also reports the usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatWithUsage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v2/chats/stream": {
       "post": {
         "tags": [
@@ -3710,11 +3993,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -3742,15 +4020,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -3828,11 +4101,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -3860,15 +4128,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -3946,11 +4209,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -3978,15 +4236,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -4141,11 +4394,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -4173,15 +4421,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -4259,11 +4502,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -4291,15 +4529,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -4377,11 +4610,6 @@
                       "type": "string"
                     }
                   },
-                  "type": {
-                    "type": "string",
-                    "const": "prompt",
-                    "description": "Initialize the chat by sending a prompt to the model."
-                  },
                   "privacy": {
                     "description": "Visibility setting for the new chat.",
                     "type": "string",
@@ -4409,15 +4637,10 @@
                       "type": "string",
                       "maxLength": 500
                     }
-                  },
-                  "designSystemId": {
-                    "description": "Design system ID to apply to this chat.",
-                    "type": "string"
                   }
                 },
                 "required": [
-                  "message",
-                  "type"
+                  "message"
                 ],
                 "additionalProperties": false
               }
@@ -4623,7 +4846,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -4647,17 +4870,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -4685,7 +4902,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -4699,7 +4916,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -4723,7 +4942,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -4747,17 +4966,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -4785,7 +4998,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -4799,7 +5012,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -4823,7 +5038,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -4847,17 +5062,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -4885,7 +5094,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -4899,7 +5108,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5096,7 +5307,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5120,17 +5331,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5158,7 +5363,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5172,7 +5377,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5196,7 +5403,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5220,17 +5427,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5258,7 +5459,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5272,7 +5473,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5296,7 +5499,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5320,17 +5523,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5358,7 +5555,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5372,7 +5569,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5485,7 +5684,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5509,17 +5708,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5547,7 +5740,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5561,7 +5754,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5585,7 +5780,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5609,17 +5804,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5647,7 +5836,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5661,7 +5850,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5685,7 +5876,7 @@
                     "type": "string",
                     "description": "The prompt or instruction to send to the model."
                   },
-                  "system": {
+                  "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
                     "type": "string"
                   },
@@ -5709,17 +5900,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   },
@@ -5747,7 +5932,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "attachedSkillIds": {
+                  "skillIds": {
                     "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
@@ -5761,7 +5946,9 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "const": "fix-with-v0"
+                        "enum": [
+                          "fix-with-v0"
+                        ]
                       }
                     },
                     "required": [
@@ -5877,7 +6064,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -5901,6 +6090,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -5964,7 +6154,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -5994,7 +6186,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -6048,7 +6242,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -6058,7 +6254,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -6143,17 +6341,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -6176,7 +6368,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -6200,6 +6394,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -6263,7 +6458,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -6293,7 +6490,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -6347,7 +6546,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -6357,7 +6558,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -6442,17 +6645,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -6475,7 +6672,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -6499,6 +6698,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -6562,7 +6762,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -6592,7 +6794,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -6646,7 +6850,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -6656,7 +6862,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -6741,17 +6949,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -6873,7 +7075,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -6897,6 +7101,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -6960,7 +7165,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -6990,7 +7197,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -7044,7 +7253,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -7054,7 +7265,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -7139,17 +7352,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -7172,7 +7379,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -7196,6 +7405,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -7259,7 +7469,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -7289,7 +7501,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -7343,7 +7557,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -7353,7 +7569,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -7438,17 +7656,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -7471,7 +7683,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -7495,6 +7709,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -7558,7 +7773,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -7588,7 +7805,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -7642,7 +7861,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -7652,7 +7873,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -7737,17 +7960,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -7869,7 +8086,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -7893,6 +8112,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -7956,7 +8176,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -7986,7 +8208,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -8040,7 +8264,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -8050,7 +8276,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -8135,17 +8363,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -8168,7 +8390,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -8192,6 +8416,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -8255,7 +8480,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -8285,7 +8512,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -8339,7 +8568,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -8349,7 +8580,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -8434,17 +8667,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -8467,7 +8694,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": [
+                              "confirmed-steps"
+                            ]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -8491,6 +8720,7 @@
                                 "Clerk",
                                 "Convex",
                                 "Shopify",
+                                "Resend email",
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
@@ -8554,7 +8784,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": [
+                              "plan-exit-response"
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -8584,7 +8816,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": [
+                              "answered-questions"
+                            ]
                           },
                           "answers": {
                             "minItems": 1,
@@ -8638,7 +8872,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": [
+                              "confirmed-permissions"
+                            ]
                           },
                           "permissions": {
                             "minItems": 1,
@@ -8648,7 +8884,9 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -8733,17 +8971,11 @@
                         "default": false,
                         "type": "boolean",
                         "description": "Enables image generations to generate up to 5 images per version."
-                      },
-                      "thinking": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Enables thinking to generate a response in multiple steps."
                       }
                     },
                     "required": [
                       "modelId",
-                      "imageGenerations",
-                      "thinking"
+                      "imageGenerations"
                     ],
                     "additionalProperties": false
                   }
@@ -8871,7 +9103,9 @@
                   "properties": {
                     "success": {
                       "type": "boolean",
-                      "const": true,
+                      "enum": [
+                        true
+                      ],
                       "description": "Always true when the stop signal was successfully sent."
                     }
                   },
@@ -9294,7 +9528,9 @@
                     },
                     "success": {
                       "type": "boolean",
-                      "const": true
+                      "enum": [
+                        true
+                      ]
                     }
                   },
                   "required": [
@@ -9774,7 +10010,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "text"
+                                      "enum": [
+                                        "text"
+                                      ]
                                     },
                                     "text": {
                                       "type": "string",
@@ -9805,7 +10043,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "thinking"
+                                      "enum": [
+                                        "thinking"
+                                      ]
                                     },
                                     "text": {
                                       "type": "string",
@@ -9836,7 +10076,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "file-read"
+                                      "enum": [
+                                        "file-read"
+                                      ]
                                     },
                                     "paths": {
                                       "type": "array",
@@ -9870,7 +10112,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "file-edit"
+                                      "enum": [
+                                        "file-edit"
+                                      ]
                                     },
                                     "operation": {
                                       "type": "string",
@@ -9917,7 +10161,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "search"
+                                      "enum": [
+                                        "search"
+                                      ]
                                     },
                                     "scope": {
                                       "type": "string",
@@ -9957,7 +10203,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "bash"
+                                      "enum": [
+                                        "bash"
+                                      ]
                                     },
                                     "command": {
                                       "type": "string",
@@ -10015,7 +10263,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "tool-call"
+                                      "enum": [
+                                        "tool-call"
+                                      ]
                                     },
                                     "name": {
                                       "type": "string",
@@ -10061,7 +10311,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "agent-action"
+                                      "enum": [
+                                        "agent-action"
+                                      ]
                                     },
                                     "name": {
                                       "type": "string",
@@ -10321,7 +10573,9 @@
                       "properties": {
                         "message": {
                           "type": "string",
-                          "const": "Invalid file contents"
+                          "enum": [
+                            "Invalid file contents"
+                          ]
                         },
                         "issues": {
                           "type": "array",
@@ -10608,7 +10862,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "text"
+                                      "enum": [
+                                        "text"
+                                      ]
                                     },
                                     "text": {
                                       "type": "string",
@@ -10639,7 +10895,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "thinking"
+                                      "enum": [
+                                        "thinking"
+                                      ]
                                     },
                                     "text": {
                                       "type": "string",
@@ -10670,7 +10928,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "file-read"
+                                      "enum": [
+                                        "file-read"
+                                      ]
                                     },
                                     "paths": {
                                       "type": "array",
@@ -10704,7 +10964,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "file-edit"
+                                      "enum": [
+                                        "file-edit"
+                                      ]
                                     },
                                     "operation": {
                                       "type": "string",
@@ -10751,7 +11013,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "search"
+                                      "enum": [
+                                        "search"
+                                      ]
                                     },
                                     "scope": {
                                       "type": "string",
@@ -10791,7 +11055,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "bash"
+                                      "enum": [
+                                        "bash"
+                                      ]
                                     },
                                     "command": {
                                       "type": "string",
@@ -10849,7 +11115,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "tool-call"
+                                      "enum": [
+                                        "tool-call"
+                                      ]
                                     },
                                     "name": {
                                       "type": "string",
@@ -10895,7 +11163,9 @@
                                   "properties": {
                                     "type": {
                                       "type": "string",
-                                      "const": "agent-action"
+                                      "enum": [
+                                        "agent-action"
+                                      ]
                                     },
                                     "name": {
                                       "type": "string",
@@ -11740,7 +12010,9 @@
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "const": "none"
+                                "enum": [
+                                  "none"
+                                ]
                               }
                             },
                             "required": [
@@ -11753,7 +12025,9 @@
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "const": "bearer"
+                                "enum": [
+                                  "bearer"
+                                ]
                               },
                               "token": {
                                 "type": "string",
@@ -11771,7 +12045,9 @@
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "const": "custom-headers"
+                                "enum": [
+                                  "custom-headers"
+                                ]
                               },
                               "headers": {
                                 "type": "object",
@@ -11795,7 +12071,9 @@
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "const": "oauth"
+                                "enum": [
+                                  "oauth"
+                                ]
                               },
                               "config": {
                                 "description": "OAuth configuration discovered or manually set.",
@@ -11963,7 +12241,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -11976,7 +12256,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -11994,7 +12276,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -12017,7 +12301,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -12142,7 +12428,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -12155,7 +12443,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -12173,7 +12463,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -12196,7 +12488,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -12321,7 +12615,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -12334,7 +12630,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -12352,7 +12650,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -12375,7 +12675,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -12647,7 +12949,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -12660,7 +12964,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -12678,7 +12984,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -12701,7 +13009,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -12814,7 +13124,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -12827,7 +13139,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -12845,7 +13159,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -12868,7 +13184,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -12981,7 +13299,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "none"
+                            "enum": [
+                              "none"
+                            ]
                           }
                         },
                         "required": [
@@ -12994,7 +13314,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "bearer"
+                            "enum": [
+                              "bearer"
+                            ]
                           },
                           "token": {
                             "type": "string",
@@ -13012,7 +13334,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "custom-headers"
+                            "enum": [
+                              "custom-headers"
+                            ]
                           },
                           "headers": {
                             "type": "object",
@@ -13035,7 +13359,9 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "oauth"
+                            "enum": [
+                              "oauth"
+                            ]
                           },
                           "config": {
                             "type": "object",
@@ -13209,7 +13535,9 @@
                   "properties": {
                     "success": {
                       "type": "boolean",
-                      "const": true
+                      "enum": [
+                        true
+                      ]
                     }
                   },
                   "required": [
@@ -14135,7 +14463,9 @@
                   "properties": {
                     "success": {
                       "type": "boolean",
-                      "const": true
+                      "enum": [
+                        true
+                      ]
                     }
                   },
                   "required": [
@@ -14772,7 +15102,9 @@
                     },
                     "deleted": {
                       "type": "boolean",
-                      "const": true
+                      "enum": [
+                        true
+                      ]
                     }
                   },
                   "required": [

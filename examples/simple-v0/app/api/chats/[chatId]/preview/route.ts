@@ -96,7 +96,7 @@ export async function GET(
 
 async function getPreviewUrl(v0: ReturnType<typeof getV0Client>, chatId: string) {
   const response = await v0.chats.getPreview({
-    path: { chatId },
+    chatId,
   })
   const preview = unwrapV0Response(response)
 
