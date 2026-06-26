@@ -151,25 +151,6 @@ export default function SettingsDialog({ trigger }: SettingsDialogProps) {
               }
             />
           </div>
-
-          {/* Thinking */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h3 className="text-sm font-medium">Thinking</h3>
-              <p className="text-xs text-muted-foreground">
-                Show AI reasoning process during generation
-              </p>
-            </div>
-            <Switch
-              checked={tempSettings.thinking}
-              onCheckedChange={(checked) =>
-                setTempSettings({
-                  ...tempSettings,
-                  thinking: checked,
-                })
-              }
-            />
-          </div>
         </div>
 
         <div className="flex justify-end space-x-2 pt-4">

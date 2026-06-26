@@ -278,7 +278,7 @@ export default function ChatPage() {
 
   const handleSubmit = async (
     prompt: string,
-    settings: { modelId: string; imageGenerations: boolean; thinking: boolean },
+    settings: { modelId: string; imageGenerations: boolean },
     attachments?: { url: string; name?: string; type?: string }[],
   ) => {
     setIsLoading(true)
@@ -297,7 +297,6 @@ export default function ChatPage() {
           chatId: selectedChatId !== 'new' ? selectedChatId : undefined,
           modelId: settings.modelId,
           imageGenerations: settings.imageGenerations,
-          thinking: settings.thinking,
           ...(attachments && attachments.length > 0 && { attachments }),
         }),
       })

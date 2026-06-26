@@ -1,9 +1,9 @@
-import { createV0Client, type Chat, type ChatListResponse } from 'v0'
+import { createV0Client, type Chat, type ChatsListResponse } from 'v0'
 
 const CHAT_URL_BASE = 'https://v0.app/chat'
 
 type V0Client = ReturnType<typeof createV0Client>
-type ListedChat = ChatListResponse['chats'][number]
+type ListedChat = ChatsListResponse['chats'][number]
 type ChatLike = Chat | ListedChat
 
 type V0Result<T> = { data: T; error: undefined } | { data: undefined; error: { message?: string } }
@@ -56,10 +56,8 @@ async function listSimpleChats(v0: V0Client) {
 
   for (let page = 0; page < 10; page++) {
     const response = await v0.chats.list({
-      query: {
-        limit: 100,
-        ...(cursor ? { cursor } : {}),
-      },
+      limit: 100,
+      ...(cursor ? { cursor } : {}),
     })
     const data = unwrapV0Response(response)
 

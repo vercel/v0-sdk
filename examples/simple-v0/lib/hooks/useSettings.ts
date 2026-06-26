@@ -5,13 +5,11 @@ export type ModelType = 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fa
 export interface Settings {
   model: ModelType
   imageGenerations: boolean
-  thinking: boolean
 }
 
 const DEFAULT_SETTINGS: Settings = {
   model: 'v0-pro',
   imageGenerations: false,
-  thinking: false,
 }
 
 const SETTINGS_STORAGE_KEY = 'v0-settings'

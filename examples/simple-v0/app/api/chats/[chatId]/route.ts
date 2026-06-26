@@ -14,7 +14,7 @@ export async function GET(
 
     const v0 = getV0Client()
     const response = await v0.chats.get({
-      path: { chatId },
+      chatId,
     })
     const chat = unwrapV0Response(response)
 
@@ -54,7 +54,7 @@ export async function DELETE(
 
     const v0 = getV0Client()
     const response = await v0.chats.delete({
-      path: { chatId },
+      chatId,
     })
 
     unwrapV0Response(response)
@@ -102,10 +102,8 @@ export async function PATCH(
 
     const v0 = getV0Client()
     const response = await v0.chats.update({
-      path: { chatId },
-      body: {
-        title: name.trim(),
-      },
+      chatId,
+      title: name.trim(),
     })
 
     return NextResponse.json(normalizeChat(unwrapV0Response(response)))
