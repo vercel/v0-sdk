@@ -2,14 +2,16 @@
   "name": "basic",
   "private": true,
   "type": "module",
-  "module": "index.ts",
+  "scripts": {
+    "sync": "tsx chats/sync.ts",
+    "stream": "tsx chats/stream.ts"
+  },
   "dependencies": {
     "v0": "workspace:*"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3"
   }
 }
