@@ -7,9 +7,9 @@
   ],
   "type": "module",
   "scripts": {
-    "generate": "bun --filter v0 generate",
-    "build": "bun --filter v0 build",
-    "typecheck": "bun --filter v0 typecheck",
+    "generate": "bun --filter v0 generate && bun --filter @v0-sdk/ai-tools generate",
+    "build": "bun --filter v0 build && bun --filter @v0-sdk/ai-tools build",
+    "typecheck": "bun --filter v0 typecheck && bun --filter @v0-sdk/ai-tools typecheck",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
