@@ -12,6 +12,7 @@ export default defineConfig({
     {
       name: '@hey-api/sdk',
       transformer: true,
+      paramsStructure: 'flat',
       operations: {
         containerName: 'V0Sdk',
         strategy: 'single',

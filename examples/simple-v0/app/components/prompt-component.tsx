@@ -85,7 +85,7 @@ interface PromptComponentProps {
   // Submit handler - different behavior for homepage vs chat pages
   onSubmit: (
     prompt: string,
-    settings: { modelId: string; imageGenerations: boolean; thinking: boolean },
+    settings: { modelId: string; imageGenerations: boolean },
     attachments?: Attachment[],
   ) => Promise<void>
 
@@ -360,7 +360,6 @@ export default function PromptComponent({
         {
           modelId: settings.model,
           imageGenerations: settings.imageGenerations,
-          thinking: settings.thinking,
         },
         attachments,
       )

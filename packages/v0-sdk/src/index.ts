@@ -21,15 +21,23 @@ type GeneratedV0Client = V0Sdk
 type GeneratedChats = GeneratedV0Client['chats']
 type GeneratedMessages = GeneratedV0Client['messages']
 type ChatsCreateStreamOptions = Parameters<GeneratedChats['createStream']>[0]
+type ChatsCreateStreamRequestOptions = Parameters<GeneratedChats['createStream']>[1]
 type MessagesSendStreamOptions = Parameters<GeneratedMessages['sendStream']>[0]
+type MessagesSendStreamRequestOptions = Parameters<GeneratedMessages['sendStream']>[1]
 
 /** The v0 client returned by {@link createV0Client}. */
 export type V0Client = Omit<GeneratedV0Client, 'chats' | 'messages'> & {
   chats: Omit<GeneratedChats, 'createStream'> & {
-    createStream(options: ChatsCreateStreamOptions): Promise<V0StreamResult>
+    createStream(
+      parameters: ChatsCreateStreamOptions,
+      options?: ChatsCreateStreamRequestOptions,
+    ): Promise<V0StreamResult>
   }
   messages: Omit<GeneratedMessages, 'sendStream'> & {
-    sendStream(options: MessagesSendStreamOptions): Promise<V0StreamResult>
+    sendStream(
+      parameters: MessagesSendStreamOptions,
+      options?: MessagesSendStreamRequestOptions,
+    ): Promise<V0StreamResult>
   }
 }
 
@@ -74,8 +82,11 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
   return new Proxy(chats, {
     get(target, property, receiver) {
       if (property === 'createStream') {
-        return async (options: ChatsCreateStreamOptions) => {
-          const result = await target.createStream(options)
+        return async (
+          parameters: ChatsCreateStreamOptions,
+          options?: ChatsCreateStreamRequestOptions,
+        ) => {
+          const result = await target.createStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }
@@ -89,8 +100,11 @@ function wrapMessages(messages: GeneratedMessages): V0Client['messages'] {
   return new Proxy(messages, {
     get(target, property, receiver) {
       if (property === 'sendStream') {
-        return async (options: MessagesSendStreamOptions) => {
-          const result = await target.sendStream(options)
+        return async (
+          parameters: MessagesSendStreamOptions,
+          options?: MessagesSendStreamRequestOptions,
+        ) => {
+          const result = await target.sendStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }

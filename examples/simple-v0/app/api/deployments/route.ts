@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const v0 = getV0Client()
     const result = await v0.chats.deploy({
-      path: { chatId },
+      chatId,
     })
 
     return NextResponse.json(unwrapV0Response(result))

@@ -5,9 +5,7 @@ export async function GET() {
   try {
     const v0 = getV0Client()
     const response = await v0.chats.list({
-      query: {
-        limit: 1,
-      },
+      limit: 1,
     })
 
     unwrapV0Response(response)

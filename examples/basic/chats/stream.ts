@@ -9,10 +9,7 @@ const v0 = createV0Client({
 })
 
 const serverResult = await v0.chats.createStream({
-  body: {
-    type: 'prompt',
-    message: 'Simple hello world button',
-  },
+  message: 'Simple hello world button',
 })
 
 const result = readV0Stream(serverResult.toResponse())

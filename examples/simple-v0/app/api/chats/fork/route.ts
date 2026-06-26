@@ -12,11 +12,9 @@ export async function POST(request: NextRequest) {
     const v0 = getV0Client()
 
     const response = await v0.chats.duplicate({
-      path: { chatId },
-      body: {
-        privacy: 'private',
-        title: 'Fork',
-      },
+      chatId,
+      privacy: 'private',
+      title: 'Fork',
     })
     const forkedChat = unwrapV0Response(response)
 
