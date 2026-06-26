@@ -1,8 +1,4 @@
-import { createV0Client } from 'v0'
-
-const v0 = createV0Client({
-  auth: process.env.V0_API_KEY!,
-})
+import { v0 } from 'v0'
 
 const response = await v0.chats.create({
   message: 'Build me a cool personal website',
