@@ -11,31 +11,26 @@ This repository contains the v2 SDK package and compatible examples:
 ## Install
 
 ```bash
-npm install v0
+npm install v0@canary
 # or
-pnpm add v0
+pnpm add v0@canary
 # or
-yarn add v0
+yarn add v0@canary
 # or
-bun add v0
+bun add v0@canary
 ```
 
 ## Usage
 
-Get an API key from [v0.app/settings](https://v0.app/settings), then pass it to `createV0Client`.
+Set `V0_API_KEY`, or deploy server-side code on Vercel with OIDC enabled, then use the default client.
+
+You can get an API key from [v0.app/settings](https://v0.app/settings)
 
 ```ts
-import { createV0Client } from 'v0'
-
-const v0 = createV0Client({
-  auth: process.env.V0_API_KEY!,
-})
+import { v0 } from 'v0'
 
 const response = await v0.chats.create({
-  body: {
-    type: 'prompt',
-    message: 'Build me a personal website',
-  },
+  message: 'Build me a personal website',
 })
 
 if (response.error) {
@@ -45,22 +40,23 @@ if (response.error) {
 console.log(response.data.chat.id)
 ```
 
-For server-side code deployed on Vercel with OIDC enabled, `auth` can be omitted and the SDK will use Vercel OIDC auth by default.
+Use `createV0Client` when you need to customize auth, `baseUrl`, or fetch options.
+
+```ts
+import { createV0Client } from 'v0'
+
+const v0 = createV0Client({
+  auth: process.env.CUSTOM_V0_API_KEY!,
+})
+```
 
 ## Streaming
 
 ```ts
-import { createV0Client, readV0Stream } from 'v0'
-
-const v0 = createV0Client({
-  auth: process.env.V0_API_KEY!,
-})
+import { readV0Stream, v0 } from 'v0'
 
 const serverResult = await v0.chats.createStream({
-  body: {
-    type: 'prompt',
-    message: 'Build a hello world button',
-  },
+  message: 'Build a hello world button',
 })
 
 const result = readV0Stream(serverResult.toResponse())
