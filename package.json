@@ -8,8 +8,8 @@
   "type": "module",
   "scripts": {
     "generate": "bun --filter v0 generate && bun --filter @v0-sdk/ai-tools generate",
-    "build": "bun --filter v0 build && bun --filter @v0-sdk/ai-tools build",
-    "typecheck": "bun --filter v0 typecheck && bun --filter @v0-sdk/ai-tools typecheck",
+    "build": "bun --filter v0 build && bun --filter @v0-sdk/ai-tools build && bun --filter create-v0-sdk-app build",
+    "typecheck": "bun --filter v0 typecheck && bun --filter @v0-sdk/ai-tools typecheck && bun --filter create-v0-sdk-app typecheck",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
