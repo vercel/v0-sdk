@@ -93,12 +93,19 @@ export async function fetchPreview({
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
-    headers: response.headers,
+    headers: getPreviewResponseHeaders(response),
   })
 }
 
 function redirectToFallback(request: Request, fallbackUrl: string | URL) {
   return Response.redirect(new URL(fallbackUrl, request.url), 302)
+}
+
+function getPreviewResponseHeaders(response: Response) {
+  const headers = new Headers(response.headers)
+  headers.delete('content-encoding')
+  headers.delete('content-length')
+  return headers
 }
 
 function normalizePreviewPath(path: string | string[]) {
