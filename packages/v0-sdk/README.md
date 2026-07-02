@@ -24,6 +24,6 @@ if (response.error) {
 console.log(response.data.chat.id)
 ```
 
-The default `v0` client uses `V0_API_KEY` when present, otherwise it falls back to Vercel OIDC auth for server-side code deployed on Vercel. Use `createV0Client` when you need custom auth or client options.
+The default `v0` client uses `VERCEL_TOKEN` when present, then `V0_API_KEY`, otherwise it falls back to Vercel OIDC auth for server-side code deployed on Vercel. Use `createV0Client` when you need custom auth or client options.
 
 See https://v0.app/docs/api/v2 for full documentation and API reference.

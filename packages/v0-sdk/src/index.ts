@@ -13,7 +13,7 @@ type CreateV0ClientConfig = CreateClientConfig & {
   /**
    * v0 API key, or a callback returning a token. A string is sent as-is on
    * every request; a callback is invoked per request, for tokens that have to
-   * be fetched or refreshed. Defaults to `V0_API_KEY`, then
+   * be fetched or refreshed. Defaults to `VERCEL_TOKEN`, then `V0_API_KEY`, then
    * {@link vercelOidcAuth}, when omitted.
    */
   auth?: CreateClientConfig['auth']
@@ -30,6 +30,7 @@ type MessagesSendStreamRequestOptions = Parameters<GeneratedMessages['sendStream
 type ProcessWithEnv = {
   env?: {
     V0_API_KEY?: string
+    VERCEL_TOKEN?: string
   }
 }
 
@@ -52,8 +53,9 @@ export type V0Client = Omit<GeneratedV0Client, 'chats' | 'messages'> & {
 /**
  * Creates a v0 client. To authenticate:
  * - pass your v0 API key as `auth`; or
- * - omit `auth` to use the `V0_API_KEY` environment variable when present, or
- *   project-scoped Vercel OIDC auth for server-side code deployed on Vercel.
+ * - omit `auth` to use the `VERCEL_TOKEN` environment variable when present,
+ *   then `V0_API_KEY`, or project-scoped Vercel OIDC auth for server-side
+ *   code deployed on Vercel.
  */
 export function createV0Client(config: CreateV0ClientConfig = {}): V0Client {
   const { auth = defaultV0Auth, ...clientConfig } = config
@@ -69,18 +71,18 @@ export function createV0Client(config: CreateV0ClientConfig = {}): V0Client {
   return wrapV0Client(new V0Sdk({ client }))
 }
 
-/** Default v0 client using `V0_API_KEY` or Vercel OIDC auth. */
+/** Default v0 client using `VERCEL_TOKEN`, `V0_API_KEY`, or Vercel OIDC auth. */
 export const v0 = createV0Client()
 
 const defaultVercelOidcAuth = vercelOidcAuth()
 
 async function defaultV0Auth(auth: Auth): Promise<AuthToken> {
-  return getV0ApiKeyFromEnv() ?? defaultVercelOidcAuth(auth)
+  return getV0AuthTokenFromEnv() ?? defaultVercelOidcAuth(auth)
 }
 
-function getV0ApiKeyFromEnv(): string | undefined {
+function getV0AuthTokenFromEnv(): string | undefined {
   const maybeProcess = (globalThis as typeof globalThis & { process?: ProcessWithEnv }).process
-  return maybeProcess?.env?.V0_API_KEY
+  return maybeProcess?.env?.VERCEL_TOKEN ?? maybeProcess?.env?.V0_API_KEY
 }
 
 function wrapV0Client(raw: V0Sdk): V0Client {

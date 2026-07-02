@@ -28,6 +28,9 @@ await generateText({
 })
 ```
 
+When `auth` and `apiKey` are omitted, the tools use `VERCEL_TOKEN`, then
+`V0_API_KEY`, from the environment.
+
 ## Tool names
 
 Tool keys are canonical operation names, not friendly aliases:

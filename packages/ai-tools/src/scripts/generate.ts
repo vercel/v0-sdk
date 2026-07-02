@@ -405,8 +405,9 @@ ${categoryEntries}
 
 function resolveV0ToolsConfig(config: V0ToolsConfig): Parameters<typeof createV0ClientType>[0] {
   const { apiKey, ...clientConfig } = config
-  const envApiKey = typeof process !== 'undefined' ? process.env["V0_API_KEY"] : undefined
-  const auth = clientConfig.auth ?? apiKey ?? envApiKey
+  const envAuth =
+    typeof process !== 'undefined' ? process.env["VERCEL_TOKEN"] ?? process.env["V0_API_KEY"] : undefined
+  const auth = clientConfig.auth ?? apiKey ?? envAuth
 
   return auth === undefined ? clientConfig : { ...clientConfig, auth }
 }

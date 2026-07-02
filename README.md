@@ -22,7 +22,7 @@ bun add v0@canary
 
 ## Usage
 
-Set `V0_API_KEY`, or deploy server-side code on Vercel with OIDC enabled, then use the default client.
+Set `VERCEL_TOKEN` or `V0_API_KEY`, or deploy server-side code on Vercel with OIDC enabled, then use the default client.
 
 You can get an API key from [v0.app/settings](https://v0.app/settings)
 

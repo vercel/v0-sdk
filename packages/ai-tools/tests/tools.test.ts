@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -27,9 +27,15 @@ const operationIds = Object.values(openApi.paths)
 const operationKeys = operationIds.map(toCanonicalToolKey).sort()
 
 let currentClient: unknown = {}
+let currentClientConfigs: unknown[] = []
+const originalV0ApiKey = process.env['V0_API_KEY']
+const originalVercelToken = process.env['VERCEL_TOKEN']
 
 mock.module('v0', () => ({
-  createV0Client: () => currentClient,
+  createV0Client: (config: unknown) => {
+    currentClientConfigs.push(config)
+    return currentClient
+  },
 }))
 
 function toCanonicalToolKey(operationId: string): string {
@@ -58,6 +64,14 @@ function upperFirst(value: string): string {
 describe('generated v0 tools', () => {
   beforeEach(() => {
     currentClient = {}
+    currentClientConfigs = []
+    delete process.env['V0_API_KEY']
+    delete process.env['VERCEL_TOKEN']
+  })
+
+  afterEach(() => {
+    restoreEnv('V0_API_KEY', originalV0ApiKey)
+    restoreEnv('VERCEL_TOKEN', originalVercelToken)
   })
 
   test('flat tools contain every OpenAPI operation', async () => {
@@ -108,6 +122,25 @@ describe('generated v0 tools', () => {
       expect(generatedTool?.inputSchema).toBeDefined()
       expect(generatedTool?.execute).toBeFunction()
     }
+  })
+
+  test('uses VERCEL_TOKEN from env when auth is omitted', async () => {
+    process.env['VERCEL_TOKEN'] = 'vercel-token'
+
+    const { v0Tools } = await import('../src')
+    v0Tools()
+
+    expect(currentClientConfigs).toEqual([{ auth: 'vercel-token' }])
+  })
+
+  test('prefers VERCEL_TOKEN over V0_API_KEY from env', async () => {
+    process.env['V0_API_KEY'] = 'v0-api-key'
+    process.env['VERCEL_TOKEN'] = 'vercel-token'
+
+    const { v0Tools } = await import('../src')
+    v0Tools()
+
+    expect(currentClientConfigs).toEqual([{ auth: 'vercel-token' }])
   })
 
   test('generated Zod schemas validate required body and path fields', async () => {
@@ -272,3 +305,12 @@ describe('generated v0 tools', () => {
     ])
   })
 })
+
+function restoreEnv(key: 'V0_API_KEY' | 'VERCEL_TOKEN', value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[key]
+    return
+  }
+
+  process.env[key] = value
+}
