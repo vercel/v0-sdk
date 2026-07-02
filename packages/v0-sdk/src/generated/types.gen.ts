@@ -450,7 +450,7 @@ export type Message = {
         /**
          * Process exit code, when available. Reserved for future use; currently always omitted.
          */
-        exitCode?: number | unknown;
+        exitCode?: number | null;
         /**
          * True if the command was flagged as potentially dangerous and required explicit user approval.
          */
@@ -519,7 +519,7 @@ export type Message = {
     /**
      * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
      */
-    finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | unknown;
+    finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
      * Files attached to this message.
      */
@@ -544,7 +544,7 @@ export type Message = {
     /**
      * ID of the user who authored a user message; null for assistant messages.
      */
-    authorId: string | unknown;
+    authorId: string | null;
     /**
      * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
@@ -729,7 +729,7 @@ export type MessageListResponse = {
             /**
              * Process exit code, when available. Reserved for future use; currently always omitted.
              */
-            exitCode?: number | unknown;
+            exitCode?: number | null;
             /**
              * True if the command was flagged as potentially dangerous and required explicit user approval.
              */
@@ -798,7 +798,7 @@ export type MessageListResponse = {
         /**
          * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
          */
-        finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | unknown;
+        finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
         /**
          * Files attached to this message.
          */
@@ -823,7 +823,7 @@ export type MessageListResponse = {
         /**
          * ID of the user who authored a user message; null for assistant messages.
          */
-        authorId: string | unknown;
+        authorId: string | null;
         /**
          * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
          */
@@ -883,7 +883,7 @@ export type MessageListResponse = {
     /**
      * Cursor to fetch the next page, or null if there are no more messages.
      */
-    cursor: string | unknown;
+    cursor: string | null;
 };
 
 /**
@@ -1022,7 +1022,7 @@ export type MessageStreamEvent = {
         /**
          * Process exit code, when available. Reserved for future use; currently always omitted.
          */
-        exitCode?: number | unknown;
+        exitCode?: number | null;
         /**
          * True if the command was flagged as potentially dangerous and required explicit user approval.
          */
@@ -1091,7 +1091,7 @@ export type MessageStreamEvent = {
     /**
      * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
      */
-    finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | unknown;
+    finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
      * Files attached to this message.
      */
@@ -1116,7 +1116,7 @@ export type MessageStreamEvent = {
     /**
      * ID of the user who authored a user message; null for assistant messages.
      */
-    authorId: string | unknown;
+    authorId: string | null;
     /**
      * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
@@ -1399,7 +1399,7 @@ export type ApiKey = {
     /**
      * The last time this key was used, or null if never used.
      */
-    lastUsed: string | unknown;
+    lastUsed: string | null;
 };
 
 export type ApiKeyWithSecret = {
@@ -1473,7 +1473,7 @@ export type Webhook = {
     /**
      * Optional ID of the chat that this webhook is scoped to.
      */
-    chatId: string | unknown;
+    chatId: string | null;
 };
 
 export type ChatsListData = {
@@ -1574,7 +1574,7 @@ export type ChatsListResponses = {
         /**
          * Cursor to fetch the next page, or null if there are no more chats.
          */
-        cursor: string | unknown;
+        cursor: string | null;
     };
 };
 
@@ -2439,11 +2439,11 @@ export type MessagesResolveData = {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -2590,11 +2590,11 @@ export type MessagesResolveStreamData = {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -2741,11 +2741,11 @@ export type MessagesResolveAsyncData = {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -2981,8 +2981,8 @@ export type ChatsUpdateData = {
          * User-defined key-value metadata. Merged with existing entries. Pass `null` for a value to delete that key, or pass `null` for the whole field to delete all entries. Maximum 50 active entries.
          */
         metadata?: {
-            [key: string]: string | unknown;
-        } | unknown;
+            [key: string]: string | null;
+        } | null;
     };
     path: {
         /**
@@ -3086,7 +3086,7 @@ export type ChatsGetPreviewResponses = {
              * The ISO timestamp when token expires.
              */
             expiresAt: Date;
-        } | unknown;
+        } | null;
     };
 };
 
@@ -3155,7 +3155,7 @@ export type ChatsUpdateFilesData = {
             /**
              * New file content. Pass `null` to delete the file at this path.
              */
-            content: string | unknown;
+            content: string | null;
         }>;
     };
     path: {
@@ -3345,7 +3345,7 @@ export type ChatsUpdateFilesResponses = {
                 /**
                  * Process exit code, when available. Reserved for future use; currently always omitted.
                  */
-                exitCode?: number | unknown;
+                exitCode?: number | null;
                 /**
                  * True if the command was flagged as potentially dangerous and required explicit user approval.
                  */
@@ -3414,7 +3414,7 @@ export type ChatsUpdateFilesResponses = {
             /**
              * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
              */
-            finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | unknown;
+            finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
             /**
              * Files attached to this message.
              */
@@ -3439,7 +3439,7 @@ export type ChatsUpdateFilesResponses = {
             /**
              * ID of the user who authored a user message; null for assistant messages.
              */
-            authorId: string | unknown;
+            authorId: string | null;
             /**
              * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
@@ -3726,7 +3726,7 @@ export type ChatsRestoreMessageResponses = {
                 /**
                  * Process exit code, when available. Reserved for future use; currently always omitted.
                  */
-                exitCode?: number | unknown;
+                exitCode?: number | null;
                 /**
                  * True if the command was flagged as potentially dangerous and required explicit user approval.
                  */
@@ -3795,7 +3795,7 @@ export type ChatsRestoreMessageResponses = {
             /**
              * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
              */
-            finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | unknown;
+            finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
             /**
              * Files attached to this message.
              */
@@ -3820,7 +3820,7 @@ export type ChatsRestoreMessageResponses = {
             /**
              * ID of the user who authored a user message; null for assistant messages.
              */
-            authorId: string | unknown;
+            authorId: string | null;
             /**
              * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
@@ -4537,7 +4537,7 @@ export type OrganizationsTeamsListApiKeysResponses = {
         /**
          * The last time this key was used, or null if never used.
          */
-        lastUsed: string | unknown;
+        lastUsed: string | null;
     }>;
 };
 
@@ -4958,7 +4958,7 @@ export type WebhooksCreateData = {
         /**
          * The ID of a chat to scope the webhook to.
          */
-        chatId: string | unknown;
+        chatId: string | null;
     };
     path?: never;
     query?: never;
