@@ -619,6 +619,10 @@ function schemaToNonNullableZodExpression(spec: OpenApiDocument, schema: OpenApi
 
   const type = Array.isArray(schema.type) ? schema.type[0] : schema.type
 
+  if (type === 'null') {
+    return 'z.null()'
+  }
+
   if (type === 'string') {
     return stringToZodExpression(schema)
   }
