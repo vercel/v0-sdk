@@ -2,7 +2,7 @@
 
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, organizationsGetSpendLimitResponseTransformer, organizationsSetSpendLimitResponseTransformer, organizationsTeamsGetSpendLimitResponseTransformer, organizationsTeamsSetSpendLimitResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
+import { chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, organizationsGetSpendLimitResponseTransformer, organizationsSetSpendLimitResponseTransformer, organizationsTeamsGetSpendLimitResponseTransformer, organizationsTeamsSetSpendLimitResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
 import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, OrganizationsGetSpendLimitErrors, OrganizationsGetSpendLimitResponses, OrganizationsSetSpendLimitErrors, OrganizationsSetSpendLimitResponses, OrganizationsTeamsCreateApiKeyErrors, OrganizationsTeamsCreateApiKeyResponses, OrganizationsTeamsDeleteApiKeyErrors, OrganizationsTeamsDeleteApiKeyResponses, OrganizationsTeamsDeleteSpendLimitErrors, OrganizationsTeamsDeleteSpendLimitResponses, OrganizationsTeamsGetSpendLimitErrors, OrganizationsTeamsGetSpendLimitResponses, OrganizationsTeamsListApiKeysErrors, OrganizationsTeamsListApiKeysResponses, OrganizationsTeamsSetSpendLimitErrors, OrganizationsTeamsSetSpendLimitResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
@@ -367,8 +367,8 @@ export class Chats extends HeyApiClient {
         title?: string;
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         metadata?: {
-            [key: string]: string | unknown;
-        } | unknown;
+            [key: string]: string | null;
+        } | null;
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
@@ -400,6 +400,7 @@ export class Chats extends HeyApiClient {
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).get<ChatsGetPreviewResponses, ChatsGetPreviewErrors, ThrowOnError>({
+            responseTransformer: chatsGetPreviewResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v2/chats/{chatId}/preview',
             ...options,
@@ -439,7 +440,7 @@ export class Chats extends HeyApiClient {
             /**
              * New file content. Pass `null` to delete the file at this path.
              */
-            content: string | unknown;
+            content: string | null;
         }>;
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'body', key: 'files' }] }]);
@@ -868,11 +869,11 @@ export class Messages extends HeyApiClient {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -989,11 +990,11 @@ export class Messages extends HeyApiClient {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -1109,11 +1110,11 @@ export class Messages extends HeyApiClient {
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
-                taskNameActive?: string | unknown;
+                taskNameActive?: string | null;
                 /**
                  * Label shown after the tool completes (e.g. "Migration complete").
                  */
-                taskNameComplete?: string | unknown;
+                taskNameComplete?: string | null;
                 /**
                  * Optional message from the user about this permission.
                  */
@@ -1540,7 +1541,7 @@ export class Webhooks extends HeyApiClient {
         name: string;
         events: Array<'chat.created' | 'chat.updated' | 'chat.deleted' | 'message.created' | 'message.updated' | 'message.deleted' | 'message.finished'>;
         url: string;
-        chatId: string | unknown;
+        chatId: string | null;
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'body', key: 'name' },

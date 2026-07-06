@@ -391,7 +391,7 @@ const chatsUpdateInputSchema = z.object({
     .describe('Updated visibility setting for the chat.')
     .optional(),
   metadata: z
-    .union([z.record(z.string(), z.union([z.string(), z.unknown()])), z.unknown()])
+    .union([z.record(z.string(), z.union([z.string(), z.null()])), z.null()])
     .describe(
       'User-defined key-value metadata. Merged with existing entries. Pass `null` for a value to delete that key, or pass `null` for the whole field to delete all entries. Maximum 50 active entries.',
     )
@@ -405,7 +405,7 @@ const chatsUpdateFilesInputSchema = z.object({
       z.object({
         path: z.string().describe('Project-relative file path, e.g. "app/page.tsx".'),
         content: z
-          .union([z.string(), z.unknown()])
+          .union([z.string(), z.null()])
           .describe('New file content. Pass `null` to delete the file at this path.'),
       }),
     )
@@ -620,11 +620,11 @@ const messagesResolveInputSchema = z.object({
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
               taskNameActive: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
                 .optional(),
               taskNameComplete: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown after the tool completes (e.g. "Migration complete").')
                 .optional(),
               userMessage: z
@@ -759,11 +759,11 @@ const messagesResolveAsyncInputSchema = z.object({
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
               taskNameActive: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
                 .optional(),
               taskNameComplete: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown after the tool completes (e.g. "Migration complete").')
                 .optional(),
               userMessage: z
@@ -898,11 +898,11 @@ const messagesResolveStreamInputSchema = z.object({
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
               taskNameActive: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
                 .optional(),
               taskNameComplete: z
-                .union([z.string(), z.unknown()])
+                .union([z.string(), z.null()])
                 .describe('Label shown after the tool completes (e.g. "Migration complete").')
                 .optional(),
               userMessage: z
@@ -1143,7 +1143,7 @@ const webhooksCreateInputSchema = z.object({
     )
     .describe('List of event types the webhook should subscribe to.'),
   url: z.string().url().describe('The target URL to receive the webhook payloads.'),
-  chatId: z.union([z.string(), z.unknown()]).describe('The ID of a chat to scope the webhook to.'),
+  chatId: z.union([z.string(), z.null()]).describe('The ID of a chat to scope the webhook to.'),
 })
 
 const webhooksDeleteInputSchema = z.object({
