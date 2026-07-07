@@ -1,14 +1,22 @@
 import type {
   Chat,
   ChatsCreateStreamResponses,
+  ChatsResumeResponses,
   Message,
+  MessagesResolveStreamResponses,
   MessagesSendStreamResponses,
 } from '../generated/types.gen'
 import { patch } from './diffpatch'
 
 type CreateStreamEvent = ChatsCreateStreamResponses[200]
+type ResumeStreamEvent = ChatsResumeResponses[200]
 type SendStreamEvent = MessagesSendStreamResponses[200]
-export type V0StreamEvent = CreateStreamEvent | SendStreamEvent
+type ResolveStreamEvent = MessagesResolveStreamResponses[200]
+export type V0StreamEvent =
+  | CreateStreamEvent
+  | ResumeStreamEvent
+  | SendStreamEvent
+  | ResolveStreamEvent
 
 export type V0StreamParts = Message['parts']
 
