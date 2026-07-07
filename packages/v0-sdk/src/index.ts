@@ -26,6 +26,10 @@ type GeneratedChats = GeneratedV0Client['chats']
 type GeneratedMessages = GeneratedV0Client['messages']
 type ChatsCreateStreamOptions = Parameters<GeneratedChats['createStream']>[0]
 type ChatsCreateStreamRequestOptions = Parameters<GeneratedChats['createStream']>[1]
+type ChatsResumeOptions = Parameters<GeneratedChats['resume']>[0]
+type ChatsResumeRequestOptions = Parameters<GeneratedChats['resume']>[1]
+type MessagesResolveStreamOptions = Parameters<GeneratedMessages['resolveStream']>[0]
+type MessagesResolveStreamRequestOptions = Parameters<GeneratedMessages['resolveStream']>[1]
 type MessagesSendStreamOptions = Parameters<GeneratedMessages['sendStream']>[0]
 type MessagesSendStreamRequestOptions = Parameters<GeneratedMessages['sendStream']>[1]
 
@@ -37,13 +41,21 @@ type ProcessWithEnv = {
 
 /** The v0 client returned by {@link createV0Client}. */
 export type V0Client = Omit<GeneratedV0Client, 'chats' | 'messages'> & {
-  chats: Omit<GeneratedChats, 'createStream'> & {
+  chats: Omit<GeneratedChats, 'createStream' | 'resume'> & {
     createStream(
       parameters: ChatsCreateStreamOptions,
       options?: ChatsCreateStreamRequestOptions,
     ): Promise<V0StreamResult>
+    resume(
+      parameters: ChatsResumeOptions,
+      options?: ChatsResumeRequestOptions,
+    ): Promise<V0StreamResult>
   }
-  messages: Omit<GeneratedMessages, 'sendStream'> & {
+  messages: Omit<GeneratedMessages, 'resolveStream' | 'sendStream'> & {
+    resolveStream(
+      parameters: MessagesResolveStreamOptions,
+      options?: MessagesResolveStreamRequestOptions,
+    ): Promise<V0StreamResult>
     sendStream(
       parameters: MessagesSendStreamOptions,
       options?: MessagesSendStreamRequestOptions,
@@ -117,6 +129,16 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
         }
       }
 
+      if (property === 'resume') {
+        return async (
+          parameters: ChatsResumeOptions,
+          options?: ChatsResumeRequestOptions,
+        ) => {
+          const result = await target.resume(parameters, options)
+          return createV0StreamResult(result.stream)
+        }
+      }
+
       return Reflect.get(target, property, receiver)
     },
   }) as unknown as V0Client['chats']
@@ -125,6 +147,16 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
 function wrapMessages(messages: GeneratedMessages): V0Client['messages'] {
   return new Proxy(messages, {
     get(target, property, receiver) {
+      if (property === 'resolveStream') {
+        return async (
+          parameters: MessagesResolveStreamOptions,
+          options?: MessagesResolveStreamRequestOptions,
+        ) => {
+          const result = await target.resolveStream(parameters, options)
+          return createV0StreamResult(result.stream)
+        }
+      }
+
       if (property === 'sendStream') {
         return async (
           parameters: MessagesSendStreamOptions,
