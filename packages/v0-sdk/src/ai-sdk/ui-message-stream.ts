@@ -74,6 +74,43 @@ export function toUIMessageStreamResponse(
   })
 }
 
+/**
+ * Converts a `v0.chats.resume` result into a `Response` for the reconnect
+ * (`GET`) route handler used by `useChat`'s `resume`. When there is a
+ * generation to attach to it responds like {@link toUIMessageStreamResponse};
+ * when there is nothing to resume (v0 responds with an error, for example 404
+ * when no resumable stream exists) it responds with `204 No Content`, which
+ * `useChat` treats as "nothing to resume".
+ *
+ * ```ts
+ * export async function GET(request: Request) {
+ *   const chatId = new URL(request.url).searchParams.get('chatId')
+ *   if (!chatId) return new Response(null, { status: 204 })
+ *
+ *   return toResumeResponse(v0.chats.resume({ chatId }, { sseMaxRetryAttempts: 1 }))
+ * }
+ * ```
+ */
+export async function toResumeResponse(
+  result: V0StreamResult | Promise<V0StreamResult>,
+  init?: Omit<Parameters<typeof createUIMessageStreamResponse>[0], 'stream'>,
+): Promise<Response> {
+  try {
+    const resolved = await result
+
+    const probe = resolved.stream[Symbol.asyncIterator]()
+    try {
+      await probe.next()
+    } finally {
+      await probe.return?.()
+    }
+
+    return toUIMessageStreamResponse(resolved, init)
+  } catch {
+    return new Response(null, { status: 204 })
+  }
+}
+
 interface TextPartState {
   kind: 'text' | 'reasoning'
   id: string

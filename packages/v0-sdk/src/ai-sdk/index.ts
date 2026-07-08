@@ -6,4 +6,4 @@ export type {
   V0UIMessage,
   V0UIMessageChunk,
 } from './ui-message'
-export { toUIMessageStream, toUIMessageStreamResponse } from './ui-message-stream'
+export { toResumeResponse, toUIMessageStream, toUIMessageStreamResponse } from './ui-message-stream'

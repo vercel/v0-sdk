@@ -1,9 +1,15 @@
 import { describe, expect, test } from 'bun:test'
 import { readUIMessageStream } from 'ai'
-import { toUIMessage, toUIMessageStream, toUIMessageStreamResponse } from '../src/ai-sdk'
+import {
+  toResumeResponse,
+  toUIMessage,
+  toUIMessageStream,
+  toUIMessageStreamResponse,
+} from '../src/ai-sdk'
 import type { V0UIMessage, V0UIMessageChunk } from '../src/ai-sdk'
 import type { Message } from '../src/generated/types.gen'
 import { diff } from '../src/stream/diffpatch'
+import { createV0StreamResult } from '../src/stream/result'
 import type { V0StreamEvent } from '../src/stream/result'
 import {
   assistantMessage,
@@ -477,6 +483,68 @@ describe('toUIMessageStreamResponse', () => {
     )
 
     expect(response.status).toBe(201)
+    expect(response.headers.get('x-chat-id')).toBe('chat_1')
+
+    await response.body?.cancel()
+  })
+})
+
+describe('toResumeResponse', () => {
+  test('streams the full response when a generation is resumable', async () => {
+    const response = await toResumeResponse(
+      streamOf([
+        { ...chatSnapshot(), object: 'chat' },
+        {
+          id: 'msg_9',
+          object: 'message.parts.chunk',
+          delta: diff([], [{ type: 'text', text: 'Still going' }]),
+        },
+      ]),
+    )
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toStartWith('text/event-stream')
+
+    const body = await response.text()
+    expect(body).toContain('"type":"start"')
+    expect(body).toContain('"data-chat"')
+    expect(body).toContain('Still going')
+    expect(body).toContain('"type":"finish"')
+  })
+
+  test('responds with 204 when the resume request rejects', async () => {
+    const response = await toResumeResponse(
+      Promise.reject(new Error('SSE failed: 404 Not Found')),
+    )
+
+    expect(response.status).toBe(204)
+    expect(response.body).toBeNull()
+  })
+
+  test('responds with 204 when the stream fails before its first event', async () => {
+    const response = await toResumeResponse(
+      createV0StreamResult(
+        (async function* () {
+          throw new Error('SSE failed: 404 Not Found')
+        })(),
+      ),
+    )
+
+    expect(response.status).toBe(204)
+  })
+
+  test('responds with 204 when the stream ends without events', async () => {
+    const response = await toResumeResponse(streamOf([]))
+
+    expect(response.status).toBe(204)
+  })
+
+  test('passes response init through when streaming', async () => {
+    const response = await toResumeResponse(
+      streamOf([{ ...assistantMessage(), object: 'message' }]),
+      { headers: { 'x-chat-id': 'chat_1' } },
+    )
+
     expect(response.headers.get('x-chat-id')).toBe('chat_1')
 
     await response.body?.cancel()
