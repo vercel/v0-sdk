@@ -10,6 +10,8 @@ export type { FetchPreviewOptions } from './preview-proxy'
 export { vercelOidcAuth, type VercelOidcAuthOptions } from './vercel-oidc'
 export type * from './generated/types.gen'
 
+export { createChatId } from './id'
+
 type CreateClientConfig = NonNullable<Parameters<typeof createClient>[0]>
 type CreateV0ClientConfig = CreateClientConfig & {
   /**
@@ -130,10 +132,7 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
       }
 
       if (property === 'resume') {
-        return async (
-          parameters: ChatsResumeOptions,
-          options?: ChatsResumeRequestOptions,
-        ) => {
+        return async (parameters: ChatsResumeOptions, options?: ChatsResumeRequestOptions) => {
           const result = await target.resume(parameters, options)
           return createV0StreamResult(result.stream)
         }
