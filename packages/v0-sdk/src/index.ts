@@ -4,9 +4,7 @@ import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
 import { vercelOidcAuth } from './vercel-oidc'
 
-export { fetchPreview } from './preview-proxy'
 export * from './stream'
-export type { FetchPreviewOptions } from './preview-proxy'
 export { vercelOidcAuth, type VercelOidcAuthOptions } from './vercel-oidc'
 export type * from './generated/types.gen'
 
@@ -130,10 +128,7 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
       }
 
       if (property === 'resume') {
-        return async (
-          parameters: ChatsResumeOptions,
-          options?: ChatsResumeRequestOptions,
-        ) => {
+        return async (parameters: ChatsResumeOptions, options?: ChatsResumeRequestOptions) => {
           const result = await target.resume(parameters, options)
           return createV0StreamResult(result.stream)
         }

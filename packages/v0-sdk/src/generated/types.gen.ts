@@ -486,6 +486,35 @@ export type Message = {
          */
         status: 'ok' | 'error';
         /**
+         * Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.
+         */
+        suggestedPermissions?: Array<{
+            /**
+             * Permission grant type.
+             */
+            type: 'ALLOW_DYNAMIC_TOOL_STRICT';
+            /**
+             * The tool this permission authorizes.
+             */
+            toolName: string;
+            /**
+             * The tool input this permission authorizes. Pass back unchanged when resolving.
+             */
+            input?: unknown;
+            /**
+             * Internal label for the in-progress task. Pass back unchanged.
+             */
+            taskNameActive?: string | null;
+            /**
+             * Internal label for the completed task. Pass back unchanged.
+             */
+            taskNameComplete?: string | null;
+            /**
+             * Optional message associated with the permission.
+             */
+            userMessage?: string;
+        }>;
+        /**
          * ISO timestamp when this part began.
          */
         startedAt?: Date;
@@ -504,9 +533,70 @@ export type Message = {
          */
         summary: string;
         /**
-         * Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly.
+         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
          */
-        data?: unknown;
+        data?: {
+            /**
+             * The questions the agent is waiting for answers to. Resolve with an `answered-questions` task.
+             */
+            questions: Array<{
+                /**
+                 * Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task.
+                 */
+                id: string;
+                /**
+                 * The full question text.
+                 */
+                question: string;
+                /**
+                 * Short label for the question.
+                 */
+                header: string;
+                /**
+                 * Whether more than one option may be selected.
+                 */
+                multiSelect: boolean;
+                /**
+                 * The available answer options.
+                 */
+                options: Array<{
+                    /**
+                     * Option identifier.
+                     */
+                    id: string;
+                    /**
+                     * Display label. Pass matching labels back in `selectedLabels` when resolving.
+                     */
+                    label: string;
+                    /**
+                     * Optional longer explanation of the option.
+                     */
+                    description?: string;
+                }>;
+            }>;
+        } | {
+            /**
+             * The full proposed plan, as Markdown.
+             */
+            plan: string;
+            /**
+             * A concise summary of the plan, when available.
+             */
+            summary?: string;
+            /**
+             * The path the plan applies to.
+             */
+            path: string;
+        } | {
+            /**
+             * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
+             */
+            requestedIntegrations: Array<string>;
+            /**
+             * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
+             */
+            requestedMcpPresets: Array<string>;
+        };
         /**
          * ISO timestamp when this part began.
          */
@@ -765,6 +855,35 @@ export type MessageListResponse = {
              */
             status: 'ok' | 'error';
             /**
+             * Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.
+             */
+            suggestedPermissions?: Array<{
+                /**
+                 * Permission grant type.
+                 */
+                type: 'ALLOW_DYNAMIC_TOOL_STRICT';
+                /**
+                 * The tool this permission authorizes.
+                 */
+                toolName: string;
+                /**
+                 * The tool input this permission authorizes. Pass back unchanged when resolving.
+                 */
+                input?: unknown;
+                /**
+                 * Internal label for the in-progress task. Pass back unchanged.
+                 */
+                taskNameActive?: string | null;
+                /**
+                 * Internal label for the completed task. Pass back unchanged.
+                 */
+                taskNameComplete?: string | null;
+                /**
+                 * Optional message associated with the permission.
+                 */
+                userMessage?: string;
+            }>;
+            /**
              * ISO timestamp when this part began.
              */
             startedAt?: Date;
@@ -783,9 +902,70 @@ export type MessageListResponse = {
              */
             summary: string;
             /**
-             * Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly.
+             * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
              */
-            data?: unknown;
+            data?: {
+                /**
+                 * The questions the agent is waiting for answers to. Resolve with an `answered-questions` task.
+                 */
+                questions: Array<{
+                    /**
+                     * Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task.
+                     */
+                    id: string;
+                    /**
+                     * The full question text.
+                     */
+                    question: string;
+                    /**
+                     * Short label for the question.
+                     */
+                    header: string;
+                    /**
+                     * Whether more than one option may be selected.
+                     */
+                    multiSelect: boolean;
+                    /**
+                     * The available answer options.
+                     */
+                    options: Array<{
+                        /**
+                         * Option identifier.
+                         */
+                        id: string;
+                        /**
+                         * Display label. Pass matching labels back in `selectedLabels` when resolving.
+                         */
+                        label: string;
+                        /**
+                         * Optional longer explanation of the option.
+                         */
+                        description?: string;
+                    }>;
+                }>;
+            } | {
+                /**
+                 * The full proposed plan, as Markdown.
+                 */
+                plan: string;
+                /**
+                 * A concise summary of the plan, when available.
+                 */
+                summary?: string;
+                /**
+                 * The path the plan applies to.
+                 */
+                path: string;
+            } | {
+                /**
+                 * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
+                 */
+                requestedIntegrations: Array<string>;
+                /**
+                 * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
+                 */
+                requestedMcpPresets: Array<string>;
+            };
             /**
              * ISO timestamp when this part began.
              */
@@ -1058,6 +1238,35 @@ export type MessageStreamEvent = {
          */
         status: 'ok' | 'error';
         /**
+         * Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.
+         */
+        suggestedPermissions?: Array<{
+            /**
+             * Permission grant type.
+             */
+            type: 'ALLOW_DYNAMIC_TOOL_STRICT';
+            /**
+             * The tool this permission authorizes.
+             */
+            toolName: string;
+            /**
+             * The tool input this permission authorizes. Pass back unchanged when resolving.
+             */
+            input?: unknown;
+            /**
+             * Internal label for the in-progress task. Pass back unchanged.
+             */
+            taskNameActive?: string | null;
+            /**
+             * Internal label for the completed task. Pass back unchanged.
+             */
+            taskNameComplete?: string | null;
+            /**
+             * Optional message associated with the permission.
+             */
+            userMessage?: string;
+        }>;
+        /**
          * ISO timestamp when this part began.
          */
         startedAt?: Date;
@@ -1076,9 +1285,70 @@ export type MessageStreamEvent = {
          */
         summary: string;
         /**
-         * Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly.
+         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
          */
-        data?: unknown;
+        data?: {
+            /**
+             * The questions the agent is waiting for answers to. Resolve with an `answered-questions` task.
+             */
+            questions: Array<{
+                /**
+                 * Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task.
+                 */
+                id: string;
+                /**
+                 * The full question text.
+                 */
+                question: string;
+                /**
+                 * Short label for the question.
+                 */
+                header: string;
+                /**
+                 * Whether more than one option may be selected.
+                 */
+                multiSelect: boolean;
+                /**
+                 * The available answer options.
+                 */
+                options: Array<{
+                    /**
+                     * Option identifier.
+                     */
+                    id: string;
+                    /**
+                     * Display label. Pass matching labels back in `selectedLabels` when resolving.
+                     */
+                    label: string;
+                    /**
+                     * Optional longer explanation of the option.
+                     */
+                    description?: string;
+                }>;
+            }>;
+        } | {
+            /**
+             * The full proposed plan, as Markdown.
+             */
+            plan: string;
+            /**
+             * A concise summary of the plan, when available.
+             */
+            summary?: string;
+            /**
+             * The path the plan applies to.
+             */
+            path: string;
+        } | {
+            /**
+             * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
+             */
+            requestedIntegrations: Array<string>;
+            /**
+             * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
+             */
+            requestedMcpPresets: Array<string>;
+        };
         /**
          * ISO timestamp when this part began.
          */
@@ -1617,9 +1887,40 @@ export type ChatsCreateData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * Visibility setting for the new chat.
          */
@@ -1840,9 +2141,40 @@ export type ChatsCreateStreamData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * Visibility setting for the new chat.
          */
@@ -1934,9 +2266,40 @@ export type ChatsCreateAsyncData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * Visibility setting for the new chat.
          */
@@ -2083,9 +2446,40 @@ export type MessagesSendData = {
             url: string;
         }>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
@@ -2220,9 +2614,40 @@ export type MessagesSendStreamData = {
             url: string;
         }>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
@@ -2311,9 +2736,40 @@ export type MessagesSendAsyncData = {
             url: string;
         }>;
         /**
-         * Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.
+         * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
          */
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         /**
          * An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.
          */
@@ -2375,7 +2831,7 @@ export type MessagesResolveData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2526,7 +2982,7 @@ export type MessagesResolveStreamData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2677,7 +3133,7 @@ export type MessagesResolveAsyncData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3046,17 +3502,9 @@ export type ChatsGetPreviewErrors = {
      */
     401: Error;
     /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
      * Response for status 404
      */
     404: Error;
-    /**
-     * Response for status 422
-     */
-    422: Error;
     /**
      * Response for status 500
      */
@@ -3067,27 +3515,14 @@ export type ChatsGetPreviewError = ChatsGetPreviewErrors[keyof ChatsGetPreviewEr
 
 export type ChatsGetPreviewResponses = {
     /**
-     * Response for status 200
+     * The preview details, or null if the preview is still starting. Poll this endpoint until the response is non-null.
      */
     200: {
         /**
-         * The preview details, or null if the preview is still starting. Poll this endpoint until preview is non-null.
+         * A short-lived bootstrap URL that establishes preview access and redirects to the live preview.
          */
-        preview: {
-            /**
-             * The preview URL for this chat.
-             */
-            url: string;
-            /**
-             * A short-lived token for accessing the preview URL via the x-v0-preview-token header.
-             */
-            token: string;
-            /**
-             * The ISO timestamp when token expires.
-             */
-            expiresAt: Date;
-        } | null;
-    };
+        url: string;
+    } | null;
 };
 
 export type ChatsGetPreviewResponse = ChatsGetPreviewResponses[keyof ChatsGetPreviewResponses];
@@ -3381,6 +3816,35 @@ export type ChatsUpdateFilesResponses = {
                  */
                 status: 'ok' | 'error';
                 /**
+                 * Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.
+                 */
+                suggestedPermissions?: Array<{
+                    /**
+                     * Permission grant type.
+                     */
+                    type: 'ALLOW_DYNAMIC_TOOL_STRICT';
+                    /**
+                     * The tool this permission authorizes.
+                     */
+                    toolName: string;
+                    /**
+                     * The tool input this permission authorizes. Pass back unchanged when resolving.
+                     */
+                    input?: unknown;
+                    /**
+                     * Internal label for the in-progress task. Pass back unchanged.
+                     */
+                    taskNameActive?: string | null;
+                    /**
+                     * Internal label for the completed task. Pass back unchanged.
+                     */
+                    taskNameComplete?: string | null;
+                    /**
+                     * Optional message associated with the permission.
+                     */
+                    userMessage?: string;
+                }>;
+                /**
                  * ISO timestamp when this part began.
                  */
                 startedAt?: Date;
@@ -3399,9 +3863,70 @@ export type ChatsUpdateFilesResponses = {
                  */
                 summary: string;
                 /**
-                 * Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly.
+                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
                  */
-                data?: unknown;
+                data?: {
+                    /**
+                     * The questions the agent is waiting for answers to. Resolve with an `answered-questions` task.
+                     */
+                    questions: Array<{
+                        /**
+                         * Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task.
+                         */
+                        id: string;
+                        /**
+                         * The full question text.
+                         */
+                        question: string;
+                        /**
+                         * Short label for the question.
+                         */
+                        header: string;
+                        /**
+                         * Whether more than one option may be selected.
+                         */
+                        multiSelect: boolean;
+                        /**
+                         * The available answer options.
+                         */
+                        options: Array<{
+                            /**
+                             * Option identifier.
+                             */
+                            id: string;
+                            /**
+                             * Display label. Pass matching labels back in `selectedLabels` when resolving.
+                             */
+                            label: string;
+                            /**
+                             * Optional longer explanation of the option.
+                             */
+                            description?: string;
+                        }>;
+                    }>;
+                } | {
+                    /**
+                     * The full proposed plan, as Markdown.
+                     */
+                    plan: string;
+                    /**
+                     * A concise summary of the plan, when available.
+                     */
+                    summary?: string;
+                    /**
+                     * The path the plan applies to.
+                     */
+                    path: string;
+                } | {
+                    /**
+                     * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedIntegrations: Array<string>;
+                    /**
+                     * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedMcpPresets: Array<string>;
+                };
                 /**
                  * ISO timestamp when this part began.
                  */
@@ -3762,6 +4287,35 @@ export type ChatsRestoreMessageResponses = {
                  */
                 status: 'ok' | 'error';
                 /**
+                 * Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.
+                 */
+                suggestedPermissions?: Array<{
+                    /**
+                     * Permission grant type.
+                     */
+                    type: 'ALLOW_DYNAMIC_TOOL_STRICT';
+                    /**
+                     * The tool this permission authorizes.
+                     */
+                    toolName: string;
+                    /**
+                     * The tool input this permission authorizes. Pass back unchanged when resolving.
+                     */
+                    input?: unknown;
+                    /**
+                     * Internal label for the in-progress task. Pass back unchanged.
+                     */
+                    taskNameActive?: string | null;
+                    /**
+                     * Internal label for the completed task. Pass back unchanged.
+                     */
+                    taskNameComplete?: string | null;
+                    /**
+                     * Optional message associated with the permission.
+                     */
+                    userMessage?: string;
+                }>;
+                /**
                  * ISO timestamp when this part began.
                  */
                 startedAt?: Date;
@@ -3780,9 +4334,70 @@ export type ChatsRestoreMessageResponses = {
                  */
                 summary: string;
                 /**
-                 * Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly.
+                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
                  */
-                data?: unknown;
+                data?: {
+                    /**
+                     * The questions the agent is waiting for answers to. Resolve with an `answered-questions` task.
+                     */
+                    questions: Array<{
+                        /**
+                         * Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task.
+                         */
+                        id: string;
+                        /**
+                         * The full question text.
+                         */
+                        question: string;
+                        /**
+                         * Short label for the question.
+                         */
+                        header: string;
+                        /**
+                         * Whether more than one option may be selected.
+                         */
+                        multiSelect: boolean;
+                        /**
+                         * The available answer options.
+                         */
+                        options: Array<{
+                            /**
+                             * Option identifier.
+                             */
+                            id: string;
+                            /**
+                             * Display label. Pass matching labels back in `selectedLabels` when resolving.
+                             */
+                            label: string;
+                            /**
+                             * Optional longer explanation of the option.
+                             */
+                            description?: string;
+                        }>;
+                    }>;
+                } | {
+                    /**
+                     * The full proposed plan, as Markdown.
+                     */
+                    plan: string;
+                    /**
+                     * A concise summary of the plan, when available.
+                     */
+                    summary?: string;
+                    /**
+                     * The path the plan applies to.
+                     */
+                    path: string;
+                } | {
+                    /**
+                     * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedIntegrations: Array<string>;
+                    /**
+                     * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedMcpPresets: Array<string>;
+                };
                 /**
                  * ISO timestamp when this part began.
                  */
@@ -4475,433 +5090,6 @@ export type McpServersUpdateResponses = {
 };
 
 export type McpServersUpdateResponse = McpServersUpdateResponses[keyof McpServersUpdateResponses];
-
-export type OrganizationsTeamsListApiKeysData = {
-    body?: never;
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys';
-};
-
-export type OrganizationsTeamsListApiKeysErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsListApiKeysError = OrganizationsTeamsListApiKeysErrors[keyof OrganizationsTeamsListApiKeysErrors];
-
-export type OrganizationsTeamsListApiKeysResponses = {
-    /**
-     * Response for status 200
-     */
-    200: Array<{
-        /**
-         * The unique identifier of the API key.
-         */
-        id: string;
-        /**
-         * The name of the API key.
-         */
-        name: string;
-        /**
-         * The team ID that owns this key.
-         */
-        ownerId: string;
-        /**
-         * The last few characters of the API key.
-         */
-        partialKey: string;
-        /**
-         * The last time this key was used, or null if never used.
-         */
-        lastUsed: string | null;
-    }>;
-};
-
-export type OrganizationsTeamsListApiKeysResponse = OrganizationsTeamsListApiKeysResponses[keyof OrganizationsTeamsListApiKeysResponses];
-
-export type OrganizationsTeamsCreateApiKeyData = {
-    body: {
-        /**
-         * A name for the API key.
-         */
-        name: string;
-    };
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys';
-};
-
-export type OrganizationsTeamsCreateApiKeyErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 422
-     */
-    422: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsCreateApiKeyError = OrganizationsTeamsCreateApiKeyErrors[keyof OrganizationsTeamsCreateApiKeyErrors];
-
-export type OrganizationsTeamsCreateApiKeyResponses = {
-    /**
-     * Response for status 200
-     */
-    200: ApiKeyWithSecret;
-};
-
-export type OrganizationsTeamsCreateApiKeyResponse = OrganizationsTeamsCreateApiKeyResponses[keyof OrganizationsTeamsCreateApiKeyResponses];
-
-export type OrganizationsTeamsDeleteApiKeyData = {
-    body?: never;
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-        /**
-         * The unique identifier of the API key.
-         */
-        keyId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys/{keyId}';
-};
-
-export type OrganizationsTeamsDeleteApiKeyErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsDeleteApiKeyError = OrganizationsTeamsDeleteApiKeyErrors[keyof OrganizationsTeamsDeleteApiKeyErrors];
-
-export type OrganizationsTeamsDeleteApiKeyResponses = {
-    /**
-     * Response for status 200
-     */
-    200: {
-        /**
-         * The unique identifier of the deleted API key.
-         */
-        id: string;
-        /**
-         * The name of the deleted API key.
-         */
-        name: string;
-        /**
-         * The team ID that owned this key.
-         */
-        ownerId: string;
-    };
-};
-
-export type OrganizationsTeamsDeleteApiKeyResponse = OrganizationsTeamsDeleteApiKeyResponses[keyof OrganizationsTeamsDeleteApiKeyResponses];
-
-export type OrganizationsGetSpendLimitData = {
-    body?: never;
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/spend-limit';
-};
-
-export type OrganizationsGetSpendLimitErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsGetSpendLimitError = OrganizationsGetSpendLimitErrors[keyof OrganizationsGetSpendLimitErrors];
-
-export type OrganizationsGetSpendLimitResponses = {
-    /**
-     * Response for status 200
-     */
-    200: SpendLimit;
-};
-
-export type OrganizationsGetSpendLimitResponse = OrganizationsGetSpendLimitResponses[keyof OrganizationsGetSpendLimitResponses];
-
-export type OrganizationsSetSpendLimitData = {
-    body: {
-        /**
-         * The spend limit in dollars.
-         */
-        limit: number;
-    };
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/spend-limit';
-};
-
-export type OrganizationsSetSpendLimitErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 422
-     */
-    422: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsSetSpendLimitError = OrganizationsSetSpendLimitErrors[keyof OrganizationsSetSpendLimitErrors];
-
-export type OrganizationsSetSpendLimitResponses = {
-    /**
-     * Response for status 200
-     */
-    200: SpendLimit;
-};
-
-export type OrganizationsSetSpendLimitResponse = OrganizationsSetSpendLimitResponses[keyof OrganizationsSetSpendLimitResponses];
-
-export type OrganizationsTeamsDeleteSpendLimitData = {
-    body?: never;
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit';
-};
-
-export type OrganizationsTeamsDeleteSpendLimitErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsDeleteSpendLimitError = OrganizationsTeamsDeleteSpendLimitErrors[keyof OrganizationsTeamsDeleteSpendLimitErrors];
-
-export type OrganizationsTeamsDeleteSpendLimitResponses = {
-    /**
-     * Response for status 200
-     */
-    200: {
-        success: true;
-    };
-};
-
-export type OrganizationsTeamsDeleteSpendLimitResponse = OrganizationsTeamsDeleteSpendLimitResponses[keyof OrganizationsTeamsDeleteSpendLimitResponses];
-
-export type OrganizationsTeamsGetSpendLimitData = {
-    body?: never;
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit';
-};
-
-export type OrganizationsTeamsGetSpendLimitErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsGetSpendLimitError = OrganizationsTeamsGetSpendLimitErrors[keyof OrganizationsTeamsGetSpendLimitErrors];
-
-export type OrganizationsTeamsGetSpendLimitResponses = {
-    /**
-     * Response for status 200
-     */
-    200: SpendLimit;
-};
-
-export type OrganizationsTeamsGetSpendLimitResponse = OrganizationsTeamsGetSpendLimitResponses[keyof OrganizationsTeamsGetSpendLimitResponses];
-
-export type OrganizationsTeamsSetSpendLimitData = {
-    body: {
-        /**
-         * The spend limit in dollars.
-         */
-        limit: number;
-    };
-    path: {
-        /**
-         * The unique identifier of the organization.
-         */
-        orgId: string;
-        /**
-         * The unique identifier of the team.
-         */
-        teamId: string;
-    };
-    query?: never;
-    url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit';
-};
-
-export type OrganizationsTeamsSetSpendLimitErrors = {
-    /**
-     * Response for status 401
-     */
-    401: Error;
-    /**
-     * Response for status 403
-     */
-    403: Error;
-    /**
-     * Response for status 404
-     */
-    404: Error;
-    /**
-     * Response for status 422
-     */
-    422: Error;
-    /**
-     * Response for status 500
-     */
-    500: Error;
-};
-
-export type OrganizationsTeamsSetSpendLimitError = OrganizationsTeamsSetSpendLimitErrors[keyof OrganizationsTeamsSetSpendLimitErrors];
-
-export type OrganizationsTeamsSetSpendLimitResponses = {
-    /**
-     * Response for status 200
-     */
-    200: SpendLimit;
-};
-
-export type OrganizationsTeamsSetSpendLimitResponse = OrganizationsTeamsSetSpendLimitResponses[keyof OrganizationsTeamsSetSpendLimitResponses];
 
 export type WebhooksListData = {
     body?: never;

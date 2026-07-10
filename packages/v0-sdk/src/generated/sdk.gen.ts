@@ -2,8 +2,8 @@
 
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, organizationsGetSpendLimitResponseTransformer, organizationsSetSpendLimitResponseTransformer, organizationsTeamsGetSpendLimitResponseTransformer, organizationsTeamsSetSpendLimitResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, OrganizationsGetSpendLimitErrors, OrganizationsGetSpendLimitResponses, OrganizationsSetSpendLimitErrors, OrganizationsSetSpendLimitResponses, OrganizationsTeamsCreateApiKeyErrors, OrganizationsTeamsCreateApiKeyResponses, OrganizationsTeamsDeleteApiKeyErrors, OrganizationsTeamsDeleteApiKeyResponses, OrganizationsTeamsDeleteSpendLimitErrors, OrganizationsTeamsDeleteSpendLimitResponses, OrganizationsTeamsGetSpendLimitErrors, OrganizationsTeamsGetSpendLimitResponses, OrganizationsTeamsListApiKeysErrors, OrganizationsTeamsListApiKeysResponses, OrganizationsTeamsSetSpendLimitErrors, OrganizationsTeamsSetSpendLimitResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import { chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -103,7 +103,38 @@ export class Chats extends HeyApiClient {
             url: string;
         }>;
         mcpServerIds?: Array<string>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         title?: string;
         metadata?: {
@@ -116,7 +147,7 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'attachments' },
                     { in: 'body', key: 'mcpServerIds' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
                     { in: 'body', key: 'metadata' }
@@ -235,7 +266,38 @@ export class Chats extends HeyApiClient {
             url: string;
         }>;
         mcpServerIds?: Array<string>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         title?: string;
         metadata?: {
@@ -248,7 +310,7 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'attachments' },
                     { in: 'body', key: 'mcpServerIds' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
                     { in: 'body', key: 'metadata' }
@@ -291,7 +353,38 @@ export class Chats extends HeyApiClient {
             url: string;
         }>;
         mcpServerIds?: Array<string>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         title?: string;
         metadata?: {
@@ -304,7 +397,7 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'attachments' },
                     { in: 'body', key: 'mcpServerIds' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
                     { in: 'body', key: 'metadata' }
@@ -391,16 +484,15 @@ export class Chats extends HeyApiClient {
     }
     
     /**
-     * Get Preview URL
+     * Get Preview
      *
-     * Returns the preview URL for a chat. If the preview isn't ready, it will return null. Poll this endpoint until preview is non-null.
+     * Returns a short-lived bootstrap URL for opening a chat's live preview in a browser. If the preview isn't ready, the response is null. Poll this endpoint until the response is non-null.
      */
     public getPreview<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).get<ChatsGetPreviewResponses, ChatsGetPreviewErrors, ThrowOnError>({
-            responseTransformer: chatsGetPreviewResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v2/chats/{chatId}/preview',
             ...options,
@@ -637,7 +729,38 @@ export class Messages extends HeyApiClient {
              */
             url: string;
         }>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         action?: {
             type: 'fix-with-v0';
         };
@@ -649,7 +772,7 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'action' }
                 ] }]);
         return (options?.client ?? this.client).post<MessagesSendResponses, MessagesSendErrors, ThrowOnError>({
@@ -711,7 +834,38 @@ export class Messages extends HeyApiClient {
              */
             url: string;
         }>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         action?: {
             type: 'fix-with-v0';
         };
@@ -723,7 +877,7 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'action' }
                 ] }]);
         return (options?.client ?? this.client).sse.post<MessagesSendStreamResponses, MessagesSendStreamErrors, ThrowOnError>({
@@ -765,7 +919,38 @@ export class Messages extends HeyApiClient {
              */
             url: string;
         }>;
-        skillIds?: Array<string>;
+        skills?: Array<{
+            /**
+             * Discriminator: a skills.sh skill.
+             */
+            type: 'remote';
+            /**
+             * Skill ID from skills.sh.
+             */
+            id: string;
+        } | {
+            /**
+             * Discriminator: a user- or team-scoped memory skill.
+             */
+            type: 'memory';
+            /**
+             * Whether the skill lives in user or team memory.
+             */
+            scope: 'user' | 'team';
+            /**
+             * Name of the memory skill to attach.
+             */
+            skillName: string;
+        } | {
+            /**
+             * Discriminator: a skill defined in the project repo.
+             */
+            type: 'project';
+            /**
+             * Name of the project skill to attach.
+             */
+            skillName: string;
+        }>;
         action?: {
             type: 'fix-with-v0';
         };
@@ -777,7 +962,7 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skillIds' },
+                    { in: 'body', key: 'skills' },
                     { in: 'body', key: 'action' }
                 ] }]);
         return (options?.client ?? this.client).post<MessagesSendAsyncResponses, MessagesSendAsyncErrors, ThrowOnError>({
@@ -805,7 +990,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -926,7 +1111,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1046,7 +1231,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake'>;
+            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1348,176 +1533,6 @@ export class McpServers extends HeyApiClient {
     }
 }
 
-export class Teams extends HeyApiClient {
-    /**
-     * List API Keys for Team
-     */
-    public listApiKeys<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'orgId' }, { in: 'path', key: 'teamId' }] }]);
-        return (options?.client ?? this.client).get<OrganizationsTeamsListApiKeysResponses, OrganizationsTeamsListApiKeysErrors, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys',
-            ...options,
-            ...params
-        });
-    }
-    
-    /**
-     * Create API Key for Team
-     */
-    public createApiKey<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-        name: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [
-                    { in: 'path', key: 'orgId' },
-                    { in: 'path', key: 'teamId' },
-                    { in: 'body', key: 'name' }
-                ] }]);
-        return (options?.client ?? this.client).post<OrganizationsTeamsCreateApiKeyResponses, OrganizationsTeamsCreateApiKeyErrors, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys',
-            ...options,
-            ...params,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
-                ...params.headers
-            }
-        });
-    }
-    
-    /**
-     * Delete API Key for Team
-     */
-    public deleteApiKey<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-        keyId: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [
-                    { in: 'path', key: 'orgId' },
-                    { in: 'path', key: 'teamId' },
-                    { in: 'path', key: 'keyId' }
-                ] }]);
-        return (options?.client ?? this.client).delete<OrganizationsTeamsDeleteApiKeyResponses, OrganizationsTeamsDeleteApiKeyErrors, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/api-keys/{keyId}',
-            ...options,
-            ...params
-        });
-    }
-    
-    /**
-     * Delete Team Spend Limit
-     */
-    public deleteSpendLimit<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'orgId' }, { in: 'path', key: 'teamId' }] }]);
-        return (options?.client ?? this.client).delete<OrganizationsTeamsDeleteSpendLimitResponses, OrganizationsTeamsDeleteSpendLimitErrors, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit',
-            ...options,
-            ...params
-        });
-    }
-    
-    /**
-     * Get Team Spend Limit
-     */
-    public getSpendLimit<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'orgId' }, { in: 'path', key: 'teamId' }] }]);
-        return (options?.client ?? this.client).get<OrganizationsTeamsGetSpendLimitResponses, OrganizationsTeamsGetSpendLimitErrors, ThrowOnError>({
-            responseTransformer: organizationsTeamsGetSpendLimitResponseTransformer,
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit',
-            ...options,
-            ...params
-        });
-    }
-    
-    /**
-     * Set Team Spend Limit
-     */
-    public setSpendLimit<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        teamId: string;
-        limit: number;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [
-                    { in: 'path', key: 'orgId' },
-                    { in: 'path', key: 'teamId' },
-                    { in: 'body', key: 'limit' }
-                ] }]);
-        return (options?.client ?? this.client).put<OrganizationsTeamsSetSpendLimitResponses, OrganizationsTeamsSetSpendLimitErrors, ThrowOnError>({
-            responseTransformer: organizationsTeamsSetSpendLimitResponseTransformer,
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit',
-            ...options,
-            ...params,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
-                ...params.headers
-            }
-        });
-    }
-}
-
-export class Organizations extends HeyApiClient {
-    /**
-     * Get Organization Spend Limit
-     */
-    public getSpendLimit<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'orgId' }] }]);
-        return (options?.client ?? this.client).get<OrganizationsGetSpendLimitResponses, OrganizationsGetSpendLimitErrors, ThrowOnError>({
-            responseTransformer: organizationsGetSpendLimitResponseTransformer,
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/spend-limit',
-            ...options,
-            ...params
-        });
-    }
-    
-    /**
-     * Set Organization Spend Limit
-     */
-    public setSpendLimit<ThrowOnError extends boolean = false>(parameters: {
-        orgId: string;
-        limit: number;
-    }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'orgId' }, { in: 'body', key: 'limit' }] }]);
-        return (options?.client ?? this.client).put<OrganizationsSetSpendLimitResponses, OrganizationsSetSpendLimitErrors, ThrowOnError>({
-            responseTransformer: organizationsSetSpendLimitResponseTransformer,
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/organizations/{orgId}/spend-limit',
-            ...options,
-            ...params,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
-                ...params.headers
-            }
-        });
-    }
-    
-    private _teams?: Teams;
-    get teams(): Teams {
-        return this._teams ??= new Teams({ client: this.client });
-    }
-}
-
 export class Webhooks extends HeyApiClient {
     /**
      * List Webhooks
@@ -1654,11 +1669,6 @@ export class V0Sdk extends HeyApiClient {
     private _mcpServers?: McpServers;
     get mcpServers(): McpServers {
         return this._mcpServers ??= new McpServers({ client: this.client });
-    }
-    
-    private _organizations?: Organizations;
-    get organizations(): Organizations {
-        return this._organizations ??= new Organizations({ client: this.client });
     }
     
     private _webhooks?: Webhooks;

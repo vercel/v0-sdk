@@ -875,6 +875,61 @@
                       ],
                       "description": "Whether the tool call succeeded or returned an error."
                     },
+                    "suggestedPermissions": {
+                      "description": "Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "ALLOW_DYNAMIC_TOOL_STRICT"
+                            ],
+                            "description": "Permission grant type."
+                          },
+                          "toolName": {
+                            "type": "string",
+                            "description": "The tool this permission authorizes."
+                          },
+                          "input": {
+                            "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                          },
+                          "taskNameActive": {
+                            "description": "Internal label for the in-progress task. Pass back unchanged.",
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "taskNameComplete": {
+                            "description": "Internal label for the completed task. Pass back unchanged.",
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "userMessage": {
+                            "description": "Optional message associated with the permission.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "toolName"
+                        ],
+                        "additionalProperties": false,
+                        "description": "A permission the agent is waiting for you to grant. Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task."
+                      }
+                    },
                     "startedAt": {
                       "description": "ISO timestamp when this part began.",
                       "type": "string",
@@ -914,7 +969,126 @@
                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                     },
                     "data": {
-                      "description": "Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly."
+                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "questions": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task."
+                                  },
+                                  "question": {
+                                    "type": "string",
+                                    "description": "The full question text."
+                                  },
+                                  "header": {
+                                    "type": "string",
+                                    "description": "Short label for the question."
+                                  },
+                                  "multiSelect": {
+                                    "type": "boolean",
+                                    "description": "Whether more than one option may be selected."
+                                  },
+                                  "options": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "Option identifier."
+                                        },
+                                        "label": {
+                                          "type": "string",
+                                          "description": "Display label. Pass matching labels back in `selectedLabels` when resolving."
+                                        },
+                                        "description": {
+                                          "description": "Optional longer explanation of the option.",
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "label"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "description": "The available answer options."
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "question",
+                                  "header",
+                                  "multiSelect",
+                                  "options"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "description": "The questions the agent is waiting for answers to. Resolve with an `answered-questions` task."
+                            }
+                          },
+                          "required": [
+                            "questions"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Structured payload for an `ask_user_questions` agent action."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "plan": {
+                              "type": "string",
+                              "description": "The full proposed plan, as Markdown."
+                            },
+                            "summary": {
+                              "description": "A concise summary of the plan, when available.",
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string",
+                              "description": "The path the plan applies to."
+                            }
+                          },
+                          "required": [
+                            "plan",
+                            "path"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Structured payload for an `exit_plan_mode` agent action."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "requestedIntegrations": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
+                            },
+                            "requestedMcpPresets": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task."
+                            }
+                          },
+                          "required": [
+                            "requestedIntegrations",
+                            "requestedMcpPresets"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Structured payload for a `get_or_request_integration` agent action."
+                        }
+                      ]
                     },
                     "startedAt": {
                       "description": "ISO timestamp when this part began.",
@@ -1424,6 +1598,61 @@
                             ],
                             "description": "Whether the tool call succeeded or returned an error."
                           },
+                          "suggestedPermissions": {
+                            "description": "Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.",
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  ],
+                                  "description": "Permission grant type."
+                                },
+                                "toolName": {
+                                  "type": "string",
+                                  "description": "The tool this permission authorizes."
+                                },
+                                "input": {
+                                  "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                },
+                                "taskNameActive": {
+                                  "description": "Internal label for the in-progress task. Pass back unchanged.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "taskNameComplete": {
+                                  "description": "Internal label for the completed task. Pass back unchanged.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "userMessage": {
+                                  "description": "Optional message associated with the permission.",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "toolName"
+                              ],
+                              "additionalProperties": false,
+                              "description": "A permission the agent is waiting for you to grant. Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task."
+                            }
+                          },
                           "startedAt": {
                             "description": "ISO timestamp when this part began.",
                             "type": "string",
@@ -1463,7 +1692,126 @@
                             "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                           },
                           "data": {
-                            "description": "Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly."
+                            "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "questions": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task."
+                                        },
+                                        "question": {
+                                          "type": "string",
+                                          "description": "The full question text."
+                                        },
+                                        "header": {
+                                          "type": "string",
+                                          "description": "Short label for the question."
+                                        },
+                                        "multiSelect": {
+                                          "type": "boolean",
+                                          "description": "Whether more than one option may be selected."
+                                        },
+                                        "options": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string",
+                                                "description": "Option identifier."
+                                              },
+                                              "label": {
+                                                "type": "string",
+                                                "description": "Display label. Pass matching labels back in `selectedLabels` when resolving."
+                                              },
+                                              "description": {
+                                                "description": "Optional longer explanation of the option.",
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "label"
+                                            ],
+                                            "additionalProperties": false
+                                          },
+                                          "description": "The available answer options."
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "question",
+                                        "header",
+                                        "multiSelect",
+                                        "options"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "description": "The questions the agent is waiting for answers to. Resolve with an `answered-questions` task."
+                                  }
+                                },
+                                "required": [
+                                  "questions"
+                                ],
+                                "additionalProperties": false,
+                                "description": "Structured payload for an `ask_user_questions` agent action."
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "plan": {
+                                    "type": "string",
+                                    "description": "The full proposed plan, as Markdown."
+                                  },
+                                  "summary": {
+                                    "description": "A concise summary of the plan, when available.",
+                                    "type": "string"
+                                  },
+                                  "path": {
+                                    "type": "string",
+                                    "description": "The path the plan applies to."
+                                  }
+                                },
+                                "required": [
+                                  "plan",
+                                  "path"
+                                ],
+                                "additionalProperties": false,
+                                "description": "Structured payload for an `exit_plan_mode` agent action."
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "requestedIntegrations": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
+                                  },
+                                  "requestedMcpPresets": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task."
+                                  }
+                                },
+                                "required": [
+                                  "requestedIntegrations",
+                                  "requestedMcpPresets"
+                                ],
+                                "additionalProperties": false,
+                                "description": "Structured payload for a `get_or_request_integration` agent action."
+                              }
+                            ]
                           },
                           "startedAt": {
                             "description": "ISO timestamp when this part began.",
@@ -2005,6 +2353,61 @@
                           ],
                           "description": "Whether the tool call succeeded or returned an error."
                         },
+                        "suggestedPermissions": {
+                          "description": "Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.",
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "ALLOW_DYNAMIC_TOOL_STRICT"
+                                ],
+                                "description": "Permission grant type."
+                              },
+                              "toolName": {
+                                "type": "string",
+                                "description": "The tool this permission authorizes."
+                              },
+                              "input": {
+                                "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                              },
+                              "taskNameActive": {
+                                "description": "Internal label for the in-progress task. Pass back unchanged.",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "taskNameComplete": {
+                                "description": "Internal label for the completed task. Pass back unchanged.",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "userMessage": {
+                                "description": "Optional message associated with the permission.",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "toolName"
+                            ],
+                            "additionalProperties": false,
+                            "description": "A permission the agent is waiting for you to grant. Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task."
+                          }
+                        },
                         "startedAt": {
                           "description": "ISO timestamp when this part began.",
                           "type": "string",
@@ -2044,7 +2447,126 @@
                           "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                         },
                         "data": {
-                          "description": "Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly."
+                          "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "questions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task."
+                                      },
+                                      "question": {
+                                        "type": "string",
+                                        "description": "The full question text."
+                                      },
+                                      "header": {
+                                        "type": "string",
+                                        "description": "Short label for the question."
+                                      },
+                                      "multiSelect": {
+                                        "type": "boolean",
+                                        "description": "Whether more than one option may be selected."
+                                      },
+                                      "options": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "description": "Option identifier."
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "description": "Display label. Pass matching labels back in `selectedLabels` when resolving."
+                                            },
+                                            "description": {
+                                              "description": "Optional longer explanation of the option.",
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "id",
+                                            "label"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "description": "The available answer options."
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "question",
+                                      "header",
+                                      "multiSelect",
+                                      "options"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "The questions the agent is waiting for answers to. Resolve with an `answered-questions` task."
+                                }
+                              },
+                              "required": [
+                                "questions"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Structured payload for an `ask_user_questions` agent action."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "plan": {
+                                  "type": "string",
+                                  "description": "The full proposed plan, as Markdown."
+                                },
+                                "summary": {
+                                  "description": "A concise summary of the plan, when available.",
+                                  "type": "string"
+                                },
+                                "path": {
+                                  "type": "string",
+                                  "description": "The path the plan applies to."
+                                }
+                              },
+                              "required": [
+                                "plan",
+                                "path"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Structured payload for an `exit_plan_mode` agent action."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "requestedIntegrations": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
+                                },
+                                "requestedMcpPresets": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task."
+                                }
+                              },
+                              "required": [
+                                "requestedIntegrations",
+                                "requestedMcpPresets"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Structured payload for a `get_or_request_integration` agent action."
+                            }
+                          ]
                         },
                         "startedAt": {
                           "description": "ISO timestamp when this part began.",
@@ -2919,12 +3441,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -3027,12 +3623,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -3135,12 +3805,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -3985,12 +4729,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4093,12 +4911,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4201,12 +5093,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4386,12 +5352,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4494,12 +5534,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4602,12 +5716,86 @@
                       "type": "string"
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "privacy": {
@@ -4902,12 +6090,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -4998,12 +6260,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5094,12 +6430,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5363,12 +6773,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5459,12 +6943,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5555,12 +7113,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5740,12 +7372,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5836,12 +7542,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -5932,12 +7712,86 @@
                       "additionalProperties": false
                     }
                   },
-                  "skillIds": {
-                    "description": "Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.",
+                  "skills": {
+                    "description": "Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.",
                     "maxItems": 3,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "remote"
+                              ],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "memory"
+                              ],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "team"
+                              ],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "project"
+                              ],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "skillName"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -6094,7 +7948,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -6398,7 +8253,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -6702,7 +8558,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -7105,7 +8962,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -7409,7 +9267,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -7713,7 +9572,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -8116,7 +9976,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -8420,7 +10281,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -8724,7 +10586,8 @@
                                 "Blob",
                                 "Edge Config",
                                 "Vercel AI Gateway",
-                                "Snowflake"
+                                "Snowflake",
+                                "Figma"
                               ]
                             }
                           },
@@ -9590,8 +11453,8 @@
         "tags": [
           "Chats"
         ],
-        "summary": "Get Preview URL",
-        "description": "Returns the preview URL for a chat. If the preview isn't ready, it will return null. Poll this endpoint until preview is non-null.",
+        "summary": "Get Preview",
+        "description": "Returns a short-lived bootstrap URL for opening a chat's live preview in a browser. If the preview isn't ready, the response is null. Poll this endpoint until the response is non-null.",
         "operationId": "chats.getPreview",
         "parameters": [
           {
@@ -9607,51 +11470,31 @@
         ],
         "responses": {
           "200": {
-            "description": "Response for status 200",
+            "description": "The preview details, or null if the preview is still starting. Poll this endpoint until the response is non-null.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
-                  "type": "object",
-                  "properties": {
-                    "preview": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "The preview URL for this chat."
-                            },
-                            "token": {
-                              "type": "string",
-                              "description": "A short-lived token for accessing the preview URL via the x-v0-preview-token header."
-                            },
-                            "expiresAt": {
-                              "type": "string",
-                              "format": "date-time",
-                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
-                              "description": "The ISO timestamp when token expires."
-                            }
-                          },
-                          "required": [
-                            "url",
-                            "token",
-                            "expiresAt"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "null"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "A short-lived bootstrap URL that establishes preview access and redirects to the live preview."
                         }
+                      },
+                      "required": [
+                        "url"
                       ],
-                      "description": "The preview details, or null if the preview is still starting. Poll this endpoint until preview is non-null."
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "preview"
                   ],
-                  "additionalProperties": false
+                  "description": "The preview details, or null if the preview is still starting. Poll this endpoint until the response is non-null."
                 }
               }
             }
@@ -9666,28 +11509,8 @@
               }
             }
           },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Response for status 422",
             "content": {
               "application/json": {
                 "schema": {
@@ -10285,6 +12108,61 @@
                                       ],
                                       "description": "Whether the tool call succeeded or returned an error."
                                     },
+                                    "suggestedPermissions": {
+                                      "description": "Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "type": {
+                                            "type": "string",
+                                            "enum": [
+                                              "ALLOW_DYNAMIC_TOOL_STRICT"
+                                            ],
+                                            "description": "Permission grant type."
+                                          },
+                                          "toolName": {
+                                            "type": "string",
+                                            "description": "The tool this permission authorizes."
+                                          },
+                                          "input": {
+                                            "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                          },
+                                          "taskNameActive": {
+                                            "description": "Internal label for the in-progress task. Pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "taskNameComplete": {
+                                            "description": "Internal label for the completed task. Pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "userMessage": {
+                                            "description": "Optional message associated with the permission.",
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "type",
+                                          "toolName"
+                                        ],
+                                        "additionalProperties": false,
+                                        "description": "A permission the agent is waiting for you to grant. Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task."
+                                      }
+                                    },
                                     "startedAt": {
                                       "description": "ISO timestamp when this part began.",
                                       "type": "string",
@@ -10324,7 +12202,126 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly."
+                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "anyOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "questions": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "id": {
+                                                    "type": "string",
+                                                    "description": "Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task."
+                                                  },
+                                                  "question": {
+                                                    "type": "string",
+                                                    "description": "The full question text."
+                                                  },
+                                                  "header": {
+                                                    "type": "string",
+                                                    "description": "Short label for the question."
+                                                  },
+                                                  "multiSelect": {
+                                                    "type": "boolean",
+                                                    "description": "Whether more than one option may be selected."
+                                                  },
+                                                  "options": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "id": {
+                                                          "type": "string",
+                                                          "description": "Option identifier."
+                                                        },
+                                                        "label": {
+                                                          "type": "string",
+                                                          "description": "Display label. Pass matching labels back in `selectedLabels` when resolving."
+                                                        },
+                                                        "description": {
+                                                          "description": "Optional longer explanation of the option.",
+                                                          "type": "string"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "id",
+                                                        "label"
+                                                      ],
+                                                      "additionalProperties": false
+                                                    },
+                                                    "description": "The available answer options."
+                                                  }
+                                                },
+                                                "required": [
+                                                  "id",
+                                                  "question",
+                                                  "header",
+                                                  "multiSelect",
+                                                  "options"
+                                                ],
+                                                "additionalProperties": false
+                                              },
+                                              "description": "The questions the agent is waiting for answers to. Resolve with an `answered-questions` task."
+                                            }
+                                          },
+                                          "required": [
+                                            "questions"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for an `ask_user_questions` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "plan": {
+                                              "type": "string",
+                                              "description": "The full proposed plan, as Markdown."
+                                            },
+                                            "summary": {
+                                              "description": "A concise summary of the plan, when available.",
+                                              "type": "string"
+                                            },
+                                            "path": {
+                                              "type": "string",
+                                              "description": "The path the plan applies to."
+                                            }
+                                          },
+                                          "required": [
+                                            "plan",
+                                            "path"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for an `exit_plan_mode` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "requestedIntegrations": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
+                                            },
+                                            "requestedMcpPresets": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task."
+                                            }
+                                          },
+                                          "required": [
+                                            "requestedIntegrations",
+                                            "requestedMcpPresets"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for a `get_or_request_integration` agent action."
+                                        }
+                                      ]
                                     },
                                     "startedAt": {
                                       "description": "ISO timestamp when this part began.",
@@ -11137,6 +13134,61 @@
                                       ],
                                       "description": "Whether the tool call succeeded or returned an error."
                                     },
+                                    "suggestedPermissions": {
+                                      "description": "Present when the agent is blocked waiting for you to approve this tool call (for example, running a setup or migration script). Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task to approve. Omitted once the tool has run.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "type": {
+                                            "type": "string",
+                                            "enum": [
+                                              "ALLOW_DYNAMIC_TOOL_STRICT"
+                                            ],
+                                            "description": "Permission grant type."
+                                          },
+                                          "toolName": {
+                                            "type": "string",
+                                            "description": "The tool this permission authorizes."
+                                          },
+                                          "input": {
+                                            "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                          },
+                                          "taskNameActive": {
+                                            "description": "Internal label for the in-progress task. Pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "taskNameComplete": {
+                                            "description": "Internal label for the completed task. Pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "userMessage": {
+                                            "description": "Optional message associated with the permission.",
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "type",
+                                          "toolName"
+                                        ],
+                                        "additionalProperties": false,
+                                        "description": "A permission the agent is waiting for you to grant. Pass these objects back unchanged as the `permissions` of a `confirmed-permissions` task."
+                                      }
+                                    },
                                     "startedAt": {
                                       "description": "ISO timestamp when this part began.",
                                       "type": "string",
@@ -11176,7 +13228,126 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Optional structured data specific to the action. Treat as opaque unless you handle this action name explicitly."
+                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "anyOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "questions": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "id": {
+                                                    "type": "string",
+                                                    "description": "Question identifier. Pass back as `questionId` when resolving with an `answered-questions` task."
+                                                  },
+                                                  "question": {
+                                                    "type": "string",
+                                                    "description": "The full question text."
+                                                  },
+                                                  "header": {
+                                                    "type": "string",
+                                                    "description": "Short label for the question."
+                                                  },
+                                                  "multiSelect": {
+                                                    "type": "boolean",
+                                                    "description": "Whether more than one option may be selected."
+                                                  },
+                                                  "options": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "id": {
+                                                          "type": "string",
+                                                          "description": "Option identifier."
+                                                        },
+                                                        "label": {
+                                                          "type": "string",
+                                                          "description": "Display label. Pass matching labels back in `selectedLabels` when resolving."
+                                                        },
+                                                        "description": {
+                                                          "description": "Optional longer explanation of the option.",
+                                                          "type": "string"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "id",
+                                                        "label"
+                                                      ],
+                                                      "additionalProperties": false
+                                                    },
+                                                    "description": "The available answer options."
+                                                  }
+                                                },
+                                                "required": [
+                                                  "id",
+                                                  "question",
+                                                  "header",
+                                                  "multiSelect",
+                                                  "options"
+                                                ],
+                                                "additionalProperties": false
+                                              },
+                                              "description": "The questions the agent is waiting for answers to. Resolve with an `answered-questions` task."
+                                            }
+                                          },
+                                          "required": [
+                                            "questions"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for an `ask_user_questions` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "plan": {
+                                              "type": "string",
+                                              "description": "The full proposed plan, as Markdown."
+                                            },
+                                            "summary": {
+                                              "description": "A concise summary of the plan, when available.",
+                                              "type": "string"
+                                            },
+                                            "path": {
+                                              "type": "string",
+                                              "description": "The path the plan applies to."
+                                            }
+                                          },
+                                          "required": [
+                                            "plan",
+                                            "path"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for an `exit_plan_mode` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "requestedIntegrations": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
+                                            },
+                                            "requestedMcpPresets": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task."
+                                            }
+                                          },
+                                          "required": [
+                                            "requestedIntegrations",
+                                            "requestedMcpPresets"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for a `get_or_request_integration` agent action."
+                                        }
+                                      ]
                                     },
                                     "startedAt": {
                                       "description": "ISO timestamp when this part began.",
@@ -13521,934 +15692,6 @@
               "type": "string",
               "minLength": 1,
               "description": "The unique identifier of the MCP server to delete."
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "https://json-schema.org/draft/2020-12/schema",
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
-                    }
-                  },
-                  "required": [
-                    "success"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/organizations/{orgId}/teams/{teamId}/api-keys": {
-      "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "List API Keys for Team",
-        "operationId": "organizations.teams.listApiKeys",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "https://json-schema.org/draft/2020-12/schema",
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "description": "The unique identifier of the API key."
-                      },
-                      "name": {
-                        "type": "string",
-                        "description": "The name of the API key."
-                      },
-                      "ownerId": {
-                        "type": "string",
-                        "description": "The team ID that owns this key."
-                      },
-                      "partialKey": {
-                        "type": "string",
-                        "description": "The last few characters of the API key."
-                      },
-                      "lastUsed": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ],
-                        "description": "The last time this key was used, or null if never used."
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "name",
-                      "ownerId",
-                      "partialKey",
-                      "lastUsed"
-                    ],
-                    "additionalProperties": false
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Create API Key for Team",
-        "operationId": "organizations.teams.createApiKey",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100,
-                    "description": "A name for the API key."
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100,
-                    "description": "A name for the API key."
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 100,
-                    "description": "A name for the API key."
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiKeyWithSecret"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Response for status 422",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/organizations/{orgId}/teams/{teamId}/api-keys/{keyId}": {
-      "delete": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Delete API Key for Team",
-        "operationId": "organizations.teams.deleteApiKey",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
-            }
-          },
-          {
-            "name": "keyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the API key."
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "https://json-schema.org/draft/2020-12/schema",
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "description": "The unique identifier of the deleted API key."
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "The name of the deleted API key."
-                    },
-                    "ownerId": {
-                      "type": "string",
-                      "description": "The team ID that owned this key."
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "name",
-                    "ownerId"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/organizations/{orgId}/spend-limit": {
-      "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Get Organization Spend Limit",
-        "operationId": "organizations.getSpendLimit",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpendLimit"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Set Organization Spend Limit",
-        "operationId": "organizations.setSpendLimit",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpendLimit"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Response for status 422",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v2/organizations/{orgId}/teams/{teamId}/spend-limit": {
-      "get": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Get Team Spend Limit",
-        "operationId": "organizations.teams.getSpendLimit",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpendLimit"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Set Team Spend Limit",
-        "operationId": "organizations.teams.setSpendLimit",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                  "limit": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991,
-                    "description": "The spend limit in dollars."
-                  }
-                },
-                "required": [
-                  "limit"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Response for status 200",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpendLimit"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Response for status 401",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Response for status 403",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Response for status 422",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Response for status 500",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Organizations"
-        ],
-        "summary": "Delete Team Spend Limit",
-        "operationId": "organizations.teams.deleteSpendLimit",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the organization."
-            }
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "description": "The unique identifier of the team."
             }
           }
         ],
