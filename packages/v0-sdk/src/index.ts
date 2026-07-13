@@ -130,10 +130,7 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
       }
 
       if (property === 'resume') {
-        return async (
-          parameters: ChatsResumeOptions,
-          options?: ChatsResumeRequestOptions,
-        ) => {
+        return async (parameters: ChatsResumeOptions, options?: ChatsResumeRequestOptions) => {
           const result = await target.resume(parameters, options)
           return createV0StreamResult(result.stream)
         }
