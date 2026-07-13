@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "module": "index.ts",
+  "scripts": {
+    "typecheck": "tsc"
+  },
   "dependencies": {
     "v0": "workspace:*"
   },

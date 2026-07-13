@@ -100,7 +100,7 @@ async function getPreviewUrl(v0: ReturnType<typeof getV0Client>, chatId: string)
   })
   const preview = unwrapV0Response(response)
 
-  return isPreviewDetails(preview.preview) ? preview.preview.url : null
+  return isPreviewDetails(preview) ? preview.url : null
 }
 
 function isPreviewDetails(value: unknown): value is { url: string } {
