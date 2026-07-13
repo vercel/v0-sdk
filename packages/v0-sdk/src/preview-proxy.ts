@@ -13,7 +13,7 @@ export type FetchPreviewOptions = {
    * Preview returned by `v0.chats.getPreview`, usually from your cache. Pass
    * `null` when the preview is not ready.
    */
-  preview: ChatsGetPreviewResponse['preview']
+  preview: ChatsGetPreviewResponse
   /**
    * URL to redirect the iframe to when the preview is not ready or v0 asks the
    * proxy to refresh the preview. This should point at a loading route that

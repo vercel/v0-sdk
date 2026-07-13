@@ -45,14 +45,6 @@ export type V0ToolName =
   | 'messagesSendAsync'
   | 'messagesSendStream'
   | 'messagesStop'
-  | 'organizationsGetSpendLimit'
-  | 'organizationsSetSpendLimit'
-  | 'organizationsTeamsCreateApiKey'
-  | 'organizationsTeamsDeleteApiKey'
-  | 'organizationsTeamsDeleteSpendLimit'
-  | 'organizationsTeamsGetSpendLimit'
-  | 'organizationsTeamsListApiKeys'
-  | 'organizationsTeamsSetSpendLimit'
   | 'webhooksCreate'
   | 'webhooksDelete'
   | 'webhooksGet'
@@ -103,17 +95,6 @@ export type V0ToolsByCategory = {
     | 'messagesSendStream'
     | 'messagesStop'
   >
-  organizations: Pick<
-    V0ToolsFlat,
-    | 'organizationsGetSpendLimit'
-    | 'organizationsSetSpendLimit'
-    | 'organizationsTeamsCreateApiKey'
-    | 'organizationsTeamsDeleteApiKey'
-    | 'organizationsTeamsDeleteSpendLimit'
-    | 'organizationsTeamsGetSpendLimit'
-    | 'organizationsTeamsListApiKeys'
-    | 'organizationsTeamsSetSpendLimit'
-  >
   webhooks: Pick<
     V0ToolsFlat,
     'webhooksCreate' | 'webhooksDelete' | 'webhooksGet' | 'webhooksList' | 'webhooksUpdate'
@@ -153,10 +134,28 @@ const chatsCreateInputSchema = z.object({
     .array(z.string())
     .describe('MCP server IDs to enable. When omitted, uses default enabled servers.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   privacy: z
@@ -201,10 +200,28 @@ const chatsCreateAsyncInputSchema = z.object({
     .array(z.string())
     .describe('MCP server IDs to enable. When omitted, uses default enabled servers.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   privacy: z
@@ -287,10 +304,28 @@ const chatsCreateStreamInputSchema = z.object({
     .array(z.string())
     .describe('MCP server IDs to enable. When omitted, uses default enabled servers.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   privacy: z
@@ -548,6 +583,7 @@ const messagesResolveInputSchema = z.object({
               'Edge Config',
               'Vercel AI Gateway',
               'Snowflake',
+              'Figma',
             ]),
           )
           .describe(
@@ -687,6 +723,7 @@ const messagesResolveAsyncInputSchema = z.object({
               'Edge Config',
               'Vercel AI Gateway',
               'Snowflake',
+              'Figma',
             ]),
           )
           .describe(
@@ -826,6 +863,7 @@ const messagesResolveStreamInputSchema = z.object({
               'Edge Config',
               'Vercel AI Gateway',
               'Snowflake',
+              'Figma',
             ]),
           )
           .describe(
@@ -968,10 +1006,28 @@ const messagesSendInputSchema = z.object({
     )
     .describe('Files or assets to include with the message.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   action: z
@@ -1016,10 +1072,28 @@ const messagesSendAsyncInputSchema = z.object({
     )
     .describe('Files or assets to include with the message.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   action: z
@@ -1064,10 +1138,28 @@ const messagesSendStreamInputSchema = z.object({
     )
     .describe('Files or assets to include with the message.')
     .optional(),
-  skillIds: z
-    .array(z.string())
+  skills: z
+    .array(
+      z.union([
+        z.object({
+          type: z.enum(['remote']).describe('Discriminator: a skills.sh skill.'),
+          id: z.string().describe('Skill ID from skills.sh.'),
+        }),
+        z.object({
+          type: z.enum(['memory']).describe('Discriminator: a user- or team-scoped memory skill.'),
+          scope: z
+            .enum(['user', 'team'])
+            .describe('Whether the skill lives in user or team memory.'),
+          skillName: z.string().describe('Name of the memory skill to attach.'),
+        }),
+        z.object({
+          type: z.enum(['project']).describe('Discriminator: a skill defined in the project repo.'),
+          skillName: z.string().describe('Name of the project skill to attach.'),
+        }),
+      ]),
+    )
     .describe(
-      'Skill IDs (from skills.sh) to attach. Skills provide domain-specific knowledge to the AI. Maximum 3.',
+      'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
   action: z
@@ -1083,48 +1175,6 @@ const messagesSendStreamInputSchema = z.object({
 const messagesStopInputSchema = z.object({
   chatId: z.string(),
   messageId: z.string(),
-})
-
-const organizationsGetSpendLimitInputSchema = z.object({
-  orgId: z.string(),
-})
-
-const organizationsSetSpendLimitInputSchema = z.object({
-  orgId: z.string(),
-  limit: z.number().int().describe('The spend limit in dollars.'),
-})
-
-const organizationsTeamsCreateApiKeyInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-  name: z.string().describe('A name for the API key.'),
-})
-
-const organizationsTeamsDeleteApiKeyInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-  keyId: z.string(),
-})
-
-const organizationsTeamsDeleteSpendLimitInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-})
-
-const organizationsTeamsGetSpendLimitInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-})
-
-const organizationsTeamsListApiKeysInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-})
-
-const organizationsTeamsSetSpendLimitInputSchema = z.object({
-  orgId: z.string(),
-  teamId: z.string(),
-  limit: z.number().int().describe('The spend limit in dollars.'),
 })
 
 const webhooksCreateInputSchema = z.object({
@@ -1191,7 +1241,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           attachments: input.attachments,
           mcpServerIds: input.mcpServerIds,
-          skillIds: input.skillIds,
+          skills: input.skills,
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
@@ -1210,7 +1260,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           attachments: input.attachments,
           mcpServerIds: input.mcpServerIds,
-          skillIds: input.skillIds,
+          skills: input.skills,
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
@@ -1255,7 +1305,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           attachments: input.attachments,
           mcpServerIds: input.mcpServerIds,
-          skillIds: input.skillIds,
+          skills: input.skills,
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
@@ -1341,7 +1391,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsGetPreview: tool({
       description:
-        "Get Preview URL: Returns the preview URL for a chat. If the preview isn't ready, it will return null. Poll this endpoint until preview is non-null.",
+        "Get Preview URL: Returns the preview URL for a chat. If the preview isn't ready, the response is null. Poll this endpoint until the response is non-null.",
       inputSchema: chatsGetPreviewInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1549,7 +1599,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
-          skillIds: input.skillIds,
+          skills: input.skills,
           action: input.action,
         }
         return toToolResult(await client.messages.send(parameters))
@@ -1567,7 +1617,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
-          skillIds: input.skillIds,
+          skills: input.skills,
           action: input.action,
         }
         return toToolResult(await client.messages.sendAsync(parameters))
@@ -1585,7 +1635,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
-          skillIds: input.skillIds,
+          skills: input.skills,
           action: input.action,
         }
         const result = await client.messages.sendStream(parameters)
@@ -1602,96 +1652,6 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           messageId: input.messageId,
         }
         return toToolResult(await client.messages.stop(parameters))
-      },
-    }),
-    organizationsGetSpendLimit: tool({
-      description: 'Get Organization Spend Limit',
-      inputSchema: organizationsGetSpendLimitInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-        }
-        return toToolResult(await client.organizations.getSpendLimit(parameters))
-      },
-    }),
-    organizationsSetSpendLimit: tool({
-      description: 'Set Organization Spend Limit',
-      inputSchema: organizationsSetSpendLimitInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          limit: input.limit,
-        }
-        return toToolResult(await client.organizations.setSpendLimit(parameters))
-      },
-    }),
-    organizationsTeamsCreateApiKey: tool({
-      description: 'Create API Key for Team',
-      inputSchema: organizationsTeamsCreateApiKeyInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-          name: input.name,
-        }
-        return toToolResult(await client.organizations.teams.createApiKey(parameters))
-      },
-    }),
-    organizationsTeamsDeleteApiKey: tool({
-      description: 'Delete API Key for Team',
-      inputSchema: organizationsTeamsDeleteApiKeyInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-          keyId: input.keyId,
-        }
-        return toToolResult(await client.organizations.teams.deleteApiKey(parameters))
-      },
-    }),
-    organizationsTeamsDeleteSpendLimit: tool({
-      description: 'Delete Team Spend Limit',
-      inputSchema: organizationsTeamsDeleteSpendLimitInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-        }
-        return toToolResult(await client.organizations.teams.deleteSpendLimit(parameters))
-      },
-    }),
-    organizationsTeamsGetSpendLimit: tool({
-      description: 'Get Team Spend Limit',
-      inputSchema: organizationsTeamsGetSpendLimitInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-        }
-        return toToolResult(await client.organizations.teams.getSpendLimit(parameters))
-      },
-    }),
-    organizationsTeamsListApiKeys: tool({
-      description: 'List API Keys for Team',
-      inputSchema: organizationsTeamsListApiKeysInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-        }
-        return toToolResult(await client.organizations.teams.listApiKeys(parameters))
-      },
-    }),
-    organizationsTeamsSetSpendLimit: tool({
-      description: 'Set Team Spend Limit',
-      inputSchema: organizationsTeamsSetSpendLimitInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          orgId: input.orgId,
-          teamId: input.teamId,
-          limit: input.limit,
-        }
-        return toToolResult(await client.organizations.teams.setSpendLimit(parameters))
       },
     }),
     webhooksCreate: tool({
@@ -1793,16 +1753,6 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       messagesSendAsync: pickTool(tools, 'messagesSendAsync'),
       messagesSendStream: pickTool(tools, 'messagesSendStream'),
       messagesStop: pickTool(tools, 'messagesStop'),
-    },
-    organizations: {
-      organizationsGetSpendLimit: pickTool(tools, 'organizationsGetSpendLimit'),
-      organizationsSetSpendLimit: pickTool(tools, 'organizationsSetSpendLimit'),
-      organizationsTeamsCreateApiKey: pickTool(tools, 'organizationsTeamsCreateApiKey'),
-      organizationsTeamsDeleteApiKey: pickTool(tools, 'organizationsTeamsDeleteApiKey'),
-      organizationsTeamsDeleteSpendLimit: pickTool(tools, 'organizationsTeamsDeleteSpendLimit'),
-      organizationsTeamsGetSpendLimit: pickTool(tools, 'organizationsTeamsGetSpendLimit'),
-      organizationsTeamsListApiKeys: pickTool(tools, 'organizationsTeamsListApiKeys'),
-      organizationsTeamsSetSpendLimit: pickTool(tools, 'organizationsTeamsSetSpendLimit'),
     },
     webhooks: {
       webhooksCreate: pickTool(tools, 'webhooksCreate'),
