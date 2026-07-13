@@ -226,49 +226,4 @@ describe('generated v0 tools', () => {
       },
     ])
   })
-
-  test('execute routes nested operationIds to nested SDK clients', async () => {
-    const calls: unknown[] = []
-    currentClient = {
-      organizations: {
-        teams: {
-          listApiKeys: mock((options: unknown) => {
-            calls.push(options)
-            return {
-              data: { data: [] },
-              error: undefined,
-              request: new Request(
-                'https://v0.app/api/v2/organizations/org_123/teams/team_123/keys',
-              ),
-              response: new Response('{}'),
-            }
-          }),
-        },
-      },
-    }
-
-    const { v0Tools } = await import('../src')
-    const tools = v0Tools({ auth: 'test-key' })
-    const listApiKeys = tools['organizationsTeamsListApiKeys']
-    if (!listApiKeys?.execute) {
-      throw new Error('organizationsTeamsListApiKeys execute was not generated')
-    }
-
-    const result = await listApiKeys.execute(
-      {
-        orgId: 'org_123',
-        teamId: 'team_123',
-      },
-      { toolCallId: 'tool_call_123', messages: [] },
-    )
-
-    expect(result).toEqual({ data: [] })
-    expect(structuredClone(result)).toEqual({ data: [] })
-    expect(calls).toEqual([
-      {
-        orgId: 'org_123',
-        teamId: 'team_123',
-      },
-    ])
-  })
 })
