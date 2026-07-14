@@ -10,6 +10,8 @@ export type { FetchPreviewOptions } from './preview-proxy'
 export { vercelOidcAuth, type VercelOidcAuthOptions } from './vercel-oidc'
 export type * from './generated/types.gen'
 
+export { createChatId } from './id'
+
 type CreateClientConfig = NonNullable<Parameters<typeof createClient>[0]>
 type CreateV0ClientConfig = CreateClientConfig & {
   /**
