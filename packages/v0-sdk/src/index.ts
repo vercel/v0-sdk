@@ -86,7 +86,6 @@ export type {
   ChatsResolveTaskResponse,
   ChatsResolveTaskStreamResponse,
   ChatsRestoreResponse,
-  ChatsResumeResponse,
   ChatsSendMessageResponse,
   ChatsSendMessageStreamResponse,
   ChatsStopResponse,

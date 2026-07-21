@@ -98,6 +98,7 @@ export type ChatDetail = {
     modelId?:
       | 'v0-auto'
       | 'v0-opus-4.7'
+      | 'v0-opus-4.7-fast'
       | 'v0-mini'
       | 'v0-pro'
       | 'v0-max'
@@ -478,35 +479,38 @@ export interface NotificationPreferenceSchema {
   pushNotifications: boolean
 }
 
-export interface ProductDetailSchema {
+export type ProductDetailSchema = {
   object: 'product'
   id: string
   slug: string
   name: string
   description: string
   iconUrl: string
+  v0Availability?: 'in-review' | 'published'
   iconBackgroundColor?: string
 }
 
-export interface ProductListSchema {
+export type ProductListSchema = {
   object: 'list'
-  data: {
+  data: Array<{
     object: 'product'
     id: string
     slug: string
     name: string
     description: string
     iconUrl: string
-  }[]
+    v0Availability?: 'in-review' | 'published'
+  }>
 }
 
-export interface ProductSummarySchema {
+export type ProductSummarySchema = {
   object: 'product'
   id: string
   slug: string
   name: string
   description: string
   iconUrl: string
+  v0Availability?: 'in-review' | 'published'
 }
 
 export type ProjectDetail = {
@@ -757,6 +761,26 @@ export interface ChatsCreateRequest {
   designSystemId?: string | null
   mcpServerIds?: string[]
   attachedSkillIds?: string[]
+  skills?: Array<
+    | {
+        type: 'remote'
+        id: string
+        scope?: never
+        skillName?: never
+      }
+    | {
+        type: 'memory'
+        scope: 'user' | 'team'
+        skillName: string
+        id?: never
+      }
+    | {
+        type: 'project'
+        skillName: string
+        id?: never
+        scope?: never
+      }
+  >
   metadata?: Record<string, unknown>
 }
 
@@ -764,9 +788,35 @@ export type ChatsCreateResponse = ChatDetail
 
 export type ChatsCreateStreamResponse = ReadableStream<Uint8Array>
 
-export interface ChatsFindResponse {
+export type ChatsFindResponse = {
   object: 'list'
-  data: ChatSummary[]
+  data: Array<{
+    id: string
+    object: 'chat'
+    shareable: boolean
+    privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted'
+    name?: string
+    /** @deprecated */
+    title?: string
+    createdAt: string
+    updatedAt?: string
+    favorite: boolean
+    authorId: string
+    projectId?: string
+    vercelProjectId?: string
+    webUrl: string
+    apiUrl: string
+    latestVersion?: {
+      id: string
+      object: 'version'
+      status: 'pending' | 'completed' | 'failed'
+      demoUrl?: string
+      screenshotUrl?: string
+      createdAt: string
+      updatedAt?: string
+      darkScreenshotUrl?: string
+    }
+  }>
 }
 
 export type ChatsInitRequest = {
@@ -903,6 +953,26 @@ export interface ChatsSendMessageRequest {
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   mcpServerIds?: string[]
   attachedSkillIds?: string[]
+  skills?: Array<
+    | {
+        type: 'remote'
+        id: string
+        scope?: never
+        skillName?: never
+      }
+    | {
+        type: 'memory'
+        scope: 'user' | 'team'
+        skillName: string
+        id?: never
+      }
+    | {
+        type: 'project'
+        skillName: string
+        id?: never
+        scope?: never
+      }
+  >
   action?: {
     type: 'fix-with-v0'
   }
@@ -945,8 +1015,6 @@ export interface ChatsDeleteVersionFilesRequest {
 
 export type ChatsDeleteVersionFilesResponse = VersionDetail
 
-export type ChatsResumeResponse = MessageDetail
-
 export interface ChatsStopResponse {
   success: true
 }
@@ -955,27 +1023,7 @@ export interface ChatsResolveTaskRequest {
   task:
     | {
         type: 'confirmed-steps'
-        connectedIntegrationNames?: Array<
-          | 'Upstash for Redis'
-          | 'Upstash Search'
-          | 'Neon'
-          | 'Supabase'
-          | 'Amazon Aurora DSQL'
-          | 'Amazon Aurora PostgreSQL'
-          | 'Amazon DynamoDB'
-          | 'firebase'
-          | 'Groq'
-          | 'Grok'
-          | 'fal'
-          | 'Deep Infra'
-          | 'Stripe'
-          | 'Clerk'
-          | 'Convex'
-          | 'Blob'
-          | 'Edge Config'
-          | 'Vercel AI Gateway'
-          | 'Snowflake'
-        >
+        connectedIntegrationNames?: string[]
         connectedMcpPresetNames?: Array<
           | 'Linear'
           | 'Notion'
@@ -1363,6 +1411,7 @@ export type ReportsGetAIUsageResponse = {
     outputTokens: number
     totalTokens: number
     cacheCreationInputTokens: number
+    cacheCreationInputTokens1h?: number
     cacheReadInputTokens: number
     timestamp: string
     requestId: string
@@ -1605,6 +1654,7 @@ export function createClient(config: V0ClientConfig = {}) {
           designSystemId: params.designSystemId,
           mcpServerIds: params.mcpServerIds,
           attachedSkillIds: params.attachedSkillIds,
+          skills: params.skills,
           metadata: params.metadata,
         }
 
@@ -1728,6 +1778,7 @@ export function createClient(config: V0ClientConfig = {}) {
           responseMode: params.responseMode,
           mcpServerIds: params.mcpServerIds,
           attachedSkillIds: params.attachedSkillIds,
+          skills: params.skills,
           action: params.action,
         }
 
@@ -1871,7 +1922,7 @@ export function createClient(config: V0ClientConfig = {}) {
       async resume(params: {
         chatId: string
         messageId: string
-      }): Promise<ChatsResumeResponse> {
+      }): Promise<any> {
         const pathParams = {
           chatId: params.chatId,
           messageId: params.messageId,
