@@ -88,7 +88,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -121,10 +121,72 @@
                     }
                   },
                   "attachedSkillIds": {
-                    "description": "Array of skill IDs (from skills.sh) to attach to this chat. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
+                    "description": "Array of skill IDs (from skills.sh) to attach to this chat. Backwards-compatible alias for `skills` entries of type `remote`. Maximum 3 skills per chat.",
                     "type": "array",
                     "items": {
                       "type": "string"
+                    }
+                  },
+                  "skills": {
+                    "description": "Skills to force-attach to this chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Merged with `attachedSkillIds`. Maximum 3 skills per chat.",
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["remote"],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": ["type", "id"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["memory"],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": ["user", "team"],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": ["type", "scope", "skillName"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["project"],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": ["type", "skillName"],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "metadata": {
@@ -266,7 +328,135 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/ChatSummary"
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "A unique identifier for the chat."
+                          },
+                          "object": {
+                            "type": "string",
+                            "const": "chat",
+                            "description": "Fixed value identifying this object as a chat."
+                          },
+                          "shareable": {
+                            "type": "boolean",
+                            "description": "Indicates whether the chat can be shared via public link."
+                          },
+                          "privacy": {
+                            "type": "string",
+                            "enum": [
+                              "public",
+                              "private",
+                              "team",
+                              "team-edit",
+                              "unlisted"
+                            ],
+                            "description": "Defines the visibility of the chat—private, team-only, or public."
+                          },
+                          "name": {
+                            "description": "An optional name assigned to the chat by the user.",
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Deprecated title field preserved for backward compatibility.",
+                            "deprecated": true
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                            "description": "The ISO timestamp representing when the chat was created."
+                          },
+                          "updatedAt": {
+                            "description": "The ISO timestamp of the last update to the chat.",
+                            "type": "string"
+                          },
+                          "favorite": {
+                            "type": "boolean",
+                            "description": "Indicates whether the chat is marked as a favorite."
+                          },
+                          "authorId": {
+                            "type": "string",
+                            "description": "The ID of the user who created the chat."
+                          },
+                          "projectId": {
+                            "description": "Optional ID of the v0 project associated with this chat.",
+                            "type": "string"
+                          },
+                          "vercelProjectId": {
+                            "description": "Optional ID of the linked Vercel project, if connected.",
+                            "type": "string"
+                          },
+                          "webUrl": {
+                            "type": "string",
+                            "description": "Web URL to view this chat in the browser."
+                          },
+                          "apiUrl": {
+                            "type": "string",
+                            "description": "API URL to access this chat via the API."
+                          },
+                          "latestVersion": {
+                            "description": "The most recent generated version of the chat, if available.",
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "A unique identifier for the version."
+                              },
+                              "object": {
+                                "type": "string",
+                                "const": "version",
+                                "description": "Fixed value identifying this object as a version."
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "completed", "failed"],
+                                "description": "The current status of the version generation process."
+                              },
+                              "demoUrl": {
+                                "description": "Optional URL for previewing the generated output.",
+                                "type": "string"
+                              },
+                              "screenshotUrl": {
+                                "type": "string",
+                                "description": "URL to retrieve a screenshot of this version."
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                                "description": "The date and time when the version was created, in ISO 8601 format."
+                              },
+                              "updatedAt": {
+                                "description": "The date and time when the version was last updated, in ISO 8601 format.",
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                              },
+                              "darkScreenshotUrl": {
+                                "type": "string",
+                                "description": "URL to retrieve a dark mode screenshot of this version."
+                              }
+                            },
+                            "required": ["id", "object", "status", "createdAt"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "object",
+                          "shareable",
+                          "privacy",
+                          "createdAt",
+                          "favorite",
+                          "authorId",
+                          "webUrl",
+                          "apiUrl"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Summary of a chat, including metadata like privacy, author, latest version, and URLs."
                       }
                     }
                   },
@@ -1778,7 +1968,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -1807,10 +1997,72 @@
                     }
                   },
                   "attachedSkillIds": {
-                    "description": "Array of skill IDs (from skills.sh) to attach to this message. Skills provide domain-specific knowledge and instructions that guide the AI. Maximum 3 skills per chat.",
+                    "description": "Array of skill IDs (from skills.sh) to attach to this message. Backwards-compatible alias for `skills` entries of type `remote`. Maximum 3 skills per chat.",
                     "type": "array",
                     "items": {
                       "type": "string"
+                    }
+                  },
+                  "skills": {
+                    "description": "Skills to force-attach to this message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Merged with `attachedSkillIds`. Maximum 3 skills per chat.",
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["remote"],
+                              "description": "Discriminator: a skills.sh skill."
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Skill ID from skills.sh."
+                            }
+                          },
+                          "required": ["type", "id"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["memory"],
+                              "description": "Discriminator: a user- or team-scoped memory skill."
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": ["user", "team"],
+                              "description": "Whether the skill lives in user or team memory."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the memory skill to attach."
+                            }
+                          },
+                          "required": ["type", "scope", "skillName"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["project"],
+                              "description": "Discriminator: a skill defined in the project repo."
+                            },
+                            "skillName": {
+                              "type": "string",
+                              "description": "Name of the project skill to attach."
+                            }
+                          },
+                          "required": ["type", "skillName"],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
                   },
                   "action": {
@@ -2848,16 +3100,17 @@
     "/chats/{chatId}/messages/{messageId}/resume": {
       "post": {
         "summary": "Resume Message",
-        "description": "Resumes processing of a previously interrupted or incomplete message in a chat. Useful for continuing generation when a message was paused or stopped.",
+        "description": "Reconnects to an active assistant message stream and returns it as Server-Sent Events. This does not restart or continue a stopped generation.",
         "operationId": "chats.resume",
         "tags": ["chats"],
         "responses": {
           "200": {
             "description": "Success",
             "content": {
-              "application/json": {
+              "text/event-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/MessageDetail"
+                  "type": "string",
+                  "description": "A Server-Sent Events stream of chat and message delta events."
                 }
               }
             }
@@ -3123,7 +3376,7 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-steps"
+                            "enum": ["confirmed-steps"]
                           },
                           "connectedIntegrationNames": {
                             "default": [],
@@ -3131,27 +3384,7 @@
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Groq",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -3204,7 +3437,7 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "plan-exit-response"
+                            "enum": ["plan-exit-response"]
                           },
                           "status": {
                             "type": "string",
@@ -3226,7 +3459,7 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "answered-questions"
+                            "enum": ["answered-questions"]
                           },
                           "answers": {
                             "type": "array",
@@ -3276,7 +3509,7 @@
                         "properties": {
                           "type": {
                             "type": "string",
-                            "const": "confirmed-permissions"
+                            "enum": ["confirmed-permissions"]
                           },
                           "permissions": {
                             "type": "array",
@@ -3285,7 +3518,7 @@
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "const": "ALLOW_DYNAMIC_TOOL_STRICT"
+                                  "enum": ["ALLOW_DYNAMIC_TOOL_STRICT"]
                                 },
                                 "toolName": {
                                   "type": "string",
@@ -3363,7 +3596,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8019,11 +8252,12 @@
             "required": false,
             "schema": {
               "default": 20,
+              "description": "Bounds the raw billing transactions scanned per ledger group and page. A page can contain more events than this value (large teams are scanned in parallel ledger groups), and a filtered page (chatId, userId, or messageId) can contain fewer or zero events while more data remains. Events are sorted newest-first within a page but not across pages on large teams. Always paginate with `pagination.hasMore` and `pagination.nextCursor` rather than stopping on an empty page.",
               "type": "number",
               "minimum": 1,
               "maximum": 150
             },
-            "description": "Query parameter \"limit\""
+            "description": "Bounds the raw billing transactions scanned per ledger group and page. A page can contain more events than this value (large teams are scanned in parallel ledger groups), and a filtered page (chatId, userId, or messageId) can contain fewer or zero events while more data remains. Events are sorted newest-first within a page but not across pages on large teams. Always paginate with `pagination.hasMore` and `pagination.nextCursor` rather than stopping on an empty page."
           },
           {
             "name": "cursor",
@@ -8082,6 +8316,10 @@
                             "type": "number"
                           },
                           "cacheCreationInputTokens": {
+                            "type": "number"
+                          },
+                          "cacheCreationInputTokens1h": {
+                            "default": 0,
                             "type": "number"
                           },
                           "cacheReadInputTokens": {
@@ -8575,22 +8813,24 @@
             "in": "query",
             "required": false,
             "schema": {
+              "description": "Inclusive ISO timestamp lower bound for activity.",
               "type": "string",
               "format": "date-time",
               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
             },
-            "description": "Query parameter \"startDate\""
+            "description": "Inclusive ISO timestamp lower bound for activity."
           },
           {
             "name": "endDate",
             "in": "query",
             "required": false,
             "schema": {
+              "description": "Exclusive ISO timestamp upper bound for activity. Pass the end of the last day (e.g. 23:59:59.999) to include it.",
               "type": "string",
               "format": "date-time",
               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
             },
-            "description": "Query parameter \"endDate\""
+            "description": "Exclusive ISO timestamp upper bound for activity. Pass the end of the last day (e.g. 23:59:59.999) to include it."
           }
         ],
         "security": [
@@ -10572,16 +10812,17 @@
             "properties": {
               "modelId": {
                 "default": "v0-pro",
-                "description": "Model to use for the generation.",
                 "type": "string",
                 "enum": [
                   "v0-auto",
                   "v0-opus-4.7",
+                  "v0-opus-4.7-fast",
                   "v0-mini",
                   "v0-pro",
                   "v0-max",
                   "v0-max-fast"
-                ]
+                ],
+                "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
               },
               "imageGenerations": {
                 "default": false,
@@ -12696,6 +12937,11 @@
             "type": "string",
             "description": "URL to the product icon."
           },
+          "v0Availability": {
+            "description": "The product's availability in v0. 'in-review' products only appear for teams with the review view and should be rendered as such.",
+            "type": "string",
+            "enum": ["in-review", "published"]
+          },
           "iconBackgroundColor": {
             "description": "Background color for the product icon.",
             "type": "string"
@@ -12742,6 +12988,11 @@
                 "iconUrl": {
                   "type": "string",
                   "description": "URL to the product icon."
+                },
+                "v0Availability": {
+                  "description": "The product's availability in v0. 'in-review' products only appear for teams with the review view and should be rendered as such.",
+                  "type": "string",
+                  "enum": ["in-review", "published"]
                 }
               },
               "required": [
@@ -12789,6 +13040,11 @@
           "iconUrl": {
             "type": "string",
             "description": "URL to the product icon."
+          },
+          "v0Availability": {
+            "description": "The product's availability in v0. 'in-review' products only appear for teams with the review view and should be rendered as such.",
+            "type": "string",
+            "enum": ["in-review", "published"]
           }
         },
         "required": ["object", "id", "slug", "name", "description", "iconUrl"],
