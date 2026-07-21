@@ -124,8 +124,8 @@ jobs:
             --retry-all-errors \
             --show-error \
             --silent \
-            --output packages/v0-sdk/openapi.json \
-            https://v0.app/api/v2/openapi/json
+            https://v0.app/api/v2/openapi/json \
+            | jq --indent 2 . > packages/v0-sdk/openapi.json
 
       - name: Validate production OpenAPI spec
         uses: oasdiff/oasdiff-action/validate@35b32248b144707e94e72a8d0a1456da9d6618c2 # v0.1.7
