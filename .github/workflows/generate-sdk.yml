@@ -135,6 +135,9 @@ jobs:
       - name: Generate v2 SDK
         run: bun run generate
 
+      - name: Format generated code
+        run: bun run fmt
+
       - name: Create or update v2 SDK pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
