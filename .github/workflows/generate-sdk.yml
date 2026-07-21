@@ -80,3 +80,73 @@ jobs:
             Please review the changes and merge if they look correct.
           branch: update-sdk-from-openapi
           delete-branch: true
+
+  generate-v2:
+    name: Generate v2 SDK from production OpenAPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      # TODO(v2): Change this to main for both checkout and PR base when v2 becomes main.
+      SDK_BASE_BRANCH: v2
+      # TODO(v2): Consolidate this branch with the main SDK updater when v2 becomes main.
+      SDK_UPDATE_BRANCH: update-v2-sdk-from-openapi
+
+    steps:
+      - name: Checkout v2
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.SDK_BASE_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Fetch production OpenAPI spec
+        run: |
+          curl \
+            --fail \
+            --location \
+            --retry 3 \
+            --retry-all-errors \
+            --show-error \
+            --silent \
+            --output packages/v0-sdk/openapi.json \
+            https://v0.app/api/v2/openapi/json
+
+      - name: Validate production OpenAPI spec
+        uses: oasdiff/oasdiff-action/validate@35b32248b144707e94e72a8d0a1456da9d6618c2 # v0.1.7
+        with:
+          spec: packages/v0-sdk/openapi.json
+
+      - name: Generate v2 SDK
+        run: bun run generate
+
+      - name: Create or update v2 SDK pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sign-commits: true
+          base: ${{ env.SDK_BASE_BRANCH }}
+          branch: ${{ env.SDK_UPDATE_BRANCH }}
+          delete-branch: true
+          commit-message: 'chore: update v2 SDK from production OpenAPI'
+          title: 'chore: update v2 SDK from production OpenAPI'
+          body: |
+            Fetches the latest OpenAPI document from the production v2 API and regenerates the TypeScript SDK and AI tools.
+
+            Source: https://v0.app/api/v2/openapi/json
+
+            This PR is updated in place by the daily Generate SDK workflow. The repository automatically deletes its update branch after merge.
