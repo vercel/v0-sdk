@@ -1865,7 +1865,7 @@ export type ChatsCreateData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -1974,6 +1974,75 @@ export type ChatsCreateResponses = {
 };
 
 export type ChatsCreateResponse = ChatsCreateResponses[keyof ChatsCreateResponses];
+
+export type ChatsCreateFromFilesData = {
+    body: {
+        /**
+         * Source files used to seed the new chat.
+         */
+        files: Array<{
+            /**
+             * Path of the file in the project.
+             */
+            name: string;
+            /**
+             * UTF-8 text content of the file.
+             */
+            content: string;
+        }>;
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v2/chats/from-files';
+};
+
+export type ChatsCreateFromFilesErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromFilesError = ChatsCreateFromFilesErrors[keyof ChatsCreateFromFilesErrors];
+
+export type ChatsCreateFromFilesResponses = {
+    /**
+     * A chat response that also reports the usage.
+     */
+    200: ChatWithUsage;
+};
+
+export type ChatsCreateFromFilesResponse = ChatsCreateFromFilesResponses[keyof ChatsCreateFromFilesResponses];
 
 export type ChatsCreateFromZipData = {
     body: {
@@ -2119,7 +2188,7 @@ export type ChatsCreateStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2244,7 +2313,7 @@ export type ChatsCreateAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2424,7 +2493,7 @@ export type MessagesSendData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2592,7 +2661,7 @@ export type MessagesSendStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2714,7 +2783,7 @@ export type MessagesSendAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2831,7 +2900,7 @@ export type MessagesResolveData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -2915,7 +2984,7 @@ export type MessagesResolveData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -2982,7 +3051,7 @@ export type MessagesResolveStreamData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3066,7 +3135,7 @@ export type MessagesResolveStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -3133,7 +3202,7 @@ export type MessagesResolveAsyncData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3217,7 +3286,7 @@ export type MessagesResolveAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -4598,6 +4667,10 @@ export type ChatsDeployErrors = {
      */
     409: Error;
     /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
      * Response for status 500
      */
     500: Error;
@@ -4861,14 +4934,23 @@ export type McpServersCreateData = {
             type: 'none';
         } | {
             type: 'bearer';
+            /**
+             * Bearer token for authentication.
+             */
             token: string;
         } | {
             type: 'custom-headers';
+            /**
+             * Custom headers to include in requests.
+             */
             headers: {
                 [key: string]: string;
             };
         } | {
             type: 'oauth';
+            /**
+             * OAuth configuration discovered or manually set.
+             */
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -4881,7 +4963,13 @@ export type McpServersCreateData = {
                 resource?: string;
                 clientIdMetadataDocumentSupported?: boolean;
             };
+            /**
+             * Whether OAuth is currently connected.
+             */
             connected: boolean;
+            /**
+             * ISO timestamp when the token expires.
+             */
             expiresAt?: string;
         };
         /**
@@ -5035,14 +5123,23 @@ export type McpServersUpdateData = {
             type: 'none';
         } | {
             type: 'bearer';
+            /**
+             * Bearer token for authentication.
+             */
             token: string;
         } | {
             type: 'custom-headers';
+            /**
+             * Custom headers to include in requests.
+             */
             headers: {
                 [key: string]: string;
             };
         } | {
             type: 'oauth';
+            /**
+             * OAuth configuration discovered or manually set.
+             */
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -5055,7 +5152,13 @@ export type McpServersUpdateData = {
                 resource?: string;
                 clientIdMetadataDocumentSupported?: boolean;
             };
+            /**
+             * Whether OAuth is currently connected.
+             */
             connected: boolean;
+            /**
+             * ISO timestamp when the token expires.
+             */
             expiresAt?: string;
         };
         /**

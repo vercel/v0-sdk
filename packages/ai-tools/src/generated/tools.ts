@@ -15,6 +15,7 @@ type V0GeneratedTool = NonNullable<ToolSet[string]>
 export type V0ToolName =
   | 'chatsCreate'
   | 'chatsCreateAsync'
+  | 'chatsCreateFromFiles'
   | 'chatsCreateFromRepo'
   | 'chatsCreateFromZip'
   | 'chatsCreateStream'
@@ -58,6 +59,7 @@ export type V0ToolsByCategory = {
     V0ToolsFlat,
     | 'chatsCreate'
     | 'chatsCreateAsync'
+    | 'chatsCreateFromFiles'
     | 'chatsCreateFromRepo'
     | 'chatsCreateFromZip'
     | 'chatsCreateStream'
@@ -115,7 +117,9 @@ const chatsCreateInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -181,7 +185,9 @@ const chatsCreateAsyncInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -224,6 +230,26 @@ const chatsCreateAsyncInputSchema = z.object({
       'Skills to force-attach to the chat. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
     )
     .optional(),
+  privacy: z
+    .enum(['public', 'private', 'team', 'team-edit', 'unlisted'])
+    .describe('Visibility setting for the new chat.')
+    .optional(),
+  title: z.string().describe('Title for the new chat.').optional(),
+  metadata: z
+    .record(z.string(), z.string())
+    .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+})
+
+const chatsCreateFromFilesInputSchema = z.object({
+  files: z
+    .array(
+      z.object({
+        name: z.string().describe('Path of the file in the project.'),
+        content: z.string().describe('UTF-8 text content of the file.'),
+      }),
+    )
+    .describe('Source files used to seed the new chat.'),
   privacy: z
     .enum(['public', 'private', 'team', 'team-edit', 'unlisted'])
     .describe('Visibility setting for the new chat.')
@@ -285,7 +311,9 @@ const chatsCreateStreamInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -459,11 +487,13 @@ const mcpServersCreateInputSchema = z.object({
       }),
       z.object({
         type: z.enum(['bearer']),
-        token: z.string(),
+        token: z.string().describe('Bearer token for authentication.'),
       }),
       z.object({
         type: z.enum(['custom-headers']),
-        headers: z.record(z.string(), z.string()),
+        headers: z
+          .record(z.string(), z.string())
+          .describe('Custom headers to include in requests.'),
       }),
       z.object({
         type: z.enum(['oauth']),
@@ -480,9 +510,10 @@ const mcpServersCreateInputSchema = z.object({
             resource: z.string().optional(),
             clientIdMetadataDocumentSupported: z.boolean().optional(),
           })
+          .describe('OAuth configuration discovered or manually set.')
           .optional(),
-        connected: z.boolean(),
-        expiresAt: z.string().optional(),
+        connected: z.boolean().describe('Whether OAuth is currently connected.'),
+        expiresAt: z.string().describe('ISO timestamp when the token expires.').optional(),
       }),
     ])
     .describe('Authentication configuration.'),
@@ -512,11 +543,13 @@ const mcpServersUpdateInputSchema = z.object({
       }),
       z.object({
         type: z.enum(['bearer']),
-        token: z.string(),
+        token: z.string().describe('Bearer token for authentication.'),
       }),
       z.object({
         type: z.enum(['custom-headers']),
-        headers: z.record(z.string(), z.string()),
+        headers: z
+          .record(z.string(), z.string())
+          .describe('Custom headers to include in requests.'),
       }),
       z.object({
         type: z.enum(['oauth']),
@@ -533,9 +566,10 @@ const mcpServersUpdateInputSchema = z.object({
             resource: z.string().optional(),
             clientIdMetadataDocumentSupported: z.boolean().optional(),
           })
+          .describe('OAuth configuration discovered or manually set.')
           .optional(),
-        connected: z.boolean(),
-        expiresAt: z.string().optional(),
+        connected: z.boolean().describe('Whether OAuth is currently connected.'),
+        expiresAt: z.string().describe('ISO timestamp when the token expires.').optional(),
       }),
     ])
     .describe('New authentication configuration.')
@@ -561,31 +595,7 @@ const messagesResolveInputSchema = z.object({
       z.object({
         type: z.enum(['confirmed-steps']),
         connectedIntegrationNames: z
-          .array(
-            z.enum([
-              'Upstash for Redis',
-              'Upstash Search',
-              'Neon',
-              'Supabase',
-              'Amazon Aurora DSQL',
-              'Amazon Aurora PostgreSQL',
-              'Amazon DynamoDB',
-              'firebase',
-              'Grok',
-              'fal',
-              'Deep Infra',
-              'Stripe',
-              'Clerk',
-              'Convex',
-              'Shopify',
-              'Resend email',
-              'Blob',
-              'Edge Config',
-              'Vercel AI Gateway',
-              'Snowflake',
-              'Figma',
-            ]),
-          )
+          .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
           ),
@@ -685,7 +695,9 @@ const messagesResolveInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -701,31 +713,7 @@ const messagesResolveAsyncInputSchema = z.object({
       z.object({
         type: z.enum(['confirmed-steps']),
         connectedIntegrationNames: z
-          .array(
-            z.enum([
-              'Upstash for Redis',
-              'Upstash Search',
-              'Neon',
-              'Supabase',
-              'Amazon Aurora DSQL',
-              'Amazon Aurora PostgreSQL',
-              'Amazon DynamoDB',
-              'firebase',
-              'Grok',
-              'fal',
-              'Deep Infra',
-              'Stripe',
-              'Clerk',
-              'Convex',
-              'Shopify',
-              'Resend email',
-              'Blob',
-              'Edge Config',
-              'Vercel AI Gateway',
-              'Snowflake',
-              'Figma',
-            ]),
-          )
+          .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
           ),
@@ -825,7 +813,9 @@ const messagesResolveAsyncInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -841,31 +831,7 @@ const messagesResolveStreamInputSchema = z.object({
       z.object({
         type: z.enum(['confirmed-steps']),
         connectedIntegrationNames: z
-          .array(
-            z.enum([
-              'Upstash for Redis',
-              'Upstash Search',
-              'Neon',
-              'Supabase',
-              'Amazon Aurora DSQL',
-              'Amazon Aurora PostgreSQL',
-              'Amazon DynamoDB',
-              'firebase',
-              'Grok',
-              'fal',
-              'Deep Infra',
-              'Stripe',
-              'Clerk',
-              'Convex',
-              'Shopify',
-              'Resend email',
-              'Blob',
-              'Edge Config',
-              'Vercel AI Gateway',
-              'Snowflake',
-              'Figma',
-            ]),
-          )
+          .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
           ),
@@ -965,7 +931,9 @@ const messagesResolveStreamInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -987,7 +955,9 @@ const messagesSendInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1053,7 +1023,9 @@ const messagesSendAsyncInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1119,7 +1091,9 @@ const messagesSendStreamInputSchema = z.object({
     .object({
       modelId: z
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .describe(
+          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1266,6 +1240,19 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           metadata: input.metadata,
         }
         return toToolResult(await client.chats.createAsync(parameters))
+      },
+    }),
+    chatsCreateFromFiles: tool({
+      description: 'Create Chat From Files: Creates a new chat from inline source files.',
+      inputSchema: chatsCreateFromFilesInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          files: input.files,
+          privacy: input.privacy,
+          title: input.title,
+          metadata: input.metadata,
+        }
+        return toToolResult(await client.chats.createFromFiles(parameters))
       },
     }),
     chatsCreateFromRepo: tool({
@@ -1719,6 +1706,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
     chats: {
       chatsCreate: pickTool(tools, 'chatsCreate'),
       chatsCreateAsync: pickTool(tools, 'chatsCreateAsync'),
+      chatsCreateFromFiles: pickTool(tools, 'chatsCreateFromFiles'),
       chatsCreateFromRepo: pickTool(tools, 'chatsCreateFromRepo'),
       chatsCreateFromZip: pickTool(tools, 'chatsCreateFromZip'),
       chatsCreateStream: pickTool(tools, 'chatsCreateStream'),

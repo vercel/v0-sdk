@@ -2,8 +2,8 @@
 
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -88,7 +88,7 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -156,6 +156,48 @@ export class Chats extends HeyApiClient {
             responseTransformer: chatsCreateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v2/chats',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+    
+    /**
+     * Create Chat From Files
+     *
+     * Creates a new chat from inline source files.
+     */
+    public createFromFiles<ThrowOnError extends boolean = false>(parameters: {
+        files: Array<{
+            /**
+             * Path of the file in the project.
+             */
+            name: string;
+            /**
+             * UTF-8 text content of the file.
+             */
+            content: string;
+        }>;
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        title?: string;
+        metadata?: {
+            [key: string]: string;
+        };
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [
+                    { in: 'body', key: 'files' },
+                    { in: 'body', key: 'privacy' },
+                    { in: 'body', key: 'title' },
+                    { in: 'body', key: 'metadata' }
+                ] }]);
+        return (options?.client ?? this.client).post<ChatsCreateFromFilesResponses, ChatsCreateFromFilesErrors, ThrowOnError>({
+            responseTransformer: chatsCreateFromFilesResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/api/v2/chats/from-files',
             ...options,
             ...params,
             headers: {
@@ -251,7 +293,7 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -338,7 +380,7 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -715,7 +757,7 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -820,7 +862,7 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -905,7 +947,7 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -991,7 +1033,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1072,7 +1114,7 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -1112,7 +1154,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1193,7 +1235,7 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -1232,7 +1274,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<'Upstash for Redis' | 'Upstash Search' | 'Neon' | 'Supabase' | 'Amazon Aurora DSQL' | 'Amazon Aurora PostgreSQL' | 'Amazon DynamoDB' | 'firebase' | 'Grok' | 'fal' | 'Deep Infra' | 'Stripe' | 'Clerk' | 'Convex' | 'Shopify' | 'Resend email' | 'Blob' | 'Edge Config' | 'Vercel AI Gateway' | 'Snowflake' | 'Figma'>;
+            connectedIntegrationNames: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1313,7 +1355,7 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
             modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
@@ -1388,14 +1430,23 @@ export class McpServers extends HeyApiClient {
             type: 'none';
         } | {
             type: 'bearer';
+            /**
+             * Bearer token for authentication.
+             */
             token: string;
         } | {
             type: 'custom-headers';
+            /**
+             * Custom headers to include in requests.
+             */
             headers: {
                 [key: string]: string;
             };
         } | {
             type: 'oauth';
+            /**
+             * OAuth configuration discovered or manually set.
+             */
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -1408,7 +1459,13 @@ export class McpServers extends HeyApiClient {
                 resource?: string;
                 clientIdMetadataDocumentSupported?: boolean;
             };
+            /**
+             * Whether OAuth is currently connected.
+             */
             connected: boolean;
+            /**
+             * ISO timestamp when the token expires.
+             */
             expiresAt?: string;
         };
         scope: 'user' | 'team';
@@ -1485,14 +1542,23 @@ export class McpServers extends HeyApiClient {
             type: 'none';
         } | {
             type: 'bearer';
+            /**
+             * Bearer token for authentication.
+             */
             token: string;
         } | {
             type: 'custom-headers';
+            /**
+             * Custom headers to include in requests.
+             */
             headers: {
                 [key: string]: string;
             };
         } | {
             type: 'oauth';
+            /**
+             * OAuth configuration discovered or manually set.
+             */
             config?: {
                 authorizationUrl: string;
                 tokenUrl: string;
@@ -1505,7 +1571,13 @@ export class McpServers extends HeyApiClient {
                 resource?: string;
                 clientIdMetadataDocumentSupported?: boolean;
             };
+            /**
+             * Whether OAuth is currently connected.
+             */
             connected: boolean;
+            /**
+             * ISO timestamp when the token expires.
+             */
             expiresAt?: string;
         };
         scope?: 'user' | 'team';
