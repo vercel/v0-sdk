@@ -47,7 +47,6 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 - **Chat Management**: Continue conversations, fork chats, rename, and delete as needed
 - **One-Click Deployment**: Deploy generated apps directly to Vercel
 - **File Attachments**: Upload images and files to enhance your prompts
-- **SDK Agent Skill**: Adds v0 SDK guidance to generated apps through the generation system prompt
 - **Voice Input**: Use speech-to-text for hands-free prompt creation
 - **Rate Limiting**: Built-in rate limiting (3 AI generations per 12 hours) to prevent abuse
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
@@ -107,20 +106,9 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 │   └── ui/                     # Reusable UI components (buttons, dialogs, etc.)
 ├── lib/
 │   ├── hooks/                  # Custom React hooks
-│   ├── v0-sdk-agent-skill.ts   # v0 SDK guidance sent to the v0 agent
 │   └── utils.ts                # Utility functions
 └── public/                     # Static assets
 ```
-
-## Agent Skill
-
-The starter template includes a local v0 SDK agent skill at `lib/v0-sdk-agent-skill.ts`.
-It is included in the `systemPrompt` for both new chats and follow-up messages in
-`app/api/generate/route.ts`.
-
-The skill covers SDK setup, chat creation, follow-up messages, streaming, preview
-rendering, and links to the v0 Platform API v2 docs:
-[v0.app/docs/api/v2](https://v0.app/docs/api/v2).
 
 ## Environment Variables
 

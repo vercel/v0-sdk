@@ -8,6 +8,7 @@
 - Replace v1-era templates with `simple-v0` and `basic`.
 - Rewrite workspace dependencies to published v2 packages.
 - Print next-step commands from each template's actual package scripts.
+- Install the v0 SDK agent skill at `.agents/skills/v0/SKILL.md` in every generated app.
 
 ## 0.2.1
 

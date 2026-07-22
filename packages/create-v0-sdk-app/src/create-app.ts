@@ -1,5 +1,12 @@
-import { basename, join } from 'node:path'
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
+import { basename, dirname, join } from 'node:path'
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { cyan, green, red } from 'picocolors'
 import { copy } from './helpers/copy'
 import type { PackageManager } from './helpers/get-pkg-manager'
@@ -90,6 +97,8 @@ export async function createApp({
     console.error(`Example ${red(example)} does not exist or could not be downloaded.`)
     process.exit(1)
   }
+
+  installAgentSkill(appPath)
 
   // Update package.json to use published packages instead of workspace references
   const packageJsonPath = join(appPath, 'package.json')
@@ -184,6 +193,14 @@ function updateTemplatePackage(packageJson: PackageJson, example: ExampleType): 
   }
   delete packageJson.module
   delete packageJson.peerDependencies
+}
+
+function installAgentSkill(appPath: string): void {
+  const source = join(__dirname, '..', 'templates', 'v0', 'SKILL.md')
+  const destination = join(appPath, '.agents', 'skills', 'v0', 'SKILL.md')
+
+  mkdirSync(dirname(destination), { recursive: true })
+  copyFileSync(source, destination)
 }
 
 function removeLockfiles(appPath: string): void {

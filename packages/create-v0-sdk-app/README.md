@@ -66,6 +66,7 @@ Each example comes pre-configured with:
 - TypeScript support
 - v0 SDK v2 usage
 - Example code and documentation
+- A v0 SDK agent skill at `.agents/skills/v0/SKILL.md`
 - Published package dependencies for use outside this monorepo
 
 ## Development

@@ -20,7 +20,8 @@
     "create-v0-sdk-app": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "scripts": {
     "dev": "tsx src/index.ts",

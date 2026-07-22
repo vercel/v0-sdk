@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Chat } from 'v0'
 import { checkRateLimit, getUserIdentifier } from '@/lib/rate-limiter'
 import { getV0Client, normalizeChat } from '@/lib/v0'
-import { V0_SDK_AGENT_SKILL } from '@/lib/v0-sdk-agent-skill'
 
 type ModelId = 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
 
@@ -10,10 +9,8 @@ type Attachment = {
   url: string
 }
 
-const SYSTEM_PROMPT = [
-  'v0 MUST always generate code even if the user just says "hi" or asks a question. v0 MUST NOT ask the user to clarify their request.',
-  V0_SDK_AGENT_SKILL,
-].join('\n\n')
+const SYSTEM_PROMPT =
+  'v0 MUST always generate code even if the user just says "hi" or asks a question. v0 MUST NOT ask the user to clarify their request.'
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,7 +69,6 @@ export async function POST(request: NextRequest) {
             ? await v0.messages.sendStream(
                 {
                   chatId,
-                  systemPrompt: SYSTEM_PROMPT,
                   message: message.trim(),
                   modelConfiguration: {
                     modelId: resolvedModelId,
