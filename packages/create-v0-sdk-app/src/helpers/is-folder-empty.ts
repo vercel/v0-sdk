@@ -8,6 +8,7 @@ const VALID_FILES = [
   '.gitattributes',
   '.gitignore',
   '.gitlab-ci.yml',
+  '.idea',
   '.hg',
   '.hgcheck',
   '.hgignore',
@@ -23,12 +24,7 @@ export function isFolderEmpty(root: string, name: string): boolean {
 
   let conflicts: string[] = []
   try {
-    conflicts = readdirSync(root).filter(
-      (file) =>
-        !validFiles.includes(file) &&
-        // Support IntelliJ IDEA-based editors
-        !file.startsWith('.idea'),
-    )
+    conflicts = readdirSync(root).filter((file) => !validFiles.includes(file))
   } catch {
     return true
   }
