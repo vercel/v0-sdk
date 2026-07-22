@@ -9,6 +9,7 @@
 - Rewrite workspace dependencies to published v2 packages.
 - Print next-step commands from each template's actual package scripts.
 - Install the v0 SDK agent skill at `.agents/skills/v0/SKILL.md` in every generated app.
+- Use Degit to download examples from the v2 branch.
 
 ## 0.2.1
 

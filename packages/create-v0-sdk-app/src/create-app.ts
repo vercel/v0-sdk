@@ -8,11 +8,9 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { cyan, green, red } from 'picocolors'
-import { copy } from './helpers/copy'
 import type { PackageManager } from './helpers/get-pkg-manager'
 import { install } from './helpers/install'
 import { isFolderEmpty } from './helpers/is-folder-empty'
-import { downloadAndExtractExample } from './helpers/download'
 
 export type ExampleType = 'basic' | 'simple-v0'
 
@@ -74,24 +72,14 @@ export async function createApp({
   console.log(`Creating a new v0 SDK app in ${green(appPath)}.`)
   console.log()
 
-  // Download example from GitHub repository
-  const repoUrl = 'https://github.com/vercel/v0-sdk/tree/v2'
-  const examplePath = `examples/${example}`
+  const template = `vercel/v0-sdk/examples/${example}#v2`
 
-  console.log(`Downloading files from ${cyan(repoUrl)}. This might take a moment.`)
+  console.log(`Downloading template ${cyan(template)}. This might take a moment.`)
   console.log()
 
   try {
-    await downloadAndExtractExample(repoUrl, examplePath, appPath)
-
-    // Rename gitignore file if it exists
-    const gitignorePath = join(appPath, 'gitignore')
-    if (existsSync(gitignorePath)) {
-      await copy(['gitignore'], appPath, {
-        cwd: appPath,
-        rename: () => '.gitignore',
-      })
-    }
+    const { default: degit } = await import('degit')
+    await degit(template, { cache: false, force: true }).clone(appPath)
   } catch (error) {
     console.error(`Failed to download example ${red(example)}:`, error)
     console.error(`Example ${red(example)} does not exist or could not be downloaded.`)
