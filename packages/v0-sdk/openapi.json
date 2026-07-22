@@ -3383,6 +3383,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -3403,7 +3404,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -3565,6 +3566,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -3585,7 +3587,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -3747,6 +3749,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -3767,7 +3770,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -4153,6 +4156,278 @@
           },
           "401": {
             "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/chats/from-files": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create Chat From Files",
+        "description": "Creates a new chat from inline source files.",
+        "operationId": "chats.createFromFiles",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Path of the file in the project."
+                        },
+                        "content": {
+                          "type": "string",
+                          "description": "UTF-8 text content of the file."
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Source files used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Path of the file in the project."
+                        },
+                        "content": {
+                          "type": "string",
+                          "description": "UTF-8 text content of the file."
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Source files used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Path of the file in the project."
+                        },
+                        "content": {
+                          "type": "string",
+                          "description": "UTF-8 text content of the file."
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Source files used to seed the new chat."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A chat response that also reports the usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatWithUsage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
             "content": {
               "application/json": {
                 "schema": {
@@ -4671,6 +4946,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -4691,7 +4967,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -4853,6 +5129,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -4873,7 +5150,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5035,6 +5312,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -5055,7 +5333,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5294,6 +5572,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -5314,7 +5593,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5476,6 +5755,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -5496,7 +5776,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5658,6 +5938,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -5678,7 +5959,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6032,6 +6313,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -6052,7 +6334,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6202,6 +6484,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -6222,7 +6505,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6372,6 +6655,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -6392,7 +6676,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6715,6 +6999,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -6735,7 +7020,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6885,6 +7170,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -6905,7 +7191,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7055,6 +7341,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -7075,7 +7362,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7314,6 +7601,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -7334,7 +7622,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7484,6 +7772,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -7504,7 +7793,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7654,6 +7943,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "The prompt or instruction to send to the model."
                   },
                   "systemPrompt": {
@@ -7674,7 +7964,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7925,32 +8215,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -8190,7 +8459,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8230,32 +8499,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -8495,7 +8743,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8535,32 +8783,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -8800,7 +9027,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8939,32 +9166,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -9204,7 +9410,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9244,32 +9450,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -9509,7 +9694,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9549,32 +9734,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -9814,7 +9978,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9953,32 +10117,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10218,7 +10361,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10258,32 +10401,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10523,7 +10645,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10563,32 +10685,11 @@
                           "connectedIntegrationNames": {
                             "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "enum": [
-                                "Upstash for Redis",
-                                "Upstash Search",
-                                "Neon",
-                                "Supabase",
-                                "Amazon Aurora DSQL",
-                                "Amazon Aurora PostgreSQL",
-                                "Amazon DynamoDB",
-                                "firebase",
-                                "Grok",
-                                "fal",
-                                "Deep Infra",
-                                "Stripe",
-                                "Clerk",
-                                "Convex",
-                                "Shopify",
-                                "Resend email",
-                                "Blob",
-                                "Edge Config",
-                                "Vercel AI Gateway",
-                                "Snowflake",
-                                "Figma"
-                              ]
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10828,7 +10929,7 @@
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation."
+                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -13909,6 +14010,16 @@
               }
             }
           },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Response for status 500",
             "content": {
@@ -14465,7 +14576,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -14490,7 +14601,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -14509,6 +14621,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -14559,9 +14672,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
@@ -14652,7 +14767,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -14677,7 +14792,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -14696,6 +14812,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -14746,9 +14863,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
@@ -14839,7 +14958,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -14864,7 +14983,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -14883,6 +15003,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -14933,9 +15054,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
@@ -15173,7 +15296,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -15198,7 +15321,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -15217,6 +15341,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -15267,9 +15392,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
@@ -15348,7 +15475,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -15373,7 +15500,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -15392,6 +15520,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -15442,9 +15571,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
@@ -15523,7 +15654,7 @@
                           },
                           "token": {
                             "type": "string",
-                            "minLength": 1
+                            "description": "Bearer token for authentication."
                           }
                         },
                         "required": [
@@ -15548,7 +15679,8 @@
                             },
                             "additionalProperties": {
                               "type": "string"
-                            }
+                            },
+                            "description": "Custom headers to include in requests."
                           }
                         },
                         "required": [
@@ -15567,6 +15699,7 @@
                             ]
                           },
                           "config": {
+                            "description": "OAuth configuration discovered or manually set.",
                             "type": "object",
                             "properties": {
                               "authorizationUrl": {
@@ -15617,9 +15750,11 @@
                           },
                           "connected": {
                             "default": false,
+                            "description": "Whether OAuth is currently connected.",
                             "type": "boolean"
                           },
                           "expiresAt": {
+                            "description": "ISO timestamp when the token expires.",
                             "type": "string"
                           }
                         },
