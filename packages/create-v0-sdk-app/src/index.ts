@@ -1,17 +1,25 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
-import { bold, cyan, green, red } from 'picocolors'
+import picocolors from 'picocolors'
 import type { InitialReturnValue } from 'prompts'
 import prompts from 'prompts'
-import { createApp, type ExampleType } from './create-app'
-import type { PackageManager } from './helpers/get-pkg-manager'
-import { getPkgManager } from './helpers/get-pkg-manager'
-import { isFolderEmpty } from './helpers/is-folder-empty'
-import { validateNpmName } from './helpers/validate-pkg'
-import packageJson from '../package.json'
+import { createApp, type ExampleType } from './create-app.js'
+import type { PackageManager } from './helpers/get-pkg-manager.js'
+import { getPkgManager } from './helpers/get-pkg-manager.js'
+import { isFolderEmpty } from './helpers/is-folder-empty.js'
+import { validateNpmName } from './helpers/validate-pkg.js'
+
+const { bold, cyan, green, red } = picocolors
+
+const packageJson = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+) as {
+  name: string
+  version: string
+}
 
 let projectPath: string = ''
 

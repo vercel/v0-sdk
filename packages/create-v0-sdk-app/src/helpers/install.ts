@@ -1,5 +1,5 @@
 import spawn from 'cross-spawn'
-import type { PackageManager } from './get-pkg-manager'
+import type { PackageManager } from './get-pkg-manager.js'
 
 /**
  * Spawn a package manager installation based on user preference.

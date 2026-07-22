@@ -1,4 +1,5 @@
 import { basename, dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import {
   copyFileSync,
   existsSync,
@@ -7,10 +8,13 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { cyan, green, red } from 'picocolors'
-import type { PackageManager } from './helpers/get-pkg-manager'
-import { install } from './helpers/install'
-import { isFolderEmpty } from './helpers/is-folder-empty'
+import degit from 'degit'
+import picocolors from 'picocolors'
+import type { PackageManager } from './helpers/get-pkg-manager.js'
+import { install } from './helpers/install.js'
+import { isFolderEmpty } from './helpers/is-folder-empty.js'
+
+const { cyan, green, red } = picocolors
 
 export type ExampleType = 'basic' | 'simple-v0'
 
@@ -78,7 +82,6 @@ export async function createApp({
   console.log()
 
   try {
-    const { default: degit } = await import('degit')
     await degit(template, { cache: false, force: true }).clone(appPath)
   } catch (error) {
     console.error(`Failed to download example ${red(example)}:`, error)
@@ -184,7 +187,7 @@ function updateTemplatePackage(packageJson: PackageJson, example: ExampleType): 
 }
 
 function installAgentSkill(appPath: string): void {
-  const source = join(__dirname, '..', 'templates', 'v0', 'SKILL.md')
+  const source = join(dirname(fileURLToPath(import.meta.url)), '..', 'templates', 'v0', 'SKILL.md')
   const destination = join(appPath, '.agents', 'skills', 'v0', 'SKILL.md')
 
   mkdirSync(dirname(destination), { recursive: true })

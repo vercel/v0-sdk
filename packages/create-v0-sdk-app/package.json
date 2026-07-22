@@ -23,6 +23,7 @@
     "dist",
     "templates"
   ],
+  "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "bun run clean && tsc",

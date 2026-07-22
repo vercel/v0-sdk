@@ -1,6 +1,8 @@
 import { readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { red } from 'picocolors'
+import picocolors from 'picocolors'
+
+const { red } = picocolors
 
 const VALID_FILES = [
   '.DS_Store',
