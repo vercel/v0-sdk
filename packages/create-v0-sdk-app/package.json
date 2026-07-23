@@ -1,0 +1,55 @@
+{
+  "name": "create-v0-sdk-app",
+  "version": "3.0.0",
+  "description": "Create v0 Platform API v2 SDK apps with one command",
+  "keywords": [
+    "ai",
+    "next.js",
+    "react",
+    "v0",
+    "v0-sdk"
+  ],
+  "license": "Apache-2.0",
+  "author": "Vercel Team <support@vercel.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vercel/v0-sdk.git",
+    "directory": "packages/create-v0-sdk-app"
+  },
+  "bin": {
+    "create-v0-sdk-app": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "bun run clean && tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linting configured for create-v0-sdk-app package'",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "cross-spawn": "^7.0.6",
+    "degit": "^3.6.1",
+    "picocolors": "^1.0.0",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.0",
+    "@types/node": "^22.0.0",
+    "@types/prompts": "^2.4.2",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  }
+}
