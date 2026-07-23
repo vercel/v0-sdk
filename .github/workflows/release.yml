@@ -11,7 +11,7 @@ on:
 jobs:
   # Temporary v2 canary lane: backend automation pushes updated openapi.json and
   # generated SDK changes to v2, then this verifies the checked-in SDK is current
-  # and publishes commit-specific npm canaries for the SDK and app generator.
+  # and publishes commit-specific npm canaries for all three packages.
   canary:
     if: ${{ github.ref == 'refs/heads/v2' }}
     runs-on: ubuntu-latest
@@ -47,22 +47,33 @@ jobs:
         id: version
         run: |
           SDK_NAME=$(cd packages/v0-sdk && bun pm pkg get name | tr -d '"')
+          AI_TOOLS_NAME=$(cd packages/ai-tools && bun pm pkg get name | tr -d '"')
           CREATE_APP_NAME=$(cd packages/create-v0-sdk-app && bun pm pkg get name | tr -d '"')
           SDK_BASE_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
+          AI_TOOLS_BASE_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
           CREATE_APP_BASE_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')
-          if [ "$SDK_BASE_VERSION" != "$CREATE_APP_BASE_VERSION" ]; then
-            echo "::error::${SDK_NAME} and ${CREATE_APP_NAME} versions must match (${SDK_BASE_VERSION} != ${CREATE_APP_BASE_VERSION})."
+          if [ "$SDK_BASE_VERSION" != "$AI_TOOLS_BASE_VERSION" ] || [ "$SDK_BASE_VERSION" != "$CREATE_APP_BASE_VERSION" ]; then
+            echo "::error::${SDK_NAME}, ${AI_TOOLS_NAME}, and ${CREATE_APP_NAME} versions must match (${SDK_BASE_VERSION}, ${AI_TOOLS_BASE_VERSION}, ${CREATE_APP_BASE_VERSION})."
             exit 1
           fi
           SHA=$(git rev-parse --short HEAD)
           VERSION="${SDK_BASE_VERSION}-canary.${SHA}"
           echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
           echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
       - name: Check published v0 SDK canary
         id: sdk-published
         run: |
           if npm view "${{ steps.version.outputs.sdk_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check published AI tools canary
+        id: ai-tools-published
+        run: |
+          if npm view "${{ steps.version.outputs.ai_tools_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
@@ -75,16 +86,15 @@ jobs:
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.sdk-published.outputs.skip != 'true'
+      - name: Set shared canary version
         run: |
-          cd packages/v0-sdk
-          bun pm pkg set "version=${{ steps.version.outputs.version }}"
+          (cd packages/v0-sdk && bun pm pkg set "version=${{ steps.version.outputs.version }}")
+          (cd packages/ai-tools && bun pm pkg set "version=${{ steps.version.outputs.version }}")
+          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${{ steps.version.outputs.version }}")
       - if: steps.sdk-published.outputs.skip != 'true'
         run: npm publish --tag canary --workspace packages/v0-sdk
-      - if: steps.create-app-published.outputs.skip != 'true'
-        run: |
-          cd packages/create-v0-sdk-app
-          bun pm pkg set "version=${{ steps.version.outputs.version }}"
+      - if: steps.ai-tools-published.outputs.skip != 'true'
+        run: npm publish --tag canary --workspace packages/ai-tools
       - if: steps.create-app-published.outputs.skip != 'true'
         run: npm publish --tag canary --workspace packages/create-v0-sdk-app
 
@@ -145,12 +155,16 @@ jobs:
           bun pm version "$BUMP" --no-git-tag-version
           SDK_NAME=$(bun pm pkg get name | tr -d '"')
           VERSION=$(bun pm pkg get version | tr -d '"')
+          cd ../ai-tools
+          AI_TOOLS_NAME=$(bun pm pkg get name | tr -d '"')
+          bun pm pkg set "version=${VERSION}"
           cd ../create-v0-sdk-app
           CREATE_APP_NAME=$(bun pm pkg get name | tr -d '"')
           bun pm pkg set "version=${VERSION}"
           cd ../..
           bun install --lockfile-only
           echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
           echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
       - name: Check published latest
@@ -158,14 +172,18 @@ jobs:
         if: steps.changes.outputs.skip != 'true'
         run: |
           SDK_PUBLISHED=false
+          AI_TOOLS_PUBLISHED=false
           CREATE_APP_PUBLISHED=false
           if npm view "${{ steps.bump.outputs.sdk_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
             SDK_PUBLISHED=true
           fi
+          if npm view "${{ steps.bump.outputs.ai_tools_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            AI_TOOLS_PUBLISHED=true
+          fi
           if npm view "${{ steps.bump.outputs.create_app_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
             CREATE_APP_PUBLISHED=true
           fi
-          if [ "$SDK_PUBLISHED" = true ] && [ "$CREATE_APP_PUBLISHED" = true ]; then
+          if [ "$SDK_PUBLISHED" = true ] && [ "$AI_TOOLS_PUBLISHED" = true ] && [ "$CREATE_APP_PUBLISHED" = true ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
@@ -189,13 +207,14 @@ jobs:
         run: |
           VERSION="${{ steps.bump.outputs.version }}"
           SDK_NAME="${{ steps.bump.outputs.sdk_name }}"
+          AI_TOOLS_NAME="${{ steps.bump.outputs.ai_tools_name }}"
           CREATE_APP_NAME="${{ steps.bump.outputs.create_app_name }}"
           BRANCH="release/v${VERSION}-${GITHUB_RUN_ID}"
 
           git config user.name "v0[bot]"
           git config user.email "v0[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
-          git add packages/v0-sdk/package.json packages/create-v0-sdk-app/package.json bun.lock
+          git add packages/v0-sdk/package.json packages/ai-tools/package.json packages/create-v0-sdk-app/package.json bun.lock
           if git diff --cached --quiet; then
             echo "No release changes to commit."
             exit 0
@@ -207,7 +226,7 @@ jobs:
             --base main \
             --head "$BRANCH" \
             --title "Release v${VERSION}" \
-            --body "Bumps ${SDK_NAME} and ${CREATE_APP_NAME} to v${VERSION}. Merge this PR to publish them from main."
+            --body "Bumps ${SDK_NAME}, ${AI_TOOLS_NAME}, and ${CREATE_APP_NAME} to v${VERSION}. Merge this PR to publish them from main."
 
   # Stable publish lane: when a release PR is manually merged to main, the bumped
   # package versions are unpublished, so this publishes them to npm as latest and
@@ -235,15 +254,18 @@ jobs:
         id: version
         run: |
           SDK_NAME=$(cd packages/v0-sdk && bun pm pkg get name | tr -d '"')
+          AI_TOOLS_NAME=$(cd packages/ai-tools && bun pm pkg get name | tr -d '"')
           CREATE_APP_NAME=$(cd packages/create-v0-sdk-app && bun pm pkg get name | tr -d '"')
           SDK_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
+          AI_TOOLS_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
           CREATE_APP_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')
-          if [ "$SDK_VERSION" != "$CREATE_APP_VERSION" ]; then
-            echo "::error::${SDK_NAME} and ${CREATE_APP_NAME} versions must match (${SDK_VERSION} != ${CREATE_APP_VERSION})."
+          if [ "$SDK_VERSION" != "$AI_TOOLS_VERSION" ] || [ "$SDK_VERSION" != "$CREATE_APP_VERSION" ]; then
+            echo "::error::${SDK_NAME}, ${AI_TOOLS_NAME}, and ${CREATE_APP_NAME} versions must match (${SDK_VERSION}, ${AI_TOOLS_VERSION}, ${CREATE_APP_VERSION})."
             exit 1
           fi
           COMMIT=$(git rev-parse HEAD)
           echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
           echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${SDK_VERSION}" >> "$GITHUB_OUTPUT"
           echo "commit=${COMMIT}" >> "$GITHUB_OUTPUT"
@@ -257,22 +279,29 @@ jobs:
         if: steps.version.outputs.prerelease != 'true'
         run: |
           SDK_SKIP=false
+          AI_TOOLS_SKIP=false
           CREATE_APP_SKIP=false
           if npm view "${{ steps.version.outputs.sdk_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
             SDK_SKIP=true
+          fi
+          if npm view "${{ steps.version.outputs.ai_tools_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            AI_TOOLS_SKIP=true
           fi
           if npm view "${{ steps.version.outputs.create_app_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
             CREATE_APP_SKIP=true
           fi
           echo "sdk_skip=${SDK_SKIP}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_skip=${AI_TOOLS_SKIP}" >> "$GITHUB_OUTPUT"
           echo "create_app_skip=${CREATE_APP_SKIP}" >> "$GITHUB_OUTPUT"
-          if [ "$SDK_SKIP" = true ] && [ "$CREATE_APP_SKIP" = true ]; then
+          if [ "$SDK_SKIP" = true ] && [ "$AI_TOOLS_SKIP" = true ] && [ "$CREATE_APP_SKIP" = true ]; then
             echo "all_skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "all_skip=false" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.sdk_skip != 'true'
         run: npm publish --tag latest --workspace packages/v0-sdk
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.ai_tools_skip != 'true'
+        run: npm publish --tag latest --workspace packages/ai-tools
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.create_app_skip != 'true'
         run: npm publish --tag latest --workspace packages/create-v0-sdk-app
       - name: Check GitHub release
