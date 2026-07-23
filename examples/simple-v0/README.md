@@ -152,7 +152,7 @@ bun run format:check
 
 ## Learn More
 
-- [v0 Platform API Documentation](https://v0.app/docs/api/platform)
+- [v0 Platform API Documentation](https://v0.app/docs/api/v2)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Radix UI](https://www.radix-ui.com)
