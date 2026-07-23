@@ -132,9 +132,7 @@ export async function POST(request: NextRequest) {
             return
           }
 
-          sendEvent('done', {
-            ...(latestChat ? { chat: normalizeChat(latestChat) } : {}),
-          })
+          sendEvent('done', latestChat ? { chat: normalizeChat(latestChat) } : {})
         } catch (error) {
           if (!abortController.signal.aborted) {
             sendEvent('error', {
