@@ -598,7 +598,8 @@ const messagesResolveInputSchema = z.object({
           .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
-          ),
+          )
+          .optional(),
         connectedMcpPresetNames: z
           .array(
             z.enum([
@@ -618,11 +619,16 @@ const messagesResolveInputSchema = z.object({
           )
           .describe(
             'Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.',
-          ),
-        appliedScripts: z.array(z.string()).describe('Names of scripts that were applied.'),
+          )
+          .optional(),
+        appliedScripts: z
+          .array(z.string())
+          .describe('Names of scripts that were applied.')
+          .optional(),
         addedEnvVars: z
           .array(z.string())
-          .describe('Names of environment variables that were added.'),
+          .describe('Names of environment variables that were added.')
+          .optional(),
       }),
       z.object({
         type: z.enum(['plan-exit-response']),
@@ -697,10 +703,12 @@ const messagesResolveInputSchema = z.object({
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
         .describe(
           'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        )
+        .optional(),
       imageGenerations: z
         .boolean()
-        .describe('Enables image generations to generate up to 5 images per version.'),
+        .describe('Enables image generations to generate up to 5 images per version.')
+        .optional(),
     })
     .describe('Overrides for the model behavior.')
     .optional(),
@@ -716,7 +724,8 @@ const messagesResolveAsyncInputSchema = z.object({
           .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
-          ),
+          )
+          .optional(),
         connectedMcpPresetNames: z
           .array(
             z.enum([
@@ -736,11 +745,16 @@ const messagesResolveAsyncInputSchema = z.object({
           )
           .describe(
             'Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.',
-          ),
-        appliedScripts: z.array(z.string()).describe('Names of scripts that were applied.'),
+          )
+          .optional(),
+        appliedScripts: z
+          .array(z.string())
+          .describe('Names of scripts that were applied.')
+          .optional(),
         addedEnvVars: z
           .array(z.string())
-          .describe('Names of environment variables that were added.'),
+          .describe('Names of environment variables that were added.')
+          .optional(),
       }),
       z.object({
         type: z.enum(['plan-exit-response']),
@@ -815,10 +829,12 @@ const messagesResolveAsyncInputSchema = z.object({
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
         .describe(
           'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        )
+        .optional(),
       imageGenerations: z
         .boolean()
-        .describe('Enables image generations to generate up to 5 images per version.'),
+        .describe('Enables image generations to generate up to 5 images per version.')
+        .optional(),
     })
     .describe('Overrides for the model behavior.')
     .optional(),
@@ -834,7 +850,8 @@ const messagesResolveStreamInputSchema = z.object({
           .array(z.string())
           .describe(
             'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
-          ),
+          )
+          .optional(),
         connectedMcpPresetNames: z
           .array(
             z.enum([
@@ -854,11 +871,16 @@ const messagesResolveStreamInputSchema = z.object({
           )
           .describe(
             'Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.',
-          ),
-        appliedScripts: z.array(z.string()).describe('Names of scripts that were applied.'),
+          )
+          .optional(),
+        appliedScripts: z
+          .array(z.string())
+          .describe('Names of scripts that were applied.')
+          .optional(),
         addedEnvVars: z
           .array(z.string())
-          .describe('Names of environment variables that were added.'),
+          .describe('Names of environment variables that were added.')
+          .optional(),
       }),
       z.object({
         type: z.enum(['plan-exit-response']),
@@ -933,10 +955,12 @@ const messagesResolveStreamInputSchema = z.object({
         .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
         .describe(
           'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        )
+        .optional(),
       imageGenerations: z
         .boolean()
-        .describe('Enables image generations to generate up to 5 images per version.'),
+        .describe('Enables image generations to generate up to 5 images per version.')
+        .optional(),
     })
     .describe('Overrides for the model behavior.')
     .optional(),
