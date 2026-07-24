@@ -1,7 +1,7 @@
 {
   "name": "@v0-sdk/react",
   "version": "3.0.0",
-  "description": "React hooks for the v0 Platform API",
+  "description": "React hooks and AI SDK transport for the v0 Platform API",
   "keywords": [
     "ai",
     "react",
@@ -42,11 +42,13 @@
     "v0": "workspace:*"
   },
   "devDependencies": {
+    "@ai-sdk/react": "^4.0.34",
     "@arethetypeswrong/core": "^0.18.2",
     "@tsconfig/strictest": "^2.0.8",
     "@types/bun": "latest",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",
+    "ai": "^7.0.31",
     "publint": "^0.3.18",
     "react": "19.2.5",
     "react-test-renderer": "19.2.5",
@@ -55,6 +57,7 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
+    "ai": "^7.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "swr": "^2.0.0"
   },

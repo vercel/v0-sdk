@@ -1,3 +1,4 @@
+export * from './chat'
 export * from './generated/hooks'
 export { createV0Key } from './hooks'
 export type {

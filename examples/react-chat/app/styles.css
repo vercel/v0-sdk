@@ -1,0 +1,124 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color: #171717;
+  background: #f6f6f3;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.shell {
+  width: min(760px, calc(100% - 32px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+header,
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+.eyebrow,
+.actions span {
+  color: #666;
+  font-size: 13px;
+}
+
+.messages {
+  display: grid;
+  gap: 12px;
+  min-height: 55vh;
+  padding: 32px 0;
+}
+
+.empty {
+  align-self: center;
+  color: #777;
+  text-align: center;
+}
+
+.message {
+  max-width: 90%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+}
+
+.message.user {
+  justify-self: end;
+  background: #ececff;
+}
+
+.message strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.text {
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+pre {
+  overflow: auto;
+  margin: 8px 0 0;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f3f3f3;
+  white-space: pre-wrap;
+}
+
+form {
+  position: sticky;
+  bottom: 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 0;
+  outline: none;
+}
+
+button {
+  padding: 7px 14px;
+  border: 1px solid #aaa;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.error {
+  color: #b42318;
+}

@@ -34,4 +34,5 @@ jobs:
       - run: bun run generate
       - run: bun run build
       - run: bun run typecheck
+      - run: bun --filter react-chat build
       - run: bun run test
