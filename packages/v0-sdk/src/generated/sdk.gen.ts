@@ -1033,19 +1033,19 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -1116,11 +1116,11 @@ export class Messages extends HeyApiClient {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
@@ -1154,19 +1154,19 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -1237,11 +1237,11 @@ export class Messages extends HeyApiClient {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
@@ -1274,19 +1274,19 @@ export class Messages extends HeyApiClient {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -1357,11 +1357,11 @@ export class Messages extends HeyApiClient {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
