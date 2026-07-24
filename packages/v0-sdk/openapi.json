@@ -408,7 +408,7 @@
                 "description": "Discriminator."
               },
               "delta": {
-                "description": "jsondiffpatch delta to apply against the running `parts` tree. To reconstruct streaming text, apply each delta in order using the jsondiffpatch library."
+                "description": "jsondiffpatch delta to apply against the running public `Message.parts` array. Apply each delta in order to reconstruct the complete current parts snapshot."
               }
             },
             "required": [
@@ -2774,7 +2774,7 @@
                 "description": "Discriminator."
               },
               "delta": {
-                "description": "jsondiffpatch delta to apply against the running `parts` tree. To reconstruct streaming text, apply each delta in order using the jsondiffpatch library."
+                "description": "jsondiffpatch delta to apply against the running public `Message.parts` array. Apply each delta in order to reconstruct the complete current parts snapshot."
               }
             },
             "required": [
@@ -8213,8 +8213,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -8223,8 +8223,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8245,8 +8245,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8254,8 +8254,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8264,11 +8264,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -8467,10 +8463,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -8497,8 +8489,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -8507,8 +8499,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8529,8 +8521,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8538,8 +8530,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8548,11 +8540,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -8751,10 +8739,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -8781,8 +8765,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -8791,8 +8775,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8813,8 +8797,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8822,8 +8806,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -8832,11 +8816,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -9035,10 +9015,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -9164,8 +9140,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -9174,8 +9150,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9196,8 +9172,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9205,8 +9181,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9215,11 +9191,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -9418,10 +9390,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -9448,8 +9416,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -9458,8 +9426,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9480,8 +9448,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9489,8 +9457,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9499,11 +9467,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -9702,10 +9666,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -9732,8 +9692,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -9742,8 +9702,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9764,8 +9724,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9773,8 +9733,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -9783,11 +9743,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -9986,10 +9942,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -10115,8 +10067,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -10125,8 +10077,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10147,8 +10099,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10156,8 +10108,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10166,11 +10118,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -10369,10 +10317,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -10399,8 +10343,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -10409,8 +10353,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10431,8 +10375,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10440,8 +10384,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10450,11 +10394,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -10653,10 +10593,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
@@ -10683,8 +10619,8 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
@@ -10693,8 +10629,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10715,8 +10651,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10724,8 +10660,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -10734,11 +10670,7 @@
                           }
                         },
                         "required": [
-                          "type",
-                          "connectedIntegrationNames",
-                          "connectedMcpPresetNames",
-                          "appliedScripts",
-                          "addedEnvVars"
+                          "type"
                         ],
                         "additionalProperties": false,
                         "description": "Resolves an integration installation task. The agent asked the user to install integrations, MCP presets, or set environment variables. Send this after provisioning the integration on Vercel."
@@ -10937,10 +10869,6 @@
                         "description": "Enables image generations to generate up to 5 images per version."
                       }
                     },
-                    "required": [
-                      "modelId",
-                      "imageGenerations"
-                    ],
                     "additionalProperties": false
                   }
                 },
