@@ -1,5 +1,11 @@
 # @v0-sdk/react
 
+## 0.5.1
+
+### Patch Changes
+
+- 7b759cf: Fix void element rendering error for elements like `hr` that have no children
+
 ## 0.5.0
 
 ### Minor Changes

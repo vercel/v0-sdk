@@ -1,5 +1,12 @@
 # v0-sdk
 
+## 0.16.5
+
+### Patch Changes
+
+- edd2c11: Add OAuth MCP to SDK
+- cfd61a7: Add resolve task
+
 ## 0.16.4
 
 ### Patch Changes

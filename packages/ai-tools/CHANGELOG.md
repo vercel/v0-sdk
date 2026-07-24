@@ -1,5 +1,13 @@
 # @v0-sdk/ai-tools
 
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies [edd2c11]
+- Updated dependencies [cfd61a7]
+  - v0-sdk@0.16.5
+
 ## 0.3.8
 
 ### Patch Changes
