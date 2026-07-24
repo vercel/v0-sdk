@@ -3379,8 +3379,8 @@
                             "enum": ["confirmed-steps"]
                           },
                           "connectedIntegrationNames": {
-                            "default": [],
                             "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -3388,8 +3388,8 @@
                             }
                           },
                           "connectedMcpPresetNames": {
-                            "default": [],
                             "description": "Names of MCP presets that were connected (e.g. \"Linear\", \"Sentry\"). Pass an empty array to skip.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -3410,8 +3410,8 @@
                             }
                           },
                           "appliedScripts": {
-                            "default": [],
                             "description": "Names of scripts that were applied.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -3419,8 +3419,8 @@
                             }
                           },
                           "addedEnvVars": {
-                            "default": [],
                             "description": "Names of environment variables that were added.",
+                            "default": [],
                             "type": "array",
                             "items": {
                               "type": "string",
