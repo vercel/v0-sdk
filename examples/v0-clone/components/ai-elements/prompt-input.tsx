@@ -103,6 +103,18 @@ export const clearPromptFromStorage = () => {
   }
 }
 
+const sanitizeImageSource = (value: string): string => {
+  if (!value) return ''
+
+  // Allow only image data URLs or blob URLs for previews.
+  if (value.startsWith('blob:')) return value
+  if (/^data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=]+$/.test(value)) {
+    return value
+  }
+
+  return ''
+}
+
 export const createImageAttachmentFromStored = (
   stored: StoredPromptData['attachments'][0],
 ): ImageAttachment => {
@@ -111,8 +123,8 @@ export const createImageAttachmentFromStored = (
   return {
     id: stored.id,
     file: mockFile,
-    dataUrl: stored.dataUrl,
-    preview: stored.preview,
+    dataUrl: sanitizeImageSource(stored.dataUrl),
+    preview: sanitizeImageSource(stored.preview),
   }
 }
 
