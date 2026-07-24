@@ -1,4 +1,8 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["packages/v0-sdk/openapi.json", "packages/v0-sdk/src/generated/**"]
+  "ignorePatterns": [
+    "packages/react/src/generated/**",
+    "packages/v0-sdk/openapi.json",
+    "packages/v0-sdk/src/generated/**"
+  ]
 }
