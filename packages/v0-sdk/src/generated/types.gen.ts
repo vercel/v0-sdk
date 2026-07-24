@@ -238,7 +238,7 @@ export type ChatStreamEvent = {
      */
     object: 'message.parts.chunk';
     /**
-     * jsondiffpatch delta to apply against the running `parts` tree. To reconstruct streaming text, apply each delta in order using the jsondiffpatch library.
+     * jsondiffpatch delta to apply against the running public `Message.parts` array. Apply each delta in order to reconstruct the complete current parts snapshot.
      */
     delta: unknown;
 } | {
@@ -1456,7 +1456,7 @@ export type MessageStreamEvent = {
      */
     object: 'message.parts.chunk';
     /**
-     * jsondiffpatch delta to apply against the running `parts` tree. To reconstruct streaming text, apply each delta in order using the jsondiffpatch library.
+     * jsondiffpatch delta to apply against the running public `Message.parts` array. Apply each delta in order to reconstruct the complete current parts snapshot.
      */
     delta: unknown;
 } | {
@@ -2900,19 +2900,19 @@ export type MessagesResolveData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -2986,11 +2986,11 @@ export type MessagesResolveData = {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     };
     path: {
@@ -3051,19 +3051,19 @@ export type MessagesResolveStreamData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -3137,11 +3137,11 @@ export type MessagesResolveStreamData = {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     };
     path: {
@@ -3202,19 +3202,19 @@ export type MessagesResolveAsyncData = {
             /**
              * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
              */
-            connectedIntegrationNames: Array<string>;
+            connectedIntegrationNames?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
-            appliedScripts: Array<string>;
+            appliedScripts?: Array<string>;
             /**
              * Names of environment variables that were added.
              */
-            addedEnvVars: Array<string>;
+            addedEnvVars?: Array<string>;
         } | {
             type: 'plan-exit-response';
             /**
@@ -3288,11 +3288,11 @@ export type MessagesResolveAsyncData = {
             /**
              * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
-            imageGenerations: boolean;
+            imageGenerations?: boolean;
         };
     };
     path: {
