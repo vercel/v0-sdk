@@ -1,0 +1,27 @@
+{
+  "name": "react-chat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@ai-sdk/react": "^4.0.34",
+    "@v0-sdk/react": "workspace:*",
+    "ai": "^7.0.31",
+    "next": "16.2.4",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "swr": "^2.3.6",
+    "v0": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import { act, type ReactTestRenderer } from 'react-test-renderer'
 
+import { V0ResponseError } from '../src'
 import {
   createV0Key,
   useChat,
@@ -9,8 +10,8 @@ import {
   useMessagesInfinite,
   useSendMessage,
   useSendMessageBlocking,
-  V0ResponseError,
-} from '../src'
+  useStopMessage,
+} from '../src/swr'
 import { flush, message, renderV0Hook } from './helpers'
 
 describe('v0 React hooks', () => {
@@ -163,6 +164,32 @@ describe('v0 React hooks', () => {
     expect(result).toBe(response)
     expect(result.bodyUsed).toBe(false)
     expect(await result.text()).toContain('data:')
+  })
+
+  test('stops server-side generation through its full URL', async () => {
+    let request: Request | undefined
+    let state: ReturnType<typeof useStopMessage> | undefined
+
+    function Fixture() {
+      state = useStopMessage('http://localhost/api/v0/chats/chat_1/messages/assistant_1/stop', {
+        request: {
+          fetch: async (input) => {
+            request = input instanceof Request ? input : new Request(input)
+            return Response.json({ success: true })
+          },
+        },
+      })
+      return null
+    }
+
+    renderer = await renderV0Hook(<Fixture />)
+    await act(async () => {
+      await state!.trigger()
+    })
+
+    expect(request?.method).toBe('POST')
+    expect(request?.url).toBe('http://localhost/api/v0/chats/chat_1/messages/assistant_1/stop')
+    expect(await request?.clone().text()).toBe('')
   })
 
   test('downloads ZIP responses imperatively as Blob values', async () => {
