@@ -80,7 +80,7 @@ jobs:
             alex-grover
             rickeyswuave
           body: |
-            Fetches the latest OpenAPI document from the production API and regenerates the TypeScript SDK and AI tools.
+            Fetches the latest OpenAPI document from the production API and regenerates the TypeScript SDK, AI tools, and React hooks.
 
             Source: https://v0.app/api/v2/openapi/json
 
