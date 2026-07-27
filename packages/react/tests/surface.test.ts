@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import openapi from '../../v0-sdk/openapi.json'
 
-import { V0_REACT_OPERATION_HOOKS } from '../src/generated/hooks'
+import { V0_REACT_OPERATION_HOOKS } from '../src/generated/swr'
 
 const methods = new Set(['get', 'post', 'put', 'patch', 'delete'])
 

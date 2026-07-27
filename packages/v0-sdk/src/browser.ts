@@ -12,3 +12,4 @@ export type {
 } from './generated/client'
 export type * from './generated/types.gen'
 export * from './generated/transformers.gen'
+export * from './stream'

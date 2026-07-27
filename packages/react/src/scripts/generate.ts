@@ -84,7 +84,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../../..')
 const openApiPath = path.join(repoRoot, 'packages/v0-sdk/openapi.json')
 const transformersPath = path.join(repoRoot, 'packages/v0-sdk/src/generated/transformers.gen.ts')
-const outputPath = path.join(repoRoot, 'packages/react/src/generated/hooks.ts')
+const outputPath = path.join(repoRoot, 'packages/react/src/generated/swr.ts')
 
 async function main() {
   const spec = JSON.parse(await readFile(openApiPath, 'utf8')) as OpenApiDocument
@@ -98,7 +98,7 @@ async function main() {
   await mkdir(path.dirname(outputPath), { recursive: true })
   await writeFile(outputPath, render(operations))
   format(outputPath)
-  console.log(`Generated ${operations.length} React hooks from packages/v0-sdk/openapi.json`)
+  console.log(`Generated ${operations.length} SWR hooks from packages/v0-sdk/openapi.json`)
 }
 
 function collectOperations(spec: OpenApiDocument, availableTransformers: Set<string>): Operation[] {
@@ -206,7 +206,7 @@ function render(operations: Operation[]): string {
     .map((name) => `  ${name},`)
     .join(
       '\n',
-    )}\n} from 'v0/browser'\n\nimport type { V0Operation } from '../request'\nimport { useV0CursorQuery, useV0Mutation, useV0Query } from '../hooks'\nimport type {\n  V0InfiniteConfiguration,\n  V0MutationConfiguration,\n  V0QueryConfiguration,\n  V0Url,\n} from '../hooks'\n\nexport const V0_REACT_OPERATION_HOOKS = {\n${operationMap}\n} as const\n\n${operations.map(renderOperation).join('\n')}`
+    )}\n} from 'v0/browser'\n\nimport type { V0Operation } from '../request'\nimport { useV0CursorQuery, useV0Mutation, useV0Query } from '../swr-runtime'\nimport type {\n  V0InfiniteConfiguration,\n  V0MutationConfiguration,\n  V0QueryConfiguration,\n  V0Url,\n} from '../swr-runtime'\n\nexport const V0_REACT_OPERATION_HOOKS = {\n${operationMap}\n} as const\n\n${operations.map(renderOperation).join('\n')}`
 }
 
 function renderOperation(operation: Operation): string {
