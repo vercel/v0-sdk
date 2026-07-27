@@ -16,7 +16,7 @@ import { isFolderEmpty } from './helpers/is-folder-empty.js'
 
 const { cyan, green, red } = picocolors
 
-export type ExampleType = 'basic' | 'simple-v0'
+export type ExampleType = 'basic' | 'react' | 'simple-v0'
 
 type PackageJson = {
   module?: string
@@ -30,6 +30,7 @@ type PackageJson = {
 const packageVersions: Record<string, string> = {
   v0: 'canary',
   '@v0-sdk/ai-tools': 'canary',
+  '@v0-sdk/react': 'canary',
 }
 
 const scriptDescriptions: Record<string, string> = {
@@ -54,6 +55,12 @@ const basicDevDependencies: Record<string, string> = {
   typescript: '^6.0.3',
 }
 
+const templateDirectories: Record<ExampleType, string> = {
+  basic: 'basic',
+  react: 'react-chat',
+  'simple-v0': 'simple-v0',
+}
+
 const lockfiles = ['bun.lock', 'bun.lockb', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']
 
 export async function createApp({
@@ -76,7 +83,7 @@ export async function createApp({
   console.log(`Creating a new v0 SDK app in ${green(appPath)}.`)
   console.log()
 
-  const template = `vercel/v0-sdk/examples/${example}#v2`
+  const template = `vercel/v0-sdk/examples/${templateDirectories[example]}#v2`
 
   console.log(`Downloading template ${cyan(template)}. This might take a moment.`)
   console.log()

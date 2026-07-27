@@ -122,13 +122,13 @@ import type {
 } from 'v0/browser'
 
 import type { V0Operation } from '../request'
-import { useV0CursorQuery, useV0Mutation, useV0Query } from '../hooks'
+import { useV0CursorQuery, useV0Mutation, useV0Query } from '../swr-runtime'
 import type {
   V0InfiniteConfiguration,
   V0MutationConfiguration,
   V0QueryConfiguration,
   V0Url,
-} from '../hooks'
+} from '../swr-runtime'
 
 export const V0_REACT_OPERATION_HOOKS = {
   'chats.create': 'useCreateChatBlocking',
