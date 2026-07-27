@@ -1,13 +1,8 @@
 import { useChat } from '@ai-sdk/react'
 import type { Message } from 'v0/browser'
 
-import {
-  shouldResumeV0Chat,
-  toV0UIMessages,
-  useStopMessage,
-  V0Transport,
-  type V0UIMessage,
-} from '../src'
+import { shouldResumeV0Chat, toV0UIMessages, V0Transport, type V0UIMessage } from '../src'
+import { useStopMessage } from '../src/swr'
 
 // Compile-only proof that consumers use the real AI SDK hook directly.
 export function useV0IntegrationFixture(history: Message[]) {

@@ -1,7 +1,13 @@
 import type { ChatTransport, UIMessageChunk } from 'ai'
-import { readV0Stream, type Message, type V0StreamFinal, type V0StreamUpdate } from 'v0/browser'
+import {
+  readV0Stream,
+  type ChatsCreateStreamData,
+  type Message,
+  type MessagesSendStreamData,
+  type V0StreamFinal,
+  type V0StreamUpdate,
+} from 'v0/browser'
 
-import type { CreateChatInput, SendMessageInput } from '../generated/hooks'
 import { requestV0Operation, type V0Operation, type V0RequestOptions } from '../request'
 import { v0StreamToUIMessageStream } from './chunks'
 import { getResumableV0Assistant } from './composition'
@@ -20,8 +26,8 @@ export interface V0TransportOptions {
   chatId?: string
   /** Newest-first SDK history, used to seed a resumed assistant. */
   messages?: readonly Message[]
-  create?: Omit<CreateChatInput, 'message' | 'attachments'>
-  send?: Omit<SendMessageInput, 'message' | 'attachments'>
+  create?: Omit<ChatsCreateStreamData['body'], 'message' | 'attachments'>
+  send?: Omit<MessagesSendStreamData['body'], 'message' | 'attachments'>
   request?: V0RequestOptions
   onChatCreated?: (chatId: string) => void
 }
@@ -85,13 +91,13 @@ export class V0Transport implements ChatTransport<V0UIMessage> {
           ...extraBody,
           message,
           ...(attachments.length ? { attachments } : {}),
-        } satisfies SendMessageInput)
+        } satisfies MessagesSendStreamData['body'])
       : ({
           ...this.options.create,
           ...extraBody,
           message,
           ...(attachments.length ? { attachments } : {}),
-        } satisfies CreateChatInput)
+        } satisfies ChatsCreateStreamData['body'])
 
     const response = await requestV0Operation<Response>(url, streamOperation, body, request)
 

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import { act, type ReactTestRenderer } from 'react-test-renderer'
 
+import { V0ResponseError } from '../src'
 import {
   createV0Key,
   useChat,
@@ -10,8 +11,7 @@ import {
   useSendMessage,
   useSendMessageBlocking,
   useStopMessage,
-  V0ResponseError,
-} from '../src'
+} from '../src/swr'
 import { flush, message, renderV0Hook } from './helpers'
 
 describe('v0 React hooks', () => {

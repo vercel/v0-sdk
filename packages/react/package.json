@@ -24,10 +24,21 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
+  "typesVersions": {
+    "*": {
+      "swr": [
+        "dist/swr.d.mts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
+    },
+    "./swr": {
+      "import": "./dist/swr.mjs",
+      "require": "./dist/swr.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -60,6 +71,11 @@
     "ai": "^7.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "swr": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "swr": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=18"

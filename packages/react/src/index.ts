@@ -1,12 +1,4 @@
 export * from './chat'
-export * from './generated/hooks'
-export { createV0Key } from './hooks'
-export type {
-  V0InfiniteConfiguration,
-  V0MutationConfiguration,
-  V0QueryConfiguration,
-  V0Url,
-} from './hooks'
 export { V0ResponseError } from './request'
 export type {
   V0Fetch,

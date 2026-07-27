@@ -45,6 +45,10 @@ const examples: { name: ExampleType; description: string }[] = [
       'Next.js app for generating, previewing, managing, and deploying v0 chats (Recommended)',
   },
   {
+    name: 'react',
+    description: 'Minimal Next.js chat using @v0-sdk/react and AI SDK useChat',
+  },
+  {
     name: 'basic',
     description: 'Minimal TypeScript scripts for sync and streaming v2 chat creation',
   },

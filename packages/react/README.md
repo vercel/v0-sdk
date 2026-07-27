@@ -4,8 +4,16 @@ React hooks for building apps with the v0 API.
 
 ## Install
 
+For the AI SDK transport:
+
 ```sh
-npm install @v0-sdk/react react swr ai @ai-sdk/react
+npm install @v0-sdk/react react ai @ai-sdk/react
+```
+
+Add SWR when using the generated API hooks:
+
+```sh
+npm install @v0-sdk/react react swr
 ```
 
 ## Getting started
@@ -31,7 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ cha
 The client can call that route with the corresponding hook:
 
 ```tsx
-import { useChat, useMessages, useSendMessage } from '@v0-sdk/react'
+import { useChat, useMessages, useSendMessage } from '@v0-sdk/react/swr'
 
 export function Chat({ chatId }: { chatId: string }) {
   const chat = useChat(`/api/v0/chats/${chatId}`)
@@ -113,6 +121,6 @@ export function AIChat({ history }: { history: MessagesListResponse['messages'] 
 }
 ```
 
-`toV0UIMessages` maps persisted newest-first v0 history to chronological AI SDK messages. Text, reasoning, files, tools, rich v0 data parts, metadata, and resumable state are preserved. To stop generation, call `useStopMessage` for the active assistant on the server, then call the AI SDK's `chat.stop()` locally.
+`toV0UIMessages` maps persisted newest-first v0 history to chronological AI SDK messages. Text, reasoning, files, tools, rich v0 data parts, metadata, and resumable state are preserved. To stop generation, import `useStopMessage` from `@v0-sdk/react/swr`, call it for the active assistant on the server, then call the AI SDK's `chat.stop()` locally.
 
 See [`examples/react-chat`](../../examples/react-chat) for a complete one-page app and authenticated proxy routes.

@@ -4,12 +4,11 @@ import { useChat as useAIChat } from '@ai-sdk/react'
 import {
   shouldResumeV0Chat,
   toV0UIMessages,
-  useMessages,
-  useStopMessage,
   V0Transport,
   type MessagesListResponse,
   type V0UIMessage,
 } from '@v0-sdk/react'
+import { useMessages, useStopMessage } from '@v0-sdk/react/swr'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 export function ChatPage({ chatId }: { chatId?: string }) {
