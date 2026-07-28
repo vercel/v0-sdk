@@ -1,14 +1,14 @@
 'use client'
 
-import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
-import { readV0Stream } from 'v0'
+import { useChat } from '@ai-sdk/react'
+import { V0Transport, type V0UIMessage } from '@v0-sdk/react'
 import {
-  createChatFromFiles,
-  createChatFromRepo,
-  createChatFromZip,
-  type CreateChatResult,
-} from '@/app/actions'
+  useCreateChatFromFiles,
+  useCreateChatFromRepo,
+  useCreateChatFromZip,
+} from '@v0-sdk/react/swr'
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { PromptBox } from '@/components/prompt-box'
 import { PromptInputButton } from '@/components/ai-elements/prompt-input'
 import { ConversationView } from '@/components/chat/conversation-view'
@@ -38,71 +38,75 @@ export function HomeClient() {
   const { settings, updateSettings } = useSettings()
   const filesInputRef = useRef<HTMLInputElement>(null)
   const zipInputRef = useRef<HTMLInputElement>(null)
-  const [isCreating, setIsCreating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const stopRef = useRef<() => void>(() => undefined)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [repoDialogOpen, setRepoDialogOpen] = useState(false)
-  const [pendingUserMessage, setPendingUserMessage] = useState<string | null>(null)
+  const createFromFiles = useCreateChatFromFiles('/api/chats/import/files')
+  const createFromZip = useCreateChatFromZip('/api/chats/import/zip')
+  const createFromRepo = useCreateChatFromRepo('/api/chats/import/repo')
+  const transport = useMemo(
+    () =>
+      new V0Transport({
+        urls: {
+          create: '/api/chats',
+          send: (id) => `/api/chats/${encodeURIComponent(id)}/messages`,
+          resume: (id) => `/api/chats/${encodeURIComponent(id)}/resume`,
+        },
+        onChatCreated: (chatId) => {
+          stopRef.current()
+          router.push(`/chats/${chatId}`)
+          router.refresh()
+        },
+      }),
+    [router],
+  )
+  const {
+    clearError,
+    error: chatError,
+    messages,
+    sendMessage,
+    status,
+    stop,
+  } = useChat<V0UIMessage>({ transport })
+  const chatIsCreating = status === 'submitted' || status === 'streaming'
+  const isImporting =
+    createFromFiles.isMutating || createFromZip.isMutating || createFromRepo.isMutating
+  const isCreating = chatIsCreating || isImporting
+  const error = actionError ?? chatError?.message
 
-  const openChat = (chatId: string) => {
-    router.push(`/chats/${chatId}`)
-  }
+  useEffect(() => {
+    stopRef.current = stop
+  }, [stop])
 
   const createFromPrompt = async (message: string) => {
-    setError(null)
-    setIsCreating(true)
-    setPendingUserMessage(message)
+    setActionError(null)
+    clearError()
 
-    try {
-      const controller = new AbortController()
-      const result = readV0Stream(
-        fetch('/api/chats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-          body: JSON.stringify({
-            message,
-            modelConfiguration: {
-              modelId: settings.model,
-              imageGenerations: false,
-            },
-          }),
-        }),
-      )
-
-      for await (const update of result.stream) {
-        if (!update.chat?.id) continue
-
-        controller.abort()
-        openChat(update.chat.id)
-        return
-      }
-
-      throw new Error('Chat creation did not return a chat.')
-    } catch (error) {
-      setError(errorMessage(error))
-      setPendingUserMessage(null)
-      setIsCreating(false)
-    }
+    await sendMessage(
+      { text: message },
+      {
+        body: {
+          modelConfiguration: {
+            modelId: settings.model,
+            imageGenerations: false,
+          },
+        },
+      },
+    )
   }
 
-  const createImportedChat = async (create: () => Promise<CreateChatResult>) => {
-    setError(null)
-    setIsCreating(true)
+  const createImportedChat = async (create: () => Promise<{ chat: { id: string } }>) => {
+    setActionError(null)
+    clearError()
 
     try {
       const result = await create()
-      if ('error' in result) {
-        setError(result.error)
-        return false
-      }
-
-      openChat(result.chatId)
+      router.push(`/chats/${result.chat.id}`)
+      router.refresh()
       return true
     } catch (error) {
-      setError(errorMessage(error))
+      setActionError(errorMessage(error))
       return false
-    } finally {
-      setIsCreating(false)
     }
   }
 
@@ -112,14 +116,15 @@ export function HomeClient() {
     if (selectedFiles.length === 0) return
 
     await createImportedChat(async () =>
-      createChatFromFiles(
-        await Promise.all(
+      createFromFiles.trigger({
+        files: await Promise.all(
           selectedFiles.map(async (file) => ({
             name: file.webkitRelativePath || file.name,
             content: await file.text(),
           })),
         ),
-      ),
+        privacy: 'private',
+      }),
     )
   }
 
@@ -128,7 +133,12 @@ export function HomeClient() {
     event.target.value = ''
     if (!file) return
 
-    await createImportedChat(async () => createChatFromZip(await readFileAsDataUrl(file)))
+    await createImportedChat(async () =>
+      createFromZip.trigger({
+        privacy: 'private',
+        url: await readFileAsDataUrl(file),
+      }),
+    )
   }
 
   const importRepo = async (event: FormEvent<HTMLFormElement>) => {
@@ -139,9 +149,12 @@ export function HomeClient() {
     if (!url) return
 
     const created = await createImportedChat(() =>
-      createChatFromRepo({
-        url,
-        branch: branch || undefined,
+      createFromRepo.trigger({
+        privacy: 'private',
+        repo: {
+          url,
+          branch: branch || undefined,
+        },
       }),
     )
     if (created) setRepoDialogOpen(false)
@@ -196,9 +209,9 @@ export function HomeClient() {
           ref={zipInputRef}
           type="file"
         />
-        {pendingUserMessage ? (
+        {messages.length > 0 ? (
           <>
-            <ConversationView messages={[]} pendingUserMessage={pendingUserMessage} />
+            <ConversationView isStreaming={chatIsCreating} messages={messages} />
             <div className="mx-auto w-full max-w-2xl shrink-0 pb-4">{prompt}</div>
           </>
         ) : (

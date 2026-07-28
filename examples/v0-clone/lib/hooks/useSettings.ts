@@ -1,22 +1,18 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import type { MessagesSendData } from 'v0'
 
-type ModelConfiguration = NonNullable<MessagesSendData['body']['modelConfiguration']>
-
-export type ModelType = ModelConfiguration['modelId']
-
-export interface Settings {
-  model: ModelType
-}
-
-export const MODEL_LABELS: Record<ModelType, string> = {
-  'v0-auto': 'v0 Auto',
+export const MODEL_LABELS = {
   'v0-mini': 'v0 Mini',
   'v0-pro': 'v0 Pro',
   'v0-max': 'v0 Max',
   'v0-max-fast': 'v0 Max Fast',
+} as const
+
+export type ModelType = keyof typeof MODEL_LABELS
+
+export interface Settings {
+  model: ModelType
 }
 
 export const AVAILABLE_MODELS = Object.keys(MODEL_LABELS) as ModelType[]

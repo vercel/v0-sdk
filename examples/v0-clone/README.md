@@ -23,15 +23,19 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - The root layout fetches favorite and recent chats on the server.
 - `/chats/[chatId]` fetches the selected chat and its messages on the server.
-- The chat prompt optimistically renders the user message, calls
-  `messages.send` through a server action, then replaces the local transcript
-  with the returned server state.
-- Assistant messages render text, collapsible thinking, and activity directly
-  from the SDK's ordered `Message.parts` array.
-- The preview pane intentionally shows a loading placeholder.
-- The home composer is presentational; its send controls are disabled.
-- `v0@canary` is used only from server code, so `V0_API_KEY` is never included in
-  the client bundle.
+- Client chat state uses AI SDK `useChat` with `V0Transport`, while
+  `@v0-sdk/react/swr` hooks power chat, file, task-resolution, restore,
+  duplicate, download, and deployment actions.
+- App Router handlers call the v0 SDK on the server, so `V0_API_KEY` is never
+  included in the client bundle.
+- New chats can start from a prompt, selected files, a ZIP archive, or a GitHub
+  repository.
+- Assistant messages render text, reasoning, activities, and task-resolution
+  controls from the SDK's ordered message parts.
+- The preview iframe loads `/api/v0-preview/[chatId]`. That route uses
+  `fetchPreview`, and `proxy.ts` keeps root-relative preview requests on the
+  chat-specific same-origin proxy path.
+- The iframe uses `allow-scripts` and `allow-same-origin` so generated React
+  apps can hydrate and run normally.
 
-There are no local API routes or demo data stores. Server components and server
-actions call the v0 SDK directly.
+There is no local demo data store; chats and files come from the v0 API.

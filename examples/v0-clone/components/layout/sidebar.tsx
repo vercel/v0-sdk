@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import type { Chat } from '@v0-sdk/react'
+import { useChats, useChatsInfinite } from '@v0-sdk/react/swr'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import type { Chat } from 'v0'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { ChatItem } from '@/components/layout/chat-item'
-import { deleteChat, listRecentChats, renameChat, setChatFavorite } from '@/lib/sidebar-chats'
 import type { getSidebarChats } from '@/lib/sidebar-chats'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icons'
@@ -22,12 +22,45 @@ export function Sidebar({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [chats, setChats] = useState(initialChats)
   const [favoritesOpen, setFavoritesOpen] = useState(initialChats.favoriteChats.length > 0)
-  const [isLoadingMore, startLoadingMore] = useTransition()
+  const favoritesQuery = useChats(
+    '/api/chats',
+    {
+      limit: 5,
+      metadata: { favorite: 'true' },
+    },
+    {
+      fallbackData: {
+        chats: initialChats.favoriteChats,
+        cursor: null,
+      },
+      revalidateOnMount: false,
+    },
+  )
+  const recentQuery = useChatsInfinite(
+    '/api/chats',
+    { limit: 5 },
+    {
+      fallbackData: [initialChats.recentChats],
+      revalidateOnMount: false,
+    },
+  )
+  const favoriteChats = favoritesQuery.data?.chats ?? initialChats.favoriteChats
+  const recentPages = recentQuery.data ?? [initialChats.recentChats]
+  const recentChats = recentPages
+    .flatMap((page) => page.chats)
+    .filter((chat) => chat.metadata.favorite !== 'true')
+  const recentCursor = recentPages.at(-1)?.cursor
+  const isLoadingMore = recentQuery.isValidating
 
   useEffect(() => {
-    setChats(initialChats)
+    void favoritesQuery.mutate(
+      { chats: initialChats.favoriteChats, cursor: null },
+      { revalidate: false },
+    )
+    void recentQuery.mutate([initialChats.recentChats], {
+      revalidate: false,
+    })
   }, [initialChats])
 
   const renderItem = (chat: Chat) => (
@@ -35,40 +68,24 @@ export function Sidebar({
       chat={chat}
       isActive={pathname === `/chats/${chat.id}`}
       key={chat.id}
+      onChanged={refreshChats}
       onDeleted={handleDeleted}
-      onRenamed={handleRenamed}
-      onToggleFavorite={handleToggleFavorite}
     />
   )
 
-  async function handleRenamed(id: string, title: string) {
-    setChats(await renameChat(id, title))
+  async function refreshChats() {
+    const [favorites] = await Promise.all([favoritesQuery.mutate(), recentQuery.mutate()])
+    if (favorites?.chats.length) setFavoritesOpen(true)
   }
 
   async function handleDeleted(id: string) {
-    setChats(await deleteChat(id))
+    await refreshChats()
     if (pathname === `/chats/${id}`) router.push('/')
   }
 
-  async function handleToggleFavorite(id: string, favorite: boolean) {
-    const nextChats = await setChatFavorite(id, favorite)
-    setChats(nextChats)
-    if (nextChats.favoriteChats.length > 0) setFavoritesOpen(true)
-  }
-
   const handleLoadMore = () => {
-    if (!chats.recentChats.cursor) return
-
-    startLoadingMore(async () => {
-      const page = await listRecentChats(chats.recentChats.cursor ?? undefined)
-      setChats((current) => ({
-        ...current,
-        recentChats: {
-          chats: [...current.recentChats.chats, ...page.chats],
-          cursor: page.cursor,
-        },
-      }))
-    })
+    if (!recentCursor) return
+    void recentQuery.setSize((size) => size + 1)
   }
 
   return (
@@ -115,10 +132,10 @@ export function Sidebar({
               <ChevronRightIcon className="size-3.5 transition-transform group-data-[state=open]:rotate-90" />
             </CollapsibleTrigger>
             <CollapsibleContent className="flex flex-col gap-0.5">
-              {chats.favoriteChats.length === 0 ? (
+              {favoriteChats.length === 0 ? (
                 <p className="px-2.5 py-1 text-xs text-muted-foreground">No favorites yet</p>
               ) : (
-                chats.favoriteChats.map(renderItem)
+                favoriteChats.map(renderItem)
               )}
             </CollapsibleContent>
           </Collapsible>
@@ -130,12 +147,12 @@ export function Sidebar({
               <ChevronDownIcon className="size-3.5 transition-transform group-data-[state=closed]:-rotate-90" />
             </CollapsibleTrigger>
             <CollapsibleContent className="flex flex-col gap-0.5">
-              {chats.recentChats.chats.length === 0 ? (
+              {recentChats.length === 0 ? (
                 <p className="px-2.5 py-1 text-xs text-muted-foreground">No chats yet</p>
               ) : (
-                chats.recentChats.chats.map(renderItem)
+                recentChats.map(renderItem)
               )}
-              {chats.recentChats.cursor ? (
+              {recentCursor ? (
                 <button
                   className="px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:text-sidebar-foreground disabled:opacity-50"
                   disabled={isLoadingMore}

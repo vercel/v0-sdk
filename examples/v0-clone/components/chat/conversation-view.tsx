@@ -1,7 +1,7 @@
 'use client'
 
+import type { V0UIMessage } from '@v0-sdk/react'
 import { useEffect, useRef } from 'react'
-import type { Message as V0Message } from 'v0'
 import { Message, MessageContent } from '@/components/ai-elements/message'
 import { MessageParts } from '@/components/chat/message-parts'
 import { TaskResolution, type ResolveTask } from '@/components/chat/task-resolution'
@@ -9,46 +9,64 @@ import { RefreshIcon, SpinnerIcon } from '@/lib/icons'
 
 export function ConversationView({
   messages,
+  isStreaming = false,
+  pendingUserMessage,
   onRejectPermission,
   onResolveTask,
   onRestoreMessage,
-  pendingUserMessage,
   restoringMessageId,
-  streamingMessage,
   taskDisabled,
   vercelProjectId,
 }: {
-  messages: V0Message[]
+  messages: V0UIMessage[]
+  isStreaming?: boolean
+  pendingUserMessage?: string | null
   onRejectPermission?: () => void | Promise<void>
   onResolveTask?: (task: ResolveTask) => void | Promise<void>
   onRestoreMessage?: (messageId: string) => void
-  pendingUserMessage?: string | null
   restoringMessageId?: string | null
-  streamingMessage?: V0Message | null
   taskDisabled?: boolean
   vercelProjectId?: string
 }) {
   const endRef = useRef<HTMLDivElement>(null)
-  const streamingMessageIsListed = messages.some((message) => message.id === streamingMessage?.id)
+  const visibleMessages: V0UIMessage[] = pendingUserMessage
+    ? [
+        ...messages,
+        {
+          id: 'pending-user-message',
+          role: 'user',
+          parts: [
+            {
+              type: 'text',
+              text: pendingUserMessage,
+              state: 'done',
+            },
+          ],
+        },
+      ]
+    : messages
   const interactiveTaskMessageId =
-    pendingUserMessage || streamingMessage ? null : messages.at(-1)?.id
+    isStreaming || pendingUserMessage ? null : visibleMessages.at(-1)?.id
+  const streamingMessageId = isStreaming
+    ? visibleMessages.findLast((message) => message.role === 'assistant')?.id
+    : null
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end' })
-  }, [messages, pendingUserMessage, streamingMessage])
+  }, [messages, isStreaming, pendingUserMessage])
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-3 py-4 text-[13px] leading-relaxed">
-        {messages.length === 0 && !pendingUserMessage ? (
+        {visibleMessages.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">No messages yet.</p>
         ) : (
-          messages.map((message) => (
+          visibleMessages.map((message) => (
             <ConversationMessage
               isRestoring={restoringMessageId === message.id}
-              isStreaming={streamingMessage?.id === message.id}
+              isStreaming={streamingMessageId === message.id}
               key={message.id}
-              message={streamingMessage?.id === message.id ? streamingMessage : message}
+              message={message}
               onRejectPermission={
                 message.id === interactiveTaskMessageId ? onRejectPermission : undefined
               }
@@ -59,16 +77,6 @@ export function ConversationView({
             />
           ))
         )}
-        {pendingUserMessage ? (
-          <Message from="user">
-            <MessageContent className="group-[.is-user]:max-w-[80%] group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-border group-[.is-user]:bg-muted group-[.is-user]:px-3 group-[.is-user]:py-1.5 group-[.is-user]:text-[13px]">
-              {pendingUserMessage}
-            </MessageContent>
-          </Message>
-        ) : null}
-        {streamingMessage && !streamingMessageIsListed ? (
-          <ConversationMessage isStreaming message={streamingMessage} />
-        ) : null}
         <div ref={endRef} />
       </div>
     </div>
@@ -85,7 +93,7 @@ function ConversationMessage({
   taskDisabled = false,
   vercelProjectId,
 }: {
-  message: V0Message
+  message: V0UIMessage
   onRejectPermission?: () => void | Promise<void>
   onResolveTask?: (task: ResolveTask) => void | Promise<void>
   onRestore?: (messageId: string) => void

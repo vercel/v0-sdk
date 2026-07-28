@@ -7,7 +7,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ cha
   const body = (await request.json().catch(() => null)) as ResolveTaskBody | null
 
   if (!body?.task) {
-    return Response.json({ error: 'A task response is required.' }, { status: 400 })
+    return Response.json({ message: 'A task response is required.' }, { status: 400 })
   }
 
   const result = await v0.messages.resolveStream({

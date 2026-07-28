@@ -1,257 +1,229 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { readV0Stream, type Files, type Message } from 'v0'
+import { useChat } from '@ai-sdk/react'
+import {
+  shouldResumeV0Chat,
+  toV0UIMessage,
+  toV0UIMessages,
+  V0Transport,
+  type Message,
+  type V0UIMessage,
+} from '@v0-sdk/react'
+import {
+  useFiles,
+  useMessages,
+  useResolveTask,
+  useRestoreMessage,
+  useStopMessage,
+} from '@v0-sdk/react/swr'
+import { useEffect, useMemo, useState } from 'react'
+import { readV0Stream } from 'v0/browser'
 import { ConversationView } from '@/components/chat/conversation-view'
 import { PromptBox } from '@/components/prompt-box'
 import type { ResolveTask } from '@/components/chat/task-resolution'
 import { useSettings } from '@/lib/hooks/useSettings'
 
-export type RefreshMessagesAction = () => Promise<{ messages: Message[] } | { error: string }>
-
-export type RestoreMessageAction = (
-  messageId: string,
-) => Promise<{ success: true; files: Files['files']; messages: Message[] } | { error: string }>
-
-export type StopMessageAction = (
-  messageId: string,
-) => Promise<{ success: true } | { error: string }>
-
 export function ChatConversation({
   chatId,
-  messages,
-  onMessagesChange,
+  messages: initialMessages,
   onRestore,
-  refreshMessagesAction,
-  restoreMessageAction,
-  stopMessageAction,
   vercelProjectId,
 }: {
   chatId: string
   messages: Message[]
-  onMessagesChange: (messages: Message[]) => void
-  onRestore: (files: Files['files']) => void
-  refreshMessagesAction: RefreshMessagesAction
-  restoreMessageAction: RestoreMessageAction
-  stopMessageAction: StopMessageAction
+  onRestore: () => void
   vercelProjectId?: string
 }) {
   const { settings, updateSettings } = useSettings()
-  const [pendingUserMessage, setPendingUserMessage] = useState<string | null>(null)
-  const [streamingMessage, setStreamingMessage] = useState<Message | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResolving, setIsResolving] = useState(false)
+  const [resolvingMessageId, setResolvingMessageId] = useState<string | null>(null)
   const [isStopping, setIsStopping] = useState(false)
   const [restoringMessageId, setRestoringMessageId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const messagesUrl = `/api/chats/${encodeURIComponent(chatId)}/messages`
+  const filesQuery = useFiles(`/api/chats/${encodeURIComponent(chatId)}/files`, {
+    revalidateOnMount: false,
+  })
+  const messagesQuery = useMessages(
+    messagesUrl,
+    { limit: 100 },
+    {
+      fallbackData: {
+        cursor: null,
+        messages: initialMessages,
+      },
+      revalidateOnMount: false,
+    },
+  )
+  const persistedMessages = messagesQuery.data?.messages ?? initialMessages
+  const resolveTaskMutation = useResolveTask(`/api/chats/${encodeURIComponent(chatId)}/resolve`)
+  const restoreMessageMutation = useRestoreMessage(
+    `/api/chats/${encodeURIComponent(chatId)}/restore`,
+  )
+  const initialUiMessages = useMemo(() => toV0UIMessages(initialMessages), [initialMessages])
+  const transport = useMemo(
+    () =>
+      new V0Transport({
+        chatId,
+        messages: persistedMessages,
+        urls: {
+          create: '/api/chats',
+          send: (id) => `/api/chats/${encodeURIComponent(id)}/messages`,
+          resume: (id) => `/api/chats/${encodeURIComponent(id)}/resume`,
+        },
+      }),
+    [chatId, persistedMessages],
+  )
+
+  const {
+    clearError,
+    error: chatError,
+    messages: uiMessages,
+    sendMessage,
+    setMessages,
+    status,
+    stop,
+  } = useChat<V0UIMessage>({
+    id: chatId,
+    messages: initialUiMessages,
+    resume: shouldResumeV0Chat(initialMessages),
+    transport,
+    onFinish: () => {
+      void refreshMessages().catch((error) => {
+        setActionError(errorMessage(error, 'Failed to refresh messages.'))
+      })
+    },
+  })
+
+  const chatIsBusy = status === 'submitted' || status === 'streaming'
+  const activeAssistantMessage = resolvingMessageId
+    ? uiMessages.find((message) => message.id === resolvingMessageId)
+    : uiMessages.findLast(
+        (message) => message.role === 'assistant' && message.metadata?.finishReason == null,
+      )
+  const stopMessageMutation = useStopMessage(
+    `/api/chats/${encodeURIComponent(chatId)}/messages/${encodeURIComponent(
+      activeAssistantMessage?.id ?? 'missing',
+    )}/stop`,
+  )
 
   useEffect(() => {
-    const latestMessage = messages.at(-1)
-    const unfinishedMessage =
-      latestMessage?.role === 'assistant' && latestMessage.finishReason === null
-        ? latestMessage
-        : null
-    const shouldResume = !latestMessage || latestMessage.role === 'user' || unfinishedMessage
+    if (chatIsBusy || isResolving) return
 
-    if (!shouldResume) return
+    setMessages(toV0UIMessages(persistedMessages))
+  }, [chatIsBusy, isResolving, persistedMessages, setMessages])
 
-    const controller = new AbortController()
-
-    const resumeStream = async () => {
-      setError(null)
-      setIsSubmitting(true)
-      if (unfinishedMessage) setStreamingMessage(unfinishedMessage)
-
-      try {
-        const result = readV0Stream(
-          fetch(`/api/chats/${encodeURIComponent(chatId)}/resume`, {
-            method: 'POST',
-            signal: controller.signal,
-          }),
-        )
-
-        for await (const update of result.stream) {
-          if (controller.signal.aborted) return
-
-          const messageId =
-            update.message?.id ??
-            (update.event.object === 'message.parts.chunk' ||
-            update.event.object === 'message.usage'
-              ? update.event.id
-              : null)
-          if (!messageId) continue
-
-          setStreamingMessage((current) => {
-            const message =
-              update.message ??
-              (current?.id === messageId ? current : createStreamingMessage(chatId, messageId))
-
-            return {
-              ...message,
-              parts: update.parts,
-              usage: update.usage ?? message.usage,
-            }
-          })
-        }
-
-        if (controller.signal.aborted) return
-
-        const refreshed = await refreshMessagesAction()
-        if ('error' in refreshed) throw new Error(refreshed.error)
-
-        onMessagesChange(refreshed.messages)
-        setStreamingMessage(null)
-      } catch (error) {
-        if (controller.signal.aborted) return
-        setError(error instanceof Error ? error.message : 'Failed to resume message.')
-      } finally {
-        if (!controller.signal.aborted) setIsSubmitting(false)
-      }
-    }
-
-    void resumeStream()
-    return () => controller.abort()
-  }, [chatId])
-
-  const sendMessage = async (message: string) => {
-    setError(null)
-    setPendingUserMessage(message)
-    setStreamingMessage(null)
-    setIsSubmitting(true)
-
-    try {
-      const result = readV0Stream(
-        fetch(`/api/chats/${encodeURIComponent(chatId)}/messages`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message,
-            modelConfiguration: {
-              modelId: settings.model,
-              imageGenerations: false,
-            },
-          }),
-        }),
-      )
-
-      for await (const update of result.stream) {
-        if (update.message) setStreamingMessage(update.message)
-      }
-
-      const refreshed = await refreshMessagesAction()
-      if ('error' in refreshed) throw new Error(refreshed.error)
-
-      onMessagesChange(refreshed.messages)
-      setPendingUserMessage(null)
-      setStreamingMessage(null)
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to send message.')
-
-      const refreshed = await refreshMessagesAction().catch(() => null)
-      if (refreshed && !('error' in refreshed)) {
-        onMessagesChange(refreshed.messages)
-        setPendingUserMessage(null)
-        setStreamingMessage(null)
-      }
-    } finally {
-      setIsStopping(false)
-      setIsSubmitting(false)
+  const refreshMessages = async () => {
+    if (!(await messagesQuery.mutate())) {
+      throw new Error('Failed to refresh messages.')
     }
   }
 
+  const submitMessage = async (message: string) => {
+    setActionError(null)
+    clearError()
+
+    await sendMessage(
+      { text: message },
+      {
+        body: {
+          modelConfiguration: {
+            modelId: settings.model,
+            imageGenerations: false,
+          },
+        },
+      },
+    )
+  }
+
   const restoreMessage = async (messageId: string) => {
-    setError(null)
+    setActionError(null)
     setRestoringMessageId(messageId)
 
     try {
-      const result = await restoreMessageAction(messageId)
-      if ('error' in result) {
-        setError(result.error)
-        return
+      await restoreMessageMutation.trigger({ messageId })
+      const [restoredFiles, refreshedMessages] = await Promise.all([
+        filesQuery.mutate(),
+        messagesQuery.mutate(),
+      ])
+      if (!restoredFiles || !refreshedMessages) {
+        throw new Error('Failed to refresh restored chat.')
       }
-
-      onMessagesChange([...messages, ...result.messages])
-      onRestore(result.files)
-    } catch {
-      setError('Failed to restore message.')
+      onRestore()
+    } catch (error) {
+      setActionError(errorMessage(error, 'Failed to restore message.'))
     } finally {
       setRestoringMessageId(null)
     }
   }
 
   const resolveTask = async (task: ResolveTask) => {
-    setError(null)
-    setStreamingMessage(null)
-    setIsSubmitting(true)
+    setActionError(null)
+    clearError()
+    setIsResolving(true)
+    setResolvingMessageId(null)
 
     try {
-      const result = readV0Stream(
-        fetch(`/api/chats/${encodeURIComponent(chatId)}/resolve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            task,
-            modelConfiguration: {
-              modelId: settings.model,
-              imageGenerations: false,
-            },
-          }),
-        }),
-      )
+      const response = await resolveTaskMutation.trigger({
+        task,
+        modelConfiguration: {
+          modelId: settings.model,
+          imageGenerations: false,
+        },
+      })
+      const result = readV0Stream(response)
 
       for await (const update of result.stream) {
-        if (update.message) setStreamingMessage(update.message)
+        if (!update.message) continue
+
+        const nextMessage = toV0UIMessage(update.message)
+        setResolvingMessageId(nextMessage.id)
+        setMessages((current) => upsertMessage(current, nextMessage))
       }
 
-      const refreshed = await refreshMessagesAction()
-      if ('error' in refreshed) throw new Error(refreshed.error)
-
-      onMessagesChange(refreshed.messages)
-      setStreamingMessage(null)
+      await refreshMessages()
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to resolve task.')
+      setActionError(error instanceof Error ? error.message : 'Failed to resolve task.')
 
-      const refreshed = await refreshMessagesAction().catch(() => null)
-      if (refreshed && !('error' in refreshed)) {
-        onMessagesChange(refreshed.messages)
-        setStreamingMessage(null)
-      }
+      await refreshMessages().catch(() => undefined)
     } finally {
       setIsStopping(false)
-      setIsSubmitting(false)
+      setIsResolving(false)
+      setResolvingMessageId(null)
     }
   }
 
   const stopMessage = async () => {
-    if (!streamingMessage) return
+    if (!activeAssistantMessage) return
 
-    setError(null)
+    setActionError(null)
     setIsStopping(true)
 
     try {
-      const result = await stopMessageAction(streamingMessage.id)
-      if ('error' in result) {
-        setError(result.error)
-        setIsStopping(false)
-      }
-    } catch {
-      setError('Failed to stop message.')
+      await stopMessageMutation.trigger()
+      await stop()
+      await refreshMessages()
+    } catch (error) {
+      setActionError(errorMessage(error, 'Failed to stop message.'))
+    } finally {
       setIsStopping(false)
     }
   }
 
+  const isSubmitting = chatIsBusy || isResolving
   const isStreaming =
-    isSubmitting && streamingMessage !== null && streamingMessage.finishReason === null
+    activeAssistantMessage !== undefined && (status === 'streaming' || resolvingMessageId !== null)
+  const error = actionError ?? chatError?.message
 
   return (
     <>
       <ConversationView
-        messages={messages}
-        onRejectPermission={() => sendMessage('Do not run this action. Continue without it.')}
+        isStreaming={isStreaming}
+        messages={uiMessages}
+        onRejectPermission={() => submitMessage('Do not run this action. Continue without it.')}
         onResolveTask={resolveTask}
         onRestoreMessage={restoreMessage}
-        pendingUserMessage={pendingUserMessage}
         restoringMessageId={restoringMessageId}
-        streamingMessage={streamingMessage}
         taskDisabled={isSubmitting || restoringMessageId !== null}
         vercelProjectId={vercelProjectId}
       />
@@ -264,7 +236,7 @@ export function ChatConversation({
           model={settings.model}
           onModelChange={(model) => updateSettings({ model })}
           onStop={stopMessage}
-          onSubmit={sendMessage}
+          onSubmit={submitMessage}
           placeholder="Ask v0 to make changes..."
         />
         {error ? <p className="mt-1.5 px-1 text-xs text-destructive">{error}</p> : null}
@@ -273,38 +245,13 @@ export function ChatConversation({
   )
 }
 
-function createStreamingMessage(chatId: string, messageId: string): Message {
-  const now = new Date()
+function upsertMessage(messages: V0UIMessage[], message: V0UIMessage) {
+  const index = messages.findIndex((current) => current.id === message.id)
+  if (index === -1) return [...messages, message]
 
-  return {
-    id: messageId,
-    chatId,
-    role: 'assistant',
-    createdAt: now,
-    updatedAt: now,
-    content: '',
-    parts: [],
-    finishReason: null,
-    authorId: null,
-    usage: emptyUsage(),
-  }
+  return messages.map((current, currentIndex) => (currentIndex === index ? message : current))
 }
 
-function emptyUsage(): Message['usage'] {
-  return {
-    tokens: {
-      input: 0,
-      output: 0,
-      cacheRead: 0,
-      cacheWrite: 0,
-      total: 0,
-    },
-    creditsCost: {
-      input: 0,
-      output: 0,
-      cacheRead: 0,
-      cacheWrite: 0,
-      total: 0,
-    },
-  }
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
 }

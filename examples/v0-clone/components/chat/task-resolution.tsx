@@ -1,22 +1,22 @@
 'use client'
 
+import type { MessagesResolveStreamData, V0UIMessage } from '@v0-sdk/react'
+import { useCreateProject } from '@v0-sdk/react/swr'
 import { useState, type ReactNode } from 'react'
-import type { Message, MessagesResolveStreamData } from 'v0'
-import { createVercelProject } from '@/app/actions'
 import { Response } from '@/components/ai-elements/response'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 export type ResolveTask = MessagesResolveStreamData['body']['task']
 
-type MessagePart = Message['parts'][number]
-type AgentActionPart = Extract<MessagePart, { type: 'agent-action' }>
-type AgentActionData = NonNullable<AgentActionPart['data']>
+type MessagePart = V0UIMessage['parts'][number]
+type AgentActionPart = Extract<MessagePart, { type: 'data-v0-agent-action' }>
+type AgentActionData = NonNullable<AgentActionPart['data']['data']>
 type QuestionsData = Extract<AgentActionData, { questions: unknown }>
 type PlanData = Extract<AgentActionData, { plan: unknown }>
 type IntegrationData = Extract<AgentActionData, { requestedIntegrations: unknown }>
-type ToolCallPart = Extract<MessagePart, { type: 'tool-call' }>
-type Permission = NonNullable<ToolCallPart['suggestedPermissions']>[number]
+type ToolCallPart = Extract<MessagePart, { type: 'data-v0-tool-call' }>
+type Permission = NonNullable<ToolCallPart['data']['suggestedPermissions']>[number]
 type ConfirmedStepsTask = Extract<ResolveTask, { type: 'confirmed-steps' }>
 type McpPreset = NonNullable<ConfirmedStepsTask['connectedMcpPresetNames']>[number]
 
@@ -48,7 +48,7 @@ export function TaskResolution({
   onRejectPermission,
   vercelProjectId,
 }: {
-  message: Message
+  message: V0UIMessage
   disabled?: boolean
   onResolve: (task: ResolveTask) => void | Promise<void>
   onRejectPermission: () => void | Promise<void>
@@ -260,27 +260,33 @@ function IntegrationTask({
   data: IntegrationData
   disabled: boolean
   initialVercelProjectId?: string
-  message: Message
+  message: V0UIMessage
   onResolve: (task: ResolveTask) => void | Promise<void>
 }) {
   const [vercelProjectId, setVercelProjectId] = useState(initialVercelProjectId)
-  const [isCreatingProject, setIsCreatingProject] = useState(false)
   const [projectError, setProjectError] = useState<string | null>(null)
+  const chatId = message.metadata?.chatId
+  const createProjectMutation = useCreateProject(
+    `/api/chats/${encodeURIComponent(chatId ?? 'missing')}/project`,
+  )
+  const isCreatingProject = createProjectMutation.isMutating
   const requested = [...data.requestedIntegrations, ...data.requestedMcpPresets]
   const needsProject = data.requestedIntegrations.length > 0 && !vercelProjectId
 
   const createProject = async () => {
-    setIsCreatingProject(true)
     setProjectError(null)
 
-    const result = await createVercelProject(message.chatId)
-    if ('error' in result) {
-      setProjectError(result.error)
-    } else {
-      setVercelProjectId(result.vercelProjectId)
+    if (!chatId) {
+      setProjectError('Unable to find the chat for this integration request.')
+      return
     }
 
-    setIsCreatingProject(false)
+    try {
+      const result = await createProjectMutation.trigger({})
+      setVercelProjectId(result.vercelProjectId)
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : 'Failed to create Vercel project.')
+    }
   }
 
   const resolve = (connected: boolean) =>
@@ -426,33 +432,36 @@ function TaskCard({
   )
 }
 
-function findPendingTask(message: Message): PendingTask | null {
+function findPendingTask(message: V0UIMessage): PendingTask | null {
   for (let index = message.parts.length - 1; index >= 0; index -= 1) {
     const part = message.parts[index]
 
     if (
-      part.type === 'tool-call' &&
-      part.suggestedPermissions &&
-      part.suggestedPermissions.length > 0
+      part.type === 'data-v0-tool-call' &&
+      part.data.suggestedPermissions &&
+      part.data.suggestedPermissions.length > 0
     ) {
       return {
         type: 'permissions',
-        permissions: part.suggestedPermissions,
+        permissions: part.data.suggestedPermissions,
       }
     }
 
-    if (part.type !== 'agent-action' || !part.data) continue
+    if (part.type !== 'data-v0-agent-action' || !part.data.data) continue
 
-    if (part.name === 'ask_user_questions' && 'questions' in part.data) {
-      return { type: 'questions', data: part.data }
+    if (part.data.name === 'ask_user_questions' && 'questions' in part.data.data) {
+      return { type: 'questions', data: part.data.data }
     }
 
-    if (part.name === 'exit_plan_mode' && 'plan' in part.data) {
-      return { type: 'plan', data: part.data }
+    if (part.data.name === 'exit_plan_mode' && 'plan' in part.data.data) {
+      return { type: 'plan', data: part.data.data }
     }
 
-    if (part.name === 'get_or_request_integration' && 'requestedIntegrations' in part.data) {
-      return { type: 'integration', data: part.data }
+    if (
+      part.data.name === 'get_or_request_integration' &&
+      'requestedIntegrations' in part.data.data
+    ) {
+      return { type: 'integration', data: part.data.data }
     }
   }
 

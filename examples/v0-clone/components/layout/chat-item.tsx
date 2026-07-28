@@ -1,8 +1,9 @@
 'use client'
 
+import type { Chat } from '@v0-sdk/react'
+import { useDeleteChat, useUpdateChat } from '@v0-sdk/react/swr'
 import { useState } from 'react'
 import Link from 'next/link'
-import type { Chat } from 'v0'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,22 +28,25 @@ import { cn } from '@/lib/utils'
 export function ChatItem({
   chat,
   isActive,
-  onRenamed,
+  onChanged,
   onDeleted,
-  onToggleFavorite,
 }: {
   chat: Chat
   isActive: boolean
-  onRenamed: (id: string, title: string) => Promise<void>
+  onChanged: () => Promise<void>
   onDeleted: (id: string) => Promise<void>
-  onToggleFavorite: (id: string, favorite: boolean) => Promise<void>
 }) {
   const isFavorite = chat.metadata.favorite === 'true'
+  const chatUrl = `/api/chats/${encodeURIComponent(chat.id)}`
+  const deleteChat = useDeleteChat(chatUrl)
+  const updateChat = useUpdateChat(chatUrl)
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [renameValue, setRenameValue] = useState(chat.title || '')
-  const [busy, setBusy] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const busy = isRefreshing || deleteChat.isMutating || updateChat.isMutating
 
   const handleRename = async () => {
     const title = renameValue.trim()
@@ -51,22 +55,45 @@ export function ChatItem({
       return
     }
 
-    setBusy(true)
+    setError(null)
     try {
-      await onRenamed(chat.id, title)
+      await updateChat.trigger({ title })
+      setIsRefreshing(true)
+      await onChanged()
       setRenameOpen(false)
+    } catch (error) {
+      setError(errorMessage(error, 'Failed to rename chat.'))
     } finally {
-      setBusy(false)
+      setIsRefreshing(false)
     }
   }
 
   const handleDelete = async () => {
-    setBusy(true)
+    setError(null)
     try {
+      await deleteChat.trigger()
+      setIsRefreshing(true)
       await onDeleted(chat.id)
       setDeleteOpen(false)
+    } catch (error) {
+      setError(errorMessage(error, 'Failed to delete chat.'))
     } finally {
-      setBusy(false)
+      setIsRefreshing(false)
+    }
+  }
+
+  const handleToggleFavorite = async () => {
+    setError(null)
+    try {
+      await updateChat.trigger({
+        metadata: { favorite: isFavorite ? null : 'true' },
+      })
+      setIsRefreshing(true)
+      await onChanged()
+    } catch (error) {
+      setError(errorMessage(error, 'Failed to update favorite.'))
+    } finally {
+      setIsRefreshing(false)
     }
   }
 
@@ -99,7 +126,7 @@ export function ChatItem({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-44" side="right">
-            <DropdownMenuItem onSelect={() => onToggleFavorite(chat.id, !isFavorite)}>
+            <DropdownMenuItem disabled={busy} onSelect={() => void handleToggleFavorite()}>
               {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -142,6 +169,7 @@ export function ChatItem({
               }}
               value={renameValue}
             />
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
           </div>
           <DialogFooter>
             <Button onClick={() => setRenameOpen(false)} type="button" variant="outline">
@@ -163,6 +191,7 @@ export function ChatItem({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
+            {error ? <p className="mr-auto text-sm text-destructive">{error}</p> : null}
             <Button onClick={() => setDeleteOpen(false)} type="button" variant="outline">
               Cancel
             </Button>
@@ -174,4 +203,8 @@ export function ChatItem({
       </Dialog>
     </>
   )
+}
+
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
 }

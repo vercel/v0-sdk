@@ -1,7 +1,7 @@
 'use client'
 
+import type { V0UIMessage } from '@v0-sdk/react'
 import type { ReactNode } from 'react'
-import type { Message } from 'v0'
 import { Response } from '@/components/ai-elements/response'
 import {
   AgentIcon,
@@ -15,108 +15,136 @@ import {
   ToolIcon,
 } from '@/lib/icons'
 
-type MessagePart = Message['parts'][number]
+type MessagePart = V0UIMessage['parts'][number]
+type FileEditPart = Extract<MessagePart, { type: 'data-v0-file-edit' }>
+type AgentActionPart = Extract<MessagePart, { type: 'data-v0-agent-action' }>
 
 export function MessageParts({
   message,
   isStreaming = false,
 }: {
-  message: Message
+  message: V0UIMessage
   isStreaming?: boolean
 }) {
   if (message.role === 'user') {
-    const text = message.parts
-      .filter((part) => part.type === 'text')
-      .map((part) => part.text)
-      .join('\n\n')
-
-    return text || message.content
+    return (
+      <div className="flex min-w-0 flex-col gap-2">
+        {message.parts.map((part, index) => (
+          <MessagePartView
+            isAssistant={false}
+            isStreaming={false}
+            key={`${message.id}-${index}`}
+            part={part}
+          />
+        ))}
+      </div>
+    )
   }
-
-  const hasTextPart = message.parts.some((part) => part.type === 'text')
-  const content = visibleAssistantText(message.content)
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2.5">
       {message.parts.map((part, index) => (
-        <MessagePartView isStreaming={isStreaming} key={`${message.id}-${index}`} part={part} />
+        <MessagePartView
+          isAssistant
+          isStreaming={isStreaming}
+          key={`${message.id}-${index}`}
+          part={part}
+        />
       ))}
-      {!hasTextPart && content ? <Markdown isStreaming={isStreaming}>{content}</Markdown> : null}
     </div>
   )
 }
 
-function MessagePartView({ part, isStreaming }: { part: MessagePart; isStreaming: boolean }) {
+function MessagePartView({
+  part,
+  isAssistant,
+  isStreaming,
+}: {
+  part: MessagePart
+  isAssistant: boolean
+  isStreaming: boolean
+}) {
   switch (part.type) {
     case 'text': {
-      const text = visibleAssistantText(part.text)
-      return text ? <Markdown isStreaming={isStreaming}>{text}</Markdown> : null
+      const text = isAssistant ? visibleAssistantText(part.text) : part.text
+      return text ? (
+        <Markdown isStreaming={isStreaming && part.state === 'streaming'}>{text}</Markdown>
+      ) : null
     }
-    case 'thinking':
+    case 'reasoning':
       return <ThinkingPart isStreaming={isStreaming} part={part} />
-    case 'file-read':
+    case 'file':
+      return (
+        <Activity detail={part.filename ?? part.url} icon={<FileIcon />} title="Attached file" />
+      )
+    case 'data-v0-file-read':
       return (
         <Activity
-          detail={part.paths.join(', ')}
+          detail={part.data.paths.join(', ')}
           icon={<EyeIcon />}
-          title={part.paths.length === 1 ? 'Read file' : `Read ${part.paths.length} files`}
+          title={
+            part.data.paths.length === 1 ? 'Read file' : `Read ${part.data.paths.length} files`
+          }
         />
       )
-    case 'file-edit':
+    case 'data-v0-file-edit':
       return (
         <Activity
           detail={
-            part.operation === 'rename' && part.toPath ? `${part.path} → ${part.toPath}` : part.path
+            part.data.operation === 'rename' && part.data.toPath
+              ? `${part.data.path} → ${part.data.toPath}`
+              : part.data.path
           }
           icon={<FileIcon />}
-          title={fileEditLabel(part.operation)}
+          title={fileEditLabel(part.data.operation)}
         />
       )
-    case 'search':
+    case 'data-v0-search':
       return (
         <Activity
-          detail={part.query}
+          detail={part.data.query}
           icon={<SearchIcon />}
-          title={part.scope === 'web' ? 'Searched the web' : 'Searched the codebase'}
+          title={part.data.scope === 'web' ? 'Searched the web' : 'Searched the codebase'}
         />
       )
-    case 'bash':
+    case 'data-v0-bash':
       return (
-        <Activity detail={part.command} icon={<TerminalIcon />} title="Ran command">
-          {part.output}
+        <Activity detail={part.data.command} icon={<TerminalIcon />} title="Ran command">
+          {part.data.output}
         </Activity>
       )
-    case 'tool-call': {
-      const Icon = part.status === 'error' ? CrossCircleIcon : ToolIcon
+    case 'data-v0-tool-call': {
+      const Icon = part.data.status === 'error' ? CrossCircleIcon : ToolIcon
       return (
         <Activity
-          detail={humanize(part.name)}
-          error={part.status === 'error'}
+          detail={humanize(part.data.name)}
+          error={part.data.status === 'error'}
           icon={<Icon />}
-          title={part.status === 'error' ? 'Tool failed' : 'Used tool'}
+          title={part.data.status === 'error' ? 'Tool failed' : 'Used tool'}
         >
-          {formatToolDetails(part.input, part.output)}
+          {formatToolDetails(part.data.input, part.data.output)}
         </Activity>
       )
     }
-    case 'agent-action':
+    case 'data-v0-agent-action':
       return (
-        <Activity detail={part.summary} icon={<AgentIcon />} title={humanize(part.name)}>
-          {part.data === undefined || isPendingAgentAction(part)
+        <Activity detail={part.data.summary} icon={<AgentIcon />} title={humanize(part.data.name)}>
+          {part.data.data === undefined || isPendingAgentAction(part)
             ? undefined
-            : formatValue(part.data)}
+            : formatValue(part.data.data)}
         </Activity>
       )
   }
 }
 
-function isPendingAgentAction(part: Extract<MessagePart, { type: 'agent-action' }>) {
-  if (!part.data) return false
+function isPendingAgentAction(part: AgentActionPart) {
+  const data = part.data.data
+  if (!data) return false
 
   return (
-    (part.name === 'ask_user_questions' && 'questions' in part.data) ||
-    (part.name === 'exit_plan_mode' && 'plan' in part.data) ||
-    (part.name === 'get_or_request_integration' && 'requestedIntegrations' in part.data)
+    (part.data.name === 'ask_user_questions' && 'questions' in data) ||
+    (part.data.name === 'exit_plan_mode' && 'plan' in data) ||
+    (part.data.name === 'get_or_request_integration' && 'requestedIntegrations' in data)
   )
 }
 
@@ -134,20 +162,22 @@ function ThinkingPart({
   part,
   isStreaming,
 }: {
-  part: Extract<MessagePart, { type: 'thinking' }>
+  part: Extract<MessagePart, { type: 'reasoning' }>
   isStreaming: boolean
 }) {
   if (!part.text) return null
+
+  const partIsStreaming = isStreaming && part.state === 'streaming'
 
   return (
     <details className="group text-muted-foreground">
       <summary className="flex cursor-pointer list-none items-center gap-1.5 py-0.5 text-xs font-medium hover:text-foreground [&::-webkit-details-marker]:hidden">
         <SparklesIcon className="size-3.5 shrink-0" />
-        <span>{thinkingLabel(part.startedAt, part.finishedAt)}</span>
+        <span>Thought for a moment</span>
         <ChevronDownIcon className="size-3.5 transition-transform group-open:rotate-180" />
       </summary>
       <div className="mt-2 border-l border-border pl-3 text-xs leading-relaxed text-muted-foreground">
-        <Markdown isStreaming={isStreaming}>{part.text}</Markdown>
+        <Markdown isStreaming={partIsStreaming}>{part.text}</Markdown>
       </div>
     </details>
   )
@@ -216,23 +246,7 @@ function Activity({
   )
 }
 
-function thinkingLabel(startedAt?: Date, finishedAt?: Date) {
-  if (!startedAt || !finishedAt) return 'Thought for a moment'
-
-  const duration = Date.parse(String(finishedAt)) - Date.parse(String(startedAt))
-  if (!Number.isFinite(duration) || duration <= 0) return 'Thought for a moment'
-
-  const seconds = Math.max(1, Math.round(duration / 1000))
-  if (seconds < 60) return `Thought for ${seconds}s`
-
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return remainingSeconds
-    ? `Thought for ${minutes}m ${remainingSeconds}s`
-    : `Thought for ${minutes}m`
-}
-
-function fileEditLabel(operation: Extract<MessagePart, { type: 'file-edit' }>['operation']) {
+function fileEditLabel(operation: FileEditPart['data']['operation']) {
   const labels = {
     create: 'Created file',
     update: 'Updated file',

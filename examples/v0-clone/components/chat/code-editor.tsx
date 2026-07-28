@@ -1,20 +1,15 @@
 'use client'
 
+import type { Files } from '@v0-sdk/react'
+import { useFiles, useMessages, useUpdateChatFiles } from '@v0-sdk/react/swr'
 import { use, useState } from 'react'
-import type { Files, Message } from 'v0'
 import { Loader } from '@/components/ai-elements/loader'
 import { Button } from '@/components/ui/button'
 import { FileIcon, SpinnerIcon } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 
 type ChatFile = Files['files'][number]
-type FileUpdate = { path: string; content: string | null }
-
 export type ChatFilesResult = { files: Files['files'] } | { error: string }
-
-export type UpdateFilesAction = (
-  files: FileUpdate[],
-) => Promise<{ success: true; files: Files['files']; messages: Message[] } | { error: string }>
 
 export function CodeEditorLoading() {
   return (
@@ -25,20 +20,15 @@ export function CodeEditorLoading() {
 }
 
 export function CodeEditorPane({
-  files,
+  chatId,
   filesPromise,
   isPreviewReady,
-  onMessagesChange,
-  updateFilesAction,
 }: {
-  files?: Files['files']
+  chatId: string
   filesPromise: Promise<ChatFilesResult>
   isPreviewReady: boolean
-  onMessagesChange: (messages: Message[]) => void
-  updateFilesAction: UpdateFilesAction
 }) {
-  const initialResult = use(filesPromise)
-  const result = files ? { files } : initialResult
+  const result = use(filesPromise)
 
   if ('error' in result) {
     return (
@@ -48,34 +38,34 @@ export function CodeEditorPane({
     )
   }
 
-  return (
-    <CodeEditor
-      files={result.files}
-      isPreviewReady={isPreviewReady}
-      onMessagesChange={onMessagesChange}
-      updateFilesAction={updateFilesAction}
-    />
-  )
+  return <CodeEditor chatId={chatId} files={result.files} isPreviewReady={isPreviewReady} />
 }
 
 function CodeEditor({
+  chatId,
   files: initialFiles,
   isPreviewReady,
-  onMessagesChange,
-  updateFilesAction,
 }: {
+  chatId: string
   files: ChatFile[]
   isPreviewReady: boolean
-  onMessagesChange: (messages: Message[]) => void
-  updateFilesAction: UpdateFilesAction
 }) {
-  const [files, setFiles] = useState(initialFiles)
-  const [savedFiles, setSavedFiles] = useState(initialFiles)
+  const filesUrl = `/api/chats/${encodeURIComponent(chatId)}/files`
+  const messagesUrl = `/api/chats/${encodeURIComponent(chatId)}/messages`
+  const filesQuery = useFiles(filesUrl, {
+    fallbackData: { files: initialFiles },
+    revalidateOnMount: false,
+  })
+  const messagesQuery = useMessages(messagesUrl, { limit: 100 }, { revalidateOnMount: false })
+  const updateFiles = useUpdateChatFiles(filesUrl)
+  const cachedFiles = filesQuery.data?.files ?? initialFiles
+  const [files, setFiles] = useState(cachedFiles)
+  const [savedFiles, setSavedFiles] = useState(cachedFiles)
   const [selectedPath, setSelectedPath] = useState(
-    initialFiles.find((file) => file.encoding === 'utf8')?.path ?? initialFiles[0]?.path ?? null,
+    cachedFiles.find((file) => file.encoding === 'utf8')?.path ?? cachedFiles[0]?.path ?? null,
   )
-  const [isSaving, setIsSaving] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
+  const isSaving = updateFiles.isMutating
   const selectedFile = files.find((file) => file.path === selectedPath)
   const changedFiles = files.filter((file) => {
     if (file.encoding !== 'utf8') return false
@@ -93,38 +83,33 @@ function CodeEditor({
     if (changedFiles.length === 0 || !isPreviewReady) return
 
     setStatus(null)
-    setIsSaving(true)
 
     try {
-      const result = await updateFilesAction(
-        changedFiles.map(({ path, content }) => ({ path, content })),
-      )
+      await updateFiles.trigger({
+        files: changedFiles.map(({ path, content }) => ({ path, content })),
+      })
+      const [filesResult, messagesResult] = await Promise.all([
+        filesQuery.mutate(),
+        messagesQuery.mutate(),
+      ])
 
-      if ('error' in result) {
-        setStatus(result.error)
-        return
-      }
-
-      if (!Array.isArray(result.files) || !Array.isArray(result.messages)) {
+      if (!filesResult || !messagesResult) {
         setStatus('Files saved, but failed to refresh.')
         return
       }
 
-      setFiles(result.files)
-      setSavedFiles(result.files)
+      setFiles(filesResult.files)
+      setSavedFiles(filesResult.files)
       setSelectedPath((current) =>
-        result.files.some((file) => file.path === current)
+        filesResult.files.some((file) => file.path === current)
           ? current
-          : (result.files.find((file) => file.encoding === 'utf8')?.path ??
-            result.files[0]?.path ??
+          : (filesResult.files.find((file) => file.encoding === 'utf8')?.path ??
+            filesResult.files[0]?.path ??
             null),
       )
-      onMessagesChange(result.messages)
       setStatus('Saved')
-    } catch {
-      setStatus('Failed to save files.')
-    } finally {
-      setIsSaving(false)
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Failed to save files.')
     }
   }
 
