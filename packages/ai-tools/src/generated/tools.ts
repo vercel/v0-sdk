@@ -116,10 +116,8 @@ const chatsCreateInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -184,10 +182,8 @@ const chatsCreateAsyncInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -310,10 +306,8 @@ const chatsCreateStreamInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -695,15 +689,13 @@ const messagesResolveInputSchema = z.object({
       }),
     ])
     .describe(
-      'The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.',
+      'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
     ),
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        )
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.')
         .optional(),
       imageGenerations: z
         .boolean()
@@ -821,15 +813,13 @@ const messagesResolveAsyncInputSchema = z.object({
       }),
     ])
     .describe(
-      'The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.',
+      'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
     ),
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        )
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.')
         .optional(),
       imageGenerations: z
         .boolean()
@@ -947,15 +937,13 @@ const messagesResolveStreamInputSchema = z.object({
       }),
     ])
     .describe(
-      'The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type.',
+      'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
     ),
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        )
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.')
         .optional(),
       imageGenerations: z
         .boolean()
@@ -978,10 +966,8 @@ const messagesSendInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1022,14 +1008,6 @@ const messagesSendInputSchema = z.object({
     )
     .describe(
       'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
-    )
-    .optional(),
-  action: z
-    .object({
-      type: z.enum(['fix-with-v0']),
-    })
-    .describe(
-      'An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.',
     )
     .optional(),
 })
@@ -1046,10 +1024,8 @@ const messagesSendAsyncInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1090,14 +1066,6 @@ const messagesSendAsyncInputSchema = z.object({
     )
     .describe(
       'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
-    )
-    .optional(),
-  action: z
-    .object({
-      type: z.enum(['fix-with-v0']),
-    })
-    .describe(
-      'An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.',
     )
     .optional(),
 })
@@ -1114,10 +1082,8 @@ const messagesSendStreamInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-auto', 'v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe(
-          'Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.',
-        ),
+        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
+        .describe('Model to use for the generation.'),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1158,14 +1124,6 @@ const messagesSendStreamInputSchema = z.object({
     )
     .describe(
       'Skills to force-attach to the message. Supports skills.sh (`remote`), user/team memory (`memory`), and project (`project`) skills. Maximum 3.',
-    )
-    .optional(),
-  action: z
-    .object({
-      type: z.enum(['fix-with-v0']),
-    })
-    .describe(
-      'An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.',
     )
     .optional(),
 })
@@ -1249,7 +1207,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsCreateAsync: tool({
       description:
-        'Create Chat (Async): Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and a "queued" status. Poll the apiUrl to check for completion.',
+        'Create Chat (Async): Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and message ID. Poll for the assistant message by ID until `finishReason` is non-null.',
       inputSchema: chatsCreateAsyncInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1338,7 +1296,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsDelete: tool({
       description:
-        'Delete Chat: Deletes a chat and all its associated messages and blocks. The requester must have edit access to the chat.',
+        'Delete Chat: Deletes a chat and all its associated messages. The requester must have edit access to the chat.',
       inputSchema: chatsDeleteInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1547,7 +1505,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
       },
     }),
     messagesList: tool({
-      description: 'Get Messages: Get all messages in a chat.',
+      description: 'List Messages: Lists all messages in a chat.',
       inputSchema: messagesListInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1560,7 +1518,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesResolve: tool({
       description:
-        'Resolve Task: Resolves a pending task in a chat, continuing the conversation. The latest message in the active chat fork must be an assistant message currently blocked on a matching task (integration setup, plan approval, question answers, or permission grants). Blocks until the model response is complete and returns the resulting message.',
+        'Resolve Task: Resolves a pending task in a chat. Blocks until the model response is complete and returns the resulting message.',
       inputSchema: messagesResolveInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1611,7 +1569,6 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
           skills: input.skills,
-          action: input.action,
         }
         return toToolResult(await client.messages.send(parameters))
       },
@@ -1629,7 +1586,6 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
           skills: input.skills,
-          action: input.action,
         }
         return toToolResult(await client.messages.sendAsync(parameters))
       },
@@ -1647,7 +1603,6 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           mcpServerIds: input.mcpServerIds,
           attachments: input.attachments,
           skills: input.skills,
-          action: input.action,
         }
         const result = await client.messages.sendStream(parameters)
         yield* result.stream

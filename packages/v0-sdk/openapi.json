@@ -256,34 +256,18 @@
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
-          "id": {
+          "chatId": {
             "type": "string",
             "description": "Unique chat identifier."
           },
-          "assistantMessageId": {
+          "messageId": {
             "type": "string",
             "description": "ID of the assistant message that will receive the response. Poll this message by ID and check its finishReason field to detect completion."
-          },
-          "object": {
-            "type": "string",
-            "enum": [
-              "chat"
-            ],
-            "description": "Object type identifier."
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "queued"
-            ],
-            "description": "The chat is being processed in the background. Poll for the chat to check for completion."
           }
         },
         "required": [
-          "id",
-          "assistantMessageId",
-          "object",
-          "status"
+          "chatId",
+          "messageId"
         ],
         "additionalProperties": false
       },
@@ -3365,7 +3349,7 @@
     }
   ],
   "paths": {
-    "/api/v2/chats": {
+    "/chats": {
       "post": {
         "tags": [
           "Chats"
@@ -3398,13 +3382,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -3581,13 +3564,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -3764,13 +3746,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -4187,7 +4168,7 @@
         }
       }
     },
-    "/api/v2/chats/from-files": {
+    "/chats/from-files": {
       "post": {
         "tags": [
           "Chats"
@@ -4459,7 +4440,7 @@
         }
       }
     },
-    "/api/v2/chats/from-zip": {
+    "/chats/from-zip": {
       "post": {
         "tags": [
           "Chats"
@@ -4671,7 +4652,7 @@
         }
       }
     },
-    "/api/v2/chats/from-repo": {
+    "/chats/from-repo": {
       "post": {
         "tags": [
           "Chats"
@@ -4928,7 +4909,7 @@
         }
       }
     },
-    "/api/v2/chats/stream": {
+    "/chats/stream": {
       "post": {
         "tags": [
           "Chats"
@@ -4961,13 +4942,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5144,13 +5124,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5327,13 +5306,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5554,13 +5532,13 @@
         }
       }
     },
-    "/api/v2/chats/async": {
+    "/chats/async": {
       "post": {
         "tags": [
           "Chats"
         ],
         "summary": "Create Chat (Async)",
-        "description": "Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and a \"queued\" status. Poll the apiUrl to check for completion.",
+        "description": "Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and message ID. Poll for the assistant message by ID until `finishReason` is non-null.",
         "operationId": "chats.createAsync",
         "requestBody": {
           "required": true,
@@ -5587,13 +5565,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5770,13 +5747,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -5953,13 +5929,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6180,13 +6155,13 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages": {
+    "/chats/{chatId}/messages": {
       "get": {
         "tags": [
           "Messages"
         ],
-        "summary": "Get Messages",
-        "description": "Get all messages in a chat.",
+        "summary": "List Messages",
+        "description": "Lists all messages in a chat.",
         "operationId": "messages.list",
         "parameters": [
           {
@@ -6328,13 +6303,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6453,22 +6427,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -6499,13 +6457,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6624,22 +6581,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -6670,13 +6611,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -6795,22 +6735,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -6885,7 +6809,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/{messageId}": {
+    "/chats/{chatId}/messages/{messageId}": {
       "get": {
         "tags": [
           "Messages"
@@ -6969,7 +6893,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/stream": {
+    "/chats/{chatId}/messages/stream": {
       "post": {
         "tags": [
           "Messages"
@@ -7014,13 +6938,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7139,22 +7062,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7185,13 +7092,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7310,22 +7216,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7356,13 +7246,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7481,22 +7370,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7571,7 +7444,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/async": {
+    "/chats/{chatId}/messages/async": {
       "post": {
         "tags": [
           "Messages"
@@ -7616,13 +7489,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7741,22 +7613,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7787,13 +7643,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -7912,22 +7767,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7958,13 +7797,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8083,22 +7921,6 @@
                       ],
                       "description": "A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo."
                     }
-                  },
-                  "action": {
-                    "description": "An optional action. Use `fix-with-v0` to trigger automatic error fixing — the message should contain the error context.",
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "fix-with-v0"
-                        ]
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -8173,13 +7995,13 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/resolve": {
+    "/chats/{chatId}/messages/resolve": {
       "post": {
         "tags": [
           "Messages"
         ],
         "summary": "Resolve Task",
-        "description": "Resolves a pending task in a chat, continuing the conversation. The latest message in the active chat fork must be an assistant message currently blocked on a matching task (integration setup, plan approval, question answers, or permission grants). Blocks until the model response is complete and returns the resulting message.",
+        "description": "Resolves a pending task in a chat. Blocks until the model response is complete and returns the resulting message.",
         "operationId": "messages.resolve",
         "parameters": [
           {
@@ -8439,7 +8261,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -8449,13 +8271,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8715,7 +8536,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -8725,13 +8546,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -8991,7 +8811,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -9001,13 +8821,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9100,7 +8919,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/resolve/stream": {
+    "/chats/{chatId}/messages/resolve/stream": {
       "post": {
         "tags": [
           "Messages"
@@ -9366,7 +9185,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -9376,13 +9195,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9642,7 +9460,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -9652,13 +9470,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -9918,7 +9735,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -9928,13 +9745,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10027,7 +9843,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/resolve/async": {
+    "/chats/{chatId}/messages/resolve/async": {
       "post": {
         "tags": [
           "Messages"
@@ -10293,7 +10109,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -10303,13 +10119,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10569,7 +10384,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -10579,13 +10394,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10845,7 +10659,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "modelConfiguration": {
                     "description": "Overrides for the model behavior.",
@@ -10855,13 +10669,12 @@
                         "default": "v0-pro",
                         "type": "string",
                         "enum": [
-                          "v0-auto",
                           "v0-mini",
                           "v0-pro",
                           "v0-max",
                           "v0-max-fast"
                         ],
-                        "description": "Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`."
+                        "description": "Model to use for the generation."
                       },
                       "imageGenerations": {
                         "default": false,
@@ -10954,7 +10767,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/messages/{messageId}/stop": {
+    "/chats/{chatId}/messages/{messageId}/stop": {
       "post": {
         "tags": [
           "Messages"
@@ -10986,26 +10799,23 @@
         ],
         "responses": {
           "200": {
-            "description": "Response from successfully sending a stop signal for a message.",
+            "description": "The stopped message.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ],
-                      "description": "Always true when the stop signal was successfully sent."
+                    "messageId": {
+                      "type": "string",
+                      "description": "The unique identifier of the stopped message."
                     }
                   },
                   "required": [
-                    "success"
+                    "messageId"
                   ],
                   "additionalProperties": false,
-                  "description": "Response from successfully sending a stop signal for a message."
+                  "description": "The stopped message."
                 }
               }
             }
@@ -11063,7 +10873,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}": {
+    "/chats/{chatId}": {
       "get": {
         "tags": [
           "Chats"
@@ -11391,7 +11201,7 @@
           "Chats"
         ],
         "summary": "Delete Chat",
-        "description": "Deletes a chat and all its associated messages and blocks. The requester must have edit access to the chat.",
+        "description": "Deletes a chat and all its associated messages. The requester must have edit access to the chat.",
         "operationId": "chats.delete",
         "parameters": [
           {
@@ -11417,17 +11227,10 @@
                     "chatId": {
                       "type": "string",
                       "description": "The ID of the deleted chat."
-                    },
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
                     }
                   },
                   "required": [
-                    "chatId",
-                    "success"
+                    "chatId"
                   ],
                   "additionalProperties": false
                 }
@@ -11477,7 +11280,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/preview": {
+    "/chats/{chatId}/preview": {
       "get": {
         "tags": [
           "Chats"
@@ -11593,7 +11396,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/files": {
+    "/chats/{chatId}/files": {
       "get": {
         "tags": [
           "Chats"
@@ -12694,7 +12497,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/files/download": {
+    "/chats/{chatId}/files/download": {
       "get": {
         "tags": [
           "Chats"
@@ -12789,7 +12592,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/restore-message": {
+    "/chats/{chatId}/restore-message": {
       "post": {
         "tags": [
           "Chats"
@@ -13668,7 +13471,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/duplicate": {
+    "/chats/{chatId}/duplicate": {
       "post": {
         "tags": [
           "Chats"
@@ -13850,7 +13653,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/deploy": {
+    "/chats/{chatId}/deploy": {
       "post": {
         "tags": [
           "Chats"
@@ -13961,7 +13764,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/vercel-project": {
+    "/chats/{chatId}/vercel-project": {
       "post": {
         "tags": [
           "Chats"
@@ -14116,7 +13919,7 @@
         }
       }
     },
-    "/api/v2/chats/{chatId}/resume": {
+    "/chats/{chatId}/resume": {
       "post": {
         "tags": [
           "Chats"
@@ -14190,7 +13993,7 @@
         }
       }
     },
-    "/api/v2/mcp-servers": {
+    "/mcp-servers": {
       "get": {
         "tags": [
           "MCP Servers"
@@ -15074,7 +14877,7 @@
         }
       }
     },
-    "/api/v2/mcp-servers/{mcpServerId}": {
+    "/mcp-servers/{mcpServerId}": {
       "get": {
         "tags": [
           "MCP Servers"
@@ -15857,7 +15660,7 @@
         }
       }
     },
-    "/api/v2/hooks": {
+    "/hooks": {
       "get": {
         "tags": [
           "Webhooks"
@@ -16152,7 +15955,7 @@
         }
       }
     },
-    "/api/v2/hooks/{hookId}": {
+    "/hooks/{hookId}": {
       "get": {
         "tags": [
           "Webhooks"
@@ -16497,5 +16300,10 @@
         }
       }
     }
-  }
+  },
+  "servers": [
+    {
+      "url": "https://api.v0.dev/v2"
+    }
+  ]
 }

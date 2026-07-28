@@ -72,7 +72,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).get<ChatsListResponses, ChatsListErrors, ThrowOnError>({
             responseTransformer: chatsListResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats',
+            url: '/chats',
             ...options,
             ...params
         });
@@ -88,9 +88,9 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -155,7 +155,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsCreateResponses, ChatsCreateErrors, ThrowOnError>({
             responseTransformer: chatsCreateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats',
+            url: '/chats',
             ...options,
             ...params,
             headers: {
@@ -197,7 +197,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsCreateFromFilesResponses, ChatsCreateFromFilesErrors, ThrowOnError>({
             responseTransformer: chatsCreateFromFilesResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/from-files',
+            url: '/chats/from-files',
             ...options,
             ...params,
             headers: {
@@ -230,7 +230,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsCreateFromZipResponses, ChatsCreateFromZipErrors, ThrowOnError>({
             responseTransformer: chatsCreateFromZipResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/from-zip',
+            url: '/chats/from-zip',
             ...options,
             ...params,
             headers: {
@@ -272,7 +272,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsCreateFromRepoResponses, ChatsCreateFromRepoErrors, ThrowOnError>({
             responseTransformer: chatsCreateFromRepoResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/from-repo',
+            url: '/chats/from-repo',
             ...options,
             ...params,
             headers: {
@@ -293,9 +293,9 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -359,7 +359,7 @@ export class Chats extends HeyApiClient {
                 ] }]);
         return (options?.client ?? this.client).sse.post<ChatsCreateStreamResponses, ChatsCreateStreamErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/stream',
+            url: '/chats/stream',
             ...options,
             ...params,
             headers: {
@@ -373,16 +373,16 @@ export class Chats extends HeyApiClient {
     /**
      * Create Chat (Async)
      *
-     * Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and a "queued" status. Poll the apiUrl to check for completion.
+     * Creates a new chat with a user message and processes it in the background. Returns immediately with the chat ID and message ID. Poll for the assistant message by ID until `finishReason` is non-null.
      */
     public createAsync<ThrowOnError extends boolean = false>(parameters: {
         message: string;
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -446,7 +446,7 @@ export class Chats extends HeyApiClient {
                 ] }]);
         return (options?.client ?? this.client).post<ChatsCreateAsyncResponses, ChatsCreateAsyncErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/async',
+            url: '/chats/async',
             ...options,
             ...params,
             headers: {
@@ -460,7 +460,7 @@ export class Chats extends HeyApiClient {
     /**
      * Delete Chat
      *
-     * Deletes a chat and all its associated messages and blocks. The requester must have edit access to the chat.
+     * Deletes a chat and all its associated messages. The requester must have edit access to the chat.
      */
     public delete<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -468,7 +468,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).delete<ChatsDeleteResponses, ChatsDeleteErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}',
+            url: '/chats/{chatId}',
             ...options,
             ...params
         });
@@ -486,7 +486,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).get<ChatsGetResponses, ChatsGetErrors, ThrowOnError>({
             responseTransformer: chatsGetResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}',
+            url: '/chats/{chatId}',
             ...options,
             ...params
         });
@@ -514,7 +514,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).patch<ChatsUpdateResponses, ChatsUpdateErrors, ThrowOnError>({
             responseTransformer: chatsUpdateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}',
+            url: '/chats/{chatId}',
             ...options,
             ...params,
             headers: {
@@ -537,7 +537,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).get<ChatsGetPreviewResponses, ChatsGetPreviewErrors, ThrowOnError>({
             responseTransformer: chatsGetPreviewResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/preview',
+            url: '/chats/{chatId}/preview',
             ...options,
             ...params
         });
@@ -554,7 +554,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).get<ChatsGetFilesResponses, ChatsGetFilesErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/files',
+            url: '/chats/{chatId}/files',
             ...options,
             ...params
         });
@@ -582,7 +582,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).patch<ChatsUpdateFilesResponses, ChatsUpdateFilesErrors, ThrowOnError>({
             responseTransformer: chatsUpdateFilesResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/files',
+            url: '/chats/{chatId}/files',
             ...options,
             ...params,
             headers: {
@@ -604,7 +604,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).get<ChatsDownloadFilesResponses, ChatsDownloadFilesErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/files/download',
+            url: '/chats/{chatId}/files/download',
             ...options,
             ...params
         });
@@ -623,7 +623,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsRestoreMessageResponses, ChatsRestoreMessageErrors, ThrowOnError>({
             responseTransformer: chatsRestoreMessageResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/restore-message',
+            url: '/chats/{chatId}/restore-message',
             ...options,
             ...params,
             headers: {
@@ -652,7 +652,7 @@ export class Chats extends HeyApiClient {
         return (options?.client ?? this.client).post<ChatsDuplicateResponses, ChatsDuplicateErrors, ThrowOnError>({
             responseTransformer: chatsDuplicateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/duplicate',
+            url: '/chats/{chatId}/duplicate',
             ...options,
             ...params,
             headers: {
@@ -674,7 +674,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).post<ChatsDeployResponses, ChatsDeployErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/deploy',
+            url: '/chats/{chatId}/deploy',
             ...options,
             ...params
         });
@@ -692,7 +692,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'body', key: 'name' }] }]);
         return (options?.client ?? this.client).post<ChatsCreateVercelProjectResponses, ChatsCreateVercelProjectErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/vercel-project',
+            url: '/chats/{chatId}/vercel-project',
             ...options,
             ...params,
             headers: {
@@ -714,7 +714,7 @@ export class Chats extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }] }]);
         return (options?.client ?? this.client).sse.post<ChatsResumeResponses, ChatsResumeErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/resume',
+            url: '/chats/{chatId}/resume',
             ...options,
             ...params
         });
@@ -723,9 +723,9 @@ export class Chats extends HeyApiClient {
 
 export class Messages extends HeyApiClient {
     /**
-     * Get Messages
+     * List Messages
      *
-     * Get all messages in a chat.
+     * Lists all messages in a chat.
      */
     public list<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -740,7 +740,7 @@ export class Messages extends HeyApiClient {
         return (options?.client ?? this.client).get<MessagesListResponses, MessagesListErrors, ThrowOnError>({
             responseTransformer: messagesListResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages',
+            url: '/chats/{chatId}/messages',
             ...options,
             ...params
         });
@@ -757,9 +757,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -804,9 +804,6 @@ export class Messages extends HeyApiClient {
              */
             skillName: string;
         }>;
-        action?: {
-            type: 'fix-with-v0';
-        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
@@ -815,13 +812,12 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skills' },
-                    { in: 'body', key: 'action' }
+                    { in: 'body', key: 'skills' }
                 ] }]);
         return (options?.client ?? this.client).post<MessagesSendResponses, MessagesSendErrors, ThrowOnError>({
             responseTransformer: messagesSendResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages',
+            url: '/chats/{chatId}/messages',
             ...options,
             ...params,
             headers: {
@@ -845,7 +841,7 @@ export class Messages extends HeyApiClient {
         return (options?.client ?? this.client).get<MessagesGetResponses, MessagesGetErrors, ThrowOnError>({
             responseTransformer: messagesGetResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/{messageId}',
+            url: '/chats/{chatId}/messages/{messageId}',
             ...options,
             ...params
         });
@@ -862,9 +858,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -909,9 +905,6 @@ export class Messages extends HeyApiClient {
              */
             skillName: string;
         }>;
-        action?: {
-            type: 'fix-with-v0';
-        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
@@ -920,12 +913,11 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skills' },
-                    { in: 'body', key: 'action' }
+                    { in: 'body', key: 'skills' }
                 ] }]);
         return (options?.client ?? this.client).sse.post<MessagesSendStreamResponses, MessagesSendStreamErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/stream',
+            url: '/chats/{chatId}/messages/stream',
             ...options,
             ...params,
             headers: {
@@ -947,9 +939,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -994,9 +986,6 @@ export class Messages extends HeyApiClient {
              */
             skillName: string;
         }>;
-        action?: {
-            type: 'fix-with-v0';
-        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
@@ -1005,12 +994,11 @@ export class Messages extends HeyApiClient {
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
                     { in: 'body', key: 'attachments' },
-                    { in: 'body', key: 'skills' },
-                    { in: 'body', key: 'action' }
+                    { in: 'body', key: 'skills' }
                 ] }]);
         return (options?.client ?? this.client).post<MessagesSendAsyncResponses, MessagesSendAsyncErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/async',
+            url: '/chats/{chatId}/messages/async',
             ...options,
             ...params,
             headers: {
@@ -1024,7 +1012,7 @@ export class Messages extends HeyApiClient {
     /**
      * Resolve Task
      *
-     * Resolves a pending task in a chat, continuing the conversation. The latest message in the active chat fork must be an assistant message currently blocked on a matching task (integration setup, plan approval, question answers, or permission grants). Blocks until the model response is complete and returns the resulting message.
+     * Resolves a pending task in a chat. Blocks until the model response is complete and returns the resulting message.
      */
     public resolve<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -1114,9 +1102,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1131,7 +1119,7 @@ export class Messages extends HeyApiClient {
         return (options?.client ?? this.client).post<MessagesResolveResponses, MessagesResolveErrors, ThrowOnError>({
             responseTransformer: messagesResolveResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/resolve',
+            url: '/chats/{chatId}/messages/resolve',
             ...options,
             ...params,
             headers: {
@@ -1235,9 +1223,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1251,7 +1239,7 @@ export class Messages extends HeyApiClient {
                 ] }]);
         return (options?.client ?? this.client).sse.post<MessagesResolveStreamResponses, MessagesResolveStreamErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/resolve/stream',
+            url: '/chats/{chatId}/messages/resolve/stream',
             ...options,
             ...params,
             headers: {
@@ -1355,9 +1343,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation. `v0-auto` is deprecated and falls back to `v0-pro`.
+             * Model to use for the generation.
              */
-            modelId?: 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1371,7 +1359,7 @@ export class Messages extends HeyApiClient {
                 ] }]);
         return (options?.client ?? this.client).post<MessagesResolveAsyncResponses, MessagesResolveAsyncErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/resolve/async',
+            url: '/chats/{chatId}/messages/resolve/async',
             ...options,
             ...params,
             headers: {
@@ -1394,7 +1382,7 @@ export class Messages extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'path', key: 'messageId' }] }]);
         return (options?.client ?? this.client).post<MessagesStopResponses, MessagesStopErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/chats/{chatId}/messages/{messageId}/stop',
+            url: '/chats/{chatId}/messages/{messageId}/stop',
             ...options,
             ...params
         });
@@ -1411,7 +1399,7 @@ export class McpServers extends HeyApiClient {
         return (options?.client ?? this.client).get<McpServersListResponses, McpServersListErrors, ThrowOnError>({
             responseTransformer: mcpServersListResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/mcp-servers',
+            url: '/mcp-servers',
             ...options
         });
     }
@@ -1481,7 +1469,7 @@ export class McpServers extends HeyApiClient {
         return (options?.client ?? this.client).post<McpServersCreateResponses, McpServersCreateErrors, ThrowOnError>({
             responseTransformer: mcpServersCreateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/mcp-servers',
+            url: '/mcp-servers',
             ...options,
             ...params,
             headers: {
@@ -1503,7 +1491,7 @@ export class McpServers extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'mcpServerId' }] }]);
         return (options?.client ?? this.client).delete<McpServersDeleteResponses, McpServersDeleteErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/mcp-servers/{mcpServerId}',
+            url: '/mcp-servers/{mcpServerId}',
             ...options,
             ...params
         });
@@ -1521,7 +1509,7 @@ export class McpServers extends HeyApiClient {
         return (options?.client ?? this.client).get<McpServersGetResponses, McpServersGetErrors, ThrowOnError>({
             responseTransformer: mcpServersGetResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/mcp-servers/{mcpServerId}',
+            url: '/mcp-servers/{mcpServerId}',
             ...options,
             ...params
         });
@@ -1594,7 +1582,7 @@ export class McpServers extends HeyApiClient {
         return (options?.client ?? this.client).patch<McpServersUpdateResponses, McpServersUpdateErrors, ThrowOnError>({
             responseTransformer: mcpServersUpdateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/mcp-servers/{mcpServerId}',
+            url: '/mcp-servers/{mcpServerId}',
             ...options,
             ...params,
             headers: {
@@ -1615,7 +1603,7 @@ export class Webhooks extends HeyApiClient {
     public list<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
         return (options?.client ?? this.client).get<WebhooksListResponses, WebhooksListErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/hooks',
+            url: '/hooks',
             ...options
         });
     }
@@ -1640,7 +1628,7 @@ export class Webhooks extends HeyApiClient {
         return (options?.client ?? this.client).post<WebhooksCreateResponses, WebhooksCreateErrors, ThrowOnError>({
             responseTransformer: webhooksCreateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/hooks',
+            url: '/hooks',
             ...options,
             ...params,
             headers: {
@@ -1662,7 +1650,7 @@ export class Webhooks extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'hookId' }] }]);
         return (options?.client ?? this.client).delete<WebhooksDeleteResponses, WebhooksDeleteErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/hooks/{hookId}',
+            url: '/hooks/{hookId}',
             ...options,
             ...params
         });
@@ -1680,7 +1668,7 @@ export class Webhooks extends HeyApiClient {
         return (options?.client ?? this.client).get<WebhooksGetResponses, WebhooksGetErrors, ThrowOnError>({
             responseTransformer: webhooksGetResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/hooks/{hookId}',
+            url: '/hooks/{hookId}',
             ...options,
             ...params
         });
@@ -1706,7 +1694,7 @@ export class Webhooks extends HeyApiClient {
         return (options?.client ?? this.client).patch<WebhooksUpdateResponses, WebhooksUpdateErrors, ThrowOnError>({
             responseTransformer: webhooksUpdateResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/api/v2/hooks/{hookId}',
+            url: '/hooks/{hookId}',
             ...options,
             ...params,
             headers: {
