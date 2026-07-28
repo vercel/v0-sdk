@@ -3574,7 +3574,7 @@
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
                       }
                     ],
-                    "description": "The task resolution data. The latest message in the active chat fork must be an assistant message blocked on the matching task type."
+                    "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
                   },
                   "responseMode": {
                     "default": "sync",
