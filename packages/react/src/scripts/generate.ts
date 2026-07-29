@@ -36,6 +36,7 @@ type Operation = {
   hasBody: boolean
   responseKind: 'json' | 'stream' | 'blob'
   paginated: boolean
+  invalidates?: readonly V0SdkOperationId[]
   transformer?: string
 }
 
@@ -79,6 +80,13 @@ const semanticNames = {
   'webhooks.update': 'useUpdateWebhook',
   'webhooks.delete': 'useDeleteWebhook',
 } as const satisfies Record<V0SdkOperationId, string>
+
+const mutationInvalidations: Partial<Record<V0SdkOperationId, readonly V0SdkOperationId[]>> = {
+  'chats.delete': ['chats.list'],
+  'chats.restoreMessage': ['chats.getFiles', 'messages.list'],
+  'chats.update': ['chats.get', 'chats.list'],
+  'chats.updateFiles': ['chats.getFiles', 'messages.list'],
+}
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../../..')
@@ -147,6 +155,7 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
           : 'json'
       const typePrefix = toTypePrefix(operationId)
       const transformer = `${lowerFirst(typePrefix)}ResponseTransformer`
+      const invalidates = mutationInvalidations[operationId]
 
       operations.push({
         operationId,
@@ -159,6 +168,7 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
         paginated: parameters.some(
           (parameter) => parameter.in === 'query' && parameter.name === 'cursor',
         ),
+        ...(invalidates ? { invalidates } : {}),
         ...(availableTransformers.has(transformer) ? { transformer } : {}),
       })
     }
@@ -222,7 +232,7 @@ function renderOperation(operation: Operation): string {
 
 function renderOperationDefinition(operation: Operation): string {
   const responseType = getResponseType(operation)
-  return `const ${getOperationName(operation)}: V0Operation<${responseType}> = {\n  id: '${operation.operationId}',\n  method: '${operation.httpMethod}',\n  response: '${operation.responseKind}'${operation.transformer ? `,\n  transform: ${operation.transformer}` : ''},\n}`
+  return `const ${getOperationName(operation)}: V0Operation<${responseType}> = {\n  id: '${operation.operationId}',\n  method: '${operation.httpMethod}',\n  response: '${operation.responseKind}'${operation.transformer ? `,\n  transform: ${operation.transformer}` : ''}${operation.invalidates ? `,\n  invalidates: [${operation.invalidates.map((id) => `'${id}'`).join(', ')}]` : ''},\n}`
 }
 
 function renderQuery(operation: Operation): string {
