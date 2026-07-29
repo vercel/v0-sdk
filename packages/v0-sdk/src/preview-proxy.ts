@@ -68,6 +68,7 @@ export async function fetchPreview({
   const incomingUrl = new URL(request.url)
   const baseHeaders = new Headers(request.headers)
   baseHeaders.delete('host')
+  baseHeaders.delete('transfer-encoding')
 
   const upstreamUrl = new URL(normalizePreviewPath(path), preview.url)
   upstreamUrl.search = incomingUrl.search
