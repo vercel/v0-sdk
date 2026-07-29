@@ -149,7 +149,11 @@ export function v0StreamToUIMessageStream(
   result: V0StreamResult,
   options: {
     seed?: Message
-    onUpdate?: (update: V0StreamUpdate | V0StreamFinal) => void
+    /**
+     * Return `false` to stop forwarding the stream without surfacing an error
+     * to the consumer.
+     */
+    onUpdate?: (update: V0StreamUpdate | V0StreamFinal) => boolean | void
     onClose?: () => void
     abort?: (reason?: unknown) => void
   } = {},
@@ -171,13 +175,25 @@ export function v0StreamToUIMessageStream(
         while (!canceled) {
           const next = await iterator.next()
           if (next.done) break
-          options.onUpdate?.(next.value)
+          if (options.onUpdate?.(next.value) === false) {
+            canceled = true
+            options.abort?.()
+            await iterator.return?.()
+            controller.close()
+            return
+          }
           for (const chunk of reducer.push(next.value)) controller.enqueue(chunk)
         }
 
         if (!canceled) {
           const final = await result.final
-          options.onUpdate?.(final)
+          if (options.onUpdate?.(final) === false) {
+            canceled = true
+            options.abort?.()
+            await iterator.return?.()
+            controller.close()
+            return
+          }
           for (const chunk of reducer.push(final, true)) controller.enqueue(chunk)
           controller.close()
         }

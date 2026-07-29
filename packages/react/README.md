@@ -123,4 +123,38 @@ export function AIChat({ history }: { history: MessagesListResponse['messages'] 
 
 `toV0UIMessages` maps persisted newest-first v0 history to chronological AI SDK messages. Text, reasoning, files, tools, rich v0 data parts, metadata, and resumable state are preserved. To stop generation, import `useStopMessage` from `@v0-sdk/react/swr`, call it for the active assistant on the server, then call the AI SDK's `chat.stop()` locally.
 
+When a newly created chat should immediately navigate to a different page, stop
+the current transport directly from `onChatCreated`:
+
+```tsx
+const transport = new V0Transport({
+  urls,
+  onChatCreated(chatId, { stop }) {
+    stop()
+    router.push(`/chats/${chatId}`)
+  },
+})
+```
+
+## Pending tasks
+
+Use `getPendingV0Task` to find the latest questions, plan, integration request,
+or permission request carried by a v0 UI message:
+
+```tsx
+import { getPendingV0Task } from '@v0-sdk/react'
+
+const pendingTask = getPendingV0Task(chat.messages.at(-1)!)
+```
+
+## Cache revalidation
+
+Related mounted queries are revalidated after successful mutations:
+
+- `useDeleteChat` revalidates chat lists.
+- `useRestoreMessage` and `useUpdateChatFiles` revalidate messages and files.
+- `useUpdateChat` revalidates the chat and chat lists.
+
+Pass `revalidate: false` to the mutation configuration to opt out.
+
 See [`examples/react-chat`](../../examples/react-chat) for a complete one-page app and authenticated proxy routes.

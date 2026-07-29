@@ -16,6 +16,8 @@ export interface V0Operation<Data> {
   method: V0HttpMethod
   response: V0ResponseKind
   transform?: V0ResponseTransformer<Data>
+  /** Query operation IDs revalidated after this mutation succeeds. */
+  invalidates?: readonly string[]
 }
 
 /** HTTP error returned by the application's v0 proxy. */
