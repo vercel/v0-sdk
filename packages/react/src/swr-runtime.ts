@@ -1,4 +1,4 @@
-import useSWR, { type Key, type SWRConfiguration } from 'swr'
+import useSWR, { type Key, type SWRConfiguration, useSWRConfig } from 'swr'
 import useSWRInfinite, {
   type SWRInfiniteConfiguration,
   type SWRInfiniteKeyLoader,
@@ -74,13 +74,21 @@ export function useV0Mutation<Data, ErrorBody, Input>(
   url: string,
   configuration: V0MutationConfiguration<Data, ErrorBody, Input> = {},
 ) {
+  const { mutate } = useSWRConfig()
   const { request, ...swrConfiguration } = configuration
   const key = createV0Key(operation.id, url, null)
 
   return useSWRMutation<Data, V0ResponseError<ErrorBody>, Key, Input>(
     key,
-    (_key: Key, { arg }: { arg: Input }) =>
-      requestV0Operation<Data, ErrorBody>(url, operation, arg, request),
+    async (_key: Key, { arg }: { arg: Input }) => {
+      const data = await requestV0Operation<Data, ErrorBody>(url, operation, arg, request)
+
+      if (operation.invalidates?.length && swrConfiguration.revalidate !== false) {
+        await mutate((candidate) => isV0OperationKey(candidate, operation.invalidates!))
+      }
+
+      return data
+    },
     swrConfiguration,
   )
 }
@@ -106,9 +114,31 @@ export function useV0CursorQuery<Page, ErrorBody, Input extends object>(
     return createV0Key(operation.id, url, pageInput)
   }
 
-  return useSWRInfinite<Page, V0ResponseError<ErrorBody>>(
+  const result = useSWRInfinite<Page, V0ResponseError<ErrorBody>>(
     getKey,
     (key) => requestV0Operation<Page, ErrorBody>(url!, operation, key.at(-1), request),
     swrConfiguration,
+  )
+
+  // SWR's global key filters skip its internal infinite-query keys. Register a
+  // regular key whose revalidation delegates to the bound infinite mutation.
+  const invalidationKey =
+    url && input && enabled !== false ? (['v0-infinite', operation.id, url, input] as const) : null
+  useSWR(invalidationKey, () => result.mutate(), {
+    revalidateOnFocus: false,
+    revalidateOnMount: false,
+    revalidateOnReconnect: false,
+    shouldRetryOnError: false,
+  })
+
+  return result
+}
+
+function isV0OperationKey(key: unknown, operationIds: readonly string[]): boolean {
+  return (
+    Array.isArray(key) &&
+    (key[0] === 'v0' || key[0] === 'v0-infinite') &&
+    typeof key[1] === 'string' &&
+    operationIds.includes(key[1])
   )
 }

@@ -21,6 +21,11 @@ export interface V0TransportUrls {
   resume: V0TransportChatUrl
 }
 
+export interface V0TransportStreamControls {
+  /** Stops the active transport stream without reporting an error to `useChat`. */
+  stop: () => void
+}
+
 export interface V0TransportOptions {
   urls: V0TransportUrls
   chatId?: string
@@ -29,7 +34,7 @@ export interface V0TransportOptions {
   create?: Omit<ChatsCreateStreamData['body'], 'message' | 'attachments'>
   send?: Omit<MessagesSendStreamData['body'], 'message' | 'attachments'>
   request?: V0RequestOptions
-  onChatCreated?: (chatId: string) => void
+  onChatCreated?: (chatId: string, controls: V0TransportStreamControls) => void
 }
 
 const streamOperation: V0Operation<Response> = {
@@ -149,11 +154,18 @@ export class V0Transport implements ChatTransport<V0UIMessage> {
     }
   }
 
-  private captureChatId(update: V0StreamUpdate | V0StreamFinal) {
+  private captureChatId(update: V0StreamUpdate | V0StreamFinal): boolean {
     const chatId = update.chat?.id ?? update.message?.chatId
-    if (!chatId || chatId === this.currentChatId) return
+    if (!chatId || chatId === this.currentChatId) return true
+
     this.currentChatId = chatId
-    this.options.onChatCreated?.(chatId)
+    let stopped = false
+    this.options.onChatCreated?.(chatId, {
+      stop: () => {
+        stopped = true
+      },
+    })
+    return !stopped
   }
 }
 

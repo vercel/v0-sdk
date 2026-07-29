@@ -305,6 +305,7 @@ const deleteChatOperation: V0Operation<ChatsDeleteResponse> = {
   id: 'chats.delete',
   method: 'DELETE',
   response: 'json',
+  invalidates: ['chats.list'],
 }
 
 export function useDeleteChat(
@@ -447,6 +448,7 @@ const restoreMessageOperation: V0Operation<ChatsRestoreMessageResponse> = {
   method: 'POST',
   response: 'json',
   transform: chatsRestoreMessageResponseTransformer,
+  invalidates: ['chats.getFiles', 'messages.list'],
 }
 
 export type RestoreMessageInput = ChatsRestoreMessageData['body']
@@ -479,6 +481,7 @@ const updateChatOperation: V0Operation<ChatsUpdateResponse> = {
   method: 'PATCH',
   response: 'json',
   transform: chatsUpdateResponseTransformer,
+  invalidates: ['chats.get', 'chats.list'],
 }
 
 export type UpdateChatInput = ChatsUpdateData['body']
@@ -498,6 +501,7 @@ const updateChatFilesOperation: V0Operation<ChatsUpdateFilesResponse> = {
   method: 'PATCH',
   response: 'json',
   transform: chatsUpdateFilesResponseTransformer,
+  invalidates: ['chats.getFiles', 'messages.list'],
 }
 
 export type UpdateChatFilesInput = ChatsUpdateFilesData['body']

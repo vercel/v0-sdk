@@ -12,5 +12,12 @@ export {
   toV0UIMessages,
 } from './messages'
 export type { Serialized, V0UIDataTypes, V0UIMessage, V0UIMessageMetadata } from './messages'
+export { getPendingV0Task } from './tasks'
+export type { V0PendingTask } from './tasks'
 export { V0Transport } from './transport'
-export type { V0TransportChatUrl, V0TransportOptions, V0TransportUrls } from './transport'
+export type {
+  V0TransportChatUrl,
+  V0TransportOptions,
+  V0TransportStreamControls,
+  V0TransportUrls,
+} from './transport'
