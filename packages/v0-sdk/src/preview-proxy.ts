@@ -6,7 +6,9 @@ import type { ChatsGetPreviewResponse } from './generated'
 export type FetchPreviewOptions = {
   /**
    * Request received by your proxy route. The helper preserves the method,
-   * headers, body, and query string when forwarding to the preview URL.
+   * body, query string, and application headers when forwarding to the preview
+   * URL. Credentials, hop-by-hop headers, and proxy infrastructure headers are
+   * not forwarded.
    */
   request: Request
   /**
@@ -39,6 +41,47 @@ export type FetchPreviewOptions = {
 
 const previewRefreshHeader = 'x-v0-preview-refresh'
 const previewTokenHeader = 'x-v0-preview-token'
+const privateNoStore = 'private, no-store'
+
+const hopByHopHeaders = [
+  'connection',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'proxy-connection',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+]
+
+const strippedRequestHeaders = new Set([
+  ...hopByHopHeaders,
+  'authorization',
+  'content-length',
+  'cookie',
+  'forwarded',
+  'host',
+  'via',
+  'x-real-ip',
+])
+
+const strippedRequestHeaderPrefixes = ['x-envoy-', 'x-forwarded-', 'x-now-', 'x-vercel-']
+
+const strippedResponseHeaders = [
+  ...hopByHopHeaders,
+  'age',
+  'cache-status',
+  'cdn-cache-control',
+  'cf-cache-status',
+  'content-encoding',
+  'content-length',
+  'expires',
+  'set-cookie',
+  'surrogate-control',
+  'vercel-cdn-cache-control',
+  'x-vercel-cache',
+]
 
 /**
  * Handles one request to your preview proxy route.
@@ -66,19 +109,17 @@ export async function fetchPreview({
   }
 
   const incomingUrl = new URL(request.url)
-  const baseHeaders = new Headers(request.headers)
-  baseHeaders.delete('host')
 
   const upstreamUrl = new URL(normalizePreviewPath(path), preview.url)
   upstreamUrl.search = incomingUrl.search
 
-  const headers = new Headers(baseHeaders)
-  headers.set(previewTokenHeader, preview.token)
+  const headers = getPreviewRequestHeaders(request, preview.token)
 
   const hasBody = request.method !== 'GET' && request.method !== 'HEAD'
   const body = hasBody ? await request.arrayBuffer() : undefined
 
   const response = await fetchFn(upstreamUrl, {
+    cache: 'no-store',
     method: request.method,
     headers,
     body,
@@ -98,13 +139,40 @@ export async function fetchPreview({
 }
 
 function redirectToFallback(request: Request, fallbackUrl: string | URL) {
-  return Response.redirect(new URL(fallbackUrl, request.url), 302)
+  return new Response(null, {
+    status: 302,
+    headers: {
+      'cache-control': privateNoStore,
+      location: new URL(fallbackUrl, request.url).toString(),
+    },
+  })
+}
+
+function getPreviewRequestHeaders(request: Request, previewToken: string) {
+  const headers = new Headers(request.headers)
+
+  const headerNames = Array.from(headers.keys())
+  for (const name of headerNames) {
+    if (
+      strippedRequestHeaders.has(name) ||
+      strippedRequestHeaderPrefixes.some((prefix) => name.startsWith(prefix))
+    ) {
+      headers.delete(name)
+    }
+  }
+
+  headers.set(previewTokenHeader, previewToken)
+  return headers
 }
 
 function getPreviewResponseHeaders(response: Response) {
   const headers = new Headers(response.headers)
-  headers.delete('content-encoding')
-  headers.delete('content-length')
+
+  for (const name of strippedResponseHeaders) {
+    headers.delete(name)
+  }
+
+  headers.set('cache-control', privateNoStore)
   return headers
 }
 
