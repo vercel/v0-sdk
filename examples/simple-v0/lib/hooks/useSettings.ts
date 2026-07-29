@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import type { ChatsCreateData } from 'v0'
 
-export type ModelType = 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+export type ModelType = NonNullable<ChatsCreateData['body']['modelConfiguration']>['modelId']
 
 export interface Settings {
   model: ModelType
@@ -70,11 +71,5 @@ function readStoredSettings(): Settings {
 }
 
 function isModelType(value: unknown): value is ModelType {
-  return (
-    value === 'v0-auto' ||
-    value === 'v0-mini' ||
-    value === 'v0-pro' ||
-    value === 'v0-max' ||
-    value === 'v0-max-fast'
-  )
+  return value === 'v0-mini' || value === 'v0-pro' || value === 'v0-max' || value === 'v0-max-fast'
 }

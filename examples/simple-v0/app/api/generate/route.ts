@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { Chat } from 'v0'
+import type { Chat, ChatsCreateData } from 'v0'
 import { checkRateLimit, getUserIdentifier } from '@/lib/rate-limiter'
 import { getV0Client, normalizeChat } from '@/lib/v0'
 
-type ModelId = 'v0-auto' | 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast'
+type ModelId = NonNullable<ChatsCreateData['body']['modelConfiguration']>['modelId']
 
 type Attachment = {
   url: string
@@ -202,13 +202,7 @@ function normalizeAttachments(value: unknown): Attachment[] {
 }
 
 function isModelId(value: unknown): value is ModelId {
-  return (
-    value === 'v0-auto' ||
-    value === 'v0-mini' ||
-    value === 'v0-pro' ||
-    value === 'v0-max' ||
-    value === 'v0-max-fast'
-  )
+  return value === 'v0-mini' || value === 'v0-pro' || value === 'v0-max' || value === 'v0-max-fast'
 }
 
 function getErrorMessage(error: unknown) {
