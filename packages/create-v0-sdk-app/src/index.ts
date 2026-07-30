@@ -38,18 +38,12 @@ const onPromptState = (state: { value: InitialReturnValue; aborted: boolean; exi
   }
 }
 
+const defaultExample: ExampleType = 'v0-clone'
+
 const examples: { name: ExampleType; description: string }[] = [
   {
-    name: 'react',
-    description: 'Minimal Next.js chat using @v0-sdk/react and AI SDK useChat (Recommended)',
-  },
-  {
-    name: 'simple-v0',
-    description: 'Next.js app for generating, previewing, managing, and deploying v0 chats',
-  },
-  {
-    name: 'basic',
-    description: 'Minimal TypeScript scripts for sync and streaming v2 chat creation',
+    name: defaultExample,
+    description: 'Full-featured v0 clone built with the v0 SDK',
   },
 ]
 
@@ -150,25 +144,9 @@ async function run(): Promise<void> {
     process.exit(1)
   }
 
-  let example: ExampleType | undefined = opts.example
+  const example: ExampleType = opts.example || defaultExample
 
-  if (!example) {
-    const res = await prompts({
-      onState: onPromptState,
-      type: 'select',
-      name: 'example',
-      message: 'Which example would you like to use?',
-      choices: examples.map((ex) => ({
-        title: ex.name,
-        value: ex.name,
-        description: ex.description,
-      })),
-      initial: 0,
-    })
-    example = res.example
-  }
-
-  if (!example || !examples.some((ex) => ex.name === example)) {
+  if (!examples.some((ex) => ex.name === example)) {
     console.error(
       `Invalid example "${example}". Available examples are:\n` +
         examples.map((ex) => `  - ${ex.name}`).join('\n'),
