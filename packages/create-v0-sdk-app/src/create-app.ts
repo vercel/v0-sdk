@@ -94,7 +94,11 @@ export async function createApp({
 
         for (const [name, version] of Object.entries(deps)) {
           if (version === 'workspace:*') {
-            deps[name] = packageVersions[name] ?? 'latest'
+            if (packageVersions[name]) {
+              deps[name] = packageVersions[name]
+            } else {
+              deps[name] = 'latest'
+            }
           }
         }
       }
