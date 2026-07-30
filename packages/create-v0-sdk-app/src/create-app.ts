@@ -125,6 +125,9 @@ export async function createApp({
   }
 
   console.log(`${green('Success!')} Created ${appName} at ${appPath}`)
+  console.log()
+  console.log(`Add ${cyan('V0_API_KEY')} to ${cyan('.env.local')} before starting the app.`)
+  console.log(`Create an API key at ${cyan('https://v0.app/settings/keys')}.`)
 
   const availableScripts = scriptDisplayOrder.filter((script) => packageScripts?.[script])
 
