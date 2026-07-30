@@ -21,12 +21,12 @@ export function ChatWorkspace({
   filesPromise: Promise<ChatFilesResult>
 }) {
   const [view, setView] = useState<ChatView>('preview')
-  const [restoreRevision, setRestoreRevision] = useState(0)
+  const [contentRevision, setContentRevision] = useState(0)
   const [isPreviewReady, setIsPreviewReady] = useState(false)
 
-  const handleRestore = () => {
+  const handleContentChange = () => {
     setIsPreviewReady(false)
-    setRestoreRevision((revision) => revision + 1)
+    setContentRevision((revision) => revision + 1)
   }
 
   return (
@@ -42,13 +42,13 @@ export function ChatWorkspace({
           <ChatConversation
             chatId={chat.id}
             messages={messages}
-            onRestore={handleRestore}
+            onContentChange={handleContentChange}
             vercelProjectId={chat.vercelProjectId}
           />
         </div>
         <div className="hidden min-w-0 flex-1 md:block">
           <div className={view === 'preview' ? 'h-full' : 'hidden'}>
-            <PreviewPane chatId={chat.id} key={restoreRevision} onReadyChange={setIsPreviewReady} />
+            <PreviewPane chatId={chat.id} key={contentRevision} onReadyChange={setIsPreviewReady} />
           </div>
           <div className={view === 'code' ? 'h-full' : 'hidden'}>
             <Suspense fallback={<CodeEditorLoading />}>
@@ -56,7 +56,7 @@ export function ChatWorkspace({
                 chatId={chat.id}
                 filesPromise={filesPromise}
                 isPreviewReady={isPreviewReady}
-                key={restoreRevision}
+                key={contentRevision}
               />
             </Suspense>
           </div>

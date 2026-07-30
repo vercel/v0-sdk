@@ -20,12 +20,12 @@ import { useSettings } from '@/lib/hooks/useSettings'
 export function ChatConversation({
   chatId,
   messages: initialMessages,
-  onRestore,
+  onContentChange,
   vercelProjectId,
 }: {
   chatId: string
   messages: Message[]
-  onRestore: () => void
+  onContentChange: () => void
   vercelProjectId?: string
 }) {
   const { settings, updateSettings } = useSettings()
@@ -80,6 +80,7 @@ export function ChatConversation({
     resume: shouldResumeV0Chat(initialMessages),
     transport,
     onFinish: () => {
+      onContentChange()
       void refreshMessages().catch((error) => {
         setActionError(errorMessage(error, 'Failed to refresh messages.'))
       })
@@ -133,7 +134,7 @@ export function ChatConversation({
 
     try {
       await restoreMessageMutation.trigger({ messageId })
-      onRestore()
+      onContentChange()
     } catch (error) {
       setActionError(errorMessage(error, 'Failed to restore message.'))
     } finally {
@@ -165,6 +166,7 @@ export function ChatConversation({
         setMessages((current) => upsertMessage(current, nextMessage))
       }
 
+      onContentChange()
       await refreshMessages()
     } catch (error) {
       setActionError(error instanceof Error ? error.message : 'Failed to resolve task.')
@@ -186,6 +188,7 @@ export function ChatConversation({
     try {
       await stopMessageMutation.trigger()
       await stop()
+      onContentChange()
       await refreshMessages()
     } catch (error) {
       setActionError(errorMessage(error, 'Failed to stop message.'))

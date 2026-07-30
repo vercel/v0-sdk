@@ -125,10 +125,10 @@ function ConversationMessage({
     </Message>
   )
 
-  if (message.role !== 'user' || !onRestore) return content
+  if (!message.metadata?.restorable || !onRestore) return content
 
   return (
-    <div className="flex flex-col items-end">
+    <div className="flex flex-col items-start">
       {content}
       <button
         className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-50"
