@@ -32,20 +32,20 @@ bun create v0-sdk-app my-app
 
 ## Available Examples
 
-### simple-v0 (Recommended)
-
-Next.js app that uses the v2 SDK to generate, preview, manage, and deploy v0 chats.
-
-```bash
-pnpm create v0-sdk-app my-app --example simple-v0
-```
-
-### react
+### react (Recommended)
 
 Minimal Next.js chat using `@v0-sdk/react` with AI SDK `useChat`, streaming, history, and stream resumption.
 
 ```bash
 pnpm create v0-sdk-app my-react-app --example react
+```
+
+### simple-v0
+
+Next.js app that uses the v2 SDK to generate, preview, manage, and deploy v0 chats.
+
+```bash
+pnpm create v0-sdk-app my-app --example simple-v0
 ```
 
 ### basic
@@ -63,8 +63,8 @@ If you do not specify an example, the CLI prompts you to choose one:
 ```bash
 pnpm create v0-sdk-app my-app
 # ? Which example would you like to use?
-# > simple-v0 - Next.js app for generating, previewing, managing, and deploying v0 chats (Recommended)
-#   react - Minimal Next.js chat using @v0-sdk/react and AI SDK useChat
+# > react - Minimal Next.js chat using @v0-sdk/react and AI SDK useChat (Recommended)
+#   simple-v0 - Next.js app for generating, previewing, managing, and deploying v0 chats
 #   basic - Minimal TypeScript scripts for sync and streaming v2 chat creation
 ```
 

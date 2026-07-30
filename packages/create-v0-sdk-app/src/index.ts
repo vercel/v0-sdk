@@ -40,13 +40,12 @@ const onPromptState = (state: { value: InitialReturnValue; aborted: boolean; exi
 
 const examples: { name: ExampleType; description: string }[] = [
   {
-    name: 'simple-v0',
-    description:
-      'Next.js app for generating, previewing, managing, and deploying v0 chats (Recommended)',
+    name: 'react',
+    description: 'Minimal Next.js chat using @v0-sdk/react and AI SDK useChat (Recommended)',
   },
   {
-    name: 'react',
-    description: 'Minimal Next.js chat using @v0-sdk/react and AI SDK useChat',
+    name: 'simple-v0',
+    description: 'Next.js app for generating, previewing, managing, and deploying v0 chats',
   },
   {
     name: 'basic',
