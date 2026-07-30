@@ -112,7 +112,7 @@
       "name": "@v0-sdk/ai-tools",
       "version": "3.0.0",
       "dependencies": {
-        "v0": "workspace:*",
+        "v0": "3.0.0",
         "zod": "^4.1.11",
       },
       "devDependencies": {
@@ -153,7 +153,7 @@
       "name": "@v0-sdk/react",
       "version": "3.0.0",
       "dependencies": {
-        "v0": "workspace:*",
+        "v0": "3.0.0",
       },
       "devDependencies": {
         "@ai-sdk/react": "^4.0.34",
