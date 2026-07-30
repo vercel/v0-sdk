@@ -1,5 +1,6 @@
 import { type ClientOptions, V0Sdk } from './generated'
 import { createClient, createConfig } from './generated/client'
+import { client as generatedClient } from './generated/client.gen'
 import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
 import { vercelOidcAuth } from './vercel-oidc'
@@ -74,7 +75,7 @@ export function createV0Client(config: CreateV0ClientConfig = {}): V0Client {
 
   const client = createClient(
     createConfig<ClientOptions>({
-      baseUrl: 'https://v0.app/api/v2',
+      ...generatedClient.getConfig(),
       ...clientConfig,
       auth,
     }),

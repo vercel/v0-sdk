@@ -1,11 +1,11 @@
 import { createV0Client, readV0Stream } from 'v0'
 
-const baseUrl = process.env.V0_BASE_URL ?? 'https://v0.app'
-const isLocal = baseUrl.includes('localhost')
+const baseUrl = process.env.V0_BASE_URL
+const isLocal = baseUrl?.includes('localhost') ?? false
 
 const v0 = createV0Client({
   auth: (isLocal ? process.env.V0_API_KEY_LOCAL : process.env.V0_API_KEY)!,
-  baseUrl,
+  ...(baseUrl ? { baseUrl } : {}),
 })
 
 const serverResult = await v0.chats.createStream({
