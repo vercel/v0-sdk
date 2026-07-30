@@ -1,3 +1,5 @@
+import { getCloneOrigin } from '@/lib/origins'
+
 function escapeHtml(value: string) {
   return value
     .replaceAll('&', '&amp;')
@@ -16,6 +18,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ chat
     requestedReturnTo?.startsWith(`${previewPath}?`)
       ? requestedReturnTo
       : previewPath
+  const cloneOrigin = getCloneOrigin()
 
   return new Response(
     `<!doctype html>
@@ -24,6 +27,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ chat
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="refresh" content="2;url=${escapeHtml(returnTo)}" />
+    <script>
+      const notifyParent = () => parent.postMessage(
+        { type: 'v0-preview-loading' },
+        ${JSON.stringify(cloneOrigin)}
+      )
+      notifyParent()
+      setInterval(notifyParent, 250)
+    </script>
     <style>
       html, body { height: 100%; margin: 0; }
       body {

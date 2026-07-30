@@ -1,9 +1,11 @@
 import { basename, dirname, join } from 'node:path'
+import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import {
   copyFileSync,
   existsSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   unlinkSync,
   writeFileSync,
@@ -20,6 +22,7 @@ export type ExampleType = 'v0-clone'
 
 type PackageJson = {
   name?: string
+  packageManager?: string
   scripts?: Record<string, string>
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>
@@ -32,9 +35,9 @@ const packageVersions: Record<string, string> = {
 }
 
 const scriptDescriptions: Record<string, string> = {
-  dev: 'Starts the development server.',
-  build: 'Builds the app for production.',
-  start: 'Runs the built app in production mode.',
+  dev: 'Starts the web app and preview proxy.',
+  build: 'Builds both apps for production.',
+  start: 'Runs both built apps in production mode.',
 }
 
 const scriptDisplayOrder = ['dev', 'build', 'start']
@@ -80,37 +83,37 @@ export async function createApp({
 
   installAgentSkill(appPath)
 
-  // Update package.json to use published packages instead of workspace references
-  const packageJsonPath = join(appPath, 'package.json')
+  const rootPackageJsonPath = join(appPath, 'package.json')
   let packageScripts: Record<string, string> | undefined
-  if (existsSync(packageJsonPath)) {
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJson
+  if (existsSync(rootPackageJsonPath)) {
+    for (const packageJsonPath of findPackageJsonPaths(appPath)) {
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJson
 
-    // Replace workspace dependencies with actual versions
-    const replaceWorkspaceDeps = (deps: Record<string, string> | undefined) => {
-      if (!deps) return
+      const replaceWorkspaceDeps = (deps: Record<string, string> | undefined) => {
+        if (!deps) return
 
-      for (const [name, version] of Object.entries(deps)) {
-        if (version === 'workspace:*') {
-          // Map workspace packages to their published versions
-          if (packageVersions[name]) {
-            deps[name] = packageVersions[name]
-          } else {
-            // Fallback to latest version
-            deps[name] = 'latest'
+        for (const [name, version] of Object.entries(deps)) {
+          if (version === 'workspace:*') {
+            if (packageVersions[name]) {
+              deps[name] = packageVersions[name]
+            } else {
+              deps[name] = 'latest'
+            }
           }
         }
       }
+
+      replaceWorkspaceDeps(packageJson.dependencies)
+      replaceWorkspaceDeps(packageJson.devDependencies)
+
+      if (packageJsonPath === rootPackageJsonPath) {
+        packageJson.name = appName
+        packageJson.packageManager = getPackageManagerField(packageManager)
+        packageScripts = packageJson.scripts
+      }
+
+      writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
     }
-
-    replaceWorkspaceDeps(packageJson.dependencies)
-    replaceWorkspaceDeps(packageJson.devDependencies)
-
-    // Update the package name to match the app name
-    packageJson.name = appName
-    packageScripts = packageJson.scripts
-
-    writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
     removeLockfiles(appPath)
   }
 
@@ -126,7 +129,8 @@ export async function createApp({
 
   console.log(`${green('Success!')} Created ${appName} at ${appPath}`)
   console.log()
-  console.log(`Add ${cyan('V0_API_KEY')} to ${cyan('.env.local')} before starting the app.`)
+  console.log(`Copy ${cyan('.env.example')} to ${cyan('.env.local')} before starting the app.`)
+  console.log(`Add your ${cyan('V0_API_KEY')} to ${cyan('.env.local')}.`)
   console.log(`Create an API key at ${cyan('https://v0.app/settings/keys')}.`)
 
   const availableScripts = scriptDisplayOrder.filter((script) => packageScripts?.[script])
@@ -161,6 +165,14 @@ function getRunCommand(packageManager: PackageManager, script: string): string {
   return `${packageManager} ${packageManager === 'npm' ? 'run ' : ''}${script}`
 }
 
+function getPackageManagerField(packageManager: PackageManager): string {
+  const version = execFileSync(packageManager, ['--version'], {
+    encoding: 'utf8',
+  }).trim()
+
+  return `${packageManager}@${version}`
+}
+
 function installAgentSkill(appPath: string): void {
   const source = join(dirname(fileURLToPath(import.meta.url)), '..', 'templates', 'v0', 'SKILL.md')
   const destination = join(appPath, '.agents', 'skills', 'v0', 'SKILL.md')
@@ -176,4 +188,21 @@ function removeLockfiles(appPath: string): void {
       unlinkSync(lockfilePath)
     }
   }
+}
+
+function findPackageJsonPaths(directory: string): string[] {
+  const packageJsonPaths: string[] = []
+
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.name === '.git' || entry.name === 'node_modules') continue
+
+    const entryPath = join(directory, entry.name)
+    if (entry.isDirectory()) {
+      packageJsonPaths.push(...findPackageJsonPaths(entryPath))
+    } else if (entry.name === 'package.json') {
+      packageJsonPaths.push(entryPath)
+    }
+  }
+
+  return packageJsonPaths
 }
