@@ -46,6 +46,8 @@ export type V0ToolName =
   | 'messagesSendAsync'
   | 'messagesSendStream'
   | 'messagesStop'
+  | 'settingsGetPreviewHosts'
+  | 'settingsSetPreviewHosts'
   | 'webhooksCreate'
   | 'webhooksDelete'
   | 'webhooksGet'
@@ -97,6 +99,7 @@ export type V0ToolsByCategory = {
     | 'messagesSendStream'
     | 'messagesStop'
   >
+  settings: Pick<V0ToolsFlat, 'settingsGetPreviewHosts' | 'settingsSetPreviewHosts'>
   webhooks: Pick<
     V0ToolsFlat,
     'webhooksCreate' | 'webhooksDelete' | 'webhooksGet' | 'webhooksList' | 'webhooksUpdate'
@@ -433,7 +436,9 @@ const chatsListInputSchema = z.object({
 
 const chatsRestoreMessageInputSchema = z.object({
   chatId: z.string(),
-  messageId: z.string().describe('The unique identifier of the message whose files to restore.'),
+  messageId: z
+    .string()
+    .describe('The unique identifier of the assistant message whose files to restore.'),
 })
 
 const chatsResumeInputSchema = z.object({
@@ -1133,6 +1138,16 @@ const messagesStopInputSchema = z.object({
   messageId: z.string(),
 })
 
+const settingsGetPreviewHostsInputSchema = z.object({})
+
+const settingsSetPreviewHostsInputSchema = z.object({
+  hosts: z
+    .array(z.string())
+    .describe(
+      'The complete list of exact or wildcard hostname patterns trusted to embed previews. Provide hostnames only, without a scheme, port, path, userinfo, query string, or fragment. Use *.example.com for exactly one subdomain label and **.example.com for one or more. Wildcards do not include example.com itself; add the apex as a separate entry when needed.',
+    ),
+})
+
 const webhooksCreateInputSchema = z.object({
   name: z.string().describe('A human-readable name for the webhook.'),
   events: z
@@ -1386,7 +1401,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsRestoreMessage: tool({
       description:
-        'Restore Message: Restores the files associated with a message. Pass an assistant message, or pass a user message to restore the files from its assistant reply. The associated files must not already be the latest files in the chat.',
+        'Restore Message: Restores the files associated with an assistant message. The associated files must not already be the latest files in the chat.',
       inputSchema: chatsRestoreMessageInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1620,6 +1635,25 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.messages.stop(parameters))
       },
     }),
+    settingsGetPreviewHosts: tool({
+      description:
+        'Get Trusted Preview Hosts: Returns the hostname patterns trusted to embed previews for the current team. Organization child teams inherit the parent organization’s hosts.',
+      inputSchema: settingsGetPreviewHostsInputSchema,
+      execute: async () => {
+        return toToolResult(await client.settings.getPreviewHosts())
+      },
+    }),
+    settingsSetPreviewHosts: tool({
+      description:
+        'Set Trusted Preview Hosts: Sets the host patterns trusted to embed previews for a standalone team or parent organization. Organization child teams cannot override this setting.',
+      inputSchema: settingsSetPreviewHostsInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          hosts: input.hosts,
+        }
+        return toToolResult(await client.settings.setPreviewHosts(parameters))
+      },
+    }),
     webhooksCreate: tool({
       description:
         'Create Webhook: Creates a new webhook that listens for specific events. Supports optional association with a chat.',
@@ -1720,6 +1754,10 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       messagesSendAsync: pickTool(tools, 'messagesSendAsync'),
       messagesSendStream: pickTool(tools, 'messagesSendStream'),
       messagesStop: pickTool(tools, 'messagesStop'),
+    },
+    settings: {
+      settingsGetPreviewHosts: pickTool(tools, 'settingsGetPreviewHosts'),
+      settingsSetPreviewHosts: pickTool(tools, 'settingsSetPreviewHosts'),
     },
     webhooks: {
       webhooksCreate: pickTool(tools, 'webhooksCreate'),

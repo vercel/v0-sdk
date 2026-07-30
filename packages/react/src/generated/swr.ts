@@ -107,6 +107,11 @@ import type {
   MessagesSendStreamError,
   MessagesStopError,
   MessagesStopResponse,
+  SettingsGetPreviewHostsError,
+  SettingsGetPreviewHostsResponse,
+  SettingsSetPreviewHostsData,
+  SettingsSetPreviewHostsError,
+  SettingsSetPreviewHostsResponse,
   WebhooksCreateData,
   WebhooksCreateError,
   WebhooksCreateResponse,
@@ -164,6 +169,8 @@ export const V0_REACT_OPERATION_HOOKS = {
   'messages.sendAsync': 'useSendMessageAsync',
   'messages.sendStream': 'useSendMessage',
   'messages.stop': 'useStopMessage',
+  'settings.getPreviewHosts': 'usePreviewHosts',
+  'settings.setPreviewHosts': 'useSetPreviewHosts',
   'webhooks.create': 'useCreateWebhook',
   'webhooks.delete': 'useDeleteWebhook',
   'webhooks.get': 'useWebhook',
@@ -776,6 +783,45 @@ export function useStopMessage(
   configuration: V0MutationConfiguration<MessagesStopResponse, MessagesStopError, never> = {},
 ) {
   return useV0Mutation(stopMessageOperation, url, configuration)
+}
+
+const previewHostsOperation: V0Operation<SettingsGetPreviewHostsResponse> = {
+  id: 'settings.getPreviewHosts',
+  method: 'GET',
+  response: 'json',
+}
+
+export function usePreviewHosts(
+  url: V0Url,
+  configuration: V0QueryConfiguration<
+    SettingsGetPreviewHostsResponse,
+    SettingsGetPreviewHostsError
+  > = {},
+) {
+  return useV0Query<SettingsGetPreviewHostsResponse, SettingsGetPreviewHostsError, undefined>(
+    previewHostsOperation,
+    url,
+    undefined,
+    configuration,
+  )
+}
+
+const setPreviewHostsOperation: V0Operation<SettingsSetPreviewHostsResponse> = {
+  id: 'settings.setPreviewHosts',
+  method: 'PUT',
+  response: 'json',
+}
+
+export type SetPreviewHostsInput = SettingsSetPreviewHostsData['body']
+export function useSetPreviewHosts(
+  url: string,
+  configuration: V0MutationConfiguration<
+    SettingsSetPreviewHostsResponse,
+    SettingsSetPreviewHostsError,
+    SettingsSetPreviewHostsData['body']
+  > = {},
+) {
+  return useV0Mutation(setPreviewHostsOperation, url, configuration)
 }
 
 const createWebhookOperation: V0Operation<WebhooksCreateResponse> = {
