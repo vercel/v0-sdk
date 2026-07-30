@@ -114,7 +114,20 @@ Import browser-safe v0 types, `V0Transport`, message conversion helpers, and `ge
 
 Use `v0.chats.getPreview({ chatId })` after a chat exists. As with other non-streaming methods, check `response.error` and read the preview from `response.data`.
 
-The preview data may be `null` while the VM is starting. Poll until it is available. Preview access uses a short-lived token. If embedding the preview in an iframe, proxy requests through a server route and forward the token as `x-v0-preview-token`. Never send `V0_API_KEY` to the preview URL or browser.
+Generated previews are untrusted code. Embed them through a dedicated preview
+proxy deployed on a different registrable domain from the host application, not
+on the host origin or a same-site subdomain. Keep that proxy free of host-app
+sessions and unrelated application routes.
+
+Use the SDK's `fetchPreview` helper in the dedicated proxy. It obtains and
+refreshes short-lived preview credentials, forwards preview requests, and
+returns the loading fallback while a preview is stale or starting. Never send
+`V0_API_KEY` to the preview URL or browser.
+
+The iframe needs `sandbox="allow-scripts allow-same-origin ..."` for generated
+React apps to hydrate and run normally. The separate proxy origin provides the
+security boundary; do not remove `allow-same-origin` as a substitute for origin
+isolation.
 
 ## Documentation
 
