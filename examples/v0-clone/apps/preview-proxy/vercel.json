@@ -1,0 +1,5 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "node ../../scripts/vercel.mjs install",
+  "buildCommand": "node ../../scripts/vercel.mjs build preview-proxy"
+}
