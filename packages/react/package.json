@@ -50,7 +50,7 @@
     "prepublishOnly": "bun run generate && bun run build"
   },
   "dependencies": {
-    "v0": "workspace:*"
+    "v0": "3.0.0"
   },
   "devDependencies": {
     "@ai-sdk/react": "^4.0.34",
