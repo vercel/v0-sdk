@@ -1,10 +1,10 @@
 # v0 SDK
 
-TypeScript SDK for the v0 Platform API.
+TypeScript SDK for the v0 API.
 
 This repository contains the v2 SDK package and compatible examples:
 
-- [`v0`](./packages/v0-sdk) - TypeScript SDK generated from the v0 Platform API OpenAPI schema, with helpers for streaming responses and Vercel OIDC auth.
+- [`v0`](./packages/v0-sdk) - TypeScript SDK generated from the v0 API OpenAPI schema, with helpers for streaming responses and Vercel OIDC auth.
 - [`@v0-sdk/react`](./packages/react) - AI SDK transport and generated `/swr` hooks for browser clients that call an application-owned v0 proxy.
 - [`examples/basic`](./examples/basic) - Small TypeScript scripts for synchronous and streaming chat creation.
 - [`examples/react-chat`](./examples/react-chat) - Minimal Next.js chat using AI SDK `useChat` with `V0Transport`.

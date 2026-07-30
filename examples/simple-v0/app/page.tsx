@@ -193,7 +193,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="text-foreground hover:text-muted-foreground underline"
             >
-              v0 Platform API
+              v0 API
             </a>
             . Build your own AI app builder with programmatic access to v0's app generation
             pipeline.

@@ -1,6 +1,6 @@
 # create-v0-sdk-app
 
-Create [v0 Platform API v2](https://v0.app/docs/api/v2) SDK apps with one command.
+Create [v0 API](https://v0.app/docs/api/v2) SDK apps with one command.
 
 ## Usage
 

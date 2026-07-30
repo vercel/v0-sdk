@@ -1,7 +1,7 @@
 {
   "name": "create-v0-sdk-app",
   "version": "3.0.0",
-  "description": "Create v0 Platform API v2 SDK apps with one command",
+  "description": "Create apps using the v0 API and SDK with one command",
   "keywords": [
     "ai",
     "next.js",

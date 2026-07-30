@@ -70,7 +70,7 @@ You can deploy your own version of Simple v0 to Vercel with one click:
 - **Runtime:** React 19 with TypeScript
 - **Styling:** Tailwind CSS 4
 - **UI Components:** Radix UI primitives with custom styling
-- **API Integration:** v0 for Platform API communication
+- **API Integration:** v0 for API communication
 - **Rate Limiting:** Upstash Redis with sliding window algorithm
 - **Fonts:** Geist Sans and Geist Mono via next/font
 - **Build Tool:** Turbopack for fast development
@@ -114,7 +114,7 @@ When the rate limit is exceeded, users receive a 429 status code with informatio
 
 | Variable            | Required | Description                                                                             |
 | ------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `V0_API_KEY`        | Yes      | Your v0 Platform API key from [v0.app/settings](https://v0.app/settings)                |
+| `V0_API_KEY`        | Yes      | Your v0 API key from [v0.app/settings](https://v0.app/settings)                |
 | `KV_REST_API_URL`   | No       | Upstash Redis REST URL for rate limiting (if not provided, rate limiting is disabled)   |
 | `KV_REST_API_TOKEN` | No       | Upstash Redis REST token for rate limiting (if not provided, rate limiting is disabled) |
 
@@ -152,7 +152,7 @@ bun run format:check
 
 ## Learn More
 
-- [v0 Platform API Documentation](https://v0.app/docs/api/v2)
+- [v0 API Documentation](https://v0.app/docs/api/v2)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Radix UI](https://www.radix-ui.com)
