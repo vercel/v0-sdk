@@ -1,6 +1,6 @@
 ---
 name: v0
-description: Build and modify applications that use the v0 TypeScript SDK and Platform API v2.
+description: Build and modify applications that use the v0 API and TypeScript SDK.
 ---
 
 # v0 TypeScript SDK
@@ -50,4 +50,4 @@ The preview data may be `null` while the VM is starting. Poll until it is availa
 
 ## Documentation
 
-Use the [v0 Platform API v2 documentation](https://v0.app/docs/api/v2) for endpoint details.
+Use the [documentation](https://v0.app/docs/api/v2) for endpoint details.

@@ -1,7 +1,7 @@
 {
   "name": "@v0-sdk/react",
   "version": "3.0.0",
-  "description": "React hooks and AI SDK transport for the v0 Platform API",
+  "description": "React hooks and AI SDK transport for the v0 API",
   "keywords": [
     "ai",
     "react",

@@ -74,8 +74,7 @@ export default function DeployBanner() {
             <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
               <div className="flex flex-col gap-1 flex-1">
                 <div className="text-sm text-muted-foreground">
-                  Deploy your own copy of this demo to get started building with the v0 Platform
-                  API.
+                  Deploy your own copy of this demo to get started building with the v0 API.
                 </div>
               </div>
 

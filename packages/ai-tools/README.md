@@ -1,6 +1,6 @@
 # @v0-sdk/ai-tools
 
-AI SDK tools for the v0 Platform API.
+AI SDK tools for the v0 API.
 
 The tools are generated at build time from `packages/v0-sdk/openapi.json`, the
 checked-in SDK copy of the v0 repo's `api/openapi-v2.json` spec. This is the
