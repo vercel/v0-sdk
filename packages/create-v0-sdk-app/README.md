@@ -23,54 +23,24 @@ bun create v0-sdk-app my-app
 
 ## Options
 
-- `--example <example-name>` - Specify which example to use
+- `--example v0-clone` - Explicitly select the v0 clone template (currently the default and only template)
 - `--use-pnpm` - Use pnpm as the package manager
 - `--use-npm` - Use npm as the package manager
 - `--use-yarn` - Use Yarn as the package manager
 - `--use-bun` - Use Bun as the package manager
 - `--skip-install` - Skip installing dependencies
 
-## Available Examples
+## Template
 
-### react (Recommended)
-
-Minimal Next.js chat using `@v0-sdk/react` with AI SDK `useChat`, streaming, history, and stream resumption.
-
-```bash
-pnpm create v0-sdk-app my-react-app --example react
-```
-
-### simple-v0
-
-Next.js app that uses the v2 SDK to generate, preview, manage, and deploy v0 chats.
-
-```bash
-pnpm create v0-sdk-app my-app --example simple-v0
-```
-
-### basic
-
-Minimal TypeScript scripts for creating v2 chats with synchronous and streaming SDK calls.
-
-```bash
-pnpm create v0-sdk-app my-basic-app --example basic
-```
-
-## Interactive Mode
-
-If you do not specify an example, the CLI prompts you to choose one:
+The CLI currently creates the full-featured [`v0-clone`](../../examples/v0-clone) example by default. It is the only available template for now.
 
 ```bash
 pnpm create v0-sdk-app my-app
-# ? Which example would you like to use?
-# > react - Minimal Next.js chat using @v0-sdk/react and AI SDK useChat (Recommended)
-#   simple-v0 - Next.js app for generating, previewing, managing, and deploying v0 chats
-#   basic - Minimal TypeScript scripts for sync and streaming v2 chat creation
 ```
 
 ## What's Included
 
-Each example comes pre-configured with:
+The template comes pre-configured with:
 
 - TypeScript support
 - v0 SDK v2 usage

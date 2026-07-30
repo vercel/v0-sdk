@@ -16,15 +16,13 @@ import { isFolderEmpty } from './helpers/is-folder-empty.js'
 
 const { cyan, green, red } = picocolors
 
-export type ExampleType = 'basic' | 'react' | 'simple-v0'
+export type ExampleType = 'v0-clone'
 
 type PackageJson = {
-  module?: string
   name?: string
   scripts?: Record<string, string>
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>
-  peerDependencies?: Record<string, string>
 }
 
 const packageVersions: Record<string, string> = {
@@ -35,30 +33,14 @@ const packageVersions: Record<string, string> = {
 
 const scriptDescriptions: Record<string, string> = {
   dev: 'Starts the development server.',
-  sync: 'Runs the synchronous chat creation example.',
-  stream: 'Runs the streaming chat creation example.',
   build: 'Builds the app for production.',
   start: 'Runs the built app in production mode.',
 }
 
-const scriptDisplayOrder = ['dev', 'sync', 'stream', 'build', 'start']
-
-const basicScripts: Record<string, string> = {
-  sync: 'tsx chats/sync.ts',
-  stream: 'tsx chats/stream.ts',
-}
-
-const basicDevDependencies: Record<string, string> = {
-  '@types/bun': 'latest',
-  '@types/node': '^22.0.0',
-  tsx: '^4.19.2',
-  typescript: '^6.0.3',
-}
+const scriptDisplayOrder = ['dev', 'build', 'start']
 
 const templateDirectories: Record<ExampleType, string> = {
-  basic: 'basic',
-  react: 'react-chat',
-  'simple-v0': 'simple-v0',
+  'v0-clone': 'v0-clone',
 }
 
 const lockfiles = ['bun.lock', 'bun.lockb', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']
@@ -103,8 +85,6 @@ export async function createApp({
   let packageScripts: Record<string, string> | undefined
   if (existsSync(packageJsonPath)) {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJson
-
-    updateTemplatePackage(packageJson, example)
 
     // Replace workspace dependencies with actual versions
     const replaceWorkspaceDeps = (deps: Record<string, string> | undefined) => {
@@ -176,21 +156,6 @@ export async function createApp({
 
 function getRunCommand(packageManager: PackageManager, script: string): string {
   return `${packageManager} ${packageManager === 'npm' ? 'run ' : ''}${script}`
-}
-
-function updateTemplatePackage(packageJson: PackageJson, example: ExampleType): void {
-  if (example !== 'basic') return
-
-  packageJson.scripts = {
-    ...basicScripts,
-    ...packageJson.scripts,
-  }
-  packageJson.devDependencies = {
-    ...packageJson.devDependencies,
-    ...basicDevDependencies,
-  }
-  delete packageJson.module
-  delete packageJson.peerDependencies
 }
 
 function installAgentSkill(appPath: string): void {
