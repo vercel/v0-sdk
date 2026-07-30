@@ -38,7 +38,7 @@
     "prepublishOnly": "bun run generate && bun run build"
   },
   "dependencies": {
-    "v0": "workspace:*",
+    "v0": "3.0.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {

@@ -100,8 +100,8 @@ jobs:
       - name: Set shared canary version
         run: |
           (cd packages/v0-sdk && bun pm pkg set "version=${{ steps.version.outputs.version }}")
-          (cd packages/ai-tools && bun pm pkg set "version=${{ steps.version.outputs.version }}")
-          (cd packages/react && bun pm pkg set "version=${{ steps.version.outputs.version }}")
+          (cd packages/ai-tools && bun pm pkg set "version=${{ steps.version.outputs.version }}" "dependencies.v0=${{ steps.version.outputs.version }}")
+          (cd packages/react && bun pm pkg set "version=${{ steps.version.outputs.version }}" "dependencies.v0=${{ steps.version.outputs.version }}")
           (cd packages/create-v0-sdk-app && bun pm pkg set "version=${{ steps.version.outputs.version }}")
       - if: steps.sdk-published.outputs.skip != 'true'
         run: npm publish --tag canary --workspace packages/v0-sdk
@@ -171,10 +171,10 @@ jobs:
           VERSION=$(bun pm pkg get version | tr -d '"')
           cd ../ai-tools
           AI_TOOLS_NAME=$(bun pm pkg get name | tr -d '"')
-          bun pm pkg set "version=${VERSION}"
+          bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}"
           cd ../react
           REACT_NAME=$(bun pm pkg get name | tr -d '"')
-          bun pm pkg set "version=${VERSION}"
+          bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}"
           cd ../create-v0-sdk-app
           CREATE_APP_NAME=$(bun pm pkg get name | tr -d '"')
           bun pm pkg set "version=${VERSION}"
