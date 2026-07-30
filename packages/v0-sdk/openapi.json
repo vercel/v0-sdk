@@ -1120,6 +1120,10 @@
             ],
             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
           },
+          "restorable": {
+            "type": "boolean",
+            "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
+          },
           "attachments": {
             "description": "Files attached to this message.",
             "type": "array",
@@ -1251,6 +1255,7 @@
           "content",
           "parts",
           "finishReason",
+          "restorable",
           "authorId",
           "usage"
         ],
@@ -1843,6 +1848,10 @@
                   ],
                   "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                 },
+                "restorable": {
+                  "type": "boolean",
+                  "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
+                },
                 "attachments": {
                   "description": "Files attached to this message.",
                   "type": "array",
@@ -1974,6 +1983,7 @@
                 "content",
                 "parts",
                 "finishReason",
+                "restorable",
                 "authorId",
                 "usage"
               ],
@@ -2598,6 +2608,10 @@
                 ],
                 "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
               },
+              "restorable": {
+                "type": "boolean",
+                "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
+              },
               "attachments": {
                 "description": "Files attached to this message.",
                 "type": "array",
@@ -2736,6 +2750,7 @@
               "content",
               "parts",
               "finishReason",
+              "restorable",
               "authorId",
               "usage",
               "object"
@@ -3263,6 +3278,23 @@
           "source",
           "createdAt",
           "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "TrustedPreviewHosts": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "hosts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Canonicalized hostname patterns trusted to embed previews. Exact hosts match only themselves; *.example.com matches exactly one subdomain label; **.example.com matches one or more subdomain labels. Wildcards do not include the apex, so list example.com separately when it should also be trusted."
+          }
+        },
+        "required": [
+          "hosts"
         ],
         "additionalProperties": false
       },
@@ -12233,6 +12265,10 @@
                             ],
                             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                           },
+                          "restorable": {
+                            "type": "boolean",
+                            "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
+                          },
                           "attachments": {
                             "description": "Files attached to this message.",
                             "type": "array",
@@ -12364,6 +12400,7 @@
                           "content",
                           "parts",
                           "finishReason",
+                          "restorable",
                           "authorId",
                           "usage"
                         ],
@@ -12598,7 +12635,7 @@
           "Chats"
         ],
         "summary": "Restore Message",
-        "description": "Restores the files associated with a message. Pass an assistant message, or pass a user message to restore the files from its assistant reply. The associated files must not already be the latest files in the chat.",
+        "description": "Restores the files associated with an assistant message. The associated files must not already be the latest files in the chat.",
         "operationId": "chats.restoreMessage",
         "parameters": [
           {
@@ -12623,7 +12660,7 @@
                   "messageId": {
                     "type": "string",
                     "minLength": 1,
-                    "description": "The unique identifier of the message whose files to restore."
+                    "description": "The unique identifier of the assistant message whose files to restore."
                   }
                 },
                 "required": [
@@ -12640,7 +12677,7 @@
                   "messageId": {
                     "type": "string",
                     "minLength": 1,
-                    "description": "The unique identifier of the message whose files to restore."
+                    "description": "The unique identifier of the assistant message whose files to restore."
                   }
                 },
                 "required": [
@@ -12657,7 +12694,7 @@
                   "messageId": {
                     "type": "string",
                     "minLength": 1,
-                    "description": "The unique identifier of the message whose files to restore."
+                    "description": "The unique identifier of the assistant message whose files to restore."
                   }
                 },
                 "required": [
@@ -13259,6 +13296,10 @@
                             ],
                             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                           },
+                          "restorable": {
+                            "type": "boolean",
+                            "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
+                          },
                           "attachments": {
                             "description": "Files attached to this message.",
                             "type": "array",
@@ -13390,6 +13431,7 @@
                           "content",
                           "parts",
                           "finishReason",
+                          "restorable",
                           "authorId",
                           "usage"
                         ],
@@ -15639,6 +15681,206 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/preview-hosts": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Get Trusted Preview Hosts",
+        "description": "Returns the hostname patterns trusted to embed previews for the current team. Organization child teams inherit the parent organization’s hosts.",
+        "operationId": "settings.getPreviewHosts",
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedPreviewHosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Set Trusted Preview Hosts",
+        "description": "Sets the host patterns trusted to embed previews for a standalone team or parent organization. Organization child teams cannot override this setting.",
+        "operationId": "settings.setPreviewHosts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "The complete list of exact or wildcard hostname patterns trusted to embed previews. Provide hostnames only, without a scheme, port, path, userinfo, query string, or fragment. Use *.example.com for exactly one subdomain label and **.example.com for one or more. Wildcards do not include example.com itself; add the apex as a separate entry when needed."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "The complete list of exact or wildcard hostname patterns trusted to embed previews. Provide hostnames only, without a scheme, port, path, userinfo, query string, or fragment. Use *.example.com for exactly one subdomain label and **.example.com for one or more. Wildcards do not include example.com itself; add the apex as a separate entry when needed."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "The complete list of exact or wildcard hostname patterns trusted to embed previews. Provide hostnames only, without a scheme, port, path, userinfo, query string, or fragment. Use *.example.com for exactly one subdomain label and **.example.com for one or more. Wildcards do not include example.com itself; add the apex as a separate entry when needed."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedPreviewHosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
             "content": {
               "application/json": {
                 "schema": {
