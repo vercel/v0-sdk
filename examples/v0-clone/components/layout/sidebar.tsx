@@ -68,18 +68,12 @@ export function Sidebar({
       chat={chat}
       isActive={pathname === `/chats/${chat.id}`}
       key={chat.id}
-      onChanged={refreshChats}
+      onFavoriteAdded={() => setFavoritesOpen(true)}
       onDeleted={handleDeleted}
     />
   )
 
-  async function refreshChats() {
-    const [favorites] = await Promise.all([favoritesQuery.mutate(), recentQuery.mutate()])
-    if (favorites?.chats.length) setFavoritesOpen(true)
-  }
-
-  async function handleDeleted(id: string) {
-    await refreshChats()
+  function handleDeleted(id: string) {
     if (pathname === `/chats/${id}`) router.push('/')
   }
 

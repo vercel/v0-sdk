@@ -9,13 +9,7 @@ import {
   type Message,
   type V0UIMessage,
 } from '@v0-sdk/react'
-import {
-  useFiles,
-  useMessages,
-  useResolveTask,
-  useRestoreMessage,
-  useStopMessage,
-} from '@v0-sdk/react/swr'
+import { useMessages, useResolveTask, useRestoreMessage, useStopMessage } from '@v0-sdk/react/swr'
 import { useEffect, useMemo, useState } from 'react'
 import { readV0Stream } from 'v0/browser'
 import { ConversationView } from '@/components/chat/conversation-view'
@@ -41,9 +35,6 @@ export function ChatConversation({
   const [restoringMessageId, setRestoringMessageId] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const messagesUrl = `/api/chats/${encodeURIComponent(chatId)}/messages`
-  const filesQuery = useFiles(`/api/chats/${encodeURIComponent(chatId)}/files`, {
-    revalidateOnMount: false,
-  })
   const messagesQuery = useMessages(
     messagesUrl,
     { limit: 100 },
@@ -142,13 +133,6 @@ export function ChatConversation({
 
     try {
       await restoreMessageMutation.trigger({ messageId })
-      const [restoredFiles, refreshedMessages] = await Promise.all([
-        filesQuery.mutate(),
-        messagesQuery.mutate(),
-      ])
-      if (!restoredFiles || !refreshedMessages) {
-        throw new Error('Failed to refresh restored chat.')
-      }
       onRestore()
     } catch (error) {
       setActionError(errorMessage(error, 'Failed to restore message.'))

@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@ai-sdk/react": "4.0.34",
-    "@v0-sdk/react": "canary",
+    "@v0-sdk/react": "workspace:*",
     "ai": "7.0.31",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -28,8 +28,7 @@
     "streamdown": "^2.5.0",
     "swr": "^2.4.2",
     "tailwind-merge": "^3.3.1",
-    "v0": "canary",
-    "v0-canary": "npm:v0@canary"
+    "v0": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

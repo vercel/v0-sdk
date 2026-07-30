@@ -8,7 +8,7 @@ import {
   useCreateChatFromZip,
 } from '@v0-sdk/react/swr'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { PromptBox } from '@/components/prompt-box'
 import { PromptInputButton } from '@/components/ai-elements/prompt-input'
 import { ConversationView } from '@/components/chat/conversation-view'
@@ -38,7 +38,6 @@ export function HomeClient() {
   const { settings, updateSettings } = useSettings()
   const filesInputRef = useRef<HTMLInputElement>(null)
   const zipInputRef = useRef<HTMLInputElement>(null)
-  const stopRef = useRef<() => void>(() => undefined)
   const [actionError, setActionError] = useState<string | null>(null)
   const [repoDialogOpen, setRepoDialogOpen] = useState(false)
   const createFromFiles = useCreateChatFromFiles('/api/chats/import/files')
@@ -52,8 +51,8 @@ export function HomeClient() {
           send: (id) => `/api/chats/${encodeURIComponent(id)}/messages`,
           resume: (id) => `/api/chats/${encodeURIComponent(id)}/resume`,
         },
-        onChatCreated: (chatId) => {
-          stopRef.current()
+        onChatCreated: (chatId, { stop }) => {
+          stop()
           router.push(`/chats/${chatId}`)
           router.refresh()
         },
@@ -66,17 +65,14 @@ export function HomeClient() {
     messages,
     sendMessage,
     status,
-    stop,
-  } = useChat<V0UIMessage>({ transport })
+  } = useChat<V0UIMessage>({
+    transport,
+  })
   const chatIsCreating = status === 'submitted' || status === 'streaming'
   const isImporting =
     createFromFiles.isMutating || createFromZip.isMutating || createFromRepo.isMutating
   const isCreating = chatIsCreating || isImporting
   const error = actionError ?? chatError?.message
-
-  useEffect(() => {
-    stopRef.current = stop
-  }, [stop])
 
   const createFromPrompt = async (message: string) => {
     setActionError(null)

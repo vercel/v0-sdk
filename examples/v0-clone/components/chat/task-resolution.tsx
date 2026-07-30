@@ -1,6 +1,11 @@
 'use client'
 
-import type { MessagesResolveStreamData, V0UIMessage } from '@v0-sdk/react'
+import {
+  getPendingV0Task,
+  type MessagesResolveStreamData,
+  type V0PendingTask,
+  type V0UIMessage,
+} from '@v0-sdk/react'
 import { useCreateProject } from '@v0-sdk/react/swr'
 import { useState, type ReactNode } from 'react'
 import { Response } from '@/components/ai-elements/response'
@@ -9,22 +14,12 @@ import { Textarea } from '@/components/ui/textarea'
 
 export type ResolveTask = MessagesResolveStreamData['body']['task']
 
-type MessagePart = V0UIMessage['parts'][number]
-type AgentActionPart = Extract<MessagePart, { type: 'data-v0-agent-action' }>
-type AgentActionData = NonNullable<AgentActionPart['data']['data']>
-type QuestionsData = Extract<AgentActionData, { questions: unknown }>
-type PlanData = Extract<AgentActionData, { plan: unknown }>
-type IntegrationData = Extract<AgentActionData, { requestedIntegrations: unknown }>
-type ToolCallPart = Extract<MessagePart, { type: 'data-v0-tool-call' }>
-type Permission = NonNullable<ToolCallPart['data']['suggestedPermissions']>[number]
+type QuestionsData = Extract<V0PendingTask, { type: 'questions' }>['data']
+type PlanData = Extract<V0PendingTask, { type: 'plan' }>['data']
+type IntegrationData = Extract<V0PendingTask, { type: 'integration' }>['data']
+type Permission = Extract<V0PendingTask, { type: 'permissions' }>['permissions'][number]
 type ConfirmedStepsTask = Extract<ResolveTask, { type: 'confirmed-steps' }>
 type McpPreset = NonNullable<ConfirmedStepsTask['connectedMcpPresetNames']>[number]
-
-type PendingTask =
-  | { type: 'questions'; data: QuestionsData }
-  | { type: 'plan'; data: PlanData }
-  | { type: 'integration'; data: IntegrationData }
-  | { type: 'permissions'; permissions: Permission[] }
 
 const MCP_PRESETS = [
   'Linear',
@@ -54,7 +49,7 @@ export function TaskResolution({
   onRejectPermission: () => void | Promise<void>
   vercelProjectId?: string
 }) {
-  const task = findPendingTask(message)
+  const task = getPendingV0Task(message)
   if (!task) return null
 
   switch (task.type) {
@@ -430,42 +425,6 @@ function TaskCard({
       {children}
     </div>
   )
-}
-
-function findPendingTask(message: V0UIMessage): PendingTask | null {
-  for (let index = message.parts.length - 1; index >= 0; index -= 1) {
-    const part = message.parts[index]
-
-    if (
-      part.type === 'data-v0-tool-call' &&
-      part.data.suggestedPermissions &&
-      part.data.suggestedPermissions.length > 0
-    ) {
-      return {
-        type: 'permissions',
-        permissions: part.data.suggestedPermissions,
-      }
-    }
-
-    if (part.type !== 'data-v0-agent-action' || !part.data.data) continue
-
-    if (part.data.name === 'ask_user_questions' && 'questions' in part.data.data) {
-      return { type: 'questions', data: part.data.data }
-    }
-
-    if (part.data.name === 'exit_plan_mode' && 'plan' in part.data.data) {
-      return { type: 'plan', data: part.data.data }
-    }
-
-    if (
-      part.data.name === 'get_or_request_integration' &&
-      'requestedIntegrations' in part.data.data
-    ) {
-      return { type: 'integration', data: part.data.data }
-    }
-  }
-
-  return null
 }
 
 function isMcpPreset(value: string): value is McpPreset {

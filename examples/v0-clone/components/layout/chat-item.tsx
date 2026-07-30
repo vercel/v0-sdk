@@ -28,13 +28,13 @@ import { cn } from '@/lib/utils'
 export function ChatItem({
   chat,
   isActive,
-  onChanged,
+  onFavoriteAdded,
   onDeleted,
 }: {
   chat: Chat
   isActive: boolean
-  onChanged: () => Promise<void>
-  onDeleted: (id: string) => Promise<void>
+  onFavoriteAdded: () => void
+  onDeleted: (id: string) => void
 }) {
   const isFavorite = chat.metadata.favorite === 'true'
   const chatUrl = `/api/chats/${encodeURIComponent(chat.id)}`
@@ -44,9 +44,8 @@ export function ChatItem({
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [renameValue, setRenameValue] = useState(chat.title || '')
-  const [isRefreshing, setIsRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const busy = isRefreshing || deleteChat.isMutating || updateChat.isMutating
+  const busy = deleteChat.isMutating || updateChat.isMutating
 
   const handleRename = async () => {
     const title = renameValue.trim()
@@ -58,13 +57,9 @@ export function ChatItem({
     setError(null)
     try {
       await updateChat.trigger({ title })
-      setIsRefreshing(true)
-      await onChanged()
       setRenameOpen(false)
     } catch (error) {
       setError(errorMessage(error, 'Failed to rename chat.'))
-    } finally {
-      setIsRefreshing(false)
     }
   }
 
@@ -72,13 +67,10 @@ export function ChatItem({
     setError(null)
     try {
       await deleteChat.trigger()
-      setIsRefreshing(true)
-      await onDeleted(chat.id)
+      onDeleted(chat.id)
       setDeleteOpen(false)
     } catch (error) {
       setError(errorMessage(error, 'Failed to delete chat.'))
-    } finally {
-      setIsRefreshing(false)
     }
   }
 
@@ -88,12 +80,9 @@ export function ChatItem({
       await updateChat.trigger({
         metadata: { favorite: isFavorite ? null : 'true' },
       })
-      setIsRefreshing(true)
-      await onChanged()
+      if (!isFavorite) onFavoriteAdded()
     } catch (error) {
       setError(errorMessage(error, 'Failed to update favorite.'))
-    } finally {
-      setIsRefreshing(false)
     }
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import type { Files } from '@v0-sdk/react'
-import { useFiles, useMessages, useUpdateChatFiles } from '@v0-sdk/react/swr'
+import { useFiles, useUpdateChatFiles } from '@v0-sdk/react/swr'
 import { use, useState } from 'react'
 import { Loader } from '@/components/ai-elements/loader'
 import { Button } from '@/components/ui/button'
@@ -51,12 +51,10 @@ function CodeEditor({
   isPreviewReady: boolean
 }) {
   const filesUrl = `/api/chats/${encodeURIComponent(chatId)}/files`
-  const messagesUrl = `/api/chats/${encodeURIComponent(chatId)}/messages`
   const filesQuery = useFiles(filesUrl, {
     fallbackData: { files: initialFiles },
     revalidateOnMount: false,
   })
-  const messagesQuery = useMessages(messagesUrl, { limit: 100 }, { revalidateOnMount: false })
   const updateFiles = useUpdateChatFiles(filesUrl)
   const cachedFiles = filesQuery.data?.files ?? initialFiles
   const [files, setFiles] = useState(cachedFiles)
@@ -88,25 +86,7 @@ function CodeEditor({
       await updateFiles.trigger({
         files: changedFiles.map(({ path, content }) => ({ path, content })),
       })
-      const [filesResult, messagesResult] = await Promise.all([
-        filesQuery.mutate(),
-        messagesQuery.mutate(),
-      ])
-
-      if (!filesResult || !messagesResult) {
-        setStatus('Files saved, but failed to refresh.')
-        return
-      }
-
-      setFiles(filesResult.files)
-      setSavedFiles(filesResult.files)
-      setSelectedPath((current) =>
-        filesResult.files.some((file) => file.path === current)
-          ? current
-          : (filesResult.files.find((file) => file.encoding === 'utf8')?.path ??
-            filesResult.files[0]?.path ??
-            null),
-      )
+      setSavedFiles(files)
       setStatus('Saved')
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to save files.')
