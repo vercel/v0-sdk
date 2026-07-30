@@ -4,118 +4,14 @@ on:
   push:
     branches:
       - main
-      - v2
   schedule:
     - cron: '0 0 * * *'
 
 jobs:
-  # Temporary v2 canary lane: backend automation pushes updated openapi.json and
-  # generated SDK changes to v2, then this verifies the checked-in SDK is current
-  # and publishes commit-specific npm canaries for all four packages.
-  canary:
-    if: ${{ github.ref == 'refs/heads/v2' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          ref: ${{ github.sha }}
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - run: bun install --frozen-lockfile
-      - name: Build SDK
-        run: |
-          bun run generate
-          bun run build
-      - name: Check generated SDK is up to date
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "::error::Generated SDK is out of date. Run 'bun run generate && bun run build' and commit the changes."
-            git status --short
-            git diff --stat
-            git diff
-            exit 1
-          fi
-      - name: Resolve shared canary version
-        id: version
-        run: |
-          SDK_NAME=$(cd packages/v0-sdk && bun pm pkg get name | tr -d '"')
-          AI_TOOLS_NAME=$(cd packages/ai-tools && bun pm pkg get name | tr -d '"')
-          REACT_NAME=$(cd packages/react && bun pm pkg get name | tr -d '"')
-          CREATE_APP_NAME=$(cd packages/create-v0-sdk-app && bun pm pkg get name | tr -d '"')
-          SDK_BASE_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
-          AI_TOOLS_BASE_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
-          REACT_BASE_VERSION=$(cd packages/react && bun pm pkg get version | tr -d '"')
-          CREATE_APP_BASE_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')
-          if [ "$SDK_BASE_VERSION" != "$AI_TOOLS_BASE_VERSION" ] || [ "$SDK_BASE_VERSION" != "$REACT_BASE_VERSION" ] || [ "$SDK_BASE_VERSION" != "$CREATE_APP_BASE_VERSION" ]; then
-            echo "::error::${SDK_NAME}, ${AI_TOOLS_NAME}, ${REACT_NAME}, and ${CREATE_APP_NAME} versions must match (${SDK_BASE_VERSION}, ${AI_TOOLS_BASE_VERSION}, ${REACT_BASE_VERSION}, ${CREATE_APP_BASE_VERSION})."
-            exit 1
-          fi
-          SHA=$(git rev-parse --short HEAD)
-          VERSION="${SDK_BASE_VERSION}-canary.${SHA}"
-          echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
-          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
-          echo "react_name=${REACT_NAME}" >> "$GITHUB_OUTPUT"
-          echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-      - name: Check published v0 SDK canary
-        id: sdk-published
-        run: |
-          if npm view "${{ steps.version.outputs.sdk_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Check published AI tools canary
-        id: ai-tools-published
-        run: |
-          if npm view "${{ steps.version.outputs.ai_tools_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Check published React SDK canary
-        id: react-published
-        run: |
-          if npm view "${{ steps.version.outputs.react_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Check published create-v0-sdk-app canary
-        id: create-app-published
-        run: |
-          if npm view "${{ steps.version.outputs.create_app_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Set shared canary version
-        run: |
-          (cd packages/v0-sdk && bun pm pkg set "version=${{ steps.version.outputs.version }}")
-          (cd packages/ai-tools && bun pm pkg set "version=${{ steps.version.outputs.version }}" "dependencies.v0=${{ steps.version.outputs.version }}")
-          (cd packages/react && bun pm pkg set "version=${{ steps.version.outputs.version }}" "dependencies.v0=${{ steps.version.outputs.version }}")
-          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${{ steps.version.outputs.version }}")
-      - if: steps.sdk-published.outputs.skip != 'true'
-        run: npm publish --tag canary --workspace packages/v0-sdk
-      - if: steps.ai-tools-published.outputs.skip != 'true'
-        run: npm publish --tag canary --workspace packages/ai-tools
-      - if: steps.react-published.outputs.skip != 'true'
-        run: npm publish --tag canary --workspace packages/react
-      - if: steps.create-app-published.outputs.skip != 'true'
-        run: npm publish --tag canary --workspace packages/create-v0-sdk-app
-
-  # Nightly stable release lane: main remains the source for latest releases.
-  # If main has commits since the last version tag, this opens one PR containing
-  # only the lockstep package versions and lockfile bump; an existing PR for that version
-  # is left in place while more main changes can continue landing.
+  # Nightly release lane: if main has commits since the last version tag, this
+  # publishes commit-specific canaries and opens one PR containing only the
+  # lockstep package versions and lockfile bump. An existing PR for that version
+  # is left in place while newer main commits receive fresh canaries.
   version-pr:
     if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
@@ -123,6 +19,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -154,6 +51,7 @@ jobs:
         if: steps.changes.outputs.skip != 'true'
         with:
           node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         if: steps.changes.outputs.skip != 'true'
@@ -210,6 +108,47 @@ jobs:
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Resolve nightly canary version
+        id: canary
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          echo "version=${{ steps.bump.outputs.version }}-canary.${SHA}" >> "$GITHUB_OUTPUT"
+      - name: Set nightly canary versions
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          CANARY_VERSION="${{ steps.canary.outputs.version }}"
+          (cd packages/v0-sdk && bun pm pkg set "version=${CANARY_VERSION}")
+          (cd packages/ai-tools && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
+          (cd packages/react && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
+          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${CANARY_VERSION}")
+      - name: Publish nightly canaries
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          publish_if_needed() {
+            NAME="$1"
+            WORKSPACE="$2"
+            VERSION="${{ steps.canary.outputs.version }}"
+
+            if npm view "${NAME}@${VERSION}" version --silent > /dev/null 2>&1; then
+              echo "${NAME}@${VERSION} is already published; skipping."
+            else
+              npm publish --tag canary --workspace "${WORKSPACE}"
+            fi
+          }
+
+          publish_if_needed "${{ steps.bump.outputs.sdk_name }}" packages/v0-sdk
+          publish_if_needed "${{ steps.bump.outputs.ai_tools_name }}" packages/ai-tools
+          publish_if_needed "${{ steps.bump.outputs.react_name }}" packages/react
+          publish_if_needed "${{ steps.bump.outputs.create_app_name }}" packages/create-v0-sdk-app
+      - name: Restore stable release candidate versions
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          VERSION="${{ steps.bump.outputs.version }}"
+          (cd packages/v0-sdk && bun pm pkg set "version=${VERSION}")
+          (cd packages/ai-tools && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
+          (cd packages/react && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
+          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${VERSION}")
       - name: Check for existing release PR
         id: existing
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'

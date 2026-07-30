@@ -20,7 +20,7 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      SDK_BASE_BRANCH: ${{ github.ref_name }}
+      SDK_BASE_BRANCH: main
       SDK_UPDATE_BRANCH: update-sdk-from-openapi
 
     steps:
