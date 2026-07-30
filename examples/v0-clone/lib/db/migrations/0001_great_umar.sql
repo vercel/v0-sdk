@@ -1,1 +1,0 @@
-ALTER TABLE "chat_ownerships" ADD CONSTRAINT "chat_ownerships_v0_chat_id_unique" UNIQUE("v0_chat_id");

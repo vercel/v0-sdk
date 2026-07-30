@@ -1,6 +1,8 @@
 import { readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { red } from 'picocolors'
+import picocolors from 'picocolors'
+
+const { red } = picocolors
 
 const VALID_FILES = [
   '.DS_Store',
@@ -8,6 +10,7 @@ const VALID_FILES = [
   '.gitattributes',
   '.gitignore',
   '.gitlab-ci.yml',
+  '.idea',
   '.hg',
   '.hgcheck',
   '.hgignore',
@@ -23,20 +26,13 @@ export function isFolderEmpty(root: string, name: string): boolean {
 
   let conflicts: string[] = []
   try {
-    conflicts = readdirSync(root).filter(
-      (file) =>
-        !validFiles.includes(file) &&
-        // Support IntelliJ IDEA-based editors
-        !file.startsWith('.idea'),
-    )
+    conflicts = readdirSync(root).filter((file) => !validFiles.includes(file))
   } catch {
     return true
   }
 
   if (conflicts.length > 0) {
-    console.log(
-      `The directory ${red(name)} contains files that could conflict:`,
-    )
+    console.log(`The directory ${red(name)} contains files that could conflict:`)
     console.log()
     for (const file of conflicts) {
       try {
@@ -51,9 +47,7 @@ export function isFolderEmpty(root: string, name: string): boolean {
       }
     }
     console.log()
-    console.log(
-      'Either try using a new directory name, or remove the files listed above.',
-    )
+    console.log('Either try using a new directory name, or remove the files listed above.')
     console.log()
     return false
   }

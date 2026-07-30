@@ -1,198 +1,118 @@
-# v0 clone
+# v0 Clone
 
-> **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
-
-<p align="center">
-    <img src="./screenshot.png" alt="v0 Clone Screenshot" width="800" />
-</p>
-
-<p align="center">
-    An example of how to use the AI Elements to build a v0 clone with authentication and multi-tenant support.
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#setup"><strong>Setup</strong></a> ·
-  <a href="#getting-started"><strong>Getting Started</strong></a> ·
-  <a href="#usage"><strong>Usage</strong></a>
-</p>
-<br/>
-
-## Deploy Your Own
-
-You can deploy your own version of the v0 clone to Vercel with one click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0-sdk%2Ftree%2Fmain%2Fexamples%2Fv0-clone&env=V0_API_KEY,AUTH_SECRET&envDescription=Get+your+v0+API+key&envLink=https%3A%2F%2Fv0.app%2Fchat%2Fsettings%2Fkeys&products=%255B%257B%2522type%2522%253A%2522integration%2522%252C%2522protocol%2522%253A%2522storage%2522%252C%2522productSlug%2522%253A%2522neon%2522%252C%2522integrationSlug%2522%253A%2522neon%2522%257D%255D&project-name=v0-clone&repository-name=v0-clone&demo-title=v0+Clone&demo-description=A+full-featured+v0+clone+built+with+Next.js%2C+AI+Elements%2C+and+the+v0+SDK&demo-url=https%3A%2F%2Fclone-demo.v0-sdk.dev)
-
-## Setup
-
-### Environment Variables
-
-Create a `.env` file with all required variables:
-
-```bash
-# Auth Secret - Generate a random string for production
-# Generate with: openssl rand -base64 32
-# Or visit: https://generate-secret.vercel.app/32
-AUTH_SECRET=your-auth-secret-here
-
-# Database URL - PostgreSQL connection string
-POSTGRES_URL=postgresql://user:password@localhost:5432/v0_clone
-# For Vercel Postgres, use the connection string from your dashboard
-
-# Get your API key from https://v0.dev/chat/settings/keys
-V0_API_KEY=your_v0_api_key_here
-
-# Optional: Use a custom API URL
-# V0_API_URL=http://localhost:3001/v1
-```
-
-### Database Setup
-
-This project uses PostgreSQL with Drizzle ORM. Set up your database:
-
-1. **Generate Database Schema**:
-
-   ```bash
-   pnpm db:generate
-   ```
-
-2. **Run Database Migrations**:
-
-   ```bash
-   pnpm db:migrate
-   ```
-
-3. **Optional - Open Database Studio**:
-   ```bash
-   pnpm db:studio
-   ```
-
-## Getting Started
-
-Then, run the development server:
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Features
-
-This v0 clone includes:
-
-### Core Features
-
-- **AI Elements Integration**: Uses AI Elements components for a polished UI
-- **v0 SDK Integration**: Connects to the v0 Platform API for generating apps
-- **Real-time Preview**: Split-screen interface with chat and preview panels
-- **Conversation History**: Maintains chat history throughout the session
-- **Suggestion System**: Provides helpful prompts to get users started
-- **Streaming Support**: Toggle between streaming and non-streaming AI responses for real-time updates
-- **Comprehensive Task Support**: Full support for all v0 Platform API task types including:
-  - `task-thinking-v1` - AI reasoning and thought processes
-  - `task-search-web-v1` - Web search operations with results
-  - `task-search-repo-v1` - Repository/codebase search functionality
-  - `task-diagnostics-v1` - Code analysis and issue detection
-  - `task-read-file-v1` - File reading operations
-  - `task-coding-v1` - Code generation and editing tasks
-  - `task-generate-design-inspiration-v1` - Design inspiration generation
-  - **Graceful fallback** for unknown task types with user-friendly display
-
-### Authentication & Multi-Tenant Features
-
-- **Anonymous Access**: Unauthenticated users can create chats directly (with rate limits)
-- **Guest Access**: Users can register as guests for persistent sessions
-- **User Registration/Login**: Email/password authentication with secure password hashing
-- **Session Management**: Secure session handling with NextAuth.js
-- **Multi-Tenant Architecture**: Multiple users share the same v0 API organization
-- **Ownership Mapping**: Authenticated users only see their own chats and projects
-- **Rate Limiting**: Different limits for anonymous, guest, and registered users
-- **User Navigation**: Header dropdown with user info and sign-out options
-
-## Usage
-
-### Setup
-
-1. Set up all environment variables in `.env`
-2. Run database migrations with `pnpm db:migrate`
-3. Start the development server with `pnpm dev` or production server with `pnpm start`
-
-### Using the App
-
-4. **Anonymous Usage**: Visit the homepage and start creating chats immediately (3 chats/day limit)
-5. **Guest Access**: Register as a guest for persistent sessions (5 chats/day limit)
-6. **Full Account**: Create a permanent account for higher limits (50 chats/day)
-7. Use the "Streaming" toggle in the header to enable/disable real-time streaming responses
-8. Enter a prompt describing the app you want to build
-9. Watch as v0 generates your app in real-time in the preview panel
-10. Continue the conversation to iterate and improve your app
-11. Authenticated users' chats are automatically saved and associated with their account
+A deliberately small v0-style chat app built with the v0 SDK.
 
 ## Architecture
 
-### Frontend
+This example is a monorepo with two independently deployable Next.js apps:
 
-- `app/page.tsx` - Main UI with chat interface, streaming toggle, and preview panel
-- `components/ai-elements/` - AI Elements components for the UI
-- `components/shared/app-header.tsx` - Navigation header with user authentication
-- Uses `@v0-sdk/react` components for rendering streaming AI responses
+- `apps/web` is the host application. It owns chat UI, server routes, and the
+  preview iframe.
+- `apps/preview-proxy` is a dedicated preview origin. It fetches preview
+  credentials on the server, proxies preview traffic, and contains no host-app
+  sessions or unrelated application routes.
 
-### Backend & API
+Generated previews are untrusted code. Do not deploy the preview proxy on the
+host application's origin. For strong production isolation, do not use a
+same-site subdomain either: prefer origins on different registrable domains,
+such as `app.example.com` and `example-preview.net`, rather than
+`app.example.com` and `previews.example.com`.
 
-- `app/api/chat/route.ts` - Chat creation and messaging with ownership tracking
-- `app/api/chats/` - User's chat listing and individual chat access
-- `app/api/projects/` - User's project listing and individual project access
-- `app/(auth)/` - Authentication configuration and login/register pages
+The iframe keeps `allow-scripts` and `allow-same-origin` so generated React apps
+can hydrate and run normally. The dedicated proxy origin is what prevents those
+permissions from giving preview code access to the host app.
 
-### Database
+## Run it
 
-- **Users**: Store user accounts with email and hashed passwords
-- **ProjectOwnership**: Maps v0 API project IDs → user IDs (ownership only)
-- **ChatOwnership**: Maps v0 API chat IDs → user IDs with optional project association
-- **AnonymousChatLog**: Tracks anonymous chat creation by IP address for rate limiting
+Copy the example environment file and add your API key:
 
-### Multi-Tenant Design
+```bash
+cp examples/v0-clone/.env.example examples/v0-clone/.env.local
+```
 
-- **v0 API as Source of Truth**: All actual chat/project data stays in v0 API
-- **Ownership Layer**: Database only tracks "who owns what"
-- **Access Control**: API routes filter v0 data based on ownership
-- **No Data Duplication**: Avoids storing redundant data
+```bash
+V0_API_KEY=your_v0_api_key
+NEXT_PUBLIC_V0_PREVIEW_PROXY_URL=http://localhost:3001
+V0_CLONE_ORIGIN=http://localhost:3000
+```
 
-### Streaming Implementation
+Then run from the repository root:
 
-When streaming is enabled:
+```bash
+bun install
+bun --filter v0-clone dev
+```
 
-- Frontend sends `streaming: true` to the API route
-- API route calls `v0.chats.create({ responseMode: 'experimental_stream' })`
-- Server returns a streaming response with `Content-Type: text/event-stream`
-- Frontend uses `StreamingMessage` component from `@v0-sdk/react` to render responses in real-time
+The one `dev` command starts both apps:
 
-## Database Commands
+- Web app: [http://localhost:3000](http://localhost:3000)
+- Preview proxy: [http://localhost:3001](http://localhost:3001)
 
-- `pnpm db:generate` - Generate migration files from schema changes
-- `pnpm db:migrate` - Apply pending migrations
-- `pnpm db:studio` - Open Drizzle Studio for database inspection
-- `pnpm db:push` - Push schema changes directly (for development)
+When this example is created with `create-v0-sdk`, run the same commands from
+the generated project directory:
 
-## Security Features
+```bash
+bun install
+bun dev
+```
 
-- Password hashing with bcrypt
-- Secure session cookies
-- CSRF protection
-- SQL injection protection via Drizzle ORM
-- User data isolation through ownership mapping
+## Deploy it
 
-## User Types & Rate Limits
+Create two projects from the same repository:
 
-- **Anonymous Users**: No account needed, 3 chats per day, no data persistence
-- **Guest Users**: Auto-created accounts, 5 chats per day, data persists during session
-- **Registered Users**: Permanent accounts, 50 chats per day, data persists across sessions and devices
+1. Deploy `apps/web` as the host application.
+2. Deploy `apps/preview-proxy` on a different registrable domain with deployment
+   protection disabled or otherwise configured to allow iframe navigations.
+3. Set `V0_API_KEY` on both projects.
+4. Set `NEXT_PUBLIC_V0_PREVIEW_PROXY_URL` on the web project to the proxy
+   project's public origin.
+5. Set `V0_CLONE_ORIGIN` on the proxy project to the web project's exact public
+   origin. The proxy uses it for loading-state messages.
+6. Configure the preview proxy's hostname as a trusted preview host in v0.
 
-Rate limits are enforced per 24-hour period and reset daily.
+The preview proxy must not share authentication cookies or application
+endpoints with the host app. `fetchPreview` strips incoming credentials and
+infrastructure headers before forwarding requests.
 
----
+### Trust the preview proxy hostname
 
-You now have a working multi-tenant v0 clone with authentication! Feel free to explore the [v0 Platform API](https://v0.dev/docs/api/platform) and extend your app with additional features.
+Add the isolated preview proxy's hostname to your team's trusted preview hosts.
+Use the hostname only, without a scheme, port, or path. Do not use the web
+application's hostname.
+
+From the generated project's root, the following command reads `V0_API_KEY`
+from `.env.local`:
+
+```bash
+set -a
+. ./.env.local
+set +a
+
+curl -X PUT "https://api.v0.dev/v2/settings/preview-hosts" \
+  -H "Authorization: Bearer $V0_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"hosts":["preview.example-preview.com"]}'
+```
+
+Replace `preview.example-preview.com` with the proxy's production hostname.
+This endpoint replaces the complete trusted-host list, so include any existing
+hostnames that should remain trusted.
+
+## Implementation notes
+
+- The root layout fetches favorite and recent chats on the server.
+- `/chats/[chatId]` fetches the selected chat and its messages on the server.
+- Client chat state uses AI SDK `useChat` with `V0Transport`, while
+  `@v0-sdk/react/swr` hooks power chat, file, task-resolution, restore,
+  duplicate, download, and deployment actions.
+- App Router handlers call the v0 SDK on the server, so `V0_API_KEY` is never
+  included in the client bundle.
+- New chats can start from a prompt, selected files, a ZIP archive, or a GitHub
+  repository.
+- Assistant messages render text, reasoning, activities, and task-resolution
+  controls from the SDK's ordered message parts.
+- The web app points its iframe at the dedicated proxy origin. The proxy uses
+  `fetchPreview`, and its `proxy.ts` keeps root-relative preview requests on the
+  chat-specific proxy path.
+
+There is no local demo data store; chats and files come from the v0 API.

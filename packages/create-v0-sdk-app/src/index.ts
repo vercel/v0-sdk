@@ -1,17 +1,25 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
-import { blue, bold, cyan, green, red } from 'picocolors'
+import picocolors from 'picocolors'
 import type { InitialReturnValue } from 'prompts'
 import prompts from 'prompts'
-import { createApp, type ExampleType } from './create-app'
-import type { PackageManager } from './helpers/get-pkg-manager'
-import { getPkgManager } from './helpers/get-pkg-manager'
-import { isFolderEmpty } from './helpers/is-folder-empty'
-import { validateNpmName } from './helpers/validate-pkg'
-import packageJson from '../package.json'
+import { createApp, type ExampleType } from './create-app.js'
+import type { PackageManager } from './helpers/get-pkg-manager.js'
+import { getPkgManager } from './helpers/get-pkg-manager.js'
+import { isFolderEmpty } from './helpers/is-folder-empty.js'
+import { validateNpmName } from './helpers/validate-pkg.js'
+
+const { bold, cyan, green, red } = picocolors
+
+const packageJson = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+) as {
+  name: string
+  version: string
+}
 
 let projectPath: string = ''
 
@@ -20,11 +28,7 @@ const handleSigTerm = () => process.exit(0)
 process.on('SIGINT', handleSigTerm)
 process.on('SIGTERM', handleSigTerm)
 
-const onPromptState = (state: {
-  value: InitialReturnValue
-  aborted: boolean
-  exited: boolean
-}) => {
+const onPromptState = (state: { value: InitialReturnValue; aborted: boolean; exited: boolean }) => {
   if (state.aborted) {
     // If we don't re-enable the terminal cursor before exiting
     // the program, the cursor will remain hidden
@@ -34,38 +38,17 @@ const onPromptState = (state: {
   }
 }
 
+const defaultExample: ExampleType = 'v0-clone'
+
 const examples: { name: ExampleType; description: string }[] = [
   {
-    name: 'v0-clone',
-    description:
-      'Next.js app that replicates the v0.dev interface (Recommended)',
-  },
-  {
-    name: 'simple-v0',
-    description: 'The simplest way to use v0 - just prompt and see your app',
-  },
-  {
-    name: 'classic-v0',
-    description:
-      'Full-featured Next.js app similar to the original v0.dev released in 2023',
-  },
-  {
-    name: 'v0-sdk-react-example',
-    description: 'Next.js example using @v0-sdk/react components',
-  },
-  {
-    name: 'ai-tools-example',
-    description:
-      'Node.js example using @v0-sdk/ai-tools with AI SDK + AI Gateway',
+    name: defaultExample,
+    description: 'Full-featured v0 clone built with the v0 SDK',
   },
 ]
 
 const program = new Command(packageJson.name)
-  .version(
-    packageJson.version,
-    '-v, --version',
-    'Output the current version of create-v0-sdk-app.',
-  )
+  .version(packageJson.version, '-v, --version', 'Output the current version of create-v0-sdk-app.')
   .argument('[directory]')
   .usage('[directory] [options]')
   .helpOption('-h, --help', 'Display this help message.')
@@ -74,29 +57,17 @@ const program = new Command(packageJson.name)
     `
   
   An example to bootstrap the app with. Available examples:
-  ${examples.map((ex) => `  • ${ex.name}: ${ex.description}`).join('\n  ')}
+  ${examples.map((ex) => `  - ${ex.name}: ${ex.description}`).join('\n  ')}
 `,
   )
   .option(
     '--use-pnpm',
     'Explicitly tell the CLI to bootstrap the application using pnpm (recommended).',
   )
-  .option(
-    '--use-npm',
-    'Explicitly tell the CLI to bootstrap the application using npm.',
-  )
-  .option(
-    '--use-yarn',
-    'Explicitly tell the CLI to bootstrap the application using Yarn.',
-  )
-  .option(
-    '--use-bun',
-    'Explicitly tell the CLI to bootstrap the application using Bun.',
-  )
-  .option(
-    '--skip-install',
-    'Explicitly tell the CLI to skip installing packages.',
-  )
+  .option('--use-npm', 'Explicitly tell the CLI to bootstrap the application using npm.')
+  .option('--use-yarn', 'Explicitly tell the CLI to bootstrap the application using Yarn.')
+  .option('--use-bun', 'Explicitly tell the CLI to bootstrap the application using Bun.')
+  .option('--skip-install', 'Explicitly tell the CLI to skip installing packages.')
   .action((name) => {
     if (name && !name.startsWith('--no-')) {
       projectPath = name
@@ -107,13 +78,13 @@ const program = new Command(packageJson.name)
 
 const opts = program.opts()
 
-const packageManager: PackageManager = !!opts.usePnpm
+const packageManager: PackageManager = opts.usePnpm
   ? 'pnpm'
-  : !!opts.useNpm
+  : opts.useNpm
     ? 'npm'
-    : !!opts.useYarn
+    : opts.useYarn
       ? 'yarn'
-      : !!opts.useBun
+      : opts.useBun
         ? 'bun'
         : getPkgManager()
 
@@ -165,9 +136,7 @@ async function run(): Promise<void> {
       )} because of npm naming restrictions:`,
     )
 
-    validation.problems.forEach((p) =>
-      console.error(`    ${red(bold('*'))} ${p}`),
-    )
+    validation.problems.forEach((p) => console.error(`    ${red(bold('*'))} ${p}`))
     process.exit(1)
   }
 
@@ -175,28 +144,12 @@ async function run(): Promise<void> {
     process.exit(1)
   }
 
-  let example: ExampleType | undefined = opts.example
+  const example: ExampleType = opts.example || defaultExample
 
-  if (!example) {
-    const res = await prompts({
-      onState: onPromptState,
-      type: 'select',
-      name: 'example',
-      message: 'Which example would you like to use?',
-      choices: examples.map((ex) => ({
-        title: ex.name,
-        value: ex.name,
-        description: ex.description,
-      })),
-      initial: 0,
-    })
-    example = res.example
-  }
-
-  if (!example || !examples.some((ex) => ex.name === example)) {
+  if (!examples.some((ex) => ex.name === example)) {
     console.error(
       `Invalid example "${example}". Available examples are:\n` +
-        examples.map((ex) => `  • ${ex.name}`).join('\n'),
+        examples.map((ex) => `  - ${ex.name}`).join('\n'),
     )
     process.exit(1)
   }

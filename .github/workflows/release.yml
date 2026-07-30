@@ -1,54 +1,293 @@
-name: Release
+name: release
 
 on:
   push:
     branches:
       - main
-    paths:
-      - '.changeset/**'
-      - '.github/workflows/release.yml'
-  workflow_dispatch:
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  release:
-    name: Release
+  # Nightly release lane: if main has commits since the last version tag, this
+  # publishes commit-specific canaries and opens one PR containing only the
+  # lockstep package versions and lockfile bump. An existing PR for that version
+  # is left in place while newer main commits receive fresh canaries.
+  version-pr:
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
       id-token: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
+          ref: main
           fetch-depth: 0
+      - name: Check commits since last version
+        id: changes
+        run: |
+          LAST_VERSION=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --match 'v0-sdk@*' 2>/dev/null || true)
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
-        with:
-          version: 9.15.0
+          if [ -z "$LAST_VERSION" ]; then
+            echo "No version tag found; continuing with release PR."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-      - name: Setup Node.js
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+          COMMITS=$(git rev-list "${LAST_VERSION}..HEAD" --count)
+          echo "last_version=${LAST_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commits=${COMMITS}" >> "$GITHUB_OUTPUT"
+
+          if [ "$COMMITS" -eq 0 ]; then
+            echo "No commits since ${LAST_VERSION}; skipping release PR."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "${COMMITS} commits since ${LAST_VERSION}; continuing with release PR."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        if: steps.changes.outputs.skip != 'true'
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
-        with:
-          version: pnpm ci:version
-          publish: pnpm ci:release
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
-          commitMode: github-api
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        if: steps.changes.outputs.skip != 'true'
+      - if: steps.changes.outputs.skip != 'true'
+        run: bun install --frozen-lockfile
+      - name: Bump package versions
+        id: bump
+        if: steps.changes.outputs.skip != 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUMP: patch
+        run: |
+          cd packages/v0-sdk
+          bun pm version "$BUMP" --no-git-tag-version
+          SDK_NAME=$(bun pm pkg get name | tr -d '"')
+          VERSION=$(bun pm pkg get version | tr -d '"')
+          cd ../ai-tools
+          AI_TOOLS_NAME=$(bun pm pkg get name | tr -d '"')
+          bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}"
+          cd ../react
+          REACT_NAME=$(bun pm pkg get name | tr -d '"')
+          bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}"
+          cd ../create-v0-sdk-app
+          CREATE_APP_NAME=$(bun pm pkg get name | tr -d '"')
+          bun pm pkg set "version=${VERSION}"
+          cd ../..
+          bun install --lockfile-only
+          echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
+          echo "react_name=${REACT_NAME}" >> "$GITHUB_OUTPUT"
+          echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Check published latest
+        id: published
+        if: steps.changes.outputs.skip != 'true'
+        run: |
+          SDK_PUBLISHED=false
+          AI_TOOLS_PUBLISHED=false
+          REACT_PUBLISHED=false
+          CREATE_APP_PUBLISHED=false
+          if npm view "${{ steps.bump.outputs.sdk_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            SDK_PUBLISHED=true
+          fi
+          if npm view "${{ steps.bump.outputs.ai_tools_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            AI_TOOLS_PUBLISHED=true
+          fi
+          if npm view "${{ steps.bump.outputs.react_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            REACT_PUBLISHED=true
+          fi
+          if npm view "${{ steps.bump.outputs.create_app_name }}@${{ steps.bump.outputs.version }}" version --silent > /dev/null 2>&1; then
+            CREATE_APP_PUBLISHED=true
+          fi
+          if [ "$SDK_PUBLISHED" = true ] && [ "$AI_TOOLS_PUBLISHED" = true ] && [ "$REACT_PUBLISHED" = true ] && [ "$CREATE_APP_PUBLISHED" = true ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Resolve nightly canary version
+        id: canary
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          echo "version=${{ steps.bump.outputs.version }}-canary.${SHA}" >> "$GITHUB_OUTPUT"
+      - name: Set nightly canary versions
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          CANARY_VERSION="${{ steps.canary.outputs.version }}"
+          (cd packages/v0-sdk && bun pm pkg set "version=${CANARY_VERSION}")
+          (cd packages/ai-tools && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
+          (cd packages/react && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
+          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${CANARY_VERSION}")
+      - name: Publish nightly canaries
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          publish_if_needed() {
+            NAME="$1"
+            WORKSPACE="$2"
+            VERSION="${{ steps.canary.outputs.version }}"
+
+            if npm view "${NAME}@${VERSION}" version --silent > /dev/null 2>&1; then
+              echo "${NAME}@${VERSION} is already published; skipping."
+            else
+              npm publish --tag canary --workspace "${WORKSPACE}"
+            fi
+          }
+
+          publish_if_needed "${{ steps.bump.outputs.sdk_name }}" packages/v0-sdk
+          publish_if_needed "${{ steps.bump.outputs.ai_tools_name }}" packages/ai-tools
+          publish_if_needed "${{ steps.bump.outputs.react_name }}" packages/react
+          publish_if_needed "${{ steps.bump.outputs.create_app_name }}" packages/create-v0-sdk-app
+      - name: Restore stable release candidate versions
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          VERSION="${{ steps.bump.outputs.version }}"
+          (cd packages/v0-sdk && bun pm pkg set "version=${VERSION}")
+          (cd packages/ai-tools && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
+          (cd packages/react && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
+          (cd packages/create-v0-sdk-app && bun pm pkg set "version=${VERSION}")
+      - name: Check for existing release PR
+        id: existing
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          PR=$(gh pr list --state open --search "Release v${{ steps.bump.outputs.version }} in:title" --json number --jq '.[0].number // ""')
+          if [ -n "$PR" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open release PR
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true' && steps.existing.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.bump.outputs.version }}"
+          SDK_NAME="${{ steps.bump.outputs.sdk_name }}"
+          AI_TOOLS_NAME="${{ steps.bump.outputs.ai_tools_name }}"
+          REACT_NAME="${{ steps.bump.outputs.react_name }}"
+          CREATE_APP_NAME="${{ steps.bump.outputs.create_app_name }}"
+          BRANCH="release/v${VERSION}-${GITHUB_RUN_ID}"
+
+          git config user.name "v0[bot]"
+          git config user.email "v0[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add packages/v0-sdk/package.json packages/ai-tools/package.json packages/react/package.json packages/create-v0-sdk-app/package.json bun.lock
+          if git diff --cached --quiet; then
+            echo "No release changes to commit."
+            exit 0
+          fi
+          git commit -m "Release v${VERSION}"
+          git push --set-upstream origin "$BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Release v${VERSION}" \
+            --body "Bumps ${SDK_NAME}, ${AI_TOOLS_NAME}, ${REACT_NAME}, and ${CREATE_APP_NAME} to v${VERSION}. Merge this PR to publish them from main."
+
+  # Stable publish lane: when a release PR is manually merged to main, the bumped
+  # package versions are unpublished, so this publishes them to npm as latest and
+  # creates the GitHub release. Other main pushes with already-published versions
+  # skip release side effects.
+  latest:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - run: bun install --frozen-lockfile
+      - name: Resolve shared latest version
+        id: version
+        run: |
+          SDK_NAME=$(cd packages/v0-sdk && bun pm pkg get name | tr -d '"')
+          AI_TOOLS_NAME=$(cd packages/ai-tools && bun pm pkg get name | tr -d '"')
+          REACT_NAME=$(cd packages/react && bun pm pkg get name | tr -d '"')
+          CREATE_APP_NAME=$(cd packages/create-v0-sdk-app && bun pm pkg get name | tr -d '"')
+          SDK_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
+          AI_TOOLS_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
+          REACT_VERSION=$(cd packages/react && bun pm pkg get version | tr -d '"')
+          CREATE_APP_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')
+          if [ "$SDK_VERSION" != "$AI_TOOLS_VERSION" ] || [ "$SDK_VERSION" != "$REACT_VERSION" ] || [ "$SDK_VERSION" != "$CREATE_APP_VERSION" ]; then
+            echo "::error::${SDK_NAME}, ${AI_TOOLS_NAME}, ${REACT_NAME}, and ${CREATE_APP_NAME} versions must match (${SDK_VERSION}, ${AI_TOOLS_VERSION}, ${REACT_VERSION}, ${CREATE_APP_VERSION})."
+            exit 1
+          fi
+          COMMIT=$(git rev-parse HEAD)
+          echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
+          echo "react_name=${REACT_NAME}" >> "$GITHUB_OUTPUT"
+          echo "create_app_name=${CREATE_APP_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${SDK_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commit=${COMMIT}" >> "$GITHUB_OUTPUT"
+          if [[ "$SDK_VERSION" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check published latest
+        id: published
+        if: steps.version.outputs.prerelease != 'true'
+        run: |
+          SDK_SKIP=false
+          AI_TOOLS_SKIP=false
+          REACT_SKIP=false
+          CREATE_APP_SKIP=false
+          if npm view "${{ steps.version.outputs.sdk_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            SDK_SKIP=true
+          fi
+          if npm view "${{ steps.version.outputs.ai_tools_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            AI_TOOLS_SKIP=true
+          fi
+          if npm view "${{ steps.version.outputs.react_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            REACT_SKIP=true
+          fi
+          if npm view "${{ steps.version.outputs.create_app_name }}@${{ steps.version.outputs.version }}" version --silent > /dev/null 2>&1; then
+            CREATE_APP_SKIP=true
+          fi
+          echo "sdk_skip=${SDK_SKIP}" >> "$GITHUB_OUTPUT"
+          echo "ai_tools_skip=${AI_TOOLS_SKIP}" >> "$GITHUB_OUTPUT"
+          echo "react_skip=${REACT_SKIP}" >> "$GITHUB_OUTPUT"
+          echo "create_app_skip=${CREATE_APP_SKIP}" >> "$GITHUB_OUTPUT"
+          if [ "$SDK_SKIP" = true ] && [ "$AI_TOOLS_SKIP" = true ] && [ "$REACT_SKIP" = true ] && [ "$CREATE_APP_SKIP" = true ]; then
+            echo "all_skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all_skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.sdk_skip != 'true'
+        run: npm publish --tag latest --workspace packages/v0-sdk
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.ai_tools_skip != 'true'
+        run: npm publish --tag latest --workspace packages/ai-tools
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.react_skip != 'true'
+        run: npm publish --tag latest --workspace packages/react
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.create_app_skip != 'true'
+        run: npm publish --tag latest --workspace packages/create-v0-sdk-app
+      - name: Check GitHub release
+        id: release
+        if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.all_skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ steps.version.outputs.version }}" > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.all_skip != 'true' && steps.release.outputs.skip != 'true'
+        run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ steps.version.outputs.commit }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

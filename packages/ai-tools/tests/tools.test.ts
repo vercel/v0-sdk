@@ -1,200 +1,229 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { v0Tools, v0ToolsByCategory } from '../src/index'
+import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-// Mock the v0 SDK
-vi.mock('v0-sdk', () => ({
-  createClient: vi.fn(() => ({
-    chats: {
-      create: vi.fn(),
-      find: vi.fn(),
-      getById: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      sendMessage: vi.fn(),
-      favorite: vi.fn(),
-      fork: vi.fn(),
-    },
-    projects: {
-      create: vi.fn(),
-      find: vi.fn(),
-      getById: vi.fn(),
-      update: vi.fn(),
-      assign: vi.fn(),
-      getByChatId: vi.fn(),
-      createEnvVars: vi.fn(),
-      findEnvVars: vi.fn(),
-      updateEnvVars: vi.fn(),
-      deleteEnvVars: vi.fn(),
-    },
-    deployments: {
-      create: vi.fn(),
-      find: vi.fn(),
-      getById: vi.fn(),
-      delete: vi.fn(),
-      findLogs: vi.fn(),
-      findErrors: vi.fn(),
-    },
-    user: {
-      get: vi.fn(),
-      getBilling: vi.fn(),
-      getPlan: vi.fn(),
-      getScopes: vi.fn(),
-    },
-    hooks: {
-      create: vi.fn(),
-      find: vi.fn(),
-      getById: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    },
-    rateLimits: {
-      find: vi.fn(),
-    },
-  })),
+type OpenApiDocument = {
+  paths: Record<string, Record<string, { operationId?: string }>>
+}
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+const repoRoot = path.resolve(dirname, '../../..')
+const openApi = JSON.parse(
+  readFileSync(path.join(repoRoot, 'packages/v0-sdk/openapi.json'), 'utf8'),
+) as OpenApiDocument
+
+const httpMethods = new Set(['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'])
+
+const operationIds = Object.values(openApi.paths)
+  .flatMap((pathItem) =>
+    Object.entries(pathItem)
+      .filter(([method]) => httpMethods.has(method))
+      .map(([, operation]) => operation.operationId),
+  )
+  .filter((operationId): operationId is string => operationId !== undefined)
+  .sort()
+
+const operationKeys = operationIds.map(toCanonicalToolKey).sort()
+
+let currentClient: unknown = {}
+
+mock.module('v0', () => ({
+  createV0Client: () => currentClient,
 }))
 
-describe('@v0-sdk/ai-tools', () => {
+function toCanonicalToolKey(operationId: string): string {
+  return operationId
+    .split('.')
+    .map((segment, index) => {
+      const camelSegment = toCamelCase(segment)
+      return index === 0 ? lowerFirst(camelSegment) : upperFirst(camelSegment)
+    })
+    .join('')
+}
+
+function toCamelCase(value: string): string {
+  const [first = '', ...rest] = value.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+  return [lowerFirst(first), ...rest.map(upperFirst)].join('')
+}
+
+function lowerFirst(value: string): string {
+  return value.charAt(0).toLowerCase() + value.slice(1)
+}
+
+function upperFirst(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+describe('generated v0 tools', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    currentClient = {}
   })
 
-  describe('v0Tools (flat structure)', () => {
-    it('should create all tools in flat structure', () => {
-      const tools = v0Tools({
-        apiKey: 'test-api-key',
-      })
+  test('flat tools contain every OpenAPI operation', async () => {
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
 
-      // Chat tools
-      expect(tools).toHaveProperty('createChat')
-      expect(tools).toHaveProperty('sendMessage')
-      expect(tools).toHaveProperty('getChat')
-      expect(tools).toHaveProperty('updateChat')
-      expect(tools).toHaveProperty('deleteChat')
-      expect(tools).toHaveProperty('favoriteChat')
-      expect(tools).toHaveProperty('forkChat')
-      expect(tools).toHaveProperty('listChats')
-
-      // Project tools
-      expect(tools).toHaveProperty('createProject')
-      expect(tools).toHaveProperty('getProject')
-      expect(tools).toHaveProperty('updateProject')
-      expect(tools).toHaveProperty('listProjects')
-      expect(tools).toHaveProperty('assignChatToProject')
-      expect(tools).toHaveProperty('getProjectByChat')
-      expect(tools).toHaveProperty('createEnvironmentVariables')
-      expect(tools).toHaveProperty('listEnvironmentVariables')
-      expect(tools).toHaveProperty('updateEnvironmentVariables')
-      expect(tools).toHaveProperty('deleteEnvironmentVariables')
-
-      // Deployment tools
-      expect(tools).toHaveProperty('createDeployment')
-      expect(tools).toHaveProperty('getDeployment')
-      expect(tools).toHaveProperty('deleteDeployment')
-      expect(tools).toHaveProperty('listDeployments')
-      expect(tools).toHaveProperty('getDeploymentLogs')
-      expect(tools).toHaveProperty('getDeploymentErrors')
-
-      // User tools
-      expect(tools).toHaveProperty('getCurrentUser')
-      expect(tools).toHaveProperty('getUserBilling')
-      expect(tools).toHaveProperty('getUserPlan')
-      expect(tools).toHaveProperty('getUserScopes')
-      expect(tools).toHaveProperty('getRateLimits')
-
-      // Hook tools
-      expect(tools).toHaveProperty('createHook')
-      expect(tools).toHaveProperty('getHook')
-      expect(tools).toHaveProperty('updateHook')
-      expect(tools).toHaveProperty('deleteHook')
-      expect(tools).toHaveProperty('listHooks')
-    })
+    expect(Object.keys(tools).sort()).toEqual(operationKeys)
   })
 
-  describe('v0ToolsByCategory (organized structure)', () => {
-    it('should create tools organized by category', () => {
-      const tools = v0ToolsByCategory({
-        apiKey: 'test-api-key',
-      })
+  test('tools are grouped by first operationId segment', async () => {
+    const { v0ToolsByCategory } = await import('../src')
+    const toolsByCategory = v0ToolsByCategory({ auth: 'test-key' })
+    const expectedCategories = [
+      ...new Set(
+        operationIds.map((operationId) => {
+          const [category] = operationId.split('.')
+          if (!category) {
+            throw new Error(`Invalid operationId: ${operationId}`)
+          }
 
-      expect(tools).toHaveProperty('chat')
-      expect(tools).toHaveProperty('project')
-      expect(tools).toHaveProperty('deployment')
-      expect(tools).toHaveProperty('user')
-      expect(tools).toHaveProperty('hook')
-    })
+          return category
+        }),
+      ),
+    ].sort()
 
-    it('should create chat tools', () => {
-      const tools = v0ToolsByCategory()
+    expect(Object.keys(toolsByCategory).sort()).toEqual(expectedCategories)
 
-      expect(tools.chat).toHaveProperty('createChat')
-      expect(tools.chat).toHaveProperty('sendMessage')
-      expect(tools.chat).toHaveProperty('getChat')
-      expect(tools.chat).toHaveProperty('updateChat')
-      expect(tools.chat).toHaveProperty('deleteChat')
-      expect(tools.chat).toHaveProperty('favoriteChat')
-      expect(tools.chat).toHaveProperty('forkChat')
-      expect(tools.chat).toHaveProperty('listChats')
-    })
+    for (const category of expectedCategories) {
+      const expectedKeys = operationIds
+        .filter((operationId) => operationId.startsWith(`${category}.`))
+        .map(toCanonicalToolKey)
+        .sort()
 
-    it('should create project tools', () => {
-      const tools = v0ToolsByCategory()
-
-      expect(tools.project).toHaveProperty('createProject')
-      expect(tools.project).toHaveProperty('getProject')
-      expect(tools.project).toHaveProperty('updateProject')
-      expect(tools.project).toHaveProperty('listProjects')
-      expect(tools.project).toHaveProperty('assignChatToProject')
-      expect(tools.project).toHaveProperty('getProjectByChat')
-      expect(tools.project).toHaveProperty('createEnvironmentVariables')
-      expect(tools.project).toHaveProperty('listEnvironmentVariables')
-      expect(tools.project).toHaveProperty('updateEnvironmentVariables')
-      expect(tools.project).toHaveProperty('deleteEnvironmentVariables')
-    })
-
-    it('should create deployment tools', () => {
-      const tools = v0ToolsByCategory()
-
-      expect(tools.deployment).toHaveProperty('createDeployment')
-      expect(tools.deployment).toHaveProperty('getDeployment')
-      expect(tools.deployment).toHaveProperty('deleteDeployment')
-      expect(tools.deployment).toHaveProperty('listDeployments')
-      expect(tools.deployment).toHaveProperty('getDeploymentLogs')
-      expect(tools.deployment).toHaveProperty('getDeploymentErrors')
-    })
-
-    it('should create user tools', () => {
-      const tools = v0ToolsByCategory()
-
-      expect(tools.user).toHaveProperty('getCurrentUser')
-      expect(tools.user).toHaveProperty('getUserBilling')
-      expect(tools.user).toHaveProperty('getUserPlan')
-      expect(tools.user).toHaveProperty('getUserScopes')
-      expect(tools.user).toHaveProperty('getRateLimits')
-    })
-
-    it('should create hook tools', () => {
-      const tools = v0ToolsByCategory()
-
-      expect(tools.hook).toHaveProperty('createHook')
-      expect(tools.hook).toHaveProperty('getHook')
-      expect(tools.hook).toHaveProperty('updateHook')
-      expect(tools.hook).toHaveProperty('deleteHook')
-      expect(tools.hook).toHaveProperty('listHooks')
-    })
+      expect(Object.keys(toolsByCategory[category as keyof typeof toolsByCategory]).sort()).toEqual(
+        expectedKeys,
+      )
+    }
   })
 
-  describe('Tool Schemas', () => {
-    it('should have proper tool definitions', () => {
-      const tools = v0ToolsByCategory()
+  test('generated tools include description, inputSchema, and execute', async () => {
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
 
-      // Check that each tool has the required properties
-      expect(tools.chat.createChat).toHaveProperty('description')
-      expect(tools.chat.createChat).toHaveProperty('inputSchema')
-      expect(tools.chat.createChat).toHaveProperty('execute')
+    for (const key of operationKeys as Array<keyof typeof tools>) {
+      const generatedTool = tools[key]
+      expect(generatedTool).toBeDefined()
+      expect(generatedTool?.description).toBeString()
+      expect(generatedTool?.inputSchema).toBeDefined()
+      expect(generatedTool?.execute).toBeFunction()
+    }
+  })
 
-      expect(tools.project.createProject).toHaveProperty('description')
-      expect(tools.project.createProject).toHaveProperty('inputSchema')
-      expect(tools.project.createProject).toHaveProperty('execute')
-    })
+  test('generated Zod schemas validate required body and path fields', async () => {
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
+    const messagesSend = tools['messagesSend']
+    if (!messagesSend) {
+      throw new Error('messagesSend tool was not generated')
+    }
+
+    const inputSchema = messagesSend.inputSchema as {
+      safeParse(input: unknown): { success: boolean }
+    }
+
+    expect(
+      inputSchema.safeParse({
+        chatId: 'chat_123',
+        message: 'Build a dashboard',
+      }).success,
+    ).toBe(true)
+
+    expect(
+      inputSchema.safeParse({
+        message: 'Build a dashboard',
+      }).success,
+    ).toBe(false)
+  })
+
+  test('execute routes flat fields to the matching SDK method', async () => {
+    const calls: unknown[] = []
+    currentClient = {
+      messages: {
+        send: mock((options: unknown) => {
+          calls.push(options)
+          return {
+            data: { id: 'message_123' },
+            error: undefined,
+            request: new Request('https://v0.app/api/v2/chats/chat_123/messages'),
+            response: new Response('{}'),
+          }
+        }),
+      },
+    }
+
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
+    const messagesSend = tools['messagesSend']
+    if (!messagesSend?.execute) {
+      throw new Error('messagesSend execute was not generated')
+    }
+
+    const result = await messagesSend.execute(
+      {
+        chatId: 'chat_123',
+        message: 'Build a dashboard',
+      },
+      { toolCallId: 'tool_call_123', messages: [] },
+    )
+
+    expect(result).toEqual({ id: 'message_123' })
+    expect(structuredClone(result)).toEqual({ id: 'message_123' })
+    expect(calls).toEqual([
+      {
+        chatId: 'chat_123',
+        message: 'Build a dashboard',
+      },
+    ])
+  })
+
+  test('streaming execute yields SDK stream events', async () => {
+    const calls: unknown[] = []
+    async function* streamEvents() {
+      yield { type: 'chunk', value: 'one' }
+      yield { type: 'chunk', value: 'two' }
+    }
+
+    currentClient = {
+      messages: {
+        sendStream: mock((options: unknown) => {
+          calls.push(options)
+          return { stream: streamEvents() }
+        }),
+      },
+    }
+
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
+    const messagesSendStream = tools['messagesSendStream']
+    if (!messagesSendStream?.execute) {
+      throw new Error('messagesSendStream execute was not generated')
+    }
+
+    const result = messagesSendStream.execute(
+      {
+        chatId: 'chat_123',
+        message: 'Build a dashboard',
+      },
+      { toolCallId: 'tool_call_123', messages: [] },
+    )
+
+    expect(typeof (result as AsyncIterable<unknown>)[Symbol.asyncIterator]).toBe('function')
+
+    const events = []
+    for await (const event of result as AsyncIterable<unknown>) {
+      events.push(event)
+    }
+
+    expect(events).toEqual([
+      { type: 'chunk', value: 'one' },
+      { type: 'chunk', value: 'two' },
+    ])
+    expect(calls).toEqual([
+      {
+        chatId: 'chat_123',
+        message: 'Build a dashboard',
+      },
+    ])
   })
 })

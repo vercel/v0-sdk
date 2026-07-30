@@ -1,6 +1,5 @@
-import { yellow } from 'picocolors'
 import spawn from 'cross-spawn'
-import type { PackageManager } from './get-pkg-manager'
+import type { PackageManager } from './get-pkg-manager.js'
 
 /**
  * Spawn a package manager installation based on user preference.
@@ -10,16 +9,8 @@ import type { PackageManager } from './get-pkg-manager'
 export async function install(
   /** Indicate which package manager to use. */
   packageManager: PackageManager,
-  /** Indicate whether there is an active Internet connection.*/
-  isOnline: boolean,
 ): Promise<void> {
   const args: string[] = ['install']
-  if (!isOnline) {
-    console.log(
-      yellow('You appear to be offline.\nFalling back to the local cache.'),
-    )
-    args.push('--offline')
-  }
   /**
    * Return a Promise that resolves once the installation is finished.
    */

@@ -1,299 +1,160 @@
 # @v0-sdk/react
 
-> **⚠️ Developer Preview**: This SDK is currently in beta and is subject to change. Use in production at your own risk.
+React hooks for building apps with the v0 API.
 
-Headless React components and hooks for rendering content from the v0 Platform API.
+## Install
 
-## Features
+For the AI SDK transport:
 
-- **Headless by design** - Works with React Native, TUIs, and any React renderer
-- **Flexible rendering** - Use provided JSX components or build your own with headless hooks
-- **Customizable** - Override any component or styling
-- **Zero DOM dependencies** - No `react-dom` required
-- **Streaming support** - Real-time message streaming with `useStreamingMessage`
-- **Backward compatible** - Drop-in replacement for existing implementations
-
-## Installation
-
-```bash
-npm install @v0-sdk/react
-# or
-yarn add @v0-sdk/react
-# or
-pnpm add @v0-sdk/react
+```sh
+npm install @v0-sdk/react react ai @ai-sdk/react
 ```
 
-## Usage
+Add SWR when using the generated API hooks:
 
-### Basic JSX Components (Web/React DOM)
+```sh
+npm install @v0-sdk/react react swr
+```
 
-```tsx
-import { Message, StreamingMessage } from '@v0-sdk/react'
+## Getting started
 
-function ChatMessage({ content }) {
-  return (
-    <Message
-      content={content}
-      messageId="msg-1"
-      role="assistant"
-      className="my-message"
-    />
-  )
-}
+Create backend routes that authenticate with the server-side `v0` SDK, then pass those route URLs to the hooks. For example, this Next.js route proxies a streaming message request while keeping `V0_API_KEY` on the server:
 
-function StreamingChat({ stream }) {
-  return (
-    <StreamingMessage
-      stream={stream}
-      messageId="streaming-msg"
-      role="assistant"
-      onComplete={(content) => console.log('Complete:', content)}
-    />
-  )
+```ts
+// app/api/v0/chats/[chatId]/messages/stream/route.ts
+import { v0 } from 'v0'
+
+export async function POST(request: Request, { params }: { params: Promise<{ chatId: string }> }) {
+  // Perform your own authentication and validation
+
+  const { chatId } = await params
+  const body = await request.json()
+
+  const result = await v0.messages.sendStream({ chatId, ...body })
+
+  return result.toResponse()
 }
 ```
 
-### Headless Hooks (React Native/Ink/TUI)
+The client can call that route with the corresponding hook:
 
 ```tsx
-import { useMessage, useStreamingMessageData } from '@v0-sdk/react'
-import { Text, View } from 'react-native' // or any other renderer
+import { useChat, useMessages, useSendMessage } from '@v0-sdk/react/swr'
 
-function HeadlessMessage({ content }) {
-  const messageData = useMessage({
-    content,
-    messageId: 'msg-1',
-    role: 'assistant',
+export function Chat({ chatId }: { chatId: string }) {
+  const chat = useChat(`/api/v0/chats/${chatId}`)
+  const messages = useMessages(`/api/v0/chats/${chatId}/messages`, {
+    limit: 50,
   })
+  const send = useSendMessage(`/api/v0/chats/${chatId}/messages/stream`)
 
-  return (
-    <View>
-      {messageData.elements.map((element) => (
-        <Text key={element.key}>
-          {element.type === 'text' ? element.data : JSON.stringify(element)}
-        </Text>
-      ))}
-    </View>
-  )
-}
-
-function HeadlessStreamingMessage({ stream }) {
-  const streamingData = useStreamingMessageData({
-    stream,
-    messageId: 'streaming-msg',
-    role: 'assistant',
-  })
-
-  if (streamingData.error) {
-    return <Text style={{ color: 'red' }}>Error: {streamingData.error}</Text>
+  if (chat.isLoading || messages.isLoading) {
+    return <p>Loading…</p>
   }
 
-  if (streamingData.isStreaming && !streamingData.messageData) {
-    return <Text>Loading...</Text>
+  if (chat.error || messages.error) {
+    return <p>Unable to load the chat.</p>
   }
 
   return (
-    <View>
-      {streamingData.messageData?.elements.map((element) => (
-        <Text key={element.key}>
-          {element.type === 'text' ? element.data : JSON.stringify(element)}
-        </Text>
+    <main>
+      <h1>{chat.data?.title}</h1>
+
+      {messages.data?.messages.map((message) => (
+        <article key={message.id}>{message.content}</article>
       ))}
-    </View>
+
+      <button
+        disabled={send.isMutating}
+        onClick={async () => {
+          const response = await send.trigger({ message: 'Build a dashboard' })
+          await response.text()
+          await messages.mutate()
+        }}
+      >
+        Send message
+      </button>
+    </main>
   )
 }
 ```
 
-### Ink CLI Example
+## AI SDK `useChat`
+
+Use AI SDK directly with `V0Transport`. The transport points at your create, send, and resume proxy routes; v0 credentials remain on the server.
 
 ```tsx
-import { useMessage } from '@v0-sdk/react'
-import { Text, Box } from 'ink'
-
-function CliMessage({ content }) {
-  const messageData = useMessage({
-    content,
-    messageId: 'cli-msg',
-    role: 'assistant',
-  })
-
-  return (
-    <Box flexDirection="column">
-      {messageData.elements.map((element) => (
-        <Text key={element.key}>
-          {element.type === 'text' ? element.data : `[${element.type}]`}
-        </Text>
-      ))}
-    </Box>
-  )
-}
-```
-
-## Available Hooks
-
-### Core Hooks
-
-- `useMessage(props)` - Process message content into headless data structure
-- `useStreamingMessageData(props)` - Handle streaming messages with real-time updates
-- `useStreamingMessage(stream, options)` - Low-level streaming hook
-
-### Component Hooks
-
-- `useIcon(props)` - Icon data and fallbacks
-- `useCodeBlock(props)` - Code block processing
-- `useMath(props)` - Math content processing
-- `useThinkingSection(props)` - Thinking section state management
-- `useTaskSection(props)` - Task section state and processing
-- `useCodeProject(props)` - Code project structure
-- `useContentPart(part)` - Content part analysis and processing
-
-## Available Components
-
-All components are optional JSX renderers that work with DOM environments. For headless usage, use the corresponding hooks instead.
-
-- `Message` - Main message renderer
-- `StreamingMessage` - Streaming message with loading states
-- `Icon` - Generic icon component with fallbacks
-- `CodeBlock` - Code syntax highlighting
-- `MathPart` - Math content rendering
-- `ThinkingSection` - Collapsible thinking sections
-- `TaskSection` - Collapsible task sections
-- `CodeProjectPart` - Code project file browser
-- `ContentPartRenderer` - Handles different content part types
-
-## Supported Task Types
-
-The package automatically handles all v0 Platform API task types:
-
-### Explicitly Supported Tasks
-
-- `task-thinking-v1` - AI reasoning and thought processes
-- `task-search-web-v1` - Web search operations with results
-- `task-search-repo-v1` - Repository/codebase search functionality
-- `task-diagnostics-v1` - Code analysis and issue detection
-- `task-read-file-v1` - File reading operations
-- `task-coding-v1` - Code generation and editing tasks
-- `task-generate-design-inspiration-v1` - Design inspiration generation
-- `task-start-v1` - Task initialization (usually hidden)
-
-### Future-Proof Support
-
-Any new task type following the `task-*-v1` pattern will be automatically supported with:
-
-- Auto-generated readable titles
-- Appropriate icon selection
-- Proper task section rendering
-- Graceful fallback handling
-
-## Customization
-
-### Custom Components
-
-```tsx
-import { Message } from '@v0-sdk/react'
-
-function CustomMessage({ content }) {
-  return (
-    <Message
-      content={content}
-      components={{
-        // Override specific HTML elements
-        p: ({ children }) => <MyParagraph>{children}</MyParagraph>,
-        code: ({ children }) => <MyCode>{children}</MyCode>,
-
-        // Override v0-specific components
-        CodeBlock: ({ language, code }) => (
-          <MyCodeHighlighter lang={language}>{code}</MyCodeHighlighter>
-        ),
-        Icon: ({ name }) => <MyIcon icon={name} />,
-      }}
-    />
-  )
-}
-```
-
-### Headless Custom Rendering
-
-```tsx
-import { useMessage } from '@v0-sdk/react'
-
-function CustomHeadlessMessage({ content }) {
-  const messageData = useMessage({ content })
-
-  const renderElement = (element) => {
-    switch (element.type) {
-      case 'text':
-        return <MyText>{element.data}</MyText>
-      case 'code-project':
-        return <MyCodeProject {...element.data} />
-      case 'html':
-        return <MyHtmlElement {...element.data} />
-      default:
-        return null
-    }
-  }
-
-  return <MyContainer>{messageData.elements.map(renderElement)}</MyContainer>
-}
-```
-
-## TypeScript Support
-
-Full TypeScript support with exported types:
-
-```tsx
-import type {
-  MessageData,
-  MessageElement,
-  StreamingMessageData,
-  IconData,
-  CodeBlockData,
-  // ... and many more
+import { useChat as useAIChat } from '@ai-sdk/react'
+import {
+  shouldResumeV0Chat,
+  toV0UIMessages,
+  V0Transport,
+  type MessagesListResponse,
+  type V0UIMessage,
 } from '@v0-sdk/react'
+import { useMemo } from 'react'
+
+export function AIChat({ history }: { history: MessagesListResponse['messages'] }) {
+  const chatId = history[0]?.chatId
+  const transport = useMemo(
+    () =>
+      new V0Transport({
+        chatId,
+        messages: history,
+        urls: {
+          create: '/api/v0/chats/stream',
+          send: (id) => `/api/v0/chats/${id}/messages/stream`,
+          resume: (id) => `/api/v0/chats/${id}/resume`,
+        },
+      }),
+    [chatId, history],
+  )
+
+  const chat = useAIChat<V0UIMessage>({
+    id: chatId,
+    messages: toV0UIMessages(history),
+    resume: shouldResumeV0Chat(history),
+    transport,
+  })
+
+  return <button onClick={() => chat.sendMessage({ text: 'Build a dashboard' })}>Send</button>
+}
 ```
 
-## Migration from Previous Versions
+`toV0UIMessages` maps persisted newest-first v0 history to chronological AI SDK messages. Text, reasoning, files, tools, rich v0 data parts, metadata, and resumable state are preserved. To stop generation, import `useStopMessage` from `@v0-sdk/react/swr`, call it for the active assistant on the server, then call the AI SDK's `chat.stop()` locally.
 
-This version is backward compatible. Existing code will continue to work unchanged. To adopt headless patterns:
-
-1. **Keep existing JSX components** for web/DOM environments
-2. **Use headless hooks** for React Native, Ink, or custom renderers
-3. **Gradually migrate** components as needed
-
-## React Native Example
+When a newly created chat should immediately navigate to a different page, stop
+the current transport directly from `onChatCreated`:
 
 ```tsx
-import { useMessage, useIcon } from '@v0-sdk/react'
-import { View, Text, ScrollView } from 'react-native'
-
-function RNMessage({ content }) {
-  const messageData = useMessage({ content })
-
-  const renderElement = (element) => {
-    if (element.type === 'text') {
-      return <Text key={element.key}>{element.data}</Text>
-    }
-
-    if (element.type === 'html' && element.data.tagName === 'p') {
-      return (
-        <Text key={element.key} style={{ marginVertical: 8 }}>
-          {element.children?.map(renderElement)}
-        </Text>
-      )
-    }
-
-    return <Text key={element.key}>[{element.type}]</Text>
-  }
-
-  return <ScrollView>{messageData.elements.map(renderElement)}</ScrollView>
-}
-
-function RNIcon({ name }) {
-  const iconData = useIcon({ name })
-  return <Text>{iconData.fallback}</Text>
-}
+const transport = new V0Transport({
+  urls,
+  onChatCreated(chatId, { stop }) {
+    stop()
+    router.push(`/chats/${chatId}`)
+  },
+})
 ```
 
-## License
+## Pending tasks
 
-Apache-2.0
+Use `getPendingV0Task` to find the latest questions, plan, integration request,
+or permission request carried by a v0 UI message:
+
+```tsx
+import { getPendingV0Task } from '@v0-sdk/react'
+
+const pendingTask = getPendingV0Task(chat.messages.at(-1)!)
+```
+
+## Cache revalidation
+
+Related mounted queries are revalidated after successful mutations:
+
+- `useDeleteChat` revalidates chat lists.
+- `useRestoreMessage` and `useUpdateChatFiles` revalidate messages and files.
+- `useUpdateChat` revalidates the chat and chat lists.
+
+Pass `revalidate: false` to the mutation configuration to opt out.
+
+See [`examples/react-chat`](../../examples/react-chat) for a complete one-page app and authenticated proxy routes.

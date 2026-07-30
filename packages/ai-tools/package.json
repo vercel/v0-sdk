@@ -1,68 +1,54 @@
 {
   "name": "@v0-sdk/ai-tools",
-  "version": "0.3.9",
+  "version": "3.0.0",
   "description": "AI SDK tools for the v0 Platform API",
-  "homepage": "https://v0.dev/docs/api",
+  "keywords": [
+    "ai",
+    "sdk",
+    "tools",
+    "v0",
+    "vercel"
+  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vercel/v0-sdk.git"
-  },
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+    "url": "git+https://github.com/vercel/v0-sdk.git",
+    "directory": "packages/ai-tools"
   },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "type-check": "tsc --noEmit",
-    "build": "bunchee",
-    "clean": "rm -rf dist *.tsbuildinfo",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "echo 'No linting configured for ai-tools package'",
-    "test": "vitest run",
-    "test:watch": "vitest"
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
   },
-  "keywords": [
-    "v0",
-    "vercel",
-    "ai",
-    "ai-sdk",
-    "tools",
-    "chat",
-    "sdk"
-  ],
-  "license": "Apache-2.0",
+  "scripts": {
+    "generate": "bun src/scripts/generate.ts",
+    "build": "tsdown",
+    "typecheck": "tsc",
+    "test": "bun test",
+    "prepublishOnly": "bun run generate && bun run build"
+  },
   "dependencies": {
-    "v0-sdk": "workspace:*",
-    "zod": "^3.23.8"
+    "v0": "3.0.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@types/node": "^22.12.0",
-    "bunchee": "^6.5.2",
-    "prettier": "^3.3.3",
-    "typescript": "^6.0.3",
-    "vitest": "^3.2.4"
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/bun": "latest",
+    "ai": "^5.0.0",
+    "tsdown": "^0.21.4",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "ai": "^5.0.0"
-  },
-  "engines": {
-    "node": ">=22",
-    "pnpm": ">=9"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "all"
   }
 }

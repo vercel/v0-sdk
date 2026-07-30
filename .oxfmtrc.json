@@ -1,0 +1,6 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "ignorePatterns": ["packages/v0-sdk/openapi.json", "packages/v0-sdk/src/generated/**"]
+}
