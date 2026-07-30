@@ -38,7 +38,15 @@ if (response.error) {
   throw new Error(response.error.message)
 }
 
-console.log(response.data.chat.id)
+const preview = await v0.chats.getPreview({
+  chatId: response.data.chat.id,
+})
+
+if (preview.error) {
+  throw new Error(preview.error.message)
+}
+
+console.log(preview.data?.url)
 ```
 
 Use `createV0Client` when you need to customize auth, `baseUrl`, or fetch options.
