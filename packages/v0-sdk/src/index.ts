@@ -74,7 +74,7 @@ export function createV0Client(config: CreateV0ClientConfig = {}): V0Client {
 
   const client = createClient(
     createConfig<ClientOptions>({
-      baseUrl: 'https://v0.app',
+      baseUrl: 'https://v0.app/api/v2',
       ...clientConfig,
       auth,
     }),
