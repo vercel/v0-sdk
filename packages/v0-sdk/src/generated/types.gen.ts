@@ -603,6 +603,10 @@ export type Message = {
      */
     finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
+     * True when this is an assistant message that produced restorable code and is not the currently active code.
+     */
+    restorable: boolean;
+    /**
      * Files attached to this message.
      */
     attachments?: Array<{
@@ -971,6 +975,10 @@ export type MessageListResponse = {
          * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
          */
         finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
+        /**
+         * True when this is an assistant message that produced restorable code and is not the currently active code.
+         */
+        restorable: boolean;
         /**
          * Files attached to this message.
          */
@@ -1355,6 +1363,10 @@ export type MessageStreamEvent = {
      */
     finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
+     * True when this is an assistant message that produced restorable code and is not the currently active code.
+     */
+    restorable: boolean;
+    /**
      * Files attached to this message.
      */
     attachments?: Array<{
@@ -1704,6 +1716,13 @@ export type SpendLimit = {
      * ISO timestamp of when the spend limit was last updated.
      */
     updatedAt: Date;
+};
+
+export type TrustedPreviewHosts = {
+    /**
+     * Canonicalized hostname patterns trusted to embed previews. Exact hosts match only themselves; *.example.com matches exactly one subdomain label; **.example.com matches one or more subdomain labels. Wildcards do not include the apex, so list example.com separately when it should also be trusted.
+     */
+    hosts: Array<string>;
 };
 
 /**
@@ -3999,6 +4018,10 @@ export type ChatsUpdateFilesResponses = {
              */
             finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
             /**
+             * True when this is an assistant message that produced restorable code and is not the currently active code.
+             */
+            restorable: boolean;
+            /**
              * Files attached to this message.
              */
             attachments?: Array<{
@@ -4135,7 +4158,7 @@ export type ChatsDownloadFilesResponses = {
 export type ChatsRestoreMessageData = {
     body: {
         /**
-         * The unique identifier of the message whose files to restore.
+         * The unique identifier of the assistant message whose files to restore.
          */
         messageId: string;
     };
@@ -4469,6 +4492,10 @@ export type ChatsRestoreMessageResponses = {
              * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
              */
             finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
+            /**
+             * True when this is an assistant message that produced restorable code and is not the currently active code.
+             */
+            restorable: boolean;
             /**
              * Files attached to this message.
              */
@@ -5182,6 +5209,89 @@ export type McpServersUpdateResponses = {
 };
 
 export type McpServersUpdateResponse = McpServersUpdateResponses[keyof McpServersUpdateResponses];
+
+export type SettingsGetPreviewHostsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/preview-hosts';
+};
+
+export type SettingsGetPreviewHostsErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SettingsGetPreviewHostsError = SettingsGetPreviewHostsErrors[keyof SettingsGetPreviewHostsErrors];
+
+export type SettingsGetPreviewHostsResponses = {
+    /**
+     * Response for status 200
+     */
+    200: TrustedPreviewHosts;
+};
+
+export type SettingsGetPreviewHostsResponse = SettingsGetPreviewHostsResponses[keyof SettingsGetPreviewHostsResponses];
+
+export type SettingsSetPreviewHostsData = {
+    body: {
+        /**
+         * The complete list of exact or wildcard hostname patterns trusted to embed previews. Provide hostnames only, without a scheme, port, path, userinfo, query string, or fragment. Use *.example.com for exactly one subdomain label and **.example.com for one or more. Wildcards do not include example.com itself; add the apex as a separate entry when needed.
+         */
+        hosts: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/settings/preview-hosts';
+};
+
+export type SettingsSetPreviewHostsErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SettingsSetPreviewHostsError = SettingsSetPreviewHostsErrors[keyof SettingsSetPreviewHostsErrors];
+
+export type SettingsSetPreviewHostsResponses = {
+    /**
+     * Response for status 200
+     */
+    200: TrustedPreviewHosts;
+};
+
+export type SettingsSetPreviewHostsResponse = SettingsSetPreviewHostsResponses[keyof SettingsSetPreviewHostsResponses];
 
 export type WebhooksListData = {
     body?: never;

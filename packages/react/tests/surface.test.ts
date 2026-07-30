@@ -26,5 +26,7 @@ describe('generated hook surface', () => {
     expect(V0_REACT_OPERATION_HOOKS['chats.create']).toBe('useCreateChatBlocking')
     expect(V0_REACT_OPERATION_HOOKS['messages.sendStream']).toBe('useSendMessage')
     expect(V0_REACT_OPERATION_HOOKS['messages.resolveStream']).toBe('useResolveTask')
+    expect(V0_REACT_OPERATION_HOOKS['settings.getPreviewHosts']).toBe('usePreviewHosts')
+    expect(V0_REACT_OPERATION_HOOKS['settings.setPreviewHosts']).toBe('useSetPreviewHosts')
   })
 })

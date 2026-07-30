@@ -3,7 +3,7 @@
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
 import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -613,7 +613,7 @@ export class Chats extends HeyApiClient {
     /**
      * Restore Message
      *
-     * Restores the files associated with a message. Pass an assistant message, or pass a user message to restore the files from its assistant reply. The associated files must not already be the latest files in the chat.
+     * Restores the files associated with an assistant message. The associated files must not already be the latest files in the chat.
      */
     public restoreMessage<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -1594,6 +1594,43 @@ export class McpServers extends HeyApiClient {
     }
 }
 
+export class Settings extends HeyApiClient {
+    /**
+     * Get Trusted Preview Hosts
+     *
+     * Returns the hostname patterns trusted to embed previews for the current team. Organization child teams inherit the parent organization’s hosts.
+     */
+    public getPreviewHosts<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
+        return (options?.client ?? this.client).get<SettingsGetPreviewHostsResponses, SettingsGetPreviewHostsErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/settings/preview-hosts',
+            ...options
+        });
+    }
+    
+    /**
+     * Set Trusted Preview Hosts
+     *
+     * Sets the host patterns trusted to embed previews for a standalone team or parent organization. Organization child teams cannot override this setting.
+     */
+    public setPreviewHosts<ThrowOnError extends boolean = false>(parameters: {
+        hosts: Array<string>;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'body', key: 'hosts' }] }]);
+        return (options?.client ?? this.client).put<SettingsSetPreviewHostsResponses, SettingsSetPreviewHostsErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/settings/preview-hosts',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+}
+
 export class Webhooks extends HeyApiClient {
     /**
      * List Webhooks
@@ -1730,6 +1767,11 @@ export class V0Sdk extends HeyApiClient {
     private _mcpServers?: McpServers;
     get mcpServers(): McpServers {
         return this._mcpServers ??= new McpServers({ client: this.client });
+    }
+    
+    private _settings?: Settings;
+    get settings(): Settings {
+        return this._settings ??= new Settings({ client: this.client });
     }
     
     private _webhooks?: Webhooks;

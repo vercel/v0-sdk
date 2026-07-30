@@ -74,6 +74,8 @@ const semanticNames = {
   'mcpServers.get': 'useMcpServer',
   'mcpServers.update': 'useUpdateMcpServer',
   'mcpServers.delete': 'useDeleteMcpServer',
+  'settings.getPreviewHosts': 'usePreviewHosts',
+  'settings.setPreviewHosts': 'useSetPreviewHosts',
   'webhooks.list': 'useWebhooks',
   'webhooks.create': 'useCreateWebhook',
   'webhooks.get': 'useWebhook',
