@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/*",
+    "examples/v0-clone/apps/*"
   ],
   "type": "module",
   "scripts": {

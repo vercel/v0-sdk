@@ -1,11 +1,11 @@
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
 /build
