@@ -2,6 +2,17 @@
 
 A deliberately small v0-style chat app built with the v0 SDK.
 
+> **Security warning:** this example has no user accounts or authentication.
+> Everyone who can reach a deployment shares the deployer's v0 workspace —
+> they can read, create, modify, and delete chats, run generations at the
+> deployer's expense, and create Vercel projects and deployments with the
+> Vercel token embedded in `V0_API_KEY`. Every server route passes through
+> `authorizeProxyRequest` (`apps/web/lib/proxy.ts`,
+> `apps/preview-proxy/lib/authorize.ts`), a same-origin baseline check only:
+> it does not stop direct non-browser requests. Replace or extend it with real
+> session auth before exposing a deployment to untrusted users, and keep
+> Vercel deployment protection enabled on both apps until you do.
+
 ## Architecture
 
 This example is a monorepo with two independently deployable Next.js apps:
@@ -76,8 +87,15 @@ bun dev
 Create two projects from the same repository:
 
 1. Deploy `apps/web` as the host application.
-2. Deploy `apps/preview-proxy` on a different registrable domain with deployment
-   protection disabled or otherwise configured to allow iframe navigations.
+2. Deploy `apps/preview-proxy` on a different registrable domain. Keep
+   deployment protection enabled until you add real session auth. Each tester
+   must authenticate to the proxy deployment directly before the web app can
+   configure it or load its iframe.
+
+   The proxy serves a credentialed channel into the preview of every chat in
+   your workspace to anyone who knows a chat ID, and chat IDs are enumerable
+   from the web app's routes. Add real auth before exposing either project to
+   untrusted users.
 3. Link each Vercel project to the other as a Related Project. Add the preview
    proxy's project ID to `apps/web/vercel.json`, and the web project's ID to
    `apps/preview-proxy/vercel.json`:
@@ -128,6 +146,8 @@ entries are preserved.
 - App Router handlers call the v0 SDK on the server. They prefer `V0_API_KEY`,
   then a validated browser-provided key, then the SDK's Vercel OIDC fallback.
   No key is included in the client bundle.
+- Every App Router handler and the preview proxy route call
+  `authorizeProxyRequest` first; that seam is where you add session auth.
 - The preview proxy follows the same credential order using its own isolated,
   partitioned cookie. Its key-provisioning route only allows the resolved web
   origin through credentialed CORS.

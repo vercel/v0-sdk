@@ -1,11 +1,14 @@
 import { revalidatePath } from 'next/cache'
 import type { ChatsCreateStreamData, ChatsListData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { authorizeProxyRequest } from '@/lib/proxy'
 import { v0 } from '@/lib/v0-client'
 
 type CreateChatBody = Pick<ChatsCreateStreamData['body'], 'message' | 'modelConfiguration'>
 
 export async function GET(request: Request) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const searchParams = new URL(request.url).searchParams
   const limit = Number(searchParams.get('limit') ?? 20)
 
@@ -29,6 +32,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const body = (await request.json().catch(() => null)) as CreateChatBody | null
 
   if (typeof body?.message !== 'string' || !body.message.trim()) {

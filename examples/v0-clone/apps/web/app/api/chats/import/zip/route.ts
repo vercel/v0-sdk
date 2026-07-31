@@ -1,11 +1,14 @@
 import { revalidatePath } from 'next/cache'
 import type { ChatsCreateFromZipData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { authorizeProxyRequest } from '@/lib/proxy'
 import { v0 } from '@/lib/v0-client'
 
 type CreateFromZipBody = ChatsCreateFromZipData['body']
 
 export async function POST(request: Request) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const body = (await request.json().catch(() => null)) as CreateFromZipBody | null
 
   if (typeof body?.url !== 'string' || !body.url) {

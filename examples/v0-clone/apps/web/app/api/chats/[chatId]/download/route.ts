@@ -1,6 +1,9 @@
 import { v0 } from '@/lib/v0-client'
+import { authorizeProxyRequest } from '@/lib/proxy'
 
-export async function GET(_request: Request, { params }: { params: Promise<{ chatId: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ chatId: string }> }) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const { chatId } = await params
   const result = await v0.chats.downloadFiles({ chatId }, { parseAs: 'stream' })
 
