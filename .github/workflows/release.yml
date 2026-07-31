@@ -163,32 +163,23 @@ jobs:
           fi
       - name: Open release PR
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true' && steps.existing.outputs.skip != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ steps.bump.outputs.version }}"
-          SDK_NAME="${{ steps.bump.outputs.sdk_name }}"
-          AI_TOOLS_NAME="${{ steps.bump.outputs.ai_tools_name }}"
-          REACT_NAME="${{ steps.bump.outputs.react_name }}"
-          CREATE_APP_NAME="${{ steps.bump.outputs.create_app_name }}"
-          BRANCH="release/v${VERSION}-${GITHUB_RUN_ID}"
-
-          git config user.name "v0[bot]"
-          git config user.email "v0[bot]@users.noreply.github.com"
-          git switch -c "$BRANCH"
-          git add packages/v0-sdk/package.json packages/ai-tools/package.json packages/react/package.json packages/create-v0-sdk-app/package.json bun.lock
-          if git diff --cached --quiet; then
-            echo "No release changes to commit."
-            exit 0
-          fi
-          git commit -m "Release v${VERSION}"
-          git push --set-upstream origin "$BRANCH"
-
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "Release v${VERSION}" \
-            --body "Bumps ${SDK_NAME}, ${AI_TOOLS_NAME}, ${REACT_NAME}, and ${CREATE_APP_NAME} to v${VERSION}. Merge this PR to publish them from main."
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          branch-token: ${{ secrets.GITHUB_TOKEN }}
+          sign-commits: true
+          add-paths: |
+            packages/v0-sdk/package.json
+            packages/ai-tools/package.json
+            packages/react/package.json
+            packages/create-v0-sdk-app/package.json
+            bun.lock
+          base: main
+          branch: release/v${{ steps.bump.outputs.version }}-${{ github.run_id }}
+          delete-branch: true
+          commit-message: Release v${{ steps.bump.outputs.version }}
+          title: Release v${{ steps.bump.outputs.version }}
+          body: Bumps ${{ steps.bump.outputs.sdk_name }}, ${{ steps.bump.outputs.ai_tools_name }}, ${{ steps.bump.outputs.react_name }}, and ${{ steps.bump.outputs.create_app_name }} to v${{ steps.bump.outputs.version }}. Merge this PR to publish them from main.
 
   # Stable publish lane: when a release PR is manually merged to main, the bumped
   # package versions are unpublished, so this publishes them to npm as latest and
