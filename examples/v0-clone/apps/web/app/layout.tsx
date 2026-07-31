@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { ThemeProvider } from 'next-themes'
+import { ApiKeyDialog } from '@/components/layout/api-key-dialog'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppShell } from '@/components/layout/app-shell'
 import { PreviewProxyProvider } from '@/components/preview/preview-proxy-provider'
@@ -22,7 +24,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [sidebarChats, apiKeyStatus] = await Promise.all([getSidebarChats(), getV0ApiKeyStatus()])
+  const sidebarChats = await getSidebarChats()
   const previewProxyOrigin = getPreviewProxyOrigin()
 
   return (
@@ -37,7 +39,14 @@ export default async function RootLayout({
         >
           <PreviewProxyProvider origin={previewProxyOrigin}>
             <TooltipProvider delayDuration={300}>
-              <AppShell apiKeyStatus={apiKeyStatus} sidebarChats={sidebarChats}>
+              <AppShell
+                apiKeyDialog={
+                  <Suspense fallback={null}>
+                    <SidebarApiKeyDialog />
+                  </Suspense>
+                }
+                sidebarChats={sidebarChats}
+              >
                 {children}
               </AppShell>
             </TooltipProvider>
@@ -46,4 +55,10 @@ export default async function RootLayout({
       </body>
     </html>
   )
+}
+
+async function SidebarApiKeyDialog() {
+  const apiKeyStatus = await getV0ApiKeyStatus()
+
+  return <ApiKeyDialog {...apiKeyStatus} />
 }

@@ -1,3 +1,4 @@
+// Demo only: remove browser-provided API key support before using this example in production.
 'use client'
 
 import { useRouter } from 'next/navigation'

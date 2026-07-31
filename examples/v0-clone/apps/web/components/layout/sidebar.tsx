@@ -7,22 +7,18 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { ChatItem } from '@/components/layout/chat-item'
-import { ApiKeyDialog } from '@/components/layout/api-key-dialog'
 import type { getSidebarChats } from '@/lib/sidebar-chats'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icons'
 
 export function Sidebar({
   open,
-  apiKeyStatus,
+  apiKeyDialog,
   initialChats,
   onToggle,
 }: {
   open: boolean
-  apiKeyStatus: {
-    hasBrowserApiKey: boolean
-    hasEnvironmentApiKey: boolean
-  }
+  apiKeyDialog: React.ReactNode
   initialChats: Awaited<ReturnType<typeof getSidebarChats>>
   onToggle: () => void
 }) {
@@ -166,7 +162,7 @@ export function Sidebar({
           </Collapsible>
 
           <div className="flex-1" />
-          <ApiKeyDialog {...apiKeyStatus} />
+          {apiKeyDialog}
         </div>
       ) : null}
     </aside>

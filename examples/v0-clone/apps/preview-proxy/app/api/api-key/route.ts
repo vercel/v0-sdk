@@ -1,3 +1,4 @@
+// Demo only: remove browser-provided API key support before using this example in production.
 import { cookies } from 'next/headers'
 import { createV0Client } from 'v0'
 import { getCloneOrigin } from '@/lib/origins'
