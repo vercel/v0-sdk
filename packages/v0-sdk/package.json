@@ -42,6 +42,7 @@
   "scripts": {
     "generate": "openapi-ts",
     "build": "tsdown",
+    "test": "bun test",
     "typecheck": "tsc",
     "prepublishOnly": "bun run generate && bun run build"
   },

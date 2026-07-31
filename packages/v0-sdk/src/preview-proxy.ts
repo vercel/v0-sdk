@@ -111,6 +111,16 @@ export async function fetchPreview({
   const incomingUrl = new URL(request.url)
 
   const upstreamUrl = new URL(normalizePreviewPath(path), preview.url)
+
+  // Defense-in-depth: the forwarded path must never leave the preview origin.
+  // `normalizePreviewPath` already neutralizes protocol- and scheme-relative
+  // strings, but we also refuse outright if the resolved URL somehow lands on a
+  // different origin, so the `x-v0-preview-token` is never attached to a
+  // cross-host request.
+  if (upstreamUrl.origin !== new URL(preview.url).origin) {
+    throw new Error('Preview path resolved to a different origin than the preview URL.')
+  }
+
   upstreamUrl.search = incomingUrl.search
 
   const headers = getPreviewRequestHeaders(request, preview.token)
@@ -178,7 +188,13 @@ function getPreviewResponseHeaders(response: Response) {
 
 function normalizePreviewPath(path: string | string[]) {
   if (typeof path === 'string') {
-    return path.startsWith('/') ? path : `/${path}`
+    // Collapse any leading whitespace, slashes, and backslashes before
+    // prepending a single slash. Without this, a caller-influenced string such
+    // as `//attacker/x`, `/\attacker/x`, or `https://attacker/x` would resolve
+    // against `preview.url` as a protocol- or scheme-relative URL pointing at a
+    // different origin, leaking `x-v0-preview-token` to that host. The result
+    // is always a single-origin-relative path.
+    return `/${path.replace(/^[\s/\\]+/, '')}`
   }
 
   return `/${path.map((segment) => encodeURIComponent(segment)).join('/')}`
