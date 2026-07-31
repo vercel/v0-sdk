@@ -6,14 +6,16 @@ on:
       - main
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
-  # Nightly release lane: if main has commits since the last version tag, this
-  # publishes commit-specific canaries and opens one PR containing only the
-  # lockstep package versions and lockfile bump. An existing PR for that version
-  # is left in place while newer main commits receive fresh canaries.
+  # Scheduled or manually triggered release lane: if main has commits since the
+  # last version tag, this publishes commit-specific canaries and opens one PR
+  # containing only the lockstep package versions and lockfile bump. An existing
+  # PR for that version is left in place while newer main commits receive fresh
+  # canaries.
   version-pr:
-    if: ${{ github.event_name == 'schedule' }}
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
