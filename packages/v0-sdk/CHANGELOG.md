@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.6
+
+### Patch Changes
+
+- Add Vercel Connect task resolution and chat metadata support from the API v1 contract.
+
 ## 0.16.5
 
 ### Patch Changes
