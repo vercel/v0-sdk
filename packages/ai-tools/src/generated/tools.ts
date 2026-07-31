@@ -25,6 +25,7 @@ export type V0ToolName =
   | 'chatsDownloadFiles'
   | 'chatsDuplicate'
   | 'chatsGet'
+  | 'chatsGetConnectStatus'
   | 'chatsGetFiles'
   | 'chatsGetPreview'
   | 'chatsList'
@@ -71,6 +72,7 @@ export type V0ToolsByCategory = {
     | 'chatsDownloadFiles'
     | 'chatsDuplicate'
     | 'chatsGet'
+    | 'chatsGetConnectStatus'
     | 'chatsGetFiles'
     | 'chatsGetPreview'
     | 'chatsList'
@@ -401,6 +403,11 @@ const chatsGetInputSchema = z.object({
   chatId: z.string(),
 })
 
+const chatsGetConnectStatusInputSchema = z.object({
+  chatId: z.string(),
+  requestId: z.string(),
+})
+
 const chatsGetFilesInputSchema = z.object({
   chatId: z.string(),
 })
@@ -692,6 +699,9 @@ const messagesResolveInputSchema = z.object({
           .describe('Optional message from the user about the permission grant.')
           .optional(),
       }),
+      z.object({
+        type: z.enum(['vercel-connect-setup']),
+      }),
     ])
     .describe(
       'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
@@ -816,6 +826,9 @@ const messagesResolveAsyncInputSchema = z.object({
           .describe('Optional message from the user about the permission grant.')
           .optional(),
       }),
+      z.object({
+        type: z.enum(['vercel-connect-setup']),
+      }),
     ])
     .describe(
       'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
@@ -939,6 +952,9 @@ const messagesResolveStreamInputSchema = z.object({
           .string()
           .describe('Optional message from the user about the permission grant.')
           .optional(),
+      }),
+      z.object({
+        type: z.enum(['vercel-connect-setup']),
       }),
     ])
     .describe(
@@ -1363,6 +1379,18 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.chats.get(parameters))
       },
     }),
+    chatsGetConnectStatus: tool({
+      description:
+        'Get Connect Setup Status: Polls the status of a Vercel Connect connector setup started by a `configure_vercel_connect` agent action. Open the `setupUrl` from the agent action data in a browser, then poll this endpoint every few seconds while `pending`. When it returns `ready`, resolve the chat with a `vercel-connect-setup` task to resume generation.',
+      inputSchema: chatsGetConnectStatusInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          chatId: input.chatId,
+          requestId: input.requestId,
+        }
+        return toToolResult(await client.chats.getConnectStatus(parameters))
+      },
+    }),
     chatsGetFiles: tool({
       description: 'Get Chat Files: Returns the source files for a chat.',
       inputSchema: chatsGetFilesInputSchema,
@@ -1729,6 +1757,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsDownloadFiles: pickTool(tools, 'chatsDownloadFiles'),
       chatsDuplicate: pickTool(tools, 'chatsDuplicate'),
       chatsGet: pickTool(tools, 'chatsGet'),
+      chatsGetConnectStatus: pickTool(tools, 'chatsGetConnectStatus'),
       chatsGetFiles: pickTool(tools, 'chatsGetFiles'),
       chatsGetPreview: pickTool(tools, 'chatsGetPreview'),
       chatsList: pickTool(tools, 'chatsList'),

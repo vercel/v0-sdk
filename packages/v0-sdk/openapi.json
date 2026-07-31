@@ -953,7 +953,7 @@
                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                     },
                     "data": {
-                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
                       "anyOf": [
                         {
                           "type": "object",
@@ -1071,6 +1071,174 @@
                           ],
                           "additionalProperties": false,
                           "description": "Structured payload for a `get_or_request_integration` agent action."
+                        },
+                        {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "setup-required"
+                                  ],
+                                  "description": "The agent is waiting for connector setup to be completed in a browser."
+                                },
+                                "requestId": {
+                                  "type": "string",
+                                  "description": "Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion."
+                                },
+                                "service": {
+                                  "type": "string",
+                                  "description": "The service being connected (for example, \"linear\")."
+                                },
+                                "serviceIconUrl": {
+                                  "description": "Icon URL for the service, hosted on vercel.com.",
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                "connectorName": {
+                                  "type": "string",
+                                  "description": "Display name of the connector being created."
+                                },
+                                "setupUrl": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team."
+                                },
+                                "environments": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "production",
+                                      "preview",
+                                      "development"
+                                    ],
+                                    "description": "Vercel environment the connector is attached to."
+                                  },
+                                  "description": "Environments the connector will be attached to."
+                                },
+                                "triggerPath": {
+                                  "description": "Webhook trigger path that will be registered on the connector, when requested.",
+                                  "type": "string"
+                                },
+                                "createdProject": {
+                                  "description": "Vercel project auto-created for this chat during setup, when applicable.",
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Vercel project identifier."
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Vercel project name."
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "status",
+                                "requestId",
+                                "service",
+                                "connectorName",
+                                "setupUrl",
+                                "environments"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Connector setup is pending. Complete setup at `setupUrl`, poll GET /chats/{chatId}/connect/status until `ready`, then resolve with a `vercel-connect-setup` task."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "completed"
+                                  ],
+                                  "description": "The Connect action finished; no user input is needed."
+                                },
+                                "action": {
+                                  "type": "string",
+                                  "enum": [
+                                    "list",
+                                    "create",
+                                    "attach"
+                                  ],
+                                  "description": "The Connect action that ran."
+                                },
+                                "summary": {
+                                  "type": "string",
+                                  "description": "Human-readable result summary."
+                                },
+                                "connectors": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Connector identifier."
+                                      },
+                                      "name": {
+                                        "type": "string",
+                                        "description": "Connector display name."
+                                      },
+                                      "service": {
+                                        "description": "Connected service identifier.",
+                                        "type": "string"
+                                      },
+                                      "attachedToProject": {
+                                        "type": "boolean",
+                                        "description": "Whether the connector is attached to the chat’s Vercel project."
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "attachedToProject"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "Connectors involved in the action."
+                                },
+                                "createdProject": {
+                                  "description": "Vercel project created during the action, when applicable.",
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Vercel project identifier."
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Vercel project name."
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "status",
+                                "action",
+                                "summary",
+                                "connectors"
+                              ],
+                              "additionalProperties": false,
+                              "description": "The Connect action finished; no user input is needed."
+                            }
+                          ],
+                          "description": "Structured payload for a `configure_vercel_connect` agent action."
                         }
                       ]
                     },
@@ -1681,7 +1849,7 @@
                             "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                           },
                           "data": {
-                            "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                            "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
                             "anyOf": [
                               {
                                 "type": "object",
@@ -1799,6 +1967,174 @@
                                 ],
                                 "additionalProperties": false,
                                 "description": "Structured payload for a `get_or_request_integration` agent action."
+                              },
+                              {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "status": {
+                                        "type": "string",
+                                        "enum": [
+                                          "setup-required"
+                                        ],
+                                        "description": "The agent is waiting for connector setup to be completed in a browser."
+                                      },
+                                      "requestId": {
+                                        "type": "string",
+                                        "description": "Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion."
+                                      },
+                                      "service": {
+                                        "type": "string",
+                                        "description": "The service being connected (for example, \"linear\")."
+                                      },
+                                      "serviceIconUrl": {
+                                        "description": "Icon URL for the service, hosted on vercel.com.",
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      "connectorName": {
+                                        "type": "string",
+                                        "description": "Display name of the connector being created."
+                                      },
+                                      "setupUrl": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team."
+                                      },
+                                      "environments": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "enum": [
+                                            "production",
+                                            "preview",
+                                            "development"
+                                          ],
+                                          "description": "Vercel environment the connector is attached to."
+                                        },
+                                        "description": "Environments the connector will be attached to."
+                                      },
+                                      "triggerPath": {
+                                        "description": "Webhook trigger path that will be registered on the connector, when requested.",
+                                        "type": "string"
+                                      },
+                                      "createdProject": {
+                                        "description": "Vercel project auto-created for this chat during setup, when applicable.",
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "Vercel project identifier."
+                                          },
+                                          "name": {
+                                            "type": "string",
+                                            "description": "Vercel project name."
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "required": [
+                                      "status",
+                                      "requestId",
+                                      "service",
+                                      "connectorName",
+                                      "setupUrl",
+                                      "environments"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "Connector setup is pending. Complete setup at `setupUrl`, poll GET /chats/{chatId}/connect/status until `ready`, then resolve with a `vercel-connect-setup` task."
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "status": {
+                                        "type": "string",
+                                        "enum": [
+                                          "completed"
+                                        ],
+                                        "description": "The Connect action finished; no user input is needed."
+                                      },
+                                      "action": {
+                                        "type": "string",
+                                        "enum": [
+                                          "list",
+                                          "create",
+                                          "attach"
+                                        ],
+                                        "description": "The Connect action that ran."
+                                      },
+                                      "summary": {
+                                        "type": "string",
+                                        "description": "Human-readable result summary."
+                                      },
+                                      "connectors": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "description": "Connector identifier."
+                                            },
+                                            "name": {
+                                              "type": "string",
+                                              "description": "Connector display name."
+                                            },
+                                            "service": {
+                                              "description": "Connected service identifier.",
+                                              "type": "string"
+                                            },
+                                            "attachedToProject": {
+                                              "type": "boolean",
+                                              "description": "Whether the connector is attached to the chat’s Vercel project."
+                                            }
+                                          },
+                                          "required": [
+                                            "id",
+                                            "name",
+                                            "attachedToProject"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "description": "Connectors involved in the action."
+                                      },
+                                      "createdProject": {
+                                        "description": "Vercel project created during the action, when applicable.",
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "Vercel project identifier."
+                                          },
+                                          "name": {
+                                            "type": "string",
+                                            "description": "Vercel project name."
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "required": [
+                                      "status",
+                                      "action",
+                                      "summary",
+                                      "connectors"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "The Connect action finished; no user input is needed."
+                                  }
+                                ],
+                                "description": "Structured payload for a `configure_vercel_connect` agent action."
                               }
                             ]
                           },
@@ -2441,7 +2777,7 @@
                           "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                         },
                         "data": {
-                          "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                          "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
                           "anyOf": [
                             {
                               "type": "object",
@@ -2559,6 +2895,174 @@
                               ],
                               "additionalProperties": false,
                               "description": "Structured payload for a `get_or_request_integration` agent action."
+                            },
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "status": {
+                                      "type": "string",
+                                      "enum": [
+                                        "setup-required"
+                                      ],
+                                      "description": "The agent is waiting for connector setup to be completed in a browser."
+                                    },
+                                    "requestId": {
+                                      "type": "string",
+                                      "description": "Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion."
+                                    },
+                                    "service": {
+                                      "type": "string",
+                                      "description": "The service being connected (for example, \"linear\")."
+                                    },
+                                    "serviceIconUrl": {
+                                      "description": "Icon URL for the service, hosted on vercel.com.",
+                                      "type": "string",
+                                      "format": "uri"
+                                    },
+                                    "connectorName": {
+                                      "type": "string",
+                                      "description": "Display name of the connector being created."
+                                    },
+                                    "setupUrl": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team."
+                                    },
+                                    "environments": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "production",
+                                          "preview",
+                                          "development"
+                                        ],
+                                        "description": "Vercel environment the connector is attached to."
+                                      },
+                                      "description": "Environments the connector will be attached to."
+                                    },
+                                    "triggerPath": {
+                                      "description": "Webhook trigger path that will be registered on the connector, when requested.",
+                                      "type": "string"
+                                    },
+                                    "createdProject": {
+                                      "description": "Vercel project auto-created for this chat during setup, when applicable.",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "Vercel project identifier."
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Vercel project name."
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "required": [
+                                    "status",
+                                    "requestId",
+                                    "service",
+                                    "connectorName",
+                                    "setupUrl",
+                                    "environments"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Connector setup is pending. Complete setup at `setupUrl`, poll GET /chats/{chatId}/connect/status until `ready`, then resolve with a `vercel-connect-setup` task."
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "status": {
+                                      "type": "string",
+                                      "enum": [
+                                        "completed"
+                                      ],
+                                      "description": "The Connect action finished; no user input is needed."
+                                    },
+                                    "action": {
+                                      "type": "string",
+                                      "enum": [
+                                        "list",
+                                        "create",
+                                        "attach"
+                                      ],
+                                      "description": "The Connect action that ran."
+                                    },
+                                    "summary": {
+                                      "type": "string",
+                                      "description": "Human-readable result summary."
+                                    },
+                                    "connectors": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "Connector identifier."
+                                          },
+                                          "name": {
+                                            "type": "string",
+                                            "description": "Connector display name."
+                                          },
+                                          "service": {
+                                            "description": "Connected service identifier.",
+                                            "type": "string"
+                                          },
+                                          "attachedToProject": {
+                                            "type": "boolean",
+                                            "description": "Whether the connector is attached to the chat’s Vercel project."
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "attachedToProject"
+                                        ],
+                                        "additionalProperties": false
+                                      },
+                                      "description": "Connectors involved in the action."
+                                    },
+                                    "createdProject": {
+                                      "description": "Vercel project created during the action, when applicable.",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "Vercel project identifier."
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Vercel project name."
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "required": [
+                                    "status",
+                                    "action",
+                                    "summary",
+                                    "connectors"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "The Connect action finished; no user input is needed."
+                                }
+                              ],
+                              "description": "Structured payload for a `configure_vercel_connect` agent action."
                             }
                           ]
                         },
@@ -8291,6 +8795,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -8566,6 +9086,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -8841,6 +9377,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -9215,6 +9767,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -9490,6 +10058,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -9765,6 +10349,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -10139,6 +10739,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -10414,6 +11030,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -10689,6 +11321,22 @@
                         ],
                         "additionalProperties": false,
                         "description": "Resolves a permission request task. The agent wants to execute a tool (shell command, script, MCP call) and needs approval. Also used to resolve environment variable prompts."
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "vercel-connect-setup"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Resolves a Vercel Connect setup task. The agent asked the user to complete connector setup in a browser (a `configure_vercel_connect` agent action with `status: \"setup-required\"`). Complete setup at the action’s `setupUrl`, poll GET /chats/{chatId}/connect/status until it returns `ready`, then send this task. The server verifies the setup result and attaches the connector; no connector ID is needed. Returns 409 if setup is still pending or failed, or 404 if setup has not started or the request expired."
                       }
                     ],
                     "description": "The task resolution data. Use this when the chat is waiting for user input on the matching task type."
@@ -12098,7 +12746,7 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
                                       "anyOf": [
                                         {
                                           "type": "object",
@@ -12216,6 +12864,174 @@
                                           ],
                                           "additionalProperties": false,
                                           "description": "Structured payload for a `get_or_request_integration` agent action."
+                                        },
+                                        {
+                                          "oneOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "status": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "setup-required"
+                                                  ],
+                                                  "description": "The agent is waiting for connector setup to be completed in a browser."
+                                                },
+                                                "requestId": {
+                                                  "type": "string",
+                                                  "description": "Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion."
+                                                },
+                                                "service": {
+                                                  "type": "string",
+                                                  "description": "The service being connected (for example, \"linear\")."
+                                                },
+                                                "serviceIconUrl": {
+                                                  "description": "Icon URL for the service, hosted on vercel.com.",
+                                                  "type": "string",
+                                                  "format": "uri"
+                                                },
+                                                "connectorName": {
+                                                  "type": "string",
+                                                  "description": "Display name of the connector being created."
+                                                },
+                                                "setupUrl": {
+                                                  "type": "string",
+                                                  "format": "uri",
+                                                  "description": "Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team."
+                                                },
+                                                "environments": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                      "production",
+                                                      "preview",
+                                                      "development"
+                                                    ],
+                                                    "description": "Vercel environment the connector is attached to."
+                                                  },
+                                                  "description": "Environments the connector will be attached to."
+                                                },
+                                                "triggerPath": {
+                                                  "description": "Webhook trigger path that will be registered on the connector, when requested.",
+                                                  "type": "string"
+                                                },
+                                                "createdProject": {
+                                                  "description": "Vercel project auto-created for this chat during setup, when applicable.",
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "string",
+                                                      "description": "Vercel project identifier."
+                                                    },
+                                                    "name": {
+                                                      "type": "string",
+                                                      "description": "Vercel project name."
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id",
+                                                    "name"
+                                                  ],
+                                                  "additionalProperties": false
+                                                }
+                                              },
+                                              "required": [
+                                                "status",
+                                                "requestId",
+                                                "service",
+                                                "connectorName",
+                                                "setupUrl",
+                                                "environments"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "Connector setup is pending. Complete setup at `setupUrl`, poll GET /chats/{chatId}/connect/status until `ready`, then resolve with a `vercel-connect-setup` task."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "status": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "completed"
+                                                  ],
+                                                  "description": "The Connect action finished; no user input is needed."
+                                                },
+                                                "action": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "list",
+                                                    "create",
+                                                    "attach"
+                                                  ],
+                                                  "description": "The Connect action that ran."
+                                                },
+                                                "summary": {
+                                                  "type": "string",
+                                                  "description": "Human-readable result summary."
+                                                },
+                                                "connectors": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "id": {
+                                                        "type": "string",
+                                                        "description": "Connector identifier."
+                                                      },
+                                                      "name": {
+                                                        "type": "string",
+                                                        "description": "Connector display name."
+                                                      },
+                                                      "service": {
+                                                        "description": "Connected service identifier.",
+                                                        "type": "string"
+                                                      },
+                                                      "attachedToProject": {
+                                                        "type": "boolean",
+                                                        "description": "Whether the connector is attached to the chat’s Vercel project."
+                                                      }
+                                                    },
+                                                    "required": [
+                                                      "id",
+                                                      "name",
+                                                      "attachedToProject"
+                                                    ],
+                                                    "additionalProperties": false
+                                                  },
+                                                  "description": "Connectors involved in the action."
+                                                },
+                                                "createdProject": {
+                                                  "description": "Vercel project created during the action, when applicable.",
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "string",
+                                                      "description": "Vercel project identifier."
+                                                    },
+                                                    "name": {
+                                                      "type": "string",
+                                                      "description": "Vercel project name."
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id",
+                                                    "name"
+                                                  ],
+                                                  "additionalProperties": false
+                                                }
+                                              },
+                                              "required": [
+                                                "status",
+                                                "action",
+                                                "summary",
+                                                "connectors"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The Connect action finished; no user input is needed."
+                                            }
+                                          ],
+                                          "description": "Structured payload for a `configure_vercel_connect` agent action."
                                         }
                                       ]
                                     },
@@ -12608,6 +13424,214 @@
           },
           "422": {
             "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{chatId}/connect/status": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get Connect Setup Status",
+        "description": "Polls the status of a Vercel Connect connector setup started by a `configure_vercel_connect` agent action. Open the `setupUrl` from the agent action data in a browser, then poll this endpoint every few seconds while `pending`. When it returns `ready`, resolve the chat with a `vercel-connect-setup` task to resume generation.",
+        "operationId": "chats.getConnectStatus",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique identifier of the chat."
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "The `requestId` from the `configure_vercel_connect` agent action data."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending"
+                          ],
+                          "description": "Setup is still in progress."
+                        },
+                        "progress": {
+                          "description": "Current setup progress.",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "ready"
+                          ],
+                          "description": "Setup completed successfully."
+                        },
+                        "connector": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Vercel Connect connector identifier."
+                            },
+                            "uid": {
+                              "description": "Optional connector UID.",
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Connector display name."
+                            },
+                            "service": {
+                              "description": "Connected service identifier.",
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Connector type."
+                            },
+                            "supportedSubjectTypes": {
+                              "description": "Subject types supported by the connector.",
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "app",
+                                  "user",
+                                  "jwt-bearer"
+                                ]
+                              }
+                            },
+                            "supportsInstallation": {
+                              "description": "Whether the connector supports installation.",
+                              "type": "boolean"
+                            },
+                            "attachedToProject": {
+                              "type": "boolean",
+                              "description": "Whether the connector is already attached to the project."
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "type",
+                            "attachedToProject"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Connector created by setup."
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "connector"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "error"
+                          ],
+                          "description": "Setup completed with an error."
+                        },
+                        "message": {
+                          "type": "string",
+                          "description": "Safe user-facing setup error message."
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Response for status 409",
             "content": {
               "application/json": {
                 "schema": {
@@ -13129,7 +14153,7 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
                                       "anyOf": [
                                         {
                                           "type": "object",
@@ -13247,6 +14271,174 @@
                                           ],
                                           "additionalProperties": false,
                                           "description": "Structured payload for a `get_or_request_integration` agent action."
+                                        },
+                                        {
+                                          "oneOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "status": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "setup-required"
+                                                  ],
+                                                  "description": "The agent is waiting for connector setup to be completed in a browser."
+                                                },
+                                                "requestId": {
+                                                  "type": "string",
+                                                  "description": "Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion."
+                                                },
+                                                "service": {
+                                                  "type": "string",
+                                                  "description": "The service being connected (for example, \"linear\")."
+                                                },
+                                                "serviceIconUrl": {
+                                                  "description": "Icon URL for the service, hosted on vercel.com.",
+                                                  "type": "string",
+                                                  "format": "uri"
+                                                },
+                                                "connectorName": {
+                                                  "type": "string",
+                                                  "description": "Display name of the connector being created."
+                                                },
+                                                "setupUrl": {
+                                                  "type": "string",
+                                                  "format": "uri",
+                                                  "description": "Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team."
+                                                },
+                                                "environments": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                      "production",
+                                                      "preview",
+                                                      "development"
+                                                    ],
+                                                    "description": "Vercel environment the connector is attached to."
+                                                  },
+                                                  "description": "Environments the connector will be attached to."
+                                                },
+                                                "triggerPath": {
+                                                  "description": "Webhook trigger path that will be registered on the connector, when requested.",
+                                                  "type": "string"
+                                                },
+                                                "createdProject": {
+                                                  "description": "Vercel project auto-created for this chat during setup, when applicable.",
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "string",
+                                                      "description": "Vercel project identifier."
+                                                    },
+                                                    "name": {
+                                                      "type": "string",
+                                                      "description": "Vercel project name."
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id",
+                                                    "name"
+                                                  ],
+                                                  "additionalProperties": false
+                                                }
+                                              },
+                                              "required": [
+                                                "status",
+                                                "requestId",
+                                                "service",
+                                                "connectorName",
+                                                "setupUrl",
+                                                "environments"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "Connector setup is pending. Complete setup at `setupUrl`, poll GET /chats/{chatId}/connect/status until `ready`, then resolve with a `vercel-connect-setup` task."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "status": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "completed"
+                                                  ],
+                                                  "description": "The Connect action finished; no user input is needed."
+                                                },
+                                                "action": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "list",
+                                                    "create",
+                                                    "attach"
+                                                  ],
+                                                  "description": "The Connect action that ran."
+                                                },
+                                                "summary": {
+                                                  "type": "string",
+                                                  "description": "Human-readable result summary."
+                                                },
+                                                "connectors": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "id": {
+                                                        "type": "string",
+                                                        "description": "Connector identifier."
+                                                      },
+                                                      "name": {
+                                                        "type": "string",
+                                                        "description": "Connector display name."
+                                                      },
+                                                      "service": {
+                                                        "description": "Connected service identifier.",
+                                                        "type": "string"
+                                                      },
+                                                      "attachedToProject": {
+                                                        "type": "boolean",
+                                                        "description": "Whether the connector is attached to the chat’s Vercel project."
+                                                      }
+                                                    },
+                                                    "required": [
+                                                      "id",
+                                                      "name",
+                                                      "attachedToProject"
+                                                    ],
+                                                    "additionalProperties": false
+                                                  },
+                                                  "description": "Connectors involved in the action."
+                                                },
+                                                "createdProject": {
+                                                  "description": "Vercel project created during the action, when applicable.",
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "string",
+                                                      "description": "Vercel project identifier."
+                                                    },
+                                                    "name": {
+                                                      "type": "string",
+                                                      "description": "Vercel project name."
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id",
+                                                    "name"
+                                                  ],
+                                                  "additionalProperties": false
+                                                }
+                                              },
+                                              "required": [
+                                                "status",
+                                                "action",
+                                                "summary",
+                                                "connectors"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The Connect action finished; no user input is needed."
+                                            }
+                                          ],
+                                          "description": "Structured payload for a `configure_vercel_connect` agent action."
                                         }
                                       ]
                                     },
