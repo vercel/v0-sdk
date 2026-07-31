@@ -24,7 +24,8 @@ permissions from giving preview code access to the host app.
 
 ## Run it
 
-Copy the example environment file and add your API key:
+Copy the example environment file. Adding an API key here gives both apps a
+shared server-side credential:
 
 ```bash
 cp examples/v0-clone/.env.example examples/v0-clone/.env.local
@@ -35,6 +36,15 @@ V0_API_KEY=your_v0_api_key
 NEXT_PUBLIC_V0_PREVIEW_PROXY_URL=http://localhost:3001
 V0_CLONE_ORIGIN=http://localhost:3000
 ```
+
+The web app can also start without `V0_API_KEY`. It opens an API key dialog on
+first load, validates the entered key, and saves it in a secure, HTTP-only
+cookie for that deployment. This runtime key overrides `V0_API_KEY` in the web
+app.
+
+The isolated preview proxy cannot share the web app's cookie. Locally, keep
+`V0_API_KEY` in `.env.local` for previews. On Vercel, the preview proxy can use
+the SDK's project-scoped OIDC fallback instead.
 
 Then run from the repository root:
 
@@ -63,7 +73,9 @@ Create two projects from the same repository:
 1. Deploy `apps/web` as the host application.
 2. Deploy `apps/preview-proxy` on a different registrable domain with deployment
    protection disabled or otherwise configured to allow iframe navigations.
-3. Set `V0_API_KEY` on both projects.
+3. Set `V0_API_KEY` on the preview proxy, or configure its Vercel project to use
+   the SDK's OIDC fallback. Setting `V0_API_KEY` on the web project is optional;
+   without it, each user can enter a key in the app.
 4. Set `NEXT_PUBLIC_V0_PREVIEW_PROXY_URL` on the web project to the proxy
    project's public origin.
 5. Set `V0_CLONE_ORIGIN` on the proxy project to the web project's exact public
@@ -100,13 +112,15 @@ hostnames that should remain trusted.
 
 ## Implementation notes
 
-- The root layout fetches favorite and recent chats on the server.
+- The root layout fetches favorite and recent chats on the server and falls
+  back to an empty sidebar until credentials are available.
 - `/chats/[chatId]` fetches the selected chat and its messages on the server.
 - Client chat state uses AI SDK `useChat` with `V0Transport`, while
   `@v0-sdk/react/swr` hooks power chat, file, task-resolution, restore,
   duplicate, download, and deployment actions.
-- App Router handlers call the v0 SDK on the server, so `V0_API_KEY` is never
-  included in the client bundle.
+- App Router handlers call the v0 SDK on the server. They prefer a validated
+  browser-provided key, then `V0_API_KEY`, then the SDK's Vercel OIDC fallback.
+  No key is included in the client bundle.
 - New chats can start from a prompt, selected files, a ZIP archive, or a GitHub
   repository.
 - Assistant messages render text, reasoning, activities, and task-resolution

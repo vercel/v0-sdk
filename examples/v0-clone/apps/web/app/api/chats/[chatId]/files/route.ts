@@ -1,5 +1,6 @@
-import { v0, type ChatsUpdateFilesData } from 'v0'
+import type { ChatsUpdateFilesData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { v0 } from '@/lib/v0-client'
 
 type UpdateFilesBody = ChatsUpdateFilesData['body']
 type RouteContext = { params: Promise<{ chatId: string }> }

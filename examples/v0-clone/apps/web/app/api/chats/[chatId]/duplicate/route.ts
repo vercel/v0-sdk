@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache'
-import { v0, type ChatsDuplicateData } from 'v0'
+import type { ChatsDuplicateData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { v0 } from '@/lib/v0-client'
 
 type DuplicateChatBody = ChatsDuplicateData['body']
 

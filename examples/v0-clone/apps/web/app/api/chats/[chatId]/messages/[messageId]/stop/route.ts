@@ -1,5 +1,5 @@
-import { v0 } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { v0 } from '@/lib/v0-client'
 
 export async function POST(
   _request: Request,

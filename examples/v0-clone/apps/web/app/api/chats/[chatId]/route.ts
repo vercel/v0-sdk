@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache'
-import { v0, type ChatsUpdateData } from 'v0'
+import type { ChatsUpdateData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { v0 } from '@/lib/v0-client'
 
 type UpdateChatBody = ChatsUpdateData['body']
 type RouteContext = { params: Promise<{ chatId: string }> }

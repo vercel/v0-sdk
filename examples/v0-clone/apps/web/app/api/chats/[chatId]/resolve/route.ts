@@ -1,4 +1,5 @@
-import { v0, type MessagesResolveStreamData } from 'v0'
+import type { MessagesResolveStreamData } from 'v0'
+import { v0 } from '@/lib/v0-client'
 
 type ResolveTaskBody = MessagesResolveStreamData['body']
 

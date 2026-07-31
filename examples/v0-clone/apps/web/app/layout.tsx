@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppShell } from '@/components/layout/app-shell'
 import { getSidebarChats } from '@/lib/sidebar-chats'
+import { getV0ApiKeyStatus } from '@/lib/v0-client'
 import './globals.css'
 
 export const dynamic = 'force-dynamic'
@@ -19,7 +20,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const sidebarChats = await getSidebarChats()
+  const [sidebarChats, apiKeyStatus] = await Promise.all([getSidebarChats(), getV0ApiKeyStatus()])
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -32,7 +33,9 @@ export default async function RootLayout({
           storageKey="theme"
         >
           <TooltipProvider delayDuration={300}>
-            <AppShell sidebarChats={sidebarChats}>{children}</AppShell>
+            <AppShell apiKeyStatus={apiKeyStatus} sidebarChats={sidebarChats}>
+              {children}
+            </AppShell>
           </TooltipProvider>
         </ThemeProvider>
       </body>

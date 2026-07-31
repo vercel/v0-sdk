@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache'
-import { v0, type ChatsCreateStreamData, type ChatsListData } from 'v0'
+import type { ChatsCreateStreamData, ChatsListData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { v0 } from '@/lib/v0-client'
 
 type CreateChatBody = Pick<ChatsCreateStreamData['body'], 'message' | 'modelConfiguration'>
 
