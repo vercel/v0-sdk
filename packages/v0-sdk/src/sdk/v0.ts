@@ -34,6 +34,7 @@ export type ChatDetail = {
       locked: boolean
     }[]
   }
+  metadata: Record<string, unknown>
   /** @deprecated */
   url: string
   messages: Array<{
@@ -109,7 +110,6 @@ export type ChatDetail = {
   permissions: {
     write: boolean
   }
-  metadata: Record<string, unknown>
 }
 
 export type ChatSummary = {
@@ -137,6 +137,7 @@ export type ChatSummary = {
     createdAt: string
     updatedAt?: string
   }
+  metadata: Record<string, unknown>
 }
 
 export interface DeploymentDetail {
@@ -550,6 +551,7 @@ export type ProjectDetail = {
       createdAt: string
       updatedAt?: string
     }
+    metadata: Record<string, unknown>
   }>
 }
 
@@ -816,6 +818,7 @@ export type ChatsFindResponse = {
       updatedAt?: string
       darkScreenshotUrl?: string
     }
+    metadata: Record<string, unknown>
   }>
 }
 
@@ -1093,6 +1096,18 @@ export interface ChatsResolveTaskRequest {
         status?: never
         content?: never
         answers?: never
+      }
+    | {
+        type: 'vercel-connect-setup'
+        connectedIntegrationNames?: never
+        connectedMcpPresetNames?: never
+        appliedScripts?: never
+        addedEnvVars?: never
+        status?: never
+        content?: never
+        answers?: never
+        permissions?: never
+        userMessage?: never
       }
   responseMode?: 'sync' | 'async' | 'experimental_stream'
   modelConfiguration?: {
@@ -1671,6 +1686,7 @@ export function createClient(config: V0ClientConfig = {}) {
         isFavorite?: boolean
         vercelProjectId?: string
         branch?: string
+        metadata?: Record<string, unknown>
       }): Promise<ChatsFindResponse> {
         const query = params
           ? (Object.fromEntries(
@@ -1687,6 +1703,7 @@ export function createClient(config: V0ClientConfig = {}) {
                     : undefined,
                 vercelProjectId: params.vercelProjectId,
                 branch: params.branch,
+                metadata: params.metadata,
               }).filter(([_, value]) => value !== undefined),
             ) as Record<string, string>)
           : {}
