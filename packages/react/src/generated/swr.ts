@@ -53,6 +53,9 @@ import type {
   ChatsDuplicateData,
   ChatsDuplicateError,
   ChatsDuplicateResponse,
+  ChatsGetConnectStatusData,
+  ChatsGetConnectStatusError,
+  ChatsGetConnectStatusResponse,
   ChatsGetError,
   ChatsGetFilesError,
   ChatsGetFilesResponse,
@@ -148,6 +151,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.downloadFiles': 'useDownloadChatFiles',
   'chats.duplicate': 'useDuplicateChat',
   'chats.get': 'useChat',
+  'chats.getConnectStatus': 'useConnectStatus',
   'chats.getFiles': 'useFiles',
   'chats.getPreview': 'usePreview',
   'chats.list': 'useChats',
@@ -384,6 +388,27 @@ export function useChat(
     undefined,
     configuration,
   )
+}
+
+const connectStatusOperation: V0Operation<ChatsGetConnectStatusResponse> = {
+  id: 'chats.getConnectStatus',
+  method: 'GET',
+  response: 'json',
+}
+
+export function useConnectStatus(
+  url: V0Url,
+  params: NonNullable<ChatsGetConnectStatusData['query']>,
+  configuration: V0QueryConfiguration<
+    ChatsGetConnectStatusResponse,
+    ChatsGetConnectStatusError
+  > = {},
+) {
+  return useV0Query<
+    ChatsGetConnectStatusResponse,
+    ChatsGetConnectStatusError,
+    NonNullable<ChatsGetConnectStatusData['query']>
+  >(connectStatusOperation, url, params, configuration)
 }
 
 const filesOperation: V0Operation<ChatsGetFilesResponse> = {

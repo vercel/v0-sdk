@@ -525,7 +525,7 @@ export type Message = {
          */
         summary: string;
         /**
-         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
          */
         data?: {
             /**
@@ -588,6 +588,99 @@ export type Message = {
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
             requestedMcpPresets: Array<string>;
+        } | {
+            /**
+             * The agent is waiting for connector setup to be completed in a browser.
+             */
+            status: 'setup-required';
+            /**
+             * Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+             */
+            requestId: string;
+            /**
+             * The service being connected (for example, "linear").
+             */
+            service: string;
+            /**
+             * Icon URL for the service, hosted on vercel.com.
+             */
+            serviceIconUrl?: string;
+            /**
+             * Display name of the connector being created.
+             */
+            connectorName: string;
+            /**
+             * Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team.
+             */
+            setupUrl: string;
+            /**
+             * Environments the connector will be attached to.
+             */
+            environments: Array<'production' | 'preview' | 'development'>;
+            /**
+             * Webhook trigger path that will be registered on the connector, when requested.
+             */
+            triggerPath?: string;
+            /**
+             * Vercel project auto-created for this chat during setup, when applicable.
+             */
+            createdProject?: {
+                /**
+                 * Vercel project identifier.
+                 */
+                id: string;
+                /**
+                 * Vercel project name.
+                 */
+                name: string;
+            };
+        } | {
+            /**
+             * The Connect action finished; no user input is needed.
+             */
+            status: 'completed';
+            /**
+             * The Connect action that ran.
+             */
+            action: 'list' | 'create' | 'attach';
+            /**
+             * Human-readable result summary.
+             */
+            summary: string;
+            /**
+             * Connectors involved in the action.
+             */
+            connectors: Array<{
+                /**
+                 * Connector identifier.
+                 */
+                id: string;
+                /**
+                 * Connector display name.
+                 */
+                name: string;
+                /**
+                 * Connected service identifier.
+                 */
+                service?: string;
+                /**
+                 * Whether the connector is attached to the chat’s Vercel project.
+                 */
+                attachedToProject: boolean;
+            }>;
+            /**
+             * Vercel project created during the action, when applicable.
+             */
+            createdProject?: {
+                /**
+                 * Vercel project identifier.
+                 */
+                id: string;
+                /**
+                 * Vercel project name.
+                 */
+                name: string;
+            };
         };
         /**
          * ISO timestamp when this part began.
@@ -898,7 +991,7 @@ export type MessageListResponse = {
              */
             summary: string;
             /**
-             * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+             * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
              */
             data?: {
                 /**
@@ -961,6 +1054,99 @@ export type MessageListResponse = {
                  * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                  */
                 requestedMcpPresets: Array<string>;
+            } | {
+                /**
+                 * The agent is waiting for connector setup to be completed in a browser.
+                 */
+                status: 'setup-required';
+                /**
+                 * Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                 */
+                requestId: string;
+                /**
+                 * The service being connected (for example, "linear").
+                 */
+                service: string;
+                /**
+                 * Icon URL for the service, hosted on vercel.com.
+                 */
+                serviceIconUrl?: string;
+                /**
+                 * Display name of the connector being created.
+                 */
+                connectorName: string;
+                /**
+                 * Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team.
+                 */
+                setupUrl: string;
+                /**
+                 * Environments the connector will be attached to.
+                 */
+                environments: Array<'production' | 'preview' | 'development'>;
+                /**
+                 * Webhook trigger path that will be registered on the connector, when requested.
+                 */
+                triggerPath?: string;
+                /**
+                 * Vercel project auto-created for this chat during setup, when applicable.
+                 */
+                createdProject?: {
+                    /**
+                     * Vercel project identifier.
+                     */
+                    id: string;
+                    /**
+                     * Vercel project name.
+                     */
+                    name: string;
+                };
+            } | {
+                /**
+                 * The Connect action finished; no user input is needed.
+                 */
+                status: 'completed';
+                /**
+                 * The Connect action that ran.
+                 */
+                action: 'list' | 'create' | 'attach';
+                /**
+                 * Human-readable result summary.
+                 */
+                summary: string;
+                /**
+                 * Connectors involved in the action.
+                 */
+                connectors: Array<{
+                    /**
+                     * Connector identifier.
+                     */
+                    id: string;
+                    /**
+                     * Connector display name.
+                     */
+                    name: string;
+                    /**
+                     * Connected service identifier.
+                     */
+                    service?: string;
+                    /**
+                     * Whether the connector is attached to the chat’s Vercel project.
+                     */
+                    attachedToProject: boolean;
+                }>;
+                /**
+                 * Vercel project created during the action, when applicable.
+                 */
+                createdProject?: {
+                    /**
+                     * Vercel project identifier.
+                     */
+                    id: string;
+                    /**
+                     * Vercel project name.
+                     */
+                    name: string;
+                };
             };
             /**
              * ISO timestamp when this part began.
@@ -1285,7 +1471,7 @@ export type MessageStreamEvent = {
          */
         summary: string;
         /**
-         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
          */
         data?: {
             /**
@@ -1348,6 +1534,99 @@ export type MessageStreamEvent = {
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
             requestedMcpPresets: Array<string>;
+        } | {
+            /**
+             * The agent is waiting for connector setup to be completed in a browser.
+             */
+            status: 'setup-required';
+            /**
+             * Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+             */
+            requestId: string;
+            /**
+             * The service being connected (for example, "linear").
+             */
+            service: string;
+            /**
+             * Icon URL for the service, hosted on vercel.com.
+             */
+            serviceIconUrl?: string;
+            /**
+             * Display name of the connector being created.
+             */
+            connectorName: string;
+            /**
+             * Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team.
+             */
+            setupUrl: string;
+            /**
+             * Environments the connector will be attached to.
+             */
+            environments: Array<'production' | 'preview' | 'development'>;
+            /**
+             * Webhook trigger path that will be registered on the connector, when requested.
+             */
+            triggerPath?: string;
+            /**
+             * Vercel project auto-created for this chat during setup, when applicable.
+             */
+            createdProject?: {
+                /**
+                 * Vercel project identifier.
+                 */
+                id: string;
+                /**
+                 * Vercel project name.
+                 */
+                name: string;
+            };
+        } | {
+            /**
+             * The Connect action finished; no user input is needed.
+             */
+            status: 'completed';
+            /**
+             * The Connect action that ran.
+             */
+            action: 'list' | 'create' | 'attach';
+            /**
+             * Human-readable result summary.
+             */
+            summary: string;
+            /**
+             * Connectors involved in the action.
+             */
+            connectors: Array<{
+                /**
+                 * Connector identifier.
+                 */
+                id: string;
+                /**
+                 * Connector display name.
+                 */
+                name: string;
+                /**
+                 * Connected service identifier.
+                 */
+                service?: string;
+                /**
+                 * Whether the connector is attached to the chat’s Vercel project.
+                 */
+                attachedToProject: boolean;
+            }>;
+            /**
+             * Vercel project created during the action, when applicable.
+             */
+            createdProject?: {
+                /**
+                 * Vercel project identifier.
+                 */
+                id: string;
+                /**
+                 * Vercel project name.
+                 */
+                name: string;
+            };
         };
         /**
          * ISO timestamp when this part began.
@@ -2971,6 +3250,8 @@ export type MessagesResolveData = {
              * Optional message from the user about the permission grant.
              */
             userMessage?: string;
+        } | {
+            type: 'vercel-connect-setup';
         };
         /**
          * Overrides for the model behavior.
@@ -3122,6 +3403,8 @@ export type MessagesResolveStreamData = {
              * Optional message from the user about the permission grant.
              */
             userMessage?: string;
+        } | {
+            type: 'vercel-connect-setup';
         };
         /**
          * Overrides for the model behavior.
@@ -3273,6 +3556,8 @@ export type MessagesResolveAsyncData = {
              * Optional message from the user about the permission grant.
              */
             userMessage?: string;
+        } | {
+            type: 'vercel-connect-setup';
         };
         /**
          * Overrides for the model behavior.
@@ -3940,7 +4225,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 summary: string;
                 /**
-                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
                  */
                 data?: {
                     /**
@@ -4003,6 +4288,99 @@ export type ChatsUpdateFilesResponses = {
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedMcpPresets: Array<string>;
+                } | {
+                    /**
+                     * The agent is waiting for connector setup to be completed in a browser.
+                     */
+                    status: 'setup-required';
+                    /**
+                     * Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                     */
+                    requestId: string;
+                    /**
+                     * The service being connected (for example, "linear").
+                     */
+                    service: string;
+                    /**
+                     * Icon URL for the service, hosted on vercel.com.
+                     */
+                    serviceIconUrl?: string;
+                    /**
+                     * Display name of the connector being created.
+                     */
+                    connectorName: string;
+                    /**
+                     * Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team.
+                     */
+                    setupUrl: string;
+                    /**
+                     * Environments the connector will be attached to.
+                     */
+                    environments: Array<'production' | 'preview' | 'development'>;
+                    /**
+                     * Webhook trigger path that will be registered on the connector, when requested.
+                     */
+                    triggerPath?: string;
+                    /**
+                     * Vercel project auto-created for this chat during setup, when applicable.
+                     */
+                    createdProject?: {
+                        /**
+                         * Vercel project identifier.
+                         */
+                        id: string;
+                        /**
+                         * Vercel project name.
+                         */
+                        name: string;
+                    };
+                } | {
+                    /**
+                     * The Connect action finished; no user input is needed.
+                     */
+                    status: 'completed';
+                    /**
+                     * The Connect action that ran.
+                     */
+                    action: 'list' | 'create' | 'attach';
+                    /**
+                     * Human-readable result summary.
+                     */
+                    summary: string;
+                    /**
+                     * Connectors involved in the action.
+                     */
+                    connectors: Array<{
+                        /**
+                         * Connector identifier.
+                         */
+                        id: string;
+                        /**
+                         * Connector display name.
+                         */
+                        name: string;
+                        /**
+                         * Connected service identifier.
+                         */
+                        service?: string;
+                        /**
+                         * Whether the connector is attached to the chat’s Vercel project.
+                         */
+                        attachedToProject: boolean;
+                    }>;
+                    /**
+                     * Vercel project created during the action, when applicable.
+                     */
+                    createdProject?: {
+                        /**
+                         * Vercel project identifier.
+                         */
+                        id: string;
+                        /**
+                         * Vercel project name.
+                         */
+                        name: string;
+                    };
                 };
                 /**
                  * ISO timestamp when this part began.
@@ -4154,6 +4532,117 @@ export type ChatsDownloadFilesResponses = {
      */
     200: unknown;
 };
+
+export type ChatsGetConnectStatusData = {
+    body?: never;
+    path: {
+        /**
+         * The unique identifier of the chat.
+         */
+        chatId: string;
+    };
+    query: {
+        /**
+         * The `requestId` from the `configure_vercel_connect` agent action data.
+         */
+        requestId: string;
+    };
+    url: '/chats/{chatId}/connect/status';
+};
+
+export type ChatsGetConnectStatusErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 409
+     */
+    409: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsGetConnectStatusError = ChatsGetConnectStatusErrors[keyof ChatsGetConnectStatusErrors];
+
+export type ChatsGetConnectStatusResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        /**
+         * Setup is still in progress.
+         */
+        status: 'pending';
+        /**
+         * Current setup progress.
+         */
+        progress?: string;
+    } | {
+        /**
+         * Setup completed successfully.
+         */
+        status: 'ready';
+        /**
+         * Connector created by setup.
+         */
+        connector: {
+            /**
+             * Vercel Connect connector identifier.
+             */
+            id: string;
+            /**
+             * Optional connector UID.
+             */
+            uid?: string;
+            /**
+             * Connector display name.
+             */
+            name: string;
+            /**
+             * Connected service identifier.
+             */
+            service?: string;
+            /**
+             * Connector type.
+             */
+            type: string;
+            /**
+             * Subject types supported by the connector.
+             */
+            supportedSubjectTypes?: Array<'app' | 'user' | 'jwt-bearer'>;
+            /**
+             * Whether the connector supports installation.
+             */
+            supportsInstallation?: boolean;
+            /**
+             * Whether the connector is already attached to the project.
+             */
+            attachedToProject: boolean;
+        };
+    } | {
+        /**
+         * Setup completed with an error.
+         */
+        status: 'error';
+        /**
+         * Safe user-facing setup error message.
+         */
+        message: string;
+    };
+};
+
+export type ChatsGetConnectStatusResponse = ChatsGetConnectStatusResponses[keyof ChatsGetConnectStatusResponses];
 
 export type ChatsRestoreMessageData = {
     body: {
@@ -4415,7 +4904,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 summary: string;
                 /**
-                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, and `get_or_request_integration` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
                  */
                 data?: {
                     /**
@@ -4478,6 +4967,99 @@ export type ChatsRestoreMessageResponses = {
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedMcpPresets: Array<string>;
+                } | {
+                    /**
+                     * The agent is waiting for connector setup to be completed in a browser.
+                     */
+                    status: 'setup-required';
+                    /**
+                     * Setup request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                     */
+                    requestId: string;
+                    /**
+                     * The service being connected (for example, "linear").
+                     */
+                    service: string;
+                    /**
+                     * Icon URL for the service, hosted on vercel.com.
+                     */
+                    serviceIconUrl?: string;
+                    /**
+                     * Display name of the connector being created.
+                     */
+                    connectorName: string;
+                    /**
+                     * Open this vercel.com URL in a browser to complete connector setup. Requires a vercel.com session for a member of the team.
+                     */
+                    setupUrl: string;
+                    /**
+                     * Environments the connector will be attached to.
+                     */
+                    environments: Array<'production' | 'preview' | 'development'>;
+                    /**
+                     * Webhook trigger path that will be registered on the connector, when requested.
+                     */
+                    triggerPath?: string;
+                    /**
+                     * Vercel project auto-created for this chat during setup, when applicable.
+                     */
+                    createdProject?: {
+                        /**
+                         * Vercel project identifier.
+                         */
+                        id: string;
+                        /**
+                         * Vercel project name.
+                         */
+                        name: string;
+                    };
+                } | {
+                    /**
+                     * The Connect action finished; no user input is needed.
+                     */
+                    status: 'completed';
+                    /**
+                     * The Connect action that ran.
+                     */
+                    action: 'list' | 'create' | 'attach';
+                    /**
+                     * Human-readable result summary.
+                     */
+                    summary: string;
+                    /**
+                     * Connectors involved in the action.
+                     */
+                    connectors: Array<{
+                        /**
+                         * Connector identifier.
+                         */
+                        id: string;
+                        /**
+                         * Connector display name.
+                         */
+                        name: string;
+                        /**
+                         * Connected service identifier.
+                         */
+                        service?: string;
+                        /**
+                         * Whether the connector is attached to the chat’s Vercel project.
+                         */
+                        attachedToProject: boolean;
+                    }>;
+                    /**
+                     * Vercel project created during the action, when applicable.
+                     */
+                    createdProject?: {
+                        /**
+                         * Vercel project identifier.
+                         */
+                        id: string;
+                        /**
+                         * Vercel project name.
+                         */
+                        name: string;
+                    };
                 };
                 /**
                  * ISO timestamp when this part began.

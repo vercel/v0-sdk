@@ -62,6 +62,7 @@ const semanticNames = {
   'chats.delete': 'useDeleteChat',
   'chats.getPreview': 'usePreview',
   'chats.getFiles': 'useFiles',
+  'chats.getConnectStatus': 'useConnectStatus',
   'chats.updateFiles': 'useUpdateChatFiles',
   'chats.downloadFiles': 'useDownloadChatFiles',
   'chats.restoreMessage': 'useRestoreMessage',

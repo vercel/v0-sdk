@@ -20,6 +20,7 @@ describe('generated hook surface', () => {
   test('uses the confirmed semantic names and streaming defaults', () => {
     expect(V0_REACT_OPERATION_HOOKS['chats.getPreview']).toBe('usePreview')
     expect(V0_REACT_OPERATION_HOOKS['chats.getFiles']).toBe('useFiles')
+    expect(V0_REACT_OPERATION_HOOKS['chats.getConnectStatus']).toBe('useConnectStatus')
     expect(V0_REACT_OPERATION_HOOKS['chats.restoreMessage']).toBe('useRestoreMessage')
     expect(V0_REACT_OPERATION_HOOKS['chats.createVercelProject']).toBe('useCreateProject')
     expect(V0_REACT_OPERATION_HOOKS['chats.createStream']).toBe('useCreateChat')
