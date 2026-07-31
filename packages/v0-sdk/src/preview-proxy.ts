@@ -24,7 +24,8 @@ export type FetchPreviewOptions = {
   fallbackUrl: string | URL
   /**
    * Path under the iframe proxy route to forward to the preview URL. In Next.js
-   * catch-all routes, pass the `[[...path]]` param directly.
+   * catch-all routes, pass the `[[...path]]` param directly. The resolved URL
+   * must stay on the preview origin; `fetchPreview` throws otherwise.
    */
   path?: string | string[]
   /**
@@ -110,7 +111,15 @@ export async function fetchPreview({
 
   const incomingUrl = new URL(request.url)
 
-  const upstreamUrl = new URL(normalizePreviewPath(path), preview.url)
+  // `path` may be a raw string from a catch-all route param. `new URL` honors
+  // protocol-relative (`//host`) and backslash (`/\host`) escapes, which would
+  // send the credentialed request — including `x-v0-preview-token` — to an
+  // attacker-chosen origin. Resolve first, then pin to the preview origin.
+  const previewBaseUrl = new URL(preview.url)
+  const upstreamUrl = new URL(normalizePreviewPath(path), previewBaseUrl)
+  if (upstreamUrl.origin !== previewBaseUrl.origin) {
+    throw new Error('fetchPreview: resolved path must stay on the preview origin')
+  }
   upstreamUrl.search = incomingUrl.search
 
   const headers = getPreviewRequestHeaders(request, preview.token)
