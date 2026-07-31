@@ -32,12 +32,15 @@ export function SidebarToggleButton({ className }: { className?: string }) {
 
 export function AppShell({
   children,
-  apiKeyDialog,
+  apiKeyStatus,
   sidebarChats,
 }: {
   children: React.ReactNode
-  apiKeyDialog: React.ReactNode
-  sidebarChats: Awaited<ReturnType<typeof getSidebarChats>>
+  apiKeyStatus: {
+    hasBrowserApiKey: boolean
+    hasEnvironmentApiKey: boolean
+  }
+  sidebarChats: ReturnType<typeof getSidebarChats>
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
@@ -45,10 +48,10 @@ export function AppShell({
     <SidebarContext.Provider value={{ open: sidebarOpen, setOpen: setSidebarOpen }}>
       <div className="flex h-dvh overflow-hidden bg-background">
         <Sidebar
-          apiKeyDialog={apiKeyDialog}
-          initialChats={sidebarChats}
+          apiKeyStatus={apiKeyStatus}
           onToggle={() => setSidebarOpen((open) => !open)}
           open={sidebarOpen}
+          sidebarChats={sidebarChats}
         />
         <main className="min-w-0 flex-1 overflow-hidden">{children}</main>
       </div>
