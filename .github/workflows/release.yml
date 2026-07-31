@@ -1,54 +1,120 @@
-name: Release
+name: Release API v1 SDK
 
 on:
   push:
     branches:
-      - main
+      - release/api-v1-0.16.6
     paths:
-      - '.changeset/**'
       - '.github/workflows/release.yml'
+      - 'packages/v0-sdk/**'
   workflow_dispatch:
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
-    name: Release
+    name: Publish v0-sdk beta
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
+    env:
+      EXPECTED_VERSION: 0.16.6
     steps:
-      - name: Checkout Repo
+      - name: Checkout release commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 9.15.0
+          run_install: false
 
-      - name: Setup Node.js
+      - name: Setup Node.js for trusted publishing
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
 
-      - name: Install Dependencies
+      - name: Resolve package release
+        id: package
+        run: |
+          NAME=$(node --input-type=module -e "import pkg from './packages/v0-sdk/package.json' with { type: 'json' }; console.log(pkg.name)")
+          VERSION=$(node --input-type=module -e "import pkg from './packages/v0-sdk/package.json' with { type: 'json' }; console.log(pkg.version)")
+          LATEST=$(npm view "${NAME}@latest" version)
+
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "latest_before=${LATEST}" >> "$GITHUB_OUTPUT"
+
+          if [ "$VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "${NAME}@${VERSION} is not the ${EXPECTED_VERSION} release candidate; taking the no-op path."
+            echo "candidate=false" >> "$GITHUB_OUTPUT"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "candidate=true" >> "$GITHUB_OUTPUT"
+          if npm view "${NAME}@${VERSION}" version --silent > /dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published; skipping npm publish."
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.package.outputs.candidate == 'true' && steps.package.outputs.published != 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
-        with:
-          version: pnpm ci:version
-          publish: pnpm ci:release
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
-          commitMode: github-api
+      - name: Build API v1 SDK
+        if: steps.package.outputs.candidate == 'true' && steps.package.outputs.published != 'true'
+        run: pnpm --filter v0-sdk build
+
+      - name: Publish API v1 SDK under beta
+        if: steps.package.outputs.candidate == 'true' && steps.package.outputs.published != 'true'
+        working-directory: packages/v0-sdk
+        run: npm publish --tag beta --provenance
+
+      - name: Verify npm dist-tags
+        if: steps.package.outputs.candidate == 'true'
+        run: |
+          BETA=$(npm view "${{ steps.package.outputs.name }}@beta" version)
+          LATEST=$(npm view "${{ steps.package.outputs.name }}@latest" version)
+
+          if [ "$BETA" != "${{ steps.package.outputs.version }}" ]; then
+            echo "::error::${{ steps.package.outputs.name }}@beta resolved to ${BETA}, expected ${{ steps.package.outputs.version }}."
+            exit 1
+          fi
+          if [ "$LATEST" != "${{ steps.package.outputs.latest_before }}" ]; then
+            echo "::error::${{ steps.package.outputs.name }}@latest changed from ${{ steps.package.outputs.latest_before }} to ${LATEST}."
+            exit 1
+          fi
+
+      - name: Create repository release
+        if: steps.package.outputs.candidate == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: v0-sdk@${{ steps.package.outputs.version }}
+        run: |
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            echo "Repository release ${RELEASE_TAG} already exists; skipping creation."
+          else
+            gh release create "$RELEASE_TAG" \
+              --target "$GITHUB_SHA" \
+              --title "$RELEASE_TAG" \
+              --generate-notes \
+              --prerelease
+          fi
+
+          TARGET=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}" --jq '.object.sha')
+          if [ "$TARGET" != "$GITHUB_SHA" ]; then
+            echo "::error::${RELEASE_TAG} points to ${TARGET}, expected ${GITHUB_SHA}."
+            exit 1
+          fi
