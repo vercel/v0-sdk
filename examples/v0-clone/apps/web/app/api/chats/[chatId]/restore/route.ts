@@ -1,6 +1,7 @@
-import { v0, type ChatsRestoreMessageData } from 'v0'
+import type { ChatsRestoreMessageData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
 import { authorizeProxyRequest } from '@/lib/proxy'
+import { v0 } from '@/lib/v0-client'
 
 type RestoreMessageBody = ChatsRestoreMessageData['body']
 

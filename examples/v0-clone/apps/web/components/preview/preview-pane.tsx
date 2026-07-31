@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { usePreviewProxyOrigin } from '@/components/preview/preview-proxy-provider'
 
 export function PreviewPane({
   chatId,
@@ -10,9 +11,7 @@ export function PreviewPane({
   onReadyChange?: (ready: boolean) => void
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const previewProxyOrigin = new URL(
-    process.env.NEXT_PUBLIC_V0_PREVIEW_PROXY_URL ?? 'http://localhost:3001',
-  ).origin
+  const previewProxyOrigin = usePreviewProxyOrigin()
   const previewPath = `/api/v0-preview/${encodeURIComponent(chatId)}`
   const previewUrl = new URL(previewPath, previewProxyOrigin).toString()
 

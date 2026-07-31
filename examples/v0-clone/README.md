@@ -35,17 +35,32 @@ permissions from giving preview code access to the host app.
 
 ## Run it
 
-Copy the example environment file and add your API key:
+Copy the example environment file:
 
 ```bash
 cp examples/v0-clone/.env.example examples/v0-clone/.env.local
 ```
 
 ```bash
-V0_API_KEY=your_v0_api_key
-NEXT_PUBLIC_V0_PREVIEW_PROXY_URL=http://localhost:3001
-V0_CLONE_ORIGIN=http://localhost:3000
+V0_API_KEY=
+V0_PREVIEW_PROXY_URL=
+V0_CLONE_ORIGIN=
 ```
+
+Local URLs require no configuration: the web app uses `http://localhost:3000`
+and the proxy uses `http://localhost:3001`. `V0_API_KEY` is optional. With no
+key in the environment, the web app opens an API key dialog on first load.
+Saving a key does three things:
+
+1. Validates the key and stores it in the web app's HTTP-only cookie.
+2. Sends the key directly from the browser to the resolved preview proxy.
+3. The proxy derives its own hostname, merges it into the team's trusted preview
+   hosts, and stores the key in its own HTTP-only cookie.
+
+Each app resolves credentials in this order: `V0_API_KEY`, its own browser
+cookie, then Vercel OIDC. When `V0_API_KEY` is set, the dialog is read-only. Set
+the same environment key on both apps, or leave it unset on both and use the
+dialog.
 
 Then run from the repository root:
 
@@ -72,58 +87,71 @@ bun dev
 Create two projects from the same repository:
 
 1. Deploy `apps/web` as the host application.
-2. Deploy `apps/preview-proxy` on a different registrable domain with deployment
-   protection disabled or otherwise configured to allow iframe navigations.
-   Note the proxy serves a credentialed channel into the preview of every chat
-   in your workspace to anyone who knows a chat ID, and chat IDs are
-   enumerable from the web app's unauthenticated routes — add auth first if
-   that matters for your deployment.
-3. Set `V0_API_KEY` on both projects.
-4. Set `NEXT_PUBLIC_V0_PREVIEW_PROXY_URL` on the web project to the proxy
-   project's public origin.
-5. Set `V0_CLONE_ORIGIN` on the proxy project to the web project's exact public
-   origin. The proxy uses it for loading-state messages.
-6. Configure the preview proxy's hostname as a trusted preview host in v0.
+2. Deploy `apps/preview-proxy` on a different registrable domain. Keep
+   deployment protection enabled until you add real session auth. Each tester
+   must authenticate to the proxy deployment directly before the web app can
+   configure it or load its iframe.
 
-The preview proxy must not share authentication cookies or application
-endpoints with the host app. `fetchPreview` strips incoming credentials and
-infrastructure headers before forwarding requests.
+   The proxy serves a credentialed channel into the preview of every chat in
+   your workspace to anyone who knows a chat ID, and chat IDs are enumerable
+   from the web app's routes. Add real auth before exposing either project to
+   untrusted users.
 
-### Trust the preview proxy hostname
+3. Link each Vercel project to the other as a Related Project. Add the preview
+   proxy's project ID to `apps/web/vercel.json`, and the web project's ID to
+   `apps/preview-proxy/vercel.json`:
 
-Add the isolated preview proxy's hostname to your team's trusted preview hosts.
-Use the hostname only, without a scheme, port, or path. Do not use the web
-application's hostname.
+   ```json
+   {
+     "relatedProjects": ["prj_other_project_id"]
+   }
+   ```
 
-From the generated project's root, the following command reads `V0_API_KEY`
-from `.env.local`:
+   Preserve the existing install and build commands in each file. Related
+   Projects supplies the matching branch deployment URLs to both apps through
+   `VERCEL_RELATED_PROJECTS`.
 
-```bash
-set -a
-. ./.env.local
-set +a
+4. For production, set `V0_PREVIEW_PROXY_URL` on the web project to the proxy's
+   public origin and `V0_CLONE_ORIGIN` on the proxy project to the web app's
+   public origin. A related project's production host is used as a fallback.
+5. Either set the same `V0_API_KEY` on both projects, leave it unset and use the
+   dialog, or let both projects fall back to Vercel OIDC.
 
-curl -X PUT "https://api.v0.dev/v2/settings/preview-hosts" \
-  -H "Authorization: Bearer $V0_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"hosts":["preview.example-preview.com"]}'
-```
+The URL resolver is shared by the iframe and API-key dialog:
 
-Replace `preview.example-preview.com` with the proxy's production hostname.
-This endpoint replaces the complete trusted-host list, so include any existing
-hostnames that should remain trusted.
+| Environment    | Web app → preview proxy                      | Preview proxy → web app                 |
+| -------------- | -------------------------------------------- | --------------------------------------- |
+| Local          | `http://localhost:3001`                      | `http://localhost:3000`                 |
+| Vercel Preview | Related Project's matching preview URL       | Related Project's matching preview URL  |
+| Production     | `V0_PREVIEW_PROXY_URL`, then Related Project | `V0_CLONE_ORIGIN`, then Related Project |
+
+In production, the proxy key is stored in a `Secure`, HTTP-only, partitioned
+cookie. Partitioning lets the isolated proxy receive its cookie inside the
+iframe without sharing the web app's cookie or exposing the key to generated
+preview code. `fetchPreview` strips incoming credentials and infrastructure
+headers before forwarding requests.
+
+The preview proxy owns trusted-host registration. It registers the hostname
+when a browser key is provisioned and also checks once before serving previews
+with an environment or OIDC credential. Existing hosts and matching wildcard
+entries are preserved.
 
 ## Implementation notes
 
-- The root layout fetches favorite and recent chats on the server.
+- The root layout fetches favorite and recent chats on the server and falls
+  back to an empty sidebar until credentials are available.
 - `/chats/[chatId]` fetches the selected chat and its messages on the server.
 - Client chat state uses AI SDK `useChat` with `V0Transport`, while
   `@v0-sdk/react/swr` hooks power chat, file, task-resolution, restore,
   duplicate, download, and deployment actions.
-- App Router handlers call the v0 SDK on the server, so `V0_API_KEY` is never
-  included in the client bundle.
+- App Router handlers call the v0 SDK on the server. They prefer `V0_API_KEY`,
+  then a validated browser-provided key, then the SDK's Vercel OIDC fallback.
+  No key is included in the client bundle.
 - Every App Router handler and the preview proxy route call
   `authorizeProxyRequest` first; that seam is where you add session auth.
+- The preview proxy follows the same credential order using its own isolated,
+  partitioned cookie. Its key-provisioning route only allows the resolved web
+  origin through credentialed CORS.
 - New chats can start from a prompt, selected files, a ZIP archive, or a GitHub
   repository.
 - Assistant messages render text, reasoning, activities, and task-resolution

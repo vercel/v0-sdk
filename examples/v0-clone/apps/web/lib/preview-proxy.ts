@@ -1,26 +1,28 @@
+import 'server-only'
+
 import { relatedProjects, type VercelRelatedProject } from '@vercel/related-projects'
 
-const defaultCloneOrigin = 'http://localhost:3000'
+const LOCAL_PREVIEW_PROXY_URL = 'http://localhost:3001'
 
-export function getCloneOrigin() {
-  if (!process.env.VERCEL) return defaultCloneOrigin
+export function getPreviewProxyOrigin() {
+  if (!process.env.VERCEL) return LOCAL_PREVIEW_PROXY_URL
 
-  const configuredOrigin = process.env.V0_CLONE_ORIGIN
   const relatedProject = getRelatedProject()
-  const resolvedOrigin =
+  const configuredUrl = process.env.V0_PREVIEW_PROXY_URL
+  const resolvedUrl =
     process.env.VERCEL_ENV === 'preview'
-      ? getPreviewUrl(relatedProject) || configuredOrigin
-      : configuredOrigin || getProductionUrl(relatedProject)
+      ? getPreviewUrl(relatedProject) || configuredUrl
+      : configuredUrl || getProductionUrl(relatedProject)
 
-  if (!resolvedOrigin) {
+  if (!resolvedUrl) {
     throw new Error(
       process.env.VERCEL_ENV === 'preview'
-        ? 'Link the web app as a Vercel Related Project or set V0_CLONE_ORIGIN.'
-        : 'V0_CLONE_ORIGIN is required when the web app is not a Vercel Related Project.',
+        ? 'Link the preview proxy as a Vercel Related Project or set V0_PREVIEW_PROXY_URL.'
+        : 'V0_PREVIEW_PROXY_URL is required when the preview proxy is not a Vercel Related Project.',
     )
   }
 
-  const url = new URL(resolvedOrigin)
+  const url = new URL(resolvedUrl)
 
   if (
     (url.protocol !== 'http:' && url.protocol !== 'https:') ||
@@ -30,11 +32,11 @@ export function getCloneOrigin() {
     url.search ||
     url.hash
   ) {
-    throw new Error('V0_CLONE_ORIGIN must be an HTTP(S) origin without a path.')
+    throw new Error('The preview proxy URL must be an HTTP(S) origin without a path.')
   }
 
   if (url.protocol !== 'https:') {
-    throw new Error('V0_CLONE_ORIGIN must use HTTPS on Vercel.')
+    throw new Error('The preview proxy URL must use HTTPS on Vercel.')
   }
 
   return url.origin
@@ -44,7 +46,7 @@ function getRelatedProject() {
   const projects = relatedProjects({ noThrow: true })
 
   if (projects.length > 1) {
-    throw new Error('The preview proxy must have only the web app configured as a Related Project.')
+    throw new Error('The web app must have only the preview proxy configured as a Related Project.')
   }
 
   return projects[0]

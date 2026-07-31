@@ -1,6 +1,7 @@
-import { v0, type MessagesSendData } from 'v0'
+import type { MessagesSendData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
 import { authorizeProxyRequest } from '@/lib/proxy'
+import { v0 } from '@/lib/v0-client'
 
 type SendMessageBody = Pick<MessagesSendData['body'], 'message' | 'modelConfiguration'>
 

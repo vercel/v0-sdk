@@ -1,13 +1,21 @@
 'use server'
 
-import { v0, type Chat } from 'v0'
+import type { Chat, ChatsListData } from 'v0'
+import { v0 } from '@/lib/v0-client'
 
 const CHAT_PAGE_SIZE = 5
 
 export async function getSidebarChats() {
-  const [favoriteChats, recentChats] = await Promise.all([listFavoriteChats(), listRecentChats()])
+  try {
+    const [favoriteChats, recentChats] = await Promise.all([listFavoriteChats(), listRecentChats()])
 
-  return { favoriteChats, recentChats }
+    return { favoriteChats, recentChats }
+  } catch {
+    return {
+      favoriteChats: [],
+      recentChats: { chats: [], cursor: null },
+    }
+  }
 }
 
 async function listFavoriteChats(): Promise<Chat[]> {
@@ -31,7 +39,7 @@ async function listRecentChats(cursor?: string) {
   }
 }
 
-async function listChats(parameters: Parameters<typeof v0.chats.list>[0]) {
+async function listChats(parameters: ChatsListData['query']) {
   const response = await v0.chats.list(parameters)
 
   if (response.error) {

@@ -1,6 +1,6 @@
-import { v0 } from 'v0'
 import type { ChatFilesResult } from '@/components/chat/code-editor'
 import { ChatWorkspace } from '@/components/chat/chat-workspace'
+import { v0 } from '@/lib/v0-client'
 
 export default async function ChatPage({ params }: { params: Promise<{ chatId: string }> }) {
   const { chatId } = await params

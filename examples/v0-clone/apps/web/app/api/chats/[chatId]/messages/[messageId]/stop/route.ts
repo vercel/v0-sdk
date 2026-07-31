@@ -1,6 +1,6 @@
-import { v0 } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
 import { authorizeProxyRequest } from '@/lib/proxy'
+import { v0 } from '@/lib/v0-client'
 
 export async function POST(
   request: Request,

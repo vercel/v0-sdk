@@ -13,10 +13,12 @@ import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icon
 
 export function Sidebar({
   open,
+  apiKeyDialog,
   initialChats,
   onToggle,
 }: {
   open: boolean
+  apiKeyDialog: React.ReactNode
   initialChats: Awaited<ReturnType<typeof getSidebarChats>>
   onToggle: () => void
 }) {
@@ -160,6 +162,7 @@ export function Sidebar({
           </Collapsible>
 
           <div className="flex-1" />
+          {apiKeyDialog}
         </div>
       ) : null}
     </aside>

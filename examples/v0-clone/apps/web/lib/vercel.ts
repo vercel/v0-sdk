@@ -1,5 +1,4 @@
-function getVercelCredentials() {
-  const apiKey = process.env.V0_API_KEY
+function getVercelCredentials(apiKey = process.env.V0_API_KEY) {
   if (!apiKey) throw new Error('V0_API_KEY is required')
 
   const [version, teamId, ...tokenParts] = apiKey.split(':')
@@ -12,8 +11,8 @@ function getVercelCredentials() {
   return { teamId, token }
 }
 
-export async function getVercelDeploymentUrl(deploymentId: string) {
-  const { teamId, token } = getVercelCredentials()
+export async function getVercelDeploymentUrl(deploymentId: string, apiKey?: string) {
+  const { teamId, token } = getVercelCredentials(apiKey)
   const url = new URL(`https://api.vercel.com/v13/deployments/${encodeURIComponent(deploymentId)}`)
   url.searchParams.set('teamId', teamId)
 

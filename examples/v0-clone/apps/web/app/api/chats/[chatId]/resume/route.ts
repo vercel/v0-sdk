@@ -1,4 +1,4 @@
-import { v0 } from 'v0'
+import { v0 } from '@/lib/v0-client'
 import { authorizeProxyRequest } from '@/lib/proxy'
 
 export async function POST(request: Request, { params }: { params: Promise<{ chatId: string }> }) {
