@@ -18,6 +18,12 @@ import { isFolderEmpty } from './helpers/is-folder-empty.js'
 
 const { cyan, green, red } = picocolors
 
+const packageJson = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+) as {
+  version: string
+}
+
 export type ExampleType = 'v0-clone'
 
 type PackageJson = {
@@ -29,9 +35,9 @@ type PackageJson = {
 }
 
 const packageVersions: Record<string, string> = {
-  v0: 'canary',
-  '@v0-sdk/ai-tools': 'canary',
-  '@v0-sdk/react': 'canary',
+  v0: packageJson.version,
+  '@v0-sdk/ai-tools': packageJson.version,
+  '@v0-sdk/react': packageJson.version,
 }
 
 const scriptDescriptions: Record<string, string> = {
@@ -68,7 +74,7 @@ export async function createApp({
   console.log(`Creating a new v0 SDK app in ${green(appPath)}.`)
   console.log()
 
-  const template = `vercel/v0-sdk/examples/${templateDirectories[example]}#v2`
+  const template = `vercel/v0-sdk/examples/${templateDirectories[example]}#v${packageJson.version}`
 
   console.log(`Downloading template ${cyan(template)}. This might take a moment.`)
   console.log()
