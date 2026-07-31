@@ -1,10 +1,13 @@
 import { revalidatePath } from 'next/cache'
 import { v0, type ChatsCreateFromRepoData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { authorizeProxyRequest } from '@/lib/proxy'
 
 type CreateFromRepoBody = ChatsCreateFromRepoData['body']
 
 export async function POST(request: Request) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const body = (await request.json().catch(() => null)) as CreateFromRepoBody | null
 
   if (typeof body?.repo?.url !== 'string' || !body.repo.url.trim()) {
