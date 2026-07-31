@@ -2,26 +2,121 @@
 
 import type { Chat } from '@v0-sdk/react'
 import { useChats, useChatsInfinite } from '@v0-sdk/react/swr'
-import { useEffect, useState } from 'react'
+import { Suspense, use, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { ChatItem } from '@/components/layout/chat-item'
+import { ApiKeyDialog } from '@/components/layout/api-key-dialog'
 import type { getSidebarChats } from '@/lib/sidebar-chats'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icons'
 
-export function Sidebar({
-  open,
-  apiKeyDialog,
-  initialChats,
-  onToggle,
-}: {
+type SidebarProps = {
   open: boolean
-  apiKeyDialog: React.ReactNode
-  initialChats: Awaited<ReturnType<typeof getSidebarChats>>
+  apiKeyStatus: {
+    hasBrowserApiKey: boolean
+    hasEnvironmentApiKey: boolean
+  }
   onToggle: () => void
-}) {
+  sidebarChats: ReturnType<typeof getSidebarChats>
+}
+
+export function Sidebar(props: SidebarProps) {
+  return (
+    <Suspense
+      fallback={
+        <SidebarSkeleton
+          apiKeyStatus={props.apiKeyStatus}
+          onToggle={props.onToggle}
+          open={props.open}
+        />
+      }
+    >
+      <SidebarContent {...props} />
+    </Suspense>
+  )
+}
+
+function SidebarSkeleton({
+  open,
+  apiKeyStatus,
+  onToggle,
+}: Pick<SidebarProps, 'open' | 'apiKeyStatus' | 'onToggle'>) {
+  return (
+    <aside
+      aria-busy="true"
+      aria-label="Loading sidebar"
+      className={cn(
+        'flex shrink-0 flex-col gap-1 overflow-hidden bg-sidebar transition-[width] duration-200',
+        open ? 'w-64 border-r border-sidebar-border' : 'w-0',
+      )}
+    >
+      {open ? (
+        <div className="flex w-64 flex-1 flex-col gap-1 overflow-y-auto p-2">
+          <div className="mb-1 flex items-center gap-1">
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-1.5 py-1 text-sm font-medium text-sidebar-foreground">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-foreground text-xs font-semibold text-background">
+                A
+              </span>
+              <span className="truncate">Acme Team</span>
+              <ChevronDownIcon className="ml-auto size-3.5 text-muted-foreground" />
+            </div>
+
+            <Button
+              aria-label="Collapse sidebar"
+              className="size-8 shrink-0 text-muted-foreground"
+              onClick={onToggle}
+              size="icon"
+              variant="ghost"
+            >
+              <SidebarToggleIcon size={18} />
+            </Button>
+          </div>
+
+          <button
+            className="flex items-center justify-center rounded-lg border border-sidebar-border bg-background px-3 py-1.5 text-sm font-medium text-sidebar-foreground shadow-sm transition-colors hover:bg-accent"
+            onClick={() => window.location.assign('/')}
+            type="button"
+          >
+            New Chat
+          </button>
+
+          <div className="mt-4">
+            <div className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <span className="flex-1">Favorites</span>
+              <ChevronRightIcon className="size-3.5 rotate-90" />
+            </div>
+            <ChatNamesSkeleton />
+          </div>
+
+          <div className="mt-2">
+            <div className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <span className="flex-1">Recent Chats</span>
+              <ChevronDownIcon className="size-3.5" />
+            </div>
+            <ChatNamesSkeleton />
+            <ChatNamesSkeleton />
+          </div>
+
+          <div className="flex-1" />
+          <ApiKeyDialog {...apiKeyStatus} />
+        </div>
+      ) : null}
+    </aside>
+  )
+}
+
+function ChatNamesSkeleton() {
+  return (
+    <div className="animate-pulse px-2.5 py-1.5">
+      <div className="h-3 w-3/4 rounded bg-muted" />
+    </div>
+  )
+}
+
+function SidebarContent({ open, apiKeyStatus, onToggle, sidebarChats }: SidebarProps) {
+  const initialChats = use(sidebarChats)
   const pathname = usePathname()
   const router = useRouter()
   const [favoritesOpen, setFavoritesOpen] = useState(initialChats.favoriteChats.length > 0)
@@ -162,7 +257,7 @@ export function Sidebar({
           </Collapsible>
 
           <div className="flex-1" />
-          {apiKeyDialog}
+          <ApiKeyDialog {...apiKeyStatus} />
         </div>
       ) : null}
     </aside>
