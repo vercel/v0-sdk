@@ -124,6 +124,20 @@ jobs:
           (cd packages/ai-tools && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
           (cd packages/react && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
           (cd packages/create-v0-sdk-app && bun pm pkg set "version=${CANARY_VERSION}")
+      - name: Ensure nightly canary tag
+        if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
+        run: |
+          TAG="v${{ steps.canary.outputs.version }}"
+          COMMIT=$(git rev-parse HEAD)
+          REMOTE_COMMIT=$(git ls-remote --tags origin "refs/tags/${TAG}" | awk '{print $1}')
+
+          if [ -z "$REMOTE_COMMIT" ]; then
+            git tag "$TAG" "$COMMIT"
+            git push origin "$TAG"
+          elif [ "$REMOTE_COMMIT" != "$COMMIT" ]; then
+            echo "::error::Tag ${TAG} points to ${REMOTE_COMMIT}, expected ${COMMIT}."
+            exit 1
+          fi
       - name: Publish nightly canaries
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
         run: |
@@ -261,6 +275,20 @@ jobs:
           else
             echo "all_skip=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Ensure stable release tag
+        if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.all_skip != 'true'
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          COMMIT="${{ steps.version.outputs.commit }}"
+          REMOTE_COMMIT=$(git ls-remote --tags origin "refs/tags/${TAG}" | awk '{print $1}')
+
+          if [ -z "$REMOTE_COMMIT" ]; then
+            git tag "$TAG" "$COMMIT"
+            git push origin "$TAG"
+          elif [ "$REMOTE_COMMIT" != "$COMMIT" ]; then
+            echo "::error::Tag ${TAG} points to ${REMOTE_COMMIT}, expected ${COMMIT}."
+            exit 1
+          fi
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.sdk_skip != 'true'
         run: npm publish --tag latest --workspace packages/v0-sdk
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.ai_tools_skip != 'true'
@@ -281,6 +309,6 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.all_skip != 'true' && steps.release.outputs.skip != 'true'
-        run: gh release create "v${{ steps.version.outputs.version }}" --target "${{ steps.version.outputs.commit }}" --generate-notes
+        run: gh release create "v${{ steps.version.outputs.version }}" --verify-tag --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
