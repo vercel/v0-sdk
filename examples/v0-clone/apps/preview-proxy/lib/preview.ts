@@ -1,4 +1,6 @@
-import { fetchPreview, v0, type ChatsGetPreviewResponse } from 'v0'
+import { fetchPreview, type ChatsGetPreviewResponse } from 'v0'
+import { ensureTrustedPreviewHost } from '@/lib/trusted-host'
+import { v0 } from '@/lib/v0-client'
 
 type Preview = NonNullable<ChatsGetPreviewResponse>
 
@@ -24,6 +26,8 @@ async function getPreview(chatId: string) {
 
 export async function proxyPreviewRequest(request: Request, chatId: string, path: string[]) {
   const proxyUrl = new URL(request.url)
+  if (path.length === 0) await ensureTrustedPreviewHost(v0, proxyUrl.hostname)
+
   const preview = await getPreview(chatId)
   const fallbackUrl = new URL(
     `/api/v0-preview/${encodeURIComponent(chatId)}/loading`,

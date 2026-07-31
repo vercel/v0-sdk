@@ -4,6 +4,8 @@ import { GeistMono } from 'geist/font/mono'
 import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppShell } from '@/components/layout/app-shell'
+import { PreviewProxyProvider } from '@/components/preview/preview-proxy-provider'
+import { getPreviewProxyOrigin } from '@/lib/preview-proxy'
 import { getSidebarChats } from '@/lib/sidebar-chats'
 import { getV0ApiKeyStatus } from '@/lib/v0-client'
 import './globals.css'
@@ -21,6 +23,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const [sidebarChats, apiKeyStatus] = await Promise.all([getSidebarChats(), getV0ApiKeyStatus()])
+  const previewProxyOrigin = getPreviewProxyOrigin()
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -32,11 +35,13 @@ export default async function RootLayout({
           disableTransitionOnChange
           storageKey="theme"
         >
-          <TooltipProvider delayDuration={300}>
-            <AppShell apiKeyStatus={apiKeyStatus} sidebarChats={sidebarChats}>
-              {children}
-            </AppShell>
-          </TooltipProvider>
+          <PreviewProxyProvider origin={previewProxyOrigin}>
+            <TooltipProvider delayDuration={300}>
+              <AppShell apiKeyStatus={apiKeyStatus} sidebarChats={sidebarChats}>
+                {children}
+              </AppShell>
+            </TooltipProvider>
+          </PreviewProxyProvider>
         </ThemeProvider>
       </body>
     </html>

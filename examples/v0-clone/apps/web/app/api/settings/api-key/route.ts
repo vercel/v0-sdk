@@ -2,10 +2,13 @@ import { cookies } from 'next/headers'
 import { createV0Client } from 'v0'
 import { V0_API_KEY_COOKIE } from '@/lib/v0-client'
 
-const MAX_API_KEY_LENGTH = 3_500
-const API_KEY_MAX_AGE = 60 * 60 * 24 * 30
+const API_KEY_MAX_AGE = 60 * 60 * 4
 
 export async function PUT(request: Request) {
+  if (process.env.V0_API_KEY) {
+    return Response.json({ message: 'This deployment already uses V0_API_KEY.' }, { status: 409 })
+  }
+
   const body = (await request.json().catch(() => null)) as { apiKey?: unknown } | null
   const apiKey = typeof body?.apiKey === 'string' ? body.apiKey.trim() : ''
 
@@ -13,13 +16,8 @@ export async function PUT(request: Request) {
     return Response.json({ message: 'Enter a v0 API key.' }, { status: 400 })
   }
 
-  if (apiKey.length > MAX_API_KEY_LENGTH) {
-    return Response.json({ message: 'The API key is too long.' }, { status: 400 })
-  }
-
-  const result = await createV0Client({ auth: apiKey })
-    .chats.list({ limit: 1 })
-    .catch(() => null)
+  const client = createV0Client({ auth: apiKey })
+  const result = await client.chats.list({ limit: 1 }).catch(() => null)
 
   if (!result) {
     return Response.json(

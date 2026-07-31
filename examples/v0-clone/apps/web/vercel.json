@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "relatedProjects": ["prj_H9Ym02nIvmP1COiXWx5Nao5sI7DU"],
   "installCommand": "if [ -d ../../../../packages/v0-sdk ]; then cd ../../../..; else cd ../..; fi && bun install --frozen-lockfile",
   "buildCommand": "if [ -d ../../../../packages/v0-sdk ]; then cd ../../../.. && bun --filter v0 build && bun --filter @v0-sdk/react build && bun --filter @v0-clone/web build; else cd ../.. && bun --filter @v0-clone/web build; fi"
 }
