@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { createHash } from 'node:crypto'
 import { cookies } from 'next/headers'
 import { createV0Client, vercelOidcAuth } from 'v0'
 
@@ -13,6 +14,12 @@ async function getV0ApiKey() {
 
   const cookieStore = await cookies()
   return cookieStore.get(V0_PROXY_API_KEY_COOKIE)?.value
+}
+
+export async function getV0ApiKeyFingerprint() {
+  const apiKey = await getV0ApiKey()
+
+  return apiKey ? createHash('sha256').update(apiKey).digest('base64url') : undefined
 }
 
 const oidcAuth = vercelOidcAuth()
