@@ -96,6 +96,7 @@ Create two projects from the same repository:
    your workspace to anyone who knows a chat ID, and chat IDs are enumerable
    from the web app's routes. Add real auth before exposing either project to
    untrusted users.
+
 3. Link each Vercel project to the other as a Related Project. Add the preview
    proxy's project ID to `apps/web/vercel.json`, and the web project's ID to
    `apps/preview-proxy/vercel.json`:
