@@ -1,10 +1,13 @@
 import { revalidatePath } from 'next/cache'
 import { v0, type ChatsCreateFromFilesData } from 'v0'
 import { toV0JsonResponse } from '@/lib/v0-response'
+import { authorizeProxyRequest } from '@/lib/proxy'
 
 type CreateFromFilesBody = ChatsCreateFromFilesData['body']
 
 export async function POST(request: Request) {
+  const denied = authorizeProxyRequest(request)
+  if (denied) return denied
   const body = (await request.json().catch(() => null)) as CreateFromFilesBody | null
 
   if (!Array.isArray(body?.files) || body.files.length === 0) {

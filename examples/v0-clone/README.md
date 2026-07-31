@@ -2,6 +2,17 @@
 
 A deliberately small v0-style chat app built with the v0 SDK.
 
+> **Security warning:** this example has no user accounts or authentication.
+> Everyone who can reach a deployment shares the deployer's v0 workspace —
+> they can read, create, modify, and delete chats, run generations at the
+> deployer's expense, and create Vercel projects and deployments with the
+> Vercel token embedded in `V0_API_KEY`. Every server route passes through
+> `authorizeProxyRequest` (`apps/web/lib/proxy.ts`,
+> `apps/preview-proxy/lib/authorize.ts`), a same-origin baseline check only:
+> it does not stop direct non-browser requests. Replace or extend it with real
+> session auth before exposing a deployment to untrusted users, and keep
+> Vercel deployment protection enabled on both apps until you do.
+
 ## Architecture
 
 This example is a monorepo with two independently deployable Next.js apps:
@@ -63,6 +74,10 @@ Create two projects from the same repository:
 1. Deploy `apps/web` as the host application.
 2. Deploy `apps/preview-proxy` on a different registrable domain with deployment
    protection disabled or otherwise configured to allow iframe navigations.
+   Note the proxy serves a credentialed channel into the preview of every chat
+   in your workspace to anyone who knows a chat ID, and chat IDs are
+   enumerable from the web app's unauthenticated routes — add auth first if
+   that matters for your deployment.
 3. Set `V0_API_KEY` on both projects.
 4. Set `NEXT_PUBLIC_V0_PREVIEW_PROXY_URL` on the web project to the proxy
    project's public origin.
@@ -107,6 +122,8 @@ hostnames that should remain trusted.
   duplicate, download, and deployment actions.
 - App Router handlers call the v0 SDK on the server, so `V0_API_KEY` is never
   included in the client bundle.
+- Every App Router handler and the preview proxy route call
+  `authorizeProxyRequest` first; that seam is where you add session auth.
 - New chats can start from a prompt, selected files, a ZIP archive, or a GitHub
   repository.
 - Assistant messages render text, reasoning, activities, and task-resolution
