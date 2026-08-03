@@ -1,5 +1,11 @@
 # v0-sdk
 
+## 0.16.7
+
+### Patch Changes
+
+- Fix metadata filter serialization in `chats.find()`.
+
 ## 0.16.6
 
 ### Patch Changes
