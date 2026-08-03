@@ -156,6 +156,29 @@ describe('createFetcher', () => {
       )
     })
 
+    it('should preserve bracketed deep-object query parameters', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: [] }),
+        headers: new Headers(),
+      })
+
+      const fetcher = createFetcher()
+      const query = {
+        'metadata[websiteId]': 'site_123',
+        'metadata[environment]': 'production',
+      }
+
+      await fetcher('/chats', 'GET', { query })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.v0.dev/v1/chats?metadata%5BwebsiteId%5D=site_123&metadata%5Benvironment%5D=production',
+        expect.objectContaining({
+          method: 'GET',
+        }),
+      )
+    })
+
     it('should handle path parameters', async () => {
       mockFetch.mockResolvedValue({
         ok: true,

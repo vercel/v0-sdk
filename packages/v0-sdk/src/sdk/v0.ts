@@ -1686,7 +1686,7 @@ export function createClient(config: V0ClientConfig = {}) {
         isFavorite?: boolean
         vercelProjectId?: string
         branch?: string
-        metadata?: Record<string, unknown>
+        metadata?: Record<string, string>
       }): Promise<ChatsFindResponse> {
         const query = params
           ? (Object.fromEntries(
@@ -1703,7 +1703,14 @@ export function createClient(config: V0ClientConfig = {}) {
                     : undefined,
                 vercelProjectId: params.vercelProjectId,
                 branch: params.branch,
-                metadata: params.metadata,
+                ...(params.metadata !== undefined
+                  ? Object.fromEntries(
+                      Object.entries(params.metadata).map(([key, value]) => [
+                        `metadata[${key}]`,
+                        value,
+                      ]),
+                    )
+                  : {}),
               }).filter(([_, value]) => value !== undefined),
             ) as Record<string, string>)
           : {}

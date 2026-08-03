@@ -52,6 +52,26 @@ describe('v0.chats.find', () => {
     expect(result).toEqual(mockResponse)
   })
 
+  it('should serialize metadata using deep-object query parameters', async () => {
+    mockFetcher.mockResolvedValue({ data: [] })
+
+    await v0.chats.find({
+      limit: 20,
+      metadata: {
+        websiteId: 'site_123',
+        environment: 'production',
+      },
+    })
+
+    expect(mockFetcher).toHaveBeenCalledWith('/chats', 'GET', {
+      query: {
+        limit: '20',
+        'metadata[websiteId]': 'site_123',
+        'metadata[environment]': 'production',
+      },
+    })
+  })
+
   it('should handle empty response', async () => {
     const mockResponse = {
       data: [],
