@@ -3,7 +3,7 @@ name: Release API v1 SDK
 on:
   push:
     branches:
-      - release/api-v1-0.16.6
+      - release/api-v1-0.16.7
     paths:
       - '.github/workflows/release.yml'
       - 'packages/v0-sdk/**'
@@ -15,14 +15,14 @@ concurrency:
 
 jobs:
   release:
-    name: Publish v0-sdk beta
+    name: Publish v0-sdk latest
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
       id-token: write
     env:
-      EXPECTED_VERSION: 0.16.6
+      EXPECTED_VERSION: 0.16.7
     steps:
       - name: Checkout release commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -48,11 +48,8 @@ jobs:
         run: |
           NAME=$(node --input-type=module -e "import pkg from './packages/v0-sdk/package.json' with { type: 'json' }; console.log(pkg.name)")
           VERSION=$(node --input-type=module -e "import pkg from './packages/v0-sdk/package.json' with { type: 'json' }; console.log(pkg.version)")
-          LATEST=$(npm view "${NAME}@latest" version)
-
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "latest_before=${LATEST}" >> "$GITHUB_OUTPUT"
 
           if [ "$VERSION" != "$EXPECTED_VERSION" ]; then
             echo "${NAME}@${VERSION} is not the ${EXPECTED_VERSION} release candidate; taking the no-op path."
@@ -77,23 +74,18 @@ jobs:
         if: steps.package.outputs.candidate == 'true' && steps.package.outputs.published != 'true'
         run: pnpm --filter v0-sdk build
 
-      - name: Publish API v1 SDK under beta
+      - name: Publish API v1 SDK under latest
         if: steps.package.outputs.candidate == 'true' && steps.package.outputs.published != 'true'
         working-directory: packages/v0-sdk
-        run: npm publish --tag beta --provenance
+        run: npm publish --tag latest --provenance
 
-      - name: Verify npm dist-tags
+      - name: Verify npm dist-tag
         if: steps.package.outputs.candidate == 'true'
         run: |
-          BETA=$(npm view "${{ steps.package.outputs.name }}@beta" version)
           LATEST=$(npm view "${{ steps.package.outputs.name }}@latest" version)
 
-          if [ "$BETA" != "${{ steps.package.outputs.version }}" ]; then
-            echo "::error::${{ steps.package.outputs.name }}@beta resolved to ${BETA}, expected ${{ steps.package.outputs.version }}."
-            exit 1
-          fi
-          if [ "$LATEST" != "${{ steps.package.outputs.latest_before }}" ]; then
-            echo "::error::${{ steps.package.outputs.name }}@latest changed from ${{ steps.package.outputs.latest_before }} to ${LATEST}."
+          if [ "$LATEST" != "${{ steps.package.outputs.version }}" ]; then
+            echo "::error::${{ steps.package.outputs.name }}@latest resolved to ${LATEST}, expected ${{ steps.package.outputs.version }}."
             exit 1
           fi
 
@@ -109,8 +101,7 @@ jobs:
             gh release create "$RELEASE_TAG" \
               --target "$GITHUB_SHA" \
               --title "$RELEASE_TAG" \
-              --generate-notes \
-              --prerelease
+              --generate-notes
           fi
 
           TARGET=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}" --jq '.object.sha')

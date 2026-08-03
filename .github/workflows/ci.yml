@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [release/api-v1-0.16.6]
+    branches: [release/api-v1-0.16.7]
   pull_request:
-    branches: [release/api-v1-0.16.6]
+    branches: [release/api-v1-0.16.7]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
