@@ -6,6 +6,7 @@ interface Parameter {
   in: 'path' | 'query' | 'header'
   required?: boolean
   schema: any
+  style?: string
 }
 
 interface RequestBodyProperty {
@@ -432,6 +433,11 @@ function generateParameterInterface(
     // Generate proper TypeScript type from schema
     let tsType = schemaToTypeScript(p.schema, {})
 
+    if (p.style === 'deepObject' && p.schema?.additionalProperties) {
+      const valueType = schemaToTypeScript(p.schema.additionalProperties, {})
+      tsType = `Record<string, ${valueType}>`
+    }
+
     // Convert boolean-like string enums to native boolean
     if (
       p.schema?.enum &&
@@ -506,6 +512,32 @@ function generateReturnType(
   return responseTypeName
 }
 
+function generateQueryParamEntry(parameter: Parameter): string {
+  if (parameter.style === 'deepObject') {
+    return `    ...(params.${parameter.name} !== undefined ? Object.fromEntries(Object.entries(params.${parameter.name}).map(([key, value]) => [\`${parameter.name}[\${key}]\`, value])) : {})`
+  }
+
+  const isBooleanEnum =
+    parameter.schema?.enum &&
+    Array.isArray(parameter.schema.enum) &&
+    parameter.schema.enum.length === 2 &&
+    parameter.schema.enum.includes('true') &&
+    parameter.schema.enum.includes('false')
+
+  if (isBooleanEnum) {
+    return `    ${parameter.name}: params.${parameter.name} !== undefined ? String(params.${parameter.name}) : undefined`
+  }
+
+  if (
+    parameter.schema?.type === 'number' ||
+    parameter.schema?.type === 'integer'
+  ) {
+    return `    ${parameter.name}: params.${parameter.name} !== undefined ? String(params.${parameter.name}) : undefined`
+  }
+
+  return `    ${parameter.name}: params.${parameter.name}`
+}
+
 function generateFunctionBody(
   route: string,
   method: string,
@@ -543,26 +575,7 @@ function generateFunctionBody(
       lines.push(`const query = params ? Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => {
-          // Convert boolean to string for boolean-like enums
-          const isBooleanEnum =
-            p.schema?.enum &&
-            Array.isArray(p.schema.enum) &&
-            p.schema.enum.length === 2 &&
-            p.schema.enum.includes('true') &&
-            p.schema.enum.includes('false')
-
-          if (isBooleanEnum) {
-            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
-          }
-
-          // Convert numbers to strings for query parameters
-          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
-            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
-          }
-
-          return `    ${p.name}: params.${p.name}`
-        })
+        .map(generateQueryParamEntry)
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
@@ -571,26 +584,7 @@ function generateFunctionBody(
       lines.push(`const query = Object.fromEntries(`)
       lines.push(`  Object.entries({`)
       const queryParamEntries = queryParams
-        .map((p) => {
-          // Convert boolean to string for boolean-like enums
-          const isBooleanEnum =
-            p.schema?.enum &&
-            Array.isArray(p.schema.enum) &&
-            p.schema.enum.length === 2 &&
-            p.schema.enum.includes('true') &&
-            p.schema.enum.includes('false')
-
-          if (isBooleanEnum) {
-            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
-          }
-
-          // Convert numbers to strings for query parameters
-          if (p.schema?.type === 'number' || p.schema?.type === 'integer') {
-            return `    ${p.name}: params.${p.name} !== undefined ? String(params.${p.name}) : undefined`
-          }
-
-          return `    ${p.name}: params.${p.name}`
-        })
+        .map(generateQueryParamEntry)
         .join(',\n')
       lines.push(queryParamEntries)
       lines.push(`  }).filter(([_, value]) => value !== undefined)`)
