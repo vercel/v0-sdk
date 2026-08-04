@@ -7416,6 +7416,16 @@
               }
             }
           },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Response for status 500",
             "content": {
@@ -11540,6 +11550,16 @@
               }
             }
           },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Response for status 500",
             "content": {
@@ -11939,6 +11959,16 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
             "content": {
               "application/json": {
                 "schema": {
@@ -13640,6 +13670,16 @@
               }
             }
           },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Response for status 500",
             "content": {
@@ -15206,6 +15246,16 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
             "content": {
               "application/json": {
                 "schema": {
