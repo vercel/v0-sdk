@@ -2914,6 +2914,10 @@ export type MessagesGetErrors = {
      */
     404: Error;
     /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
      * Response for status 500
      */
     500: Error;
@@ -3655,6 +3659,10 @@ export type MessagesStopErrors = {
      */
     409: Error;
     /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
      * Response for status 500
      */
     500: Error;
@@ -3701,6 +3709,10 @@ export type ChatsDeleteErrors = {
      * Response for status 404
      */
     404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
     /**
      * Response for status 500
      */
@@ -4568,6 +4580,10 @@ export type ChatsGetConnectStatusErrors = {
      */
     409: Error;
     /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
      * Response for status 500
      */
     500: Error;
@@ -5363,6 +5379,10 @@ export type ChatsResumeErrors = {
      * Response for status 404
      */
     404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
     /**
      * Response for status 500
      */
