@@ -3802,6 +3802,677 @@
         ],
         "additionalProperties": false
       },
+      "UsageActivity": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "usage_activity"
+            ],
+            "description": "Object type identifier."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Inclusive ISO 8601 start timestamp."
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Exclusive ISO 8601 end timestamp."
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false,
+            "description": "Time range covered by the response."
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Billing scope identifier."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "team",
+                  "personal"
+                ],
+                "description": "Billing scope type."
+              },
+              "isTeamWide": {
+                "type": "boolean",
+                "description": "Whether the response includes usage for the entire team."
+              },
+              "userId": {
+                "description": "User attribution applied to the response, when filtered.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "isTeamWide"
+            ],
+            "additionalProperties": false,
+            "description": "Authorized billing scope used for this response."
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "activeUsers": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Distinct active users."
+              },
+              "activeDays": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Distinct active days."
+              },
+              "chatCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Distinct active chats."
+              },
+              "messageCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Assistant messages."
+              }
+            },
+            "required": [
+              "activeUsers",
+              "activeDays",
+              "chatCount",
+              "messageCount"
+            ],
+            "additionalProperties": false
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "project",
+                    "drafts",
+                    "unavailable"
+                  ],
+                  "description": "Project grouping type."
+                },
+                "vercelProjectId": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Vercel project identifier, when available."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Project grouping display name."
+                },
+                "chatCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Distinct active chats."
+                },
+                "messageCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Assistant messages."
+                },
+                "activeDays": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Distinct active days."
+                },
+                "firstActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                  "description": "First activity timestamp."
+                },
+                "lastActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                  "description": "Most recent activity timestamp."
+                }
+              },
+              "required": [
+                "kind",
+                "vercelProjectId",
+                "name",
+                "chatCount",
+                "messageCount",
+                "activeDays",
+                "firstActivity",
+                "lastActivity"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Activity grouped by Vercel project or draft status."
+          },
+          "chats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "chat",
+                    "unavailable"
+                  ],
+                  "description": "Chat availability type."
+                },
+                "chatId": {
+                  "type": "string",
+                  "description": "Chat identifier."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Chat title or availability label."
+                },
+                "vercelProjectId": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Associated Vercel project identifier."
+                },
+                "projectName": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Associated project name."
+                },
+                "messageCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Assistant messages."
+                },
+                "activeDays": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Distinct active days."
+                },
+                "firstActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                  "description": "First activity timestamp."
+                },
+                "lastActivity": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                  "description": "Most recent activity timestamp."
+                }
+              },
+              "required": [
+                "kind",
+                "chatId",
+                "title",
+                "vercelProjectId",
+                "projectName",
+                "messageCount",
+                "activeDays",
+                "firstActivity",
+                "lastActivity"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Activity grouped by chat."
+          }
+        },
+        "required": [
+          "object",
+          "range",
+          "scope",
+          "summary",
+          "projects",
+          "chats"
+        ],
+        "additionalProperties": false
+      },
+      "UsageSummary": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "usage_summary"
+            ],
+            "description": "Object type identifier."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Inclusive ISO 8601 start timestamp."
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Exclusive ISO 8601 end timestamp."
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false,
+            "description": "Time range covered by the response."
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Billing scope identifier."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "team",
+                  "personal"
+                ],
+                "description": "Billing scope type."
+              },
+              "isTeamWide": {
+                "type": "boolean",
+                "description": "Whether the response includes usage for the entire team."
+              },
+              "userId": {
+                "description": "User attribution applied to the response, when filtered.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "isTeamWide"
+            ],
+            "additionalProperties": false,
+            "description": "Authorized billing scope used for this response."
+          },
+          "credits": {
+            "type": "object",
+            "properties": {
+              "plan": {
+                "type": "number",
+                "description": "Credits consumed from included plan credits."
+              },
+              "onDemand": {
+                "type": "number",
+                "description": "Credits consumed from on-demand credits."
+              },
+              "total": {
+                "type": "number",
+                "description": "Total credits consumed."
+              }
+            },
+            "required": [
+              "plan",
+              "onDemand",
+              "total"
+            ],
+            "additionalProperties": false,
+            "description": "Credits consumed during the selected range."
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "description": "UTC date in YYYY-MM-DD format."
+                },
+                "credits": {
+                  "type": "object",
+                  "properties": {
+                    "plan": {
+                      "type": "number",
+                      "description": "Credits consumed from included plan credits."
+                    },
+                    "onDemand": {
+                      "type": "number",
+                      "description": "Credits consumed from on-demand credits."
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total credits consumed."
+                    }
+                  },
+                  "required": [
+                    "plan",
+                    "onDemand",
+                    "total"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Credits consumed during the selected range."
+                }
+              },
+              "required": [
+                "date",
+                "credits"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Daily credit totals in chronological order."
+          },
+          "dataAsOf": {
+            "description": "Timestamp of the reporting snapshot backing this response.",
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          }
+        },
+        "required": [
+          "object",
+          "range",
+          "scope",
+          "credits",
+          "daily"
+        ],
+        "additionalProperties": false
+      },
+      "UsageEventList": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ],
+            "description": "Object type identifier."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Inclusive ISO 8601 start timestamp."
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "description": "Exclusive ISO 8601 end timestamp."
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false,
+            "description": "Time range covered by the response."
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Billing scope identifier."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "team",
+                  "personal"
+                ],
+                "description": "Billing scope type."
+              },
+              "isTeamWide": {
+                "type": "boolean",
+                "description": "Whether the response includes usage for the entire team."
+              },
+              "userId": {
+                "description": "User attribution applied to the response, when filtered.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "isTeamWide"
+            ],
+            "additionalProperties": false,
+            "description": "Authorized billing scope used for this response."
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Billing event identifier."
+                },
+                "object": {
+                  "type": "string",
+                  "enum": [
+                    "usage_event"
+                  ],
+                  "description": "Object type identifier."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Kind of product usage represented by the event."
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                  "description": "Timestamp of the usage event."
+                },
+                "userId": {
+                  "description": "Attributed user identifier.",
+                  "type": "string"
+                },
+                "chatId": {
+                  "description": "Related chat identifier.",
+                  "type": "string"
+                },
+                "messageId": {
+                  "description": "Related message identifier.",
+                  "type": "string"
+                },
+                "model": {
+                  "description": "Model associated with the event.",
+                  "type": "string"
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "plan",
+                      "on-demand"
+                    ]
+                  },
+                  "description": "Credit sources used by the event."
+                },
+                "waived": {
+                  "type": "boolean",
+                  "description": "Whether credits fully waived this event."
+                },
+                "tokens": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "input": {
+                          "type": "number",
+                          "description": "Input amount excluding cached input."
+                        },
+                        "output": {
+                          "type": "number",
+                          "description": "Output amount."
+                        },
+                        "cacheRead": {
+                          "type": "number",
+                          "description": "Cache-read input amount."
+                        },
+                        "cacheWrite": {
+                          "type": "number",
+                          "description": "Cache-write input amount."
+                        },
+                        "total": {
+                          "type": "number",
+                          "description": "Total amount across all categories."
+                        }
+                      },
+                      "required": [
+                        "input",
+                        "output",
+                        "cacheRead",
+                        "cacheWrite",
+                        "total"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Persisted token counts, or null when the source message is unavailable."
+                },
+                "creditsCost": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "number",
+                      "description": "Input amount excluding cached input."
+                    },
+                    "output": {
+                      "type": "number",
+                      "description": "Output amount."
+                    },
+                    "cacheRead": {
+                      "type": "number",
+                      "description": "Cache-read input amount."
+                    },
+                    "cacheWrite": {
+                      "type": "number",
+                      "description": "Cache-write input amount."
+                    },
+                    "total": {
+                      "type": "number",
+                      "description": "Total amount across all categories."
+                    },
+                    "charged": {
+                      "type": "number",
+                      "description": "Credits charged after a full waiver."
+                    }
+                  },
+                  "required": [
+                    "input",
+                    "output",
+                    "cacheRead",
+                    "cacheWrite",
+                    "total",
+                    "charged"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "type",
+                "createdAt",
+                "sources",
+                "waived",
+                "tokens",
+                "creditsCost"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Usage events in this page."
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "hasMore": {
+                "type": "boolean",
+                "description": "Whether another page is available."
+              },
+              "cursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Cursor for the next page, or null at the end."
+              }
+            },
+            "required": [
+              "hasMore",
+              "cursor"
+            ],
+            "additionalProperties": false,
+            "description": "Pagination state for this response."
+          }
+        },
+        "required": [
+          "object",
+          "range",
+          "scope",
+          "data",
+          "pagination"
+        ],
+        "additionalProperties": false
+      },
       "WebhookEventType": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "string",
@@ -17123,6 +17794,360 @@
           },
           "422": {
             "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/summary": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get Usage Summary",
+        "description": "Returns credit usage for the active billing scope. Team owners and billing members receive team-wide usage by default; other team members receive their own usage.",
+        "operationId": "usage.getSummary",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Inclusive ISO 8601 start timestamp. Defaults to seven days ago.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Exclusive ISO 8601 end timestamp. Defaults to the current time.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/events": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "List Usage Events",
+        "description": "Lists individual credit usage events. Each event includes the credits charged and, when available, associated token counts.",
+        "operationId": "usage.listEvents",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Inclusive ISO 8601 start timestamp. Defaults to seven days ago.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Exclusive ISO 8601 end timestamp. Defaults to the current time.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.",
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Filter usage by chat identifier.",
+              "type": "string"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Filter usage by message identifier.",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Maximum billing records considered per credit source (1-100, default 50). Related records may be combined into one event.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Opaque cursor returned by the previous page. It preserves the prior range and filters, so other query parameters may be omitted on subsequent pages.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageEventList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Response for status 409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/activity": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get Usage Activity",
+        "description": "Returns chat and project activity for the active billing scope. Team owners and billing members receive team-wide activity by default; other team members receive their own activity.",
+        "operationId": "usage.getActivity",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Inclusive ISO 8601 start timestamp. Defaults to seven days ago.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Exclusive ISO 8601 end timestamp. Defaults to the current time.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageActivity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
             "content": {
               "application/json": {
                 "schema": {

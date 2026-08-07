@@ -2004,6 +2004,381 @@ export type TrustedPreviewHosts = {
     hosts: Array<string>;
 };
 
+export type UsageActivity = {
+    /**
+     * Object type identifier.
+     */
+    object: 'usage_activity';
+    /**
+     * Time range covered by the response.
+     */
+    range: {
+        /**
+         * Inclusive ISO 8601 start timestamp.
+         */
+        start: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp.
+         */
+        end: Date;
+    };
+    /**
+     * Authorized billing scope used for this response.
+     */
+    scope: {
+        /**
+         * Billing scope identifier.
+         */
+        id: string;
+        /**
+         * Billing scope type.
+         */
+        type: 'team' | 'personal';
+        /**
+         * Whether the response includes usage for the entire team.
+         */
+        isTeamWide: boolean;
+        /**
+         * User attribution applied to the response, when filtered.
+         */
+        userId?: string;
+    };
+    summary: {
+        /**
+         * Distinct active users.
+         */
+        activeUsers: number;
+        /**
+         * Distinct active days.
+         */
+        activeDays: number;
+        /**
+         * Distinct active chats.
+         */
+        chatCount: number;
+        /**
+         * Assistant messages.
+         */
+        messageCount: number;
+    };
+    /**
+     * Activity grouped by Vercel project or draft status.
+     */
+    projects: Array<{
+        /**
+         * Project grouping type.
+         */
+        kind: 'project' | 'drafts' | 'unavailable';
+        /**
+         * Vercel project identifier, when available.
+         */
+        vercelProjectId: string | null;
+        /**
+         * Project grouping display name.
+         */
+        name: string;
+        /**
+         * Distinct active chats.
+         */
+        chatCount: number;
+        /**
+         * Assistant messages.
+         */
+        messageCount: number;
+        /**
+         * Distinct active days.
+         */
+        activeDays: number;
+        /**
+         * First activity timestamp.
+         */
+        firstActivity: Date;
+        /**
+         * Most recent activity timestamp.
+         */
+        lastActivity: Date;
+    }>;
+    /**
+     * Activity grouped by chat.
+     */
+    chats: Array<{
+        /**
+         * Chat availability type.
+         */
+        kind: 'chat' | 'unavailable';
+        /**
+         * Chat identifier.
+         */
+        chatId: string;
+        /**
+         * Chat title or availability label.
+         */
+        title: string;
+        /**
+         * Associated Vercel project identifier.
+         */
+        vercelProjectId: string | null;
+        /**
+         * Associated project name.
+         */
+        projectName: string | null;
+        /**
+         * Assistant messages.
+         */
+        messageCount: number;
+        /**
+         * Distinct active days.
+         */
+        activeDays: number;
+        /**
+         * First activity timestamp.
+         */
+        firstActivity: Date;
+        /**
+         * Most recent activity timestamp.
+         */
+        lastActivity: Date;
+    }>;
+};
+
+export type UsageSummary = {
+    /**
+     * Object type identifier.
+     */
+    object: 'usage_summary';
+    /**
+     * Time range covered by the response.
+     */
+    range: {
+        /**
+         * Inclusive ISO 8601 start timestamp.
+         */
+        start: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp.
+         */
+        end: Date;
+    };
+    /**
+     * Authorized billing scope used for this response.
+     */
+    scope: {
+        /**
+         * Billing scope identifier.
+         */
+        id: string;
+        /**
+         * Billing scope type.
+         */
+        type: 'team' | 'personal';
+        /**
+         * Whether the response includes usage for the entire team.
+         */
+        isTeamWide: boolean;
+        /**
+         * User attribution applied to the response, when filtered.
+         */
+        userId?: string;
+    };
+    /**
+     * Credits consumed during the selected range.
+     */
+    credits: {
+        /**
+         * Credits consumed from included plan credits.
+         */
+        plan: number;
+        /**
+         * Credits consumed from on-demand credits.
+         */
+        onDemand: number;
+        /**
+         * Total credits consumed.
+         */
+        total: number;
+    };
+    /**
+     * Daily credit totals in chronological order.
+     */
+    daily: Array<{
+        /**
+         * UTC date in YYYY-MM-DD format.
+         */
+        date: string;
+        /**
+         * Credits consumed during the selected range.
+         */
+        credits: {
+            /**
+             * Credits consumed from included plan credits.
+             */
+            plan: number;
+            /**
+             * Credits consumed from on-demand credits.
+             */
+            onDemand: number;
+            /**
+             * Total credits consumed.
+             */
+            total: number;
+        };
+    }>;
+    /**
+     * Timestamp of the reporting snapshot backing this response.
+     */
+    dataAsOf?: Date;
+};
+
+export type UsageEventList = {
+    /**
+     * Object type identifier.
+     */
+    object: 'list';
+    /**
+     * Time range covered by the response.
+     */
+    range: {
+        /**
+         * Inclusive ISO 8601 start timestamp.
+         */
+        start: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp.
+         */
+        end: Date;
+    };
+    /**
+     * Authorized billing scope used for this response.
+     */
+    scope: {
+        /**
+         * Billing scope identifier.
+         */
+        id: string;
+        /**
+         * Billing scope type.
+         */
+        type: 'team' | 'personal';
+        /**
+         * Whether the response includes usage for the entire team.
+         */
+        isTeamWide: boolean;
+        /**
+         * User attribution applied to the response, when filtered.
+         */
+        userId?: string;
+    };
+    /**
+     * Usage events in this page.
+     */
+    data: Array<{
+        /**
+         * Billing event identifier.
+         */
+        id: string;
+        /**
+         * Object type identifier.
+         */
+        object: 'usage_event';
+        /**
+         * Kind of product usage represented by the event.
+         */
+        type: string;
+        /**
+         * Timestamp of the usage event.
+         */
+        createdAt: Date;
+        /**
+         * Attributed user identifier.
+         */
+        userId?: string;
+        /**
+         * Related chat identifier.
+         */
+        chatId?: string;
+        /**
+         * Related message identifier.
+         */
+        messageId?: string;
+        /**
+         * Model associated with the event.
+         */
+        model?: string;
+        /**
+         * Credit sources used by the event.
+         */
+        sources: Array<'plan' | 'on-demand'>;
+        /**
+         * Whether credits fully waived this event.
+         */
+        waived: boolean;
+        /**
+         * Persisted token counts, or null when the source message is unavailable.
+         */
+        tokens: {
+            /**
+             * Input amount excluding cached input.
+             */
+            input: number;
+            /**
+             * Output amount.
+             */
+            output: number;
+            /**
+             * Cache-read input amount.
+             */
+            cacheRead: number;
+            /**
+             * Cache-write input amount.
+             */
+            cacheWrite: number;
+            /**
+             * Total amount across all categories.
+             */
+            total: number;
+        } | null;
+        creditsCost: {
+            /**
+             * Input amount excluding cached input.
+             */
+            input: number;
+            /**
+             * Output amount.
+             */
+            output: number;
+            /**
+             * Cache-read input amount.
+             */
+            cacheRead: number;
+            /**
+             * Cache-write input amount.
+             */
+            cacheWrite: number;
+            /**
+             * Total amount across all categories.
+             */
+            total: number;
+            /**
+             * Credits charged after a full waiver.
+             */
+            charged: number;
+        };
+    }>;
+    /**
+     * Pagination state for this response.
+     */
+    pagination: {
+        /**
+         * Whether another page is available.
+         */
+        hasMore: boolean;
+        /**
+         * Cursor for the next page, or null at the end.
+         */
+        cursor: string | null;
+    };
+};
+
 /**
  * The event type that triggers a webhook. A webhook will be invoked whenever the specified lifecycle event occurs.
  */
@@ -5894,6 +6269,184 @@ export type SettingsSetPreviewHostsResponses = {
 };
 
 export type SettingsSetPreviewHostsResponse = SettingsSetPreviewHostsResponses[keyof SettingsSetPreviewHostsResponses];
+
+export type UsageGetSummaryData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Inclusive ISO 8601 start timestamp. Defaults to seven days ago.
+         */
+        start?: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp. Defaults to the current time.
+         */
+        end?: Date;
+        /**
+         * Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.
+         */
+        userId?: string;
+    };
+    url: '/usage/summary';
+};
+
+export type UsageGetSummaryErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type UsageGetSummaryError = UsageGetSummaryErrors[keyof UsageGetSummaryErrors];
+
+export type UsageGetSummaryResponses = {
+    /**
+     * Response for status 200
+     */
+    200: UsageSummary;
+};
+
+export type UsageGetSummaryResponse = UsageGetSummaryResponses[keyof UsageGetSummaryResponses];
+
+export type UsageListEventsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Inclusive ISO 8601 start timestamp. Defaults to seven days ago.
+         */
+        start?: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp. Defaults to the current time.
+         */
+        end?: Date;
+        /**
+         * Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.
+         */
+        userId?: string;
+        /**
+         * Filter usage by chat identifier.
+         */
+        chatId?: string;
+        /**
+         * Filter usage by message identifier.
+         */
+        messageId?: string;
+        /**
+         * Maximum billing records considered per credit source (1-100, default 50). Related records may be combined into one event.
+         */
+        limit?: number;
+        /**
+         * Opaque cursor returned by the previous page. It preserves the prior range and filters, so other query parameters may be omitted on subsequent pages.
+         */
+        cursor?: string;
+    };
+    url: '/usage/events';
+};
+
+export type UsageListEventsErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 409
+     */
+    409: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type UsageListEventsError = UsageListEventsErrors[keyof UsageListEventsErrors];
+
+export type UsageListEventsResponses = {
+    /**
+     * Response for status 200
+     */
+    200: UsageEventList;
+};
+
+export type UsageListEventsResponse = UsageListEventsResponses[keyof UsageListEventsResponses];
+
+export type UsageGetActivityData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Inclusive ISO 8601 start timestamp. Defaults to seven days ago.
+         */
+        start?: Date;
+        /**
+         * Exclusive ISO 8601 end timestamp. Defaults to the current time.
+         */
+        end?: Date;
+        /**
+         * Filter usage by user. Team owners and billing members may select any team member; other callers may select only themselves.
+         */
+        userId?: string;
+    };
+    url: '/usage/activity';
+};
+
+export type UsageGetActivityErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type UsageGetActivityError = UsageGetActivityErrors[keyof UsageGetActivityErrors];
+
+export type UsageGetActivityResponses = {
+    /**
+     * Response for status 200
+     */
+    200: UsageActivity;
+};
+
+export type UsageGetActivityResponse = UsageGetActivityResponses[keyof UsageGetActivityResponses];
 
 export type WebhooksListData = {
     body?: never;

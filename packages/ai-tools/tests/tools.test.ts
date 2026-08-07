@@ -177,6 +177,41 @@ describe('generated v0 tools', () => {
     ])
   })
 
+  test('execute converts date-time inputs for the SDK', async () => {
+    const calls: unknown[] = []
+    currentClient = {
+      usage: {
+        getSummary: mock((options: unknown) => {
+          calls.push(options)
+          return { data: { object: 'usage_summary' } }
+        }),
+      },
+    }
+
+    const { v0Tools } = await import('../src')
+    const tools = v0Tools({ auth: 'test-key' })
+    const usageGetSummary = tools['usageGetSummary']
+    if (!usageGetSummary?.execute) {
+      throw new Error('usageGetSummary execute was not generated')
+    }
+
+    await usageGetSummary.execute(
+      {
+        start: '2026-08-01T00:00:00.000Z',
+        end: '2026-08-08T00:00:00.000Z',
+      },
+      { toolCallId: 'tool_call_123', messages: [] },
+    )
+
+    expect(calls).toEqual([
+      {
+        start: new Date('2026-08-01T00:00:00.000Z'),
+        end: new Date('2026-08-08T00:00:00.000Z'),
+        userId: undefined,
+      },
+    ])
+  })
+
   test('streaming execute yields SDK stream events', async () => {
     const calls: unknown[] = []
     async function* streamEvents() {

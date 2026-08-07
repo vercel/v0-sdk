@@ -29,5 +29,8 @@ describe('generated hook surface', () => {
     expect(V0_REACT_OPERATION_HOOKS['messages.resolveStream']).toBe('useResolveTask')
     expect(V0_REACT_OPERATION_HOOKS['settings.getPreviewHosts']).toBe('usePreviewHosts')
     expect(V0_REACT_OPERATION_HOOKS['settings.setPreviewHosts']).toBe('useSetPreviewHosts')
+    expect(V0_REACT_OPERATION_HOOKS['usage.getActivity']).toBe('useUsageActivity')
+    expect(V0_REACT_OPERATION_HOOKS['usage.getSummary']).toBe('useUsageSummary')
+    expect(V0_REACT_OPERATION_HOOKS['usage.listEvents']).toBe('useUsageEvents')
   })
 })

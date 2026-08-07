@@ -11,6 +11,7 @@ import {
   useSendMessage,
   useSendMessageBlocking,
   useStopMessage,
+  useUsageEventsInfinite,
 } from '../src/swr'
 import { flush, message, renderV0Hook } from './helpers'
 
@@ -246,6 +247,50 @@ describe('v0 React hooks', () => {
 
     expect(error).toBeInstanceOf(V0ResponseError)
     expect(error).toMatchObject({ status: 403, body: { message: 'denied' } })
+  })
+
+  test('follows nested response cursors for infinite usage queries', async () => {
+    const urls: string[] = []
+    let state: ReturnType<typeof useUsageEventsInfinite> | undefined
+
+    function Fixture() {
+      const result = useUsageEventsInfinite(
+        'http://localhost/proxy/usage/events',
+        { limit: 1 },
+        {
+          request: {
+            fetch: async (input) => {
+              const request = input instanceof Request ? input : new Request(input)
+              urls.push(request.url)
+              const cursor = new URL(request.url).searchParams.get('cursor')
+              return Response.json({
+                object: 'list',
+                range: {
+                  start: '2026-08-01T00:00:00.000Z',
+                  end: '2026-08-08T00:00:00.000Z',
+                },
+                scope: { id: 'team_1', type: 'team', isTeamWide: true },
+                data: [],
+                pagination: { hasMore: !cursor, cursor: cursor ? null : 'next_cursor' },
+              })
+            },
+          },
+        },
+      )
+      void result.data
+      state = result
+      return null
+    }
+
+    renderer = await renderV0Hook(<Fixture />)
+    await flush()
+
+    await act(async () => {
+      await state!.setSize(2)
+    })
+
+    expect(urls.some((url) => new URL(url).searchParams.get('cursor') === 'next_cursor')).toBe(true)
+    expect(state?.data?.map((page) => page.pagination.cursor)).toEqual(['next_cursor', null])
   })
 
   test('follows response cursors for infinite message queries', async () => {
