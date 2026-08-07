@@ -36,6 +36,7 @@ type Operation = {
   hasBody: boolean
   responseKind: 'json' | 'stream' | 'blob'
   paginated: boolean
+  cursorPath?: string
   invalidates?: readonly V0SdkOperationId[]
   transformer?: string
 }
@@ -77,6 +78,9 @@ const semanticNames = {
   'mcpServers.delete': 'useDeleteMcpServer',
   'settings.getPreviewHosts': 'usePreviewHosts',
   'settings.setPreviewHosts': 'useSetPreviewHosts',
+  'usage.getActivity': 'useUsageActivity',
+  'usage.getSummary': 'useUsageSummary',
+  'usage.listEvents': 'useUsageEvents',
   'webhooks.list': 'useWebhooks',
   'webhooks.create': 'useCreateWebhook',
   'webhooks.get': 'useWebhook',
@@ -89,6 +93,10 @@ const mutationInvalidations: Partial<Record<V0SdkOperationId, readonly V0SdkOper
   'chats.restoreMessage': ['chats.getFiles', 'messages.list'],
   'chats.update': ['chats.get', 'chats.list'],
   'chats.updateFiles': ['chats.getFiles', 'messages.list'],
+}
+
+const paginationCursorPaths: Partial<Record<V0SdkOperationId, string>> = {
+  'usage.listEvents': 'pagination.cursor',
 }
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -159,6 +167,9 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
       const typePrefix = toTypePrefix(operationId)
       const transformer = `${lowerFirst(typePrefix)}ResponseTransformer`
       const invalidates = mutationInvalidations[operationId]
+      const paginated = parameters.some(
+        (parameter) => parameter.in === 'query' && parameter.name === 'cursor',
+      )
 
       operations.push({
         operationId,
@@ -168,9 +179,8 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
         queryParameters: parameters.filter((parameter) => parameter.in === 'query'),
         hasBody: operation.requestBody !== undefined,
         responseKind,
-        paginated: parameters.some(
-          (parameter) => parameter.in === 'query' && parameter.name === 'cursor',
-        ),
+        paginated,
+        ...(paginated ? { cursorPath: paginationCursorPaths[operationId] ?? 'cursor' } : {}),
         ...(invalidates ? { invalidates } : {}),
         ...(availableTransformers.has(transformer) ? { transformer } : {}),
       })
@@ -266,7 +276,7 @@ function renderInfinite(operation: Operation): string {
   const paramsLine = `  params${requiredQuery ? '' : '?'}: ${queryType},`
   const input = requiredQuery ? 'params' : 'params ?? {}'
 
-  return `export function ${publicName}(\n  url: V0Url,\n${paramsLine}\n  configuration: V0InfiniteConfiguration<${responseType}, ${errorType}> = {},\n) {\n  return useV0CursorQuery(\n    ${getOperationName(operation)},\n    url,\n    ${input},\n    (page) => page.cursor,\n    configuration,\n  )\n}\n`
+  return `export function ${publicName}(\n  url: V0Url,\n${paramsLine}\n  configuration: V0InfiniteConfiguration<${responseType}, ${errorType}> = {},\n) {\n  return useV0CursorQuery(\n    ${getOperationName(operation)},\n    url,\n    ${input},\n    (page) => page.${operation.cursorPath ?? 'cursor'},\n    configuration,\n  )\n}\n`
 }
 
 function renderMutation(operation: Operation): string {

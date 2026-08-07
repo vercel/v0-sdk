@@ -49,6 +49,9 @@ export type V0ToolName =
   | 'messagesStop'
   | 'settingsGetPreviewHosts'
   | 'settingsSetPreviewHosts'
+  | 'usageGetActivity'
+  | 'usageGetSummary'
+  | 'usageListEvents'
   | 'webhooksCreate'
   | 'webhooksDelete'
   | 'webhooksGet'
@@ -102,6 +105,7 @@ export type V0ToolsByCategory = {
     | 'messagesStop'
   >
   settings: Pick<V0ToolsFlat, 'settingsGetPreviewHosts' | 'settingsSetPreviewHosts'>
+  usage: Pick<V0ToolsFlat, 'usageGetActivity' | 'usageGetSummary' | 'usageListEvents'>
   webhooks: Pick<
     V0ToolsFlat,
     'webhooksCreate' | 'webhooksDelete' | 'webhooksGet' | 'webhooksList' | 'webhooksUpdate'
@@ -1164,6 +1168,28 @@ const settingsSetPreviewHostsInputSchema = z.object({
     ),
 })
 
+const usageGetActivityInputSchema = z.object({
+  start: z.string().datetime().optional(),
+  end: z.string().datetime().optional(),
+  userId: z.string().optional(),
+})
+
+const usageGetSummaryInputSchema = z.object({
+  start: z.string().datetime().optional(),
+  end: z.string().datetime().optional(),
+  userId: z.string().optional(),
+})
+
+const usageListEventsInputSchema = z.object({
+  start: z.string().datetime().optional(),
+  end: z.string().datetime().optional(),
+  userId: z.string().optional(),
+  chatId: z.string().optional(),
+  messageId: z.string().optional(),
+  limit: z.number().int().optional(),
+  cursor: z.string().optional(),
+})
+
 const webhooksCreateInputSchema = z.object({
   name: z.string().describe('A human-readable name for the webhook.'),
   events: z
@@ -1682,6 +1708,49 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.settings.setPreviewHosts(parameters))
       },
     }),
+    usageGetActivity: tool({
+      description:
+        'Get Usage Activity: Returns chat and project activity for the active billing scope. Team owners and billing members receive team-wide activity by default; other team members receive their own activity.',
+      inputSchema: usageGetActivityInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          start: input.start === undefined ? undefined : new Date(input.start),
+          end: input.end === undefined ? undefined : new Date(input.end),
+          userId: input.userId,
+        }
+        return toToolResult(await client.usage.getActivity(parameters))
+      },
+    }),
+    usageGetSummary: tool({
+      description:
+        'Get Usage Summary: Returns credit usage for the active billing scope. Team owners and billing members receive team-wide usage by default; other team members receive their own usage.',
+      inputSchema: usageGetSummaryInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          start: input.start === undefined ? undefined : new Date(input.start),
+          end: input.end === undefined ? undefined : new Date(input.end),
+          userId: input.userId,
+        }
+        return toToolResult(await client.usage.getSummary(parameters))
+      },
+    }),
+    usageListEvents: tool({
+      description:
+        'List Usage Events: Lists individual credit usage events. Each event includes the credits charged and, when available, associated token counts.',
+      inputSchema: usageListEventsInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          start: input.start === undefined ? undefined : new Date(input.start),
+          end: input.end === undefined ? undefined : new Date(input.end),
+          userId: input.userId,
+          chatId: input.chatId,
+          messageId: input.messageId,
+          limit: input.limit,
+          cursor: input.cursor,
+        }
+        return toToolResult(await client.usage.listEvents(parameters))
+      },
+    }),
     webhooksCreate: tool({
       description:
         'Create Webhook: Creates a new webhook that listens for specific events. Supports optional association with a chat.',
@@ -1787,6 +1856,11 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
     settings: {
       settingsGetPreviewHosts: pickTool(tools, 'settingsGetPreviewHosts'),
       settingsSetPreviewHosts: pickTool(tools, 'settingsSetPreviewHosts'),
+    },
+    usage: {
+      usageGetActivity: pickTool(tools, 'usageGetActivity'),
+      usageGetSummary: pickTool(tools, 'usageGetSummary'),
+      usageListEvents: pickTool(tools, 'usageListEvents'),
     },
     webhooks: {
       webhooksCreate: pickTool(tools, 'webhooksCreate'),

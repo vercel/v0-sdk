@@ -20,6 +20,9 @@ import {
   messagesListResponseTransformer,
   messagesResolveResponseTransformer,
   messagesSendResponseTransformer,
+  usageGetActivityResponseTransformer,
+  usageGetSummaryResponseTransformer,
+  usageListEventsResponseTransformer,
   webhooksCreateResponseTransformer,
   webhooksGetResponseTransformer,
   webhooksUpdateResponseTransformer,
@@ -115,6 +118,15 @@ import type {
   SettingsSetPreviewHostsData,
   SettingsSetPreviewHostsError,
   SettingsSetPreviewHostsResponse,
+  UsageGetActivityData,
+  UsageGetActivityError,
+  UsageGetActivityResponse,
+  UsageGetSummaryData,
+  UsageGetSummaryError,
+  UsageGetSummaryResponse,
+  UsageListEventsData,
+  UsageListEventsError,
+  UsageListEventsResponse,
   WebhooksCreateData,
   WebhooksCreateError,
   WebhooksCreateResponse,
@@ -175,6 +187,9 @@ export const V0_REACT_OPERATION_HOOKS = {
   'messages.stop': 'useStopMessage',
   'settings.getPreviewHosts': 'usePreviewHosts',
   'settings.setPreviewHosts': 'useSetPreviewHosts',
+  'usage.getActivity': 'useUsageActivity',
+  'usage.getSummary': 'useUsageSummary',
+  'usage.listEvents': 'useUsageEvents',
   'webhooks.create': 'useCreateWebhook',
   'webhooks.delete': 'useDeleteWebhook',
   'webhooks.get': 'useWebhook',
@@ -847,6 +862,77 @@ export function useSetPreviewHosts(
   > = {},
 ) {
   return useV0Mutation(setPreviewHostsOperation, url, configuration)
+}
+
+const usageActivityOperation: V0Operation<UsageGetActivityResponse> = {
+  id: 'usage.getActivity',
+  method: 'GET',
+  response: 'json',
+  transform: usageGetActivityResponseTransformer,
+}
+
+export function useUsageActivity(
+  url: V0Url,
+  params?: NonNullable<UsageGetActivityData['query']>,
+  configuration: V0QueryConfiguration<UsageGetActivityResponse, UsageGetActivityError> = {},
+) {
+  return useV0Query<
+    UsageGetActivityResponse,
+    UsageGetActivityError,
+    NonNullable<UsageGetActivityData['query']> | undefined
+  >(usageActivityOperation, url, params, configuration)
+}
+
+const usageSummaryOperation: V0Operation<UsageGetSummaryResponse> = {
+  id: 'usage.getSummary',
+  method: 'GET',
+  response: 'json',
+  transform: usageGetSummaryResponseTransformer,
+}
+
+export function useUsageSummary(
+  url: V0Url,
+  params?: NonNullable<UsageGetSummaryData['query']>,
+  configuration: V0QueryConfiguration<UsageGetSummaryResponse, UsageGetSummaryError> = {},
+) {
+  return useV0Query<
+    UsageGetSummaryResponse,
+    UsageGetSummaryError,
+    NonNullable<UsageGetSummaryData['query']> | undefined
+  >(usageSummaryOperation, url, params, configuration)
+}
+
+const usageEventsOperation: V0Operation<UsageListEventsResponse> = {
+  id: 'usage.listEvents',
+  method: 'GET',
+  response: 'json',
+  transform: usageListEventsResponseTransformer,
+}
+
+export function useUsageEvents(
+  url: V0Url,
+  params?: NonNullable<UsageListEventsData['query']>,
+  configuration: V0QueryConfiguration<UsageListEventsResponse, UsageListEventsError> = {},
+) {
+  return useV0Query<
+    UsageListEventsResponse,
+    UsageListEventsError,
+    NonNullable<UsageListEventsData['query']> | undefined
+  >(usageEventsOperation, url, params, configuration)
+}
+
+export function useUsageEventsInfinite(
+  url: V0Url,
+  params?: Omit<NonNullable<UsageListEventsData['query']>, 'cursor'>,
+  configuration: V0InfiniteConfiguration<UsageListEventsResponse, UsageListEventsError> = {},
+) {
+  return useV0CursorQuery(
+    usageEventsOperation,
+    url,
+    params ?? {},
+    (page) => page.pagination.cursor,
+    configuration,
+  )
 }
 
 const createWebhookOperation: V0Operation<WebhooksCreateResponse> = {

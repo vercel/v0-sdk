@@ -351,7 +351,7 @@ function renderTools(operations: OperationMetadata[], spec: OpenApiDocument): st
   const schemaDeclarations = operations
     .map((operation) => renderInputSchemaDeclaration(spec, operation))
     .join('\n\n')
-  const flatEntries = operations.map((operation) => renderToolEntry(operation)).join('\n')
+  const flatEntries = operations.map((operation) => renderToolEntry(spec, operation)).join('\n')
   const categoryEntries = categories
     .map((category) => renderCategoryEntry(category, operations))
     .join('\n')
@@ -480,7 +480,7 @@ function applyOptionality(schemaExpression: string, required: boolean): string {
   return required ? schemaExpression : `${schemaExpression}.optional()`
 }
 
-function renderToolEntry(operation: OperationMetadata): string {
+function renderToolEntry(spec: OpenApiDocument, operation: OperationMetadata): string {
   const executeParameters = operationUsesInput(operation) ? 'input' : ''
   const executeDeclaration = operation.isStreaming
     ? `async function* (${executeParameters})`
@@ -490,12 +490,12 @@ function renderToolEntry(operation: OperationMetadata): string {
       description: ${JSON.stringify(operation.description)},
       inputSchema: ${operation.key}InputSchema,
       execute: ${executeDeclaration} {
-${renderExecuteBody(operation)}
+${renderExecuteBody(spec, operation)}
       },
     }),`
 }
 
-function renderExecuteBody(operation: OperationMetadata): string {
+function renderExecuteBody(spec: OpenApiDocument, operation: OperationMetadata): string {
   const methodPath = ['client', ...operation.clientPath].join('.')
 
   if (!operationUsesInput(operation)) {
@@ -508,23 +508,23 @@ function renderExecuteBody(operation: OperationMetadata): string {
   }
 
   if (operation.isStreaming) {
-    return `${renderParametersSetup(operation)}
+    return `${renderParametersSetup(spec, operation)}
         const result = await ${methodPath}(parameters)
         yield* result.stream`
   }
 
-  return `${renderParametersSetup(operation)}
+  return `${renderParametersSetup(spec, operation)}
         return toToolResult(await ${methodPath}(parameters))`
 }
 
-function renderParametersSetup(operation: OperationMetadata): string {
+function renderParametersSetup(spec: OpenApiDocument, operation: OperationMetadata): string {
   if (operation.hasBody && !operation.bodyObjectFlattened) {
     if (operation.pathProperties.length === 0 && operation.queryProperties.length === 0) {
       return `        const parameters = input as Record<string, unknown>`
     }
 
     return `        const parameters = {
-${renderParameterEntries([...operation.pathProperties, ...operation.queryProperties])}
+${renderParameterEntries(spec, [...operation.pathProperties, ...operation.queryProperties])}
           body: input.body,
         }`
   }
@@ -536,17 +536,34 @@ ${renderParameterEntries([...operation.pathProperties, ...operation.queryPropert
   ]
 
   return `        const parameters = {
-${renderParameterEntries(properties)}
+${renderParameterEntries(spec, properties)}
         }`
 }
 
-function renderParameterEntries(properties: OperationInputProperty[]): string {
+function renderParameterEntries(
+  spec: OpenApiDocument,
+  properties: OperationInputProperty[],
+): string {
   return properties
     .map(
       (property) =>
-        `          ${quoteProperty(property.name)}: input.${accessProperty(property.name)},`,
+        `          ${quoteProperty(property.name)}: ${renderParameterValue(spec, property)},`,
     )
     .join('\n')
+}
+
+function renderParameterValue(spec: OpenApiDocument, property: OperationInputProperty): string {
+  const input = `input.${accessProperty(property.name)}`
+  const schema = resolveReference(spec, property.schema)
+  const type = Array.isArray(schema.type) ? schema.type[0] : schema.type
+
+  if (type === 'string' && schema.format === 'date-time') {
+    return property.required
+      ? `new Date(${input})`
+      : `${input} === undefined ? undefined : new Date(${input})`
+  }
+
+  return input
 }
 
 function renderCategoryEntry(category: string, operations: OperationMetadata[]): string {
