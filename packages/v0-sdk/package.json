@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@vercel/oidc": "^3.5.0",
-    "jsondiffpatch": "^0.6.0"
+    "jsondiffpatch": "^0.7.2"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.2",
