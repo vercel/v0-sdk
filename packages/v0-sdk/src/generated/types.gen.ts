@@ -462,9 +462,13 @@ export type Message = {
     } | {
         type: 'tool-call';
         /**
-         * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+         * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
          */
         name: string;
+        /**
+         * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+         */
+        toolDisplayName?: string | null;
         /**
          * The arguments passed to the tool. Schema depends on the specific tool.
          */
@@ -493,6 +497,10 @@ export type Message = {
              * The tool input this permission authorizes. Pass back unchanged when resolving.
              */
             input?: unknown;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+             */
+            toolDisplayName?: string | null;
             /**
              * Internal label for the in-progress task. Pass back unchanged.
              */
@@ -928,9 +936,13 @@ export type MessageListResponse = {
         } | {
             type: 'tool-call';
             /**
-             * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+             * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
              */
             name: string;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+             */
+            toolDisplayName?: string | null;
             /**
              * The arguments passed to the tool. Schema depends on the specific tool.
              */
@@ -959,6 +971,10 @@ export type MessageListResponse = {
                  * The tool input this permission authorizes. Pass back unchanged when resolving.
                  */
                 input?: unknown;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Internal label for the in-progress task. Pass back unchanged.
                  */
@@ -1408,9 +1424,13 @@ export type MessageStreamEvent = {
     } | {
         type: 'tool-call';
         /**
-         * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+         * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
          */
         name: string;
+        /**
+         * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+         */
+        toolDisplayName?: string | null;
         /**
          * The arguments passed to the tool. Schema depends on the specific tool.
          */
@@ -1439,6 +1459,10 @@ export type MessageStreamEvent = {
              * The tool input this permission authorizes. Pass back unchanged when resolving.
              */
             input?: unknown;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+             */
+            toolDisplayName?: string | null;
             /**
              * Internal label for the in-progress task. Pass back unchanged.
              */
@@ -3613,6 +3637,10 @@ export type MessagesResolveData = {
                  */
                 input: unknown;
                 /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
+                /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
                 taskNameActive?: string | null;
@@ -3766,6 +3794,10 @@ export type MessagesResolveStreamData = {
                  */
                 input: unknown;
                 /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
+                /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
                 taskNameActive?: string | null;
@@ -3918,6 +3950,10 @@ export type MessagesResolveAsyncData = {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -4549,9 +4585,13 @@ export type ChatsUpdateFilesResponses = {
             } | {
                 type: 'tool-call';
                 /**
-                 * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+                 * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
                  */
                 name: string;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * The arguments passed to the tool. Schema depends on the specific tool.
                  */
@@ -4580,6 +4620,10 @@ export type ChatsUpdateFilesResponses = {
                      * The tool input this permission authorizes. Pass back unchanged when resolving.
                      */
                     input?: unknown;
+                    /**
+                     * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                     */
+                    toolDisplayName?: string | null;
                     /**
                      * Internal label for the in-progress task. Pass back unchanged.
                      */
@@ -5232,9 +5276,13 @@ export type ChatsRestoreMessageResponses = {
             } | {
                 type: 'tool-call';
                 /**
-                 * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+                 * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
                  */
                 name: string;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * The arguments passed to the tool. Schema depends on the specific tool.
                  */
@@ -5263,6 +5311,10 @@ export type ChatsRestoreMessageResponses = {
                      * The tool input this permission authorizes. Pass back unchanged when resolving.
                      */
                     input?: unknown;
+                    /**
+                     * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                     */
+                    toolDisplayName?: string | null;
                     /**
                      * Internal label for the in-progress task. Pass back unchanged.
                      */
