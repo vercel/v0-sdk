@@ -1101,6 +1101,10 @@ export class Messages extends HeyApiClient {
                  */
                 input: unknown;
                 /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
+                /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
                 taskNameActive?: string | null;
@@ -1224,6 +1228,10 @@ export class Messages extends HeyApiClient {
                  */
                 input: unknown;
                 /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
+                /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
                 taskNameActive?: string | null;
@@ -1345,6 +1353,10 @@ export class Messages extends HeyApiClient {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */

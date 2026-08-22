@@ -843,7 +843,18 @@
                     },
                     "name": {
                       "type": "string",
-                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
+                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
+                    },
+                    "toolDisplayName": {
+                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "input": {
                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -878,6 +889,17 @@
                           },
                           "input": {
                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                          },
+                          "toolDisplayName": {
+                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "taskNameActive": {
                             "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -1739,7 +1761,18 @@
                           },
                           "name": {
                             "type": "string",
-                            "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
+                            "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
+                          },
+                          "toolDisplayName": {
+                            "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "input": {
                             "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -1774,6 +1807,17 @@
                                 },
                                 "input": {
                                   "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -2667,7 +2711,18 @@
                         },
                         "name": {
                           "type": "string",
-                          "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
+                          "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
+                        },
+                        "toolDisplayName": {
+                          "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "input": {
                           "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -2702,6 +2757,17 @@
                               },
                               "input": {
                                 "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                              },
+                              "toolDisplayName": {
+                                "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               },
                               "taskNameActive": {
                                 "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -9425,6 +9491,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -9716,6 +9795,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -10006,6 +10098,19 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
+                                },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -10397,6 +10502,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -10688,6 +10806,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -10978,6 +11109,19 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
+                                },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -11369,6 +11513,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -11660,6 +11817,19 @@
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
                                 },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
                                   "anyOf": [
@@ -11950,6 +12120,19 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
+                                },
+                                "toolDisplayName": {
+                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 100
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -13337,7 +13520,18 @@
                                     },
                                     "name": {
                                       "type": "string",
-                                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
+                                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
+                                    },
+                                    "toolDisplayName": {
+                                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
                                     },
                                     "input": {
                                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -13372,6 +13566,17 @@
                                           },
                                           "input": {
                                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                          },
+                                          "toolDisplayName": {
+                                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
                                           },
                                           "taskNameActive": {
                                             "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -14754,7 +14959,18 @@
                                     },
                                     "name": {
                                       "type": "string",
-                                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
+                                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
+                                    },
+                                    "toolDisplayName": {
+                                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
                                     },
                                     "input": {
                                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -14789,6 +15005,17 @@
                                           },
                                           "input": {
                                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
+                                          },
+                                          "toolDisplayName": {
+                                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
+                                            "anyOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
                                           },
                                           "taskNameActive": {
                                             "description": "Internal label for the in-progress task. Pass back unchanged.",
