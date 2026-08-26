@@ -681,6 +681,12 @@ const messagesResolveInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
@@ -808,6 +814,12 @@ const messagesResolveAsyncInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
@@ -935,6 +947,12 @@ const messagesResolveStreamInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
