@@ -98,9 +98,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -303,9 +312,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -390,9 +408,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -1443,7 +1470,7 @@ export class McpServers extends HeyApiClient {
     /**
      * Create MCP Server
      *
-     * Creates a new MCP server configuration. Limited to 10 servers per user.
+     * Creates a new MCP server configuration. Limited to 100 servers per user.
      */
     public create<ThrowOnError extends boolean = false>(parameters: {
         name: string;

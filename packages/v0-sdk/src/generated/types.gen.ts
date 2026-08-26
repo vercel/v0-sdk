@@ -2563,13 +2563,22 @@ export type ChatsCreateData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2886,13 +2895,22 @@ export type ChatsCreateStreamData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -3011,13 +3029,22 @@ export type ChatsCreateAsyncData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
