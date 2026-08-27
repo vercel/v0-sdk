@@ -4675,20 +4675,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -4857,20 +4880,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -5039,20 +5085,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -6235,20 +6304,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -6417,20 +6509,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -6599,20 +6714,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -6858,20 +6996,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -7040,20 +7201,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -7222,20 +7406,43 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message.",
+                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "description": "URL of the attachment."
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL or data URI containing the attachment."
+                            }
+                          },
+                          "required": [
+                            "url"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "description": "Display name for the inline text attachment.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "content": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "UTF-8 text content of the attachment."
+                            }
+                          },
+                          "required": [
+                            "content"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "url"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "mcpServerIds": {
@@ -16425,7 +16632,7 @@
           "MCP Servers"
         ],
         "summary": "Create MCP Server",
-        "description": "Creates a new MCP server configuration. Limited to 10 servers per user.",
+        "description": "Creates a new MCP server configuration. Limited to 100 servers per user.",
         "operationId": "mcpServers.create",
         "requestBody": {
           "required": true,
