@@ -1047,11 +1047,19 @@ const messagesSendInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
@@ -1105,11 +1113,19 @@ const messagesSendAsyncInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
@@ -1163,11 +1179,19 @@ const messagesSendStreamInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
