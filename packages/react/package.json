@@ -1,6 +1,6 @@
 {
   "name": "@v0-sdk/react",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "React hooks and AI SDK transport for the v0 API",
   "keywords": [
     "ai",
@@ -50,7 +50,7 @@
     "prepublishOnly": "bun run generate && bun run build"
   },
   "dependencies": {
-    "v0": "3.0.5"
+    "v0": "3.0.6"
   },
   "devDependencies": {
     "@ai-sdk/react": "^4.0.34",
