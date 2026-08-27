@@ -3222,13 +3222,22 @@ export type MessagesSendData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
@@ -3388,13 +3397,22 @@ export type MessagesSendStreamData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
@@ -3504,13 +3522,22 @@ export type MessagesSendAsyncData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.

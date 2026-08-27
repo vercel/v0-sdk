@@ -813,9 +813,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
@@ -914,9 +923,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
@@ -995,9 +1013,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
