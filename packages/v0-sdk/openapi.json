@@ -168,6 +168,17 @@
           "usage": {
             "type": "object",
             "properties": {
+              "model": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+              },
               "tokens": {
                 "type": "object",
                 "properties": {
@@ -238,11 +249,12 @@
               }
             },
             "required": [
+              "model",
               "tokens",
               "creditsCost"
             ],
             "additionalProperties": false,
-            "description": "Token usage and credit cost for prompt."
+            "description": "Model, token usage, and credit cost for the prompt."
           }
         },
         "required": [
@@ -420,6 +432,17 @@
               "usage": {
                 "type": "object",
                 "properties": {
+                  "model": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -490,11 +513,12 @@
                   }
                 },
                 "required": [
+                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens."
+                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens."
               }
             },
             "required": [
@@ -503,7 +527,7 @@
               "usage"
             ],
             "additionalProperties": false,
-            "description": "Final token usage and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
+            "description": "Final model, token usage, and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
           },
           {
             "type": "object",
@@ -1359,6 +1383,17 @@
           "usage": {
             "type": "object",
             "properties": {
+              "model": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+              },
               "tokens": {
                 "type": "object",
                 "properties": {
@@ -1429,11 +1464,12 @@
               }
             },
             "required": [
+              "model",
               "tokens",
               "creditsCost"
             ],
             "additionalProperties": false,
-            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
+            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
           }
         },
         "required": [
@@ -2277,6 +2313,17 @@
                 "usage": {
                   "type": "object",
                   "properties": {
+                    "model": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                    },
                     "tokens": {
                       "type": "object",
                       "properties": {
@@ -2347,11 +2394,12 @@
                     }
                   },
                   "required": [
+                    "model",
                     "tokens",
                     "creditsCost"
                   ],
                   "additionalProperties": false,
-                  "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
+                  "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
                 }
               },
               "required": [
@@ -3227,6 +3275,17 @@
               "usage": {
                 "type": "object",
                 "properties": {
+                  "model": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -3297,11 +3356,12 @@
                   }
                 },
                 "required": [
+                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
+                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
               },
               "object": {
                 "type": "string",
@@ -3371,6 +3431,17 @@
               "usage": {
                 "type": "object",
                 "properties": {
+                  "model": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -3441,11 +3512,12 @@
                   }
                 },
                 "required": [
+                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens."
+                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens."
               }
             },
             "required": [
@@ -3454,7 +3526,7 @@
               "usage"
             ],
             "additionalProperties": false,
-            "description": "Final token usage and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
+            "description": "Final model, token usage, and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
           },
           {
             "type": "object",
@@ -14450,6 +14522,17 @@
                           "usage": {
                             "type": "object",
                             "properties": {
+                              "model": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
+                                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                              },
                               "tokens": {
                                 "type": "object",
                                 "properties": {
@@ -14520,11 +14603,12 @@
                               }
                             },
                             "required": [
+                              "model",
                               "tokens",
                               "creditsCost"
                             ],
                             "additionalProperties": false,
-                            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
+                            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
                           }
                         },
                         "required": [
@@ -15889,6 +15973,17 @@
                           "usage": {
                             "type": "object",
                             "properties": {
+                              "model": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
+                                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
+                              },
                               "tokens": {
                                 "type": "object",
                                 "properties": {
@@ -15959,11 +16054,12 @@
                               }
                             },
                             "required": [
+                              "model",
                               "tokens",
                               "creditsCost"
                             ],
                             "additionalProperties": false,
-                            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
+                            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
                           }
                         },
                         "required": [
