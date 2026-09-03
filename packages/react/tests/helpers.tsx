@@ -28,6 +28,11 @@ export function message(
 ): Message {
   const overrides = typeof value === 'string' ? { id: value, role: 'assistant' as const } : value
   const now = new Date('2026-01-02T03:04:05.000Z')
+  const usage = {
+    model: null,
+    tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+    creditsCost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+  }
   return {
     chatId: 'chat_1',
     createdAt: now,
@@ -38,10 +43,7 @@ export function message(
     restorable: false,
     finishReason: overrides.role === 'assistant' ? null : 'stop',
     authorId: overrides.role === 'user' ? 'user_1' : null,
-    usage: {
-      tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-      creditsCost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-    },
+    usage,
     ...overrides,
   }
 }
