@@ -94,9 +94,13 @@ export type ChatWithUsage = {
         writePermission: boolean;
     };
     /**
-     * Token usage and credit cost for prompt.
+     * Model, token usage, and credit cost for the prompt.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -243,9 +247,13 @@ export type ChatStreamEvent = {
      */
     object: 'message.usage';
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -733,9 +741,13 @@ export type Message = {
      */
     authorId: string | null;
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -1207,9 +1219,13 @@ export type MessageListResponse = {
          */
         authorId: string | null;
         /**
-         * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+         * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
          */
         usage: {
+            /**
+             * Model identifier used for the assistant message, or null when not applicable or unavailable.
+             */
+            model: string | null;
             /**
              * Token counts for this message.
              */
@@ -1695,9 +1711,13 @@ export type MessageStreamEvent = {
      */
     authorId: string | null;
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -1776,9 +1796,13 @@ export type MessageStreamEvent = {
      */
     object: 'message.usage';
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -4910,9 +4934,13 @@ export type ChatsUpdateFilesResponses = {
              */
             authorId: string | null;
             /**
-             * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+             * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
             usage: {
+                /**
+                 * Model identifier used for the assistant message, or null when not applicable or unavailable.
+                 */
+                model: string | null;
                 /**
                  * Token counts for this message.
                  */
@@ -5601,9 +5629,13 @@ export type ChatsRestoreMessageResponses = {
              */
             authorId: string | null;
             /**
-             * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+             * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
             usage: {
+                /**
+                 * Model identifier used for the assistant message, or null when not applicable or unavailable.
+                 */
+                model: string | null;
                 /**
                  * Token counts for this message.
                  */
