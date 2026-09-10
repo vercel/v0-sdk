@@ -1091,9 +1091,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1218,9 +1222,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1344,9 +1352,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */

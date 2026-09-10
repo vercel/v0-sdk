@@ -631,7 +631,13 @@ const messagesResolveInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -764,7 +770,13 @@ const messagesResolveAsyncInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -897,7 +909,13 @@ const messagesResolveStreamInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z

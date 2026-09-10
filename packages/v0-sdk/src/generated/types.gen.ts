@@ -601,6 +601,10 @@ export type Message = {
              */
             requestedIntegrations: Array<string>;
             /**
+             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             */
+            requestedNpmRegistryIds: Array<string>;
+            /**
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
             requestedMcpPresets: Array<string>;
@@ -1078,6 +1082,10 @@ export type MessageListResponse = {
                  * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
                  */
                 requestedIntegrations: Array<string>;
+                /**
+                 * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                 */
+                requestedNpmRegistryIds: Array<string>;
                 /**
                  * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                  */
@@ -1570,6 +1578,10 @@ export type MessageStreamEvent = {
              * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
              */
             requestedIntegrations: Array<string>;
+            /**
+             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             */
+            requestedNpmRegistryIds: Array<string>;
             /**
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
@@ -3651,9 +3663,13 @@ export type MessagesResolveData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3808,9 +3824,13 @@ export type MessagesResolveStreamData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3965,9 +3985,13 @@ export type MessagesResolveAsyncData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -4794,6 +4818,10 @@ export type ChatsUpdateFilesResponses = {
                      */
                     requestedIntegrations: Array<string>;
                     /**
+                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedNpmRegistryIds: Array<string>;
+                    /**
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedMcpPresets: Array<string>;
@@ -5488,6 +5516,10 @@ export type ChatsRestoreMessageResponses = {
                      * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedIntegrations: Array<string>;
+                    /**
+                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedNpmRegistryIds: Array<string>;
                     /**
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */

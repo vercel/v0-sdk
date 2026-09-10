@@ -1103,6 +1103,13 @@
                               },
                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                             },
+                            "requestedNpmRegistryIds": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                            },
                             "requestedMcpPresets": {
                               "type": "array",
                               "items": {
@@ -1113,6 +1120,7 @@
                           },
                           "required": [
                             "requestedIntegrations",
+                            "requestedNpmRegistryIds",
                             "requestedMcpPresets"
                           ],
                           "additionalProperties": false,
@@ -2033,6 +2041,13 @@
                                     },
                                     "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                   },
+                                  "requestedNpmRegistryIds": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                  },
                                   "requestedMcpPresets": {
                                     "type": "array",
                                     "items": {
@@ -2043,6 +2058,7 @@
                                 },
                                 "required": [
                                   "requestedIntegrations",
+                                  "requestedNpmRegistryIds",
                                   "requestedMcpPresets"
                                 ],
                                 "additionalProperties": false,
@@ -2995,6 +3011,13 @@
                                   },
                                   "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                 },
+                                "requestedNpmRegistryIds": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                },
                                 "requestedMcpPresets": {
                                   "type": "array",
                                   "items": {
@@ -3005,6 +3028,7 @@
                               },
                               "required": [
                                 "requestedIntegrations",
+                                "requestedNpmRegistryIds",
                                 "requestedMcpPresets"
                               ],
                               "additionalProperties": false,
@@ -9804,13 +9828,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10108,13 +10142,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10412,13 +10456,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10815,13 +10869,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11119,13 +11183,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11423,13 +11497,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11826,13 +11910,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -12130,13 +12224,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -12434,13 +12538,23 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 64
+                              "maxLength": 2052
+                            }
+                          },
+                          "connectedNpmRegistryIds": {
+                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "default": [],
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2052
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -14242,6 +14356,13 @@
                                               },
                                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                             },
+                                            "requestedNpmRegistryIds": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                            },
                                             "requestedMcpPresets": {
                                               "type": "array",
                                               "items": {
@@ -14252,6 +14373,7 @@
                                           },
                                           "required": [
                                             "requestedIntegrations",
+                                            "requestedNpmRegistryIds",
                                             "requestedMcpPresets"
                                           ],
                                           "additionalProperties": false,
@@ -15693,6 +15815,13 @@
                                               },
                                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                             },
+                                            "requestedNpmRegistryIds": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                            },
                                             "requestedMcpPresets": {
                                               "type": "array",
                                               "items": {
@@ -15703,6 +15832,7 @@
                                           },
                                           "required": [
                                             "requestedIntegrations",
+                                            "requestedNpmRegistryIds",
                                             "requestedMcpPresets"
                                           ],
                                           "additionalProperties": false,
