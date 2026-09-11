@@ -168,17 +168,6 @@
           "usage": {
             "type": "object",
             "properties": {
-              "model": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-              },
               "tokens": {
                 "type": "object",
                 "properties": {
@@ -249,12 +238,11 @@
               }
             },
             "required": [
-              "model",
               "tokens",
               "creditsCost"
             ],
             "additionalProperties": false,
-            "description": "Model, token usage, and credit cost for the prompt."
+            "description": "Token usage and credit cost for prompt."
           }
         },
         "required": [
@@ -432,17 +420,6 @@
               "usage": {
                 "type": "object",
                 "properties": {
-                  "model": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -513,12 +490,11 @@
                   }
                 },
                 "required": [
-                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens."
+                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens."
               }
             },
             "required": [
@@ -527,7 +503,7 @@
               "usage"
             ],
             "additionalProperties": false,
-            "description": "Final model, token usage, and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
+            "description": "Final token usage and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
           },
           {
             "type": "object",
@@ -867,18 +843,7 @@
                     },
                     "name": {
                       "type": "string",
-                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
-                    },
-                    "toolDisplayName": {
-                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
                     },
                     "input": {
                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -913,17 +878,6 @@
                           },
                           "input": {
                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
-                          },
-                          "toolDisplayName": {
-                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
                           },
                           "taskNameActive": {
                             "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -1103,13 +1057,6 @@
                               },
                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                             },
-                            "requestedNpmRegistryIds": {
-                              "type": "array",
-                              "items": {
-                                "type": "string"
-                              },
-                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
-                            },
                             "requestedMcpPresets": {
                               "type": "array",
                               "items": {
@@ -1120,7 +1067,6 @@
                           },
                           "required": [
                             "requestedIntegrations",
-                            "requestedNpmRegistryIds",
                             "requestedMcpPresets"
                           ],
                           "additionalProperties": false,
@@ -1391,17 +1337,6 @@
           "usage": {
             "type": "object",
             "properties": {
-              "model": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-              },
               "tokens": {
                 "type": "object",
                 "properties": {
@@ -1472,12 +1407,11 @@
               }
             },
             "required": [
-              "model",
               "tokens",
               "creditsCost"
             ],
             "additionalProperties": false,
-            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
+            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
           }
         },
         "required": [
@@ -1805,18 +1739,7 @@
                           },
                           "name": {
                             "type": "string",
-                            "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
-                          },
-                          "toolDisplayName": {
-                            "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
+                            "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
                           },
                           "input": {
                             "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -1851,17 +1774,6 @@
                                 },
                                 "input": {
                                   "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -2041,13 +1953,6 @@
                                     },
                                     "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                   },
-                                  "requestedNpmRegistryIds": {
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
-                                  },
                                   "requestedMcpPresets": {
                                     "type": "array",
                                     "items": {
@@ -2058,7 +1963,6 @@
                                 },
                                 "required": [
                                   "requestedIntegrations",
-                                  "requestedNpmRegistryIds",
                                   "requestedMcpPresets"
                                 ],
                                 "additionalProperties": false,
@@ -2329,17 +2233,6 @@
                 "usage": {
                   "type": "object",
                   "properties": {
-                    "model": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ],
-                      "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                    },
                     "tokens": {
                       "type": "object",
                       "properties": {
@@ -2410,12 +2303,11 @@
                     }
                   },
                   "required": [
-                    "model",
                     "tokens",
                     "creditsCost"
                   ],
                   "additionalProperties": false,
-                  "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
+                  "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
                 }
               },
               "required": [
@@ -2775,18 +2667,7 @@
                         },
                         "name": {
                           "type": "string",
-                          "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
-                        },
-                        "toolDisplayName": {
-                          "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
                         },
                         "input": {
                           "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -2821,17 +2702,6 @@
                               },
                               "input": {
                                 "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
-                              },
-                              "toolDisplayName": {
-                                "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
                               },
                               "taskNameActive": {
                                 "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -3011,13 +2881,6 @@
                                   },
                                   "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                 },
-                                "requestedNpmRegistryIds": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
-                                },
                                 "requestedMcpPresets": {
                                   "type": "array",
                                   "items": {
@@ -3028,7 +2891,6 @@
                               },
                               "required": [
                                 "requestedIntegrations",
-                                "requestedNpmRegistryIds",
                                 "requestedMcpPresets"
                               ],
                               "additionalProperties": false,
@@ -3299,17 +3161,6 @@
               "usage": {
                 "type": "object",
                 "properties": {
-                  "model": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -3380,12 +3231,11 @@
                   }
                 },
                 "required": [
-                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
+                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
               },
               "object": {
                 "type": "string",
@@ -3455,17 +3305,6 @@
               "usage": {
                 "type": "object",
                 "properties": {
-                  "model": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                  },
                   "tokens": {
                     "type": "object",
                     "properties": {
@@ -3536,12 +3375,11 @@
                   }
                 },
                 "required": [
-                  "model",
                   "tokens",
                   "creditsCost"
                 ],
                 "additionalProperties": false,
-                "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens."
+                "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens."
               }
             },
             "required": [
@@ -3550,7 +3388,7 @@
               "usage"
             ],
             "additionalProperties": false,
-            "description": "Final model, token usage, and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
+            "description": "Final token usage and credit cost for the assistant message produced by this stream. Emitted once after the message finishes generating, before the closing state event."
           },
           {
             "type": "object",
@@ -4771,43 +4609,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -4976,43 +4791,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -5181,43 +4973,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -6400,43 +6169,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -6605,43 +6351,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -6810,43 +6533,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -7092,43 +6792,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -7297,43 +6974,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -7502,43 +7156,20 @@
                     "additionalProperties": false
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "mcpServerIds": {
@@ -7906,43 +7537,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -8083,43 +7691,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -8260,43 +7845,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -8620,43 +8182,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -8797,43 +8336,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -8974,43 +8490,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -9240,43 +8733,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -9417,43 +8887,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -9594,43 +9041,20 @@
                     }
                   },
                   "attachments": {
-                    "description": "Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.",
+                    "description": "Files or assets to include with the message.",
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "type": "string",
-                              "description": "URL or data URI containing the attachment."
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "description": "Display name for the inline text attachment.",
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "content": {
-                              "type": "string",
-                              "minLength": 1,
-                              "description": "UTF-8 text content of the attachment."
-                            }
-                          },
-                          "required": [
-                            "content"
-                          ],
-                          "additionalProperties": false
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "description": "URL of the attachment."
                         }
-                      ]
+                      },
+                      "required": [
+                        "url"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "skills": {
@@ -9828,23 +9252,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10010,19 +9424,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -10142,23 +9543,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10324,19 +9715,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -10456,23 +9834,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -10638,19 +10006,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -10869,23 +10224,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11051,19 +10396,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -11183,23 +10515,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11365,19 +10687,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -11497,23 +10806,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -11679,19 +10978,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -11910,23 +11196,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -12092,19 +11368,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -12224,23 +11487,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -12406,19 +11659,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -12538,23 +11778,13 @@
                             ]
                           },
                           "connectedIntegrationNames": {
-                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\"). Pass an empty array to skip.",
+                            "description": "Names of integrations that were successfully connected (e.g. \"Neon\", \"Supabase\"). Pass an empty array to skip.",
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
                             "items": {
                               "type": "string",
-                              "maxLength": 2052
-                            }
-                          },
-                          "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
-                            "default": [],
-                            "maxItems": 100,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "maxLength": 2052
+                              "maxLength": 64
                             }
                           },
                           "connectedMcpPresetNames": {
@@ -12720,19 +11950,6 @@
                                 },
                                 "input": {
                                   "description": "The tool call input arguments. Pass the exact input from the stopped task."
-                                },
-                                "toolDisplayName": {
-                                  "description": "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
-                                  "anyOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 1,
-                                      "maxLength": 100
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
                                 },
                                 "taskNameActive": {
                                   "description": "Label shown while the tool is running (e.g. \"Running migration\").",
@@ -14120,18 +13337,7 @@
                                     },
                                     "name": {
                                       "type": "string",
-                                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
-                                    },
-                                    "toolDisplayName": {
-                                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
-                                      "anyOf": [
-                                        {
-                                          "type": "string"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
+                                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
                                     },
                                     "input": {
                                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -14166,17 +13372,6 @@
                                           },
                                           "input": {
                                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
-                                          },
-                                          "toolDisplayName": {
-                                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
-                                            "anyOf": [
-                                              {
-                                                "type": "string"
-                                              },
-                                              {
-                                                "type": "null"
-                                              }
-                                            ]
                                           },
                                           "taskNameActive": {
                                             "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -14356,13 +13551,6 @@
                                               },
                                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                             },
-                                            "requestedNpmRegistryIds": {
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
-                                            },
                                             "requestedMcpPresets": {
                                               "type": "array",
                                               "items": {
@@ -14373,7 +13561,6 @@
                                           },
                                           "required": [
                                             "requestedIntegrations",
-                                            "requestedNpmRegistryIds",
                                             "requestedMcpPresets"
                                           ],
                                           "additionalProperties": false,
@@ -14644,17 +13831,6 @@
                           "usage": {
                             "type": "object",
                             "properties": {
-                              "model": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ],
-                                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                              },
                               "tokens": {
                                 "type": "object",
                                 "properties": {
@@ -14725,12 +13901,11 @@
                               }
                             },
                             "required": [
-                              "model",
                               "tokens",
                               "creditsCost"
                             ],
                             "additionalProperties": false,
-                            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
+                            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
                           }
                         },
                         "required": [
@@ -15579,18 +14754,7 @@
                                     },
                                     "name": {
                                       "type": "string",
-                                      "description": "The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present."
-                                    },
-                                    "toolDisplayName": {
-                                      "description": "The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.",
-                                      "anyOf": [
-                                        {
-                                          "type": "string"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
+                                      "description": "The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier)."
                                     },
                                     "input": {
                                       "description": "The arguments passed to the tool. Schema depends on the specific tool."
@@ -15625,17 +14789,6 @@
                                           },
                                           "input": {
                                             "description": "The tool input this permission authorizes. Pass back unchanged when resolving."
-                                          },
-                                          "toolDisplayName": {
-                                            "description": "The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.",
-                                            "anyOf": [
-                                              {
-                                                "type": "string"
-                                              },
-                                              {
-                                                "type": "null"
-                                              }
-                                            ]
                                           },
                                           "taskNameActive": {
                                             "description": "Internal label for the in-progress task. Pass back unchanged.",
@@ -15815,13 +14968,6 @@
                                               },
                                               "description": "Integration names the agent is asking you to connect (for example, \"Neon\"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task."
                                             },
-                                            "requestedNpmRegistryIds": {
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
-                                            },
                                             "requestedMcpPresets": {
                                               "type": "array",
                                               "items": {
@@ -15832,7 +14978,6 @@
                                           },
                                           "required": [
                                             "requestedIntegrations",
-                                            "requestedNpmRegistryIds",
                                             "requestedMcpPresets"
                                           ],
                                           "additionalProperties": false,
@@ -16103,17 +15248,6 @@
                           "usage": {
                             "type": "object",
                             "properties": {
-                              "model": {
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ],
-                                "description": "Model identifier used for the assistant message, or null when not applicable or unavailable."
-                              },
                               "tokens": {
                                 "type": "object",
                                 "properties": {
@@ -16184,12 +15318,11 @@
                               }
                             },
                             "required": [
-                              "model",
                               "tokens",
                               "creditsCost"
                             ],
                             "additionalProperties": false,
-                            "description": "Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens."
+                            "description": "Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens."
                           }
                         },
                         "required": [
@@ -17065,7 +16198,7 @@
           "MCP Servers"
         ],
         "summary": "Create MCP Server",
-        "description": "Creates a new MCP server configuration. Limited to 100 servers per user.",
+        "description": "Creates a new MCP server configuration. Limited to 10 servers per user.",
         "operationId": "mcpServers.create",
         "requestBody": {
           "required": true,
