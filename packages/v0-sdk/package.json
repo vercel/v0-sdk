@@ -1,6 +1,6 @@
 {
   "name": "v0",
-  "version": "3.0.6",
+  "version": "3.0.4",
   "description": "TypeScript SDK for the v0 API",
   "keywords": [
     "ai",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vercel/v0-sdk.git",
-    "directory": "packages/v0-sdk"
+    "directory": "packages/v0"
   },
   "files": [
     "dist"
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@vercel/oidc": "^3.5.0",
-    "jsondiffpatch": "^0.7.2"
+    "jsondiffpatch": "^0.6.0"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.2",
