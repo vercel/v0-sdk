@@ -135,11 +135,19 @@ const chatsCreateInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   mcpServerIds: z
     .array(z.string())
@@ -201,11 +209,19 @@ const chatsCreateAsyncInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   mcpServerIds: z
     .array(z.string())
@@ -325,11 +341,19 @@ const chatsCreateStreamInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   mcpServerIds: z
     .array(z.string())
@@ -607,7 +631,13 @@ const messagesResolveInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -681,6 +711,12 @@ const messagesResolveInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
@@ -734,7 +770,13 @@ const messagesResolveAsyncInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -808,6 +850,12 @@ const messagesResolveAsyncInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
@@ -861,7 +909,13 @@ const messagesResolveStreamInputSchema = z.object({
         connectedIntegrationNames: z
           .array(z.string())
           .describe(
-            'Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.',
+            'Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.',
+          )
+          .optional(),
+        connectedNpmRegistryIds: z
+          .array(z.string())
+          .describe(
+            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -935,6 +989,12 @@ const messagesResolveStreamInputSchema = z.object({
                 .describe(
                   'The tool call input arguments. Pass the exact input from the stopped task.',
                 ),
+              toolDisplayName: z
+                .union([z.string(), z.null()])
+                .describe(
+                  "The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.",
+                )
+                .optional(),
               taskNameActive: z
                 .union([z.string(), z.null()])
                 .describe('Label shown while the tool is running (e.g. "Running migration").')
@@ -1005,11 +1065,19 @@ const messagesSendInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
@@ -1063,11 +1131,19 @@ const messagesSendAsyncInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
@@ -1121,11 +1197,19 @@ const messagesSendStreamInputSchema = z.object({
     .optional(),
   attachments: z
     .array(
-      z.object({
-        url: z.string().describe('URL of the attachment.'),
-      }),
+      z.union([
+        z.object({
+          url: z.string().describe('URL or data URI containing the attachment.'),
+        }),
+        z.object({
+          name: z.string().describe('Display name for the inline text attachment.').optional(),
+          content: z.string().describe('UTF-8 text content of the attachment.'),
+        }),
+      ]),
     )
-    .describe('Files or assets to include with the message.')
+    .describe(
+      'Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.',
+    )
     .optional(),
   skills: z
     .array(
@@ -1504,7 +1588,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     mcpServersCreate: tool({
       description:
-        'Create MCP Server: Creates a new MCP server configuration. Limited to 10 servers per user.',
+        'Create MCP Server: Creates a new MCP server configuration. Limited to 100 servers per user.',
       inputSchema: mcpServersCreateInputSchema,
       execute: async (input) => {
         const parameters = {

@@ -94,9 +94,13 @@ export type ChatWithUsage = {
         writePermission: boolean;
     };
     /**
-     * Token usage and credit cost for prompt.
+     * Model, token usage, and credit cost for the prompt.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -243,9 +247,13 @@ export type ChatStreamEvent = {
      */
     object: 'message.usage';
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -462,9 +470,13 @@ export type Message = {
     } | {
         type: 'tool-call';
         /**
-         * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+         * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
          */
         name: string;
+        /**
+         * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+         */
+        toolDisplayName?: string | null;
         /**
          * The arguments passed to the tool. Schema depends on the specific tool.
          */
@@ -493,6 +505,10 @@ export type Message = {
              * The tool input this permission authorizes. Pass back unchanged when resolving.
              */
             input?: unknown;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+             */
+            toolDisplayName?: string | null;
             /**
              * Internal label for the in-progress task. Pass back unchanged.
              */
@@ -584,6 +600,10 @@ export type Message = {
              * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
              */
             requestedIntegrations: Array<string>;
+            /**
+             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             */
+            requestedNpmRegistryIds: Array<string>;
             /**
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
@@ -725,9 +745,13 @@ export type Message = {
      */
     authorId: string | null;
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -928,9 +952,13 @@ export type MessageListResponse = {
         } | {
             type: 'tool-call';
             /**
-             * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+             * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
              */
             name: string;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+             */
+            toolDisplayName?: string | null;
             /**
              * The arguments passed to the tool. Schema depends on the specific tool.
              */
@@ -959,6 +987,10 @@ export type MessageListResponse = {
                  * The tool input this permission authorizes. Pass back unchanged when resolving.
                  */
                 input?: unknown;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Internal label for the in-progress task. Pass back unchanged.
                  */
@@ -1050,6 +1082,10 @@ export type MessageListResponse = {
                  * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
                  */
                 requestedIntegrations: Array<string>;
+                /**
+                 * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                 */
+                requestedNpmRegistryIds: Array<string>;
                 /**
                  * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                  */
@@ -1191,9 +1227,13 @@ export type MessageListResponse = {
          */
         authorId: string | null;
         /**
-         * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+         * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
          */
         usage: {
+            /**
+             * Model identifier used for the assistant message, or null when not applicable or unavailable.
+             */
+            model: string | null;
             /**
              * Token counts for this message.
              */
@@ -1408,9 +1448,13 @@ export type MessageStreamEvent = {
     } | {
         type: 'tool-call';
         /**
-         * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+         * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
          */
         name: string;
+        /**
+         * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+         */
+        toolDisplayName?: string | null;
         /**
          * The arguments passed to the tool. Schema depends on the specific tool.
          */
@@ -1439,6 +1483,10 @@ export type MessageStreamEvent = {
              * The tool input this permission authorizes. Pass back unchanged when resolving.
              */
             input?: unknown;
+            /**
+             * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+             */
+            toolDisplayName?: string | null;
             /**
              * Internal label for the in-progress task. Pass back unchanged.
              */
@@ -1530,6 +1578,10 @@ export type MessageStreamEvent = {
              * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
              */
             requestedIntegrations: Array<string>;
+            /**
+             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             */
+            requestedNpmRegistryIds: Array<string>;
             /**
              * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
              */
@@ -1671,9 +1723,13 @@ export type MessageStreamEvent = {
      */
     authorId: string | null;
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -1752,9 +1808,13 @@ export type MessageStreamEvent = {
      */
     object: 'message.usage';
     /**
-     * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not generated tokens.
+     * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not generated tokens.
      */
     usage: {
+        /**
+         * Model identifier used for the assistant message, or null when not applicable or unavailable.
+         */
+        model: string | null;
         /**
          * Token counts for this message.
          */
@@ -2539,13 +2599,22 @@ export type ChatsCreateData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2862,13 +2931,22 @@ export type ChatsCreateStreamData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -2987,13 +3065,22 @@ export type ChatsCreateAsyncData = {
             imageGenerations: boolean;
         };
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * MCP server IDs to enable. When omitted, uses default enabled servers.
@@ -3171,13 +3258,22 @@ export type MessagesSendData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
@@ -3337,13 +3433,22 @@ export type MessagesSendStreamData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
@@ -3453,13 +3558,22 @@ export type MessagesSendAsyncData = {
          */
         mcpServerIds?: Array<string>;
         /**
-         * Files or assets to include with the message.
+         * Files or assets to include with the message. Provide either a URL or data URI, or inline UTF-8 text content.
          */
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         /**
          * A skill to force-attach to the chat. Skills provide domain-specific knowledge to the AI. Use `remote` for skills.sh skills, `memory` for user/team memory skills (including design-system skills), and `project` for skills defined in the chat repo.
@@ -3549,9 +3663,13 @@ export type MessagesResolveData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3612,6 +3730,10 @@ export type MessagesResolveData = {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -3702,9 +3824,13 @@ export type MessagesResolveStreamData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3765,6 +3891,10 @@ export type MessagesResolveStreamData = {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -3855,9 +3985,13 @@ export type MessagesResolveAsyncData = {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -3918,6 +4052,10 @@ export type MessagesResolveAsyncData = {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -4549,9 +4687,13 @@ export type ChatsUpdateFilesResponses = {
             } | {
                 type: 'tool-call';
                 /**
-                 * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+                 * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
                  */
                 name: string;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * The arguments passed to the tool. Schema depends on the specific tool.
                  */
@@ -4580,6 +4722,10 @@ export type ChatsUpdateFilesResponses = {
                      * The tool input this permission authorizes. Pass back unchanged when resolving.
                      */
                     input?: unknown;
+                    /**
+                     * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                     */
+                    toolDisplayName?: string | null;
                     /**
                      * Internal label for the in-progress task. Pass back unchanged.
                      */
@@ -4671,6 +4817,10 @@ export type ChatsUpdateFilesResponses = {
                      * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedIntegrations: Array<string>;
+                    /**
+                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedNpmRegistryIds: Array<string>;
                     /**
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */
@@ -4812,9 +4962,13 @@ export type ChatsUpdateFilesResponses = {
              */
             authorId: string | null;
             /**
-             * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+             * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
             usage: {
+                /**
+                 * Model identifier used for the assistant message, or null when not applicable or unavailable.
+                 */
+                model: string | null;
                 /**
                  * Token counts for this message.
                  */
@@ -5232,9 +5386,13 @@ export type ChatsRestoreMessageResponses = {
             } | {
                 type: 'tool-call';
                 /**
-                 * The name of the tool that was invoked (e.g. an MCP tool name or built-in tool identifier).
+                 * The identifier the tool was invoked under. For MCP/integration tools this is a normalized identifier derived from the tool name — prefer `toolDisplayName` for display when present.
                  */
                 name: string;
+                /**
+                 * The tool's original human-readable name (an MCP/integration tool's server-side name), when `name` is a normalized identifier. Display-only.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * The arguments passed to the tool. Schema depends on the specific tool.
                  */
@@ -5263,6 +5421,10 @@ export type ChatsRestoreMessageResponses = {
                      * The tool input this permission authorizes. Pass back unchanged when resolving.
                      */
                     input?: unknown;
+                    /**
+                     * The tool's original human-readable name (an MCP/integration tool's server name), when `toolName` is a normalized identifier. Display-only; pass back unchanged.
+                     */
+                    toolDisplayName?: string | null;
                     /**
                      * Internal label for the in-progress task. Pass back unchanged.
                      */
@@ -5354,6 +5516,10 @@ export type ChatsRestoreMessageResponses = {
                      * Integration names the agent is asking you to connect (for example, "Neon"). Pass these back in `connectedIntegrationNames` when resolving with a `confirmed-steps` task.
                      */
                     requestedIntegrations: Array<string>;
+                    /**
+                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     */
+                    requestedNpmRegistryIds: Array<string>;
                     /**
                      * MCP preset names the agent is asking you to add. Pass these back in `connectedMcpPresetNames` when resolving with a `confirmed-steps` task.
                      */
@@ -5495,9 +5661,13 @@ export type ChatsRestoreMessageResponses = {
              */
             authorId: string | null;
             /**
-             * Token usage and credit cost. All values are zero on user messages and on assistant messages that have not yet generated tokens.
+             * Model identifier, token usage, and credit cost. Token and credit values are zero on user messages and on assistant messages that have not yet generated tokens.
              */
             usage: {
+                /**
+                 * Model identifier used for the assistant message, or null when not applicable or unavailable.
+                 */
+                model: string | null;
                 /**
                  * Token counts for this message.
                  */

@@ -98,9 +98,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -303,9 +312,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -390,9 +408,18 @@ export class Chats extends HeyApiClient {
         };
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         mcpServerIds?: Array<string>;
         skills?: Array<{
@@ -786,9 +813,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
@@ -887,9 +923,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
@@ -968,9 +1013,18 @@ export class Messages extends HeyApiClient {
         mcpServerIds?: Array<string>;
         attachments?: Array<{
             /**
-             * URL of the attachment.
+             * URL or data URI containing the attachment.
              */
             url: string;
+        } | {
+            /**
+             * Display name for the inline text attachment.
+             */
+            name?: string;
+            /**
+             * UTF-8 text content of the attachment.
+             */
+            content: string;
         }>;
         skills?: Array<{
             /**
@@ -1037,9 +1091,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1100,6 +1158,10 @@ export class Messages extends HeyApiClient {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -1160,9 +1222,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1223,6 +1289,10 @@ export class Messages extends HeyApiClient {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -1282,9 +1352,13 @@ export class Messages extends HeyApiClient {
         task: {
             type: 'confirmed-steps';
             /**
-             * Names of integrations that were successfully connected (e.g. "Neon", "Supabase"). Pass an empty array to skip.
+             * Names of integrations that were successfully connected (e.g. "Neon"). Pass an empty array to skip.
              */
             connectedIntegrationNames?: Array<string>;
+            /**
+             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             */
+            connectedNpmRegistryIds?: Array<string>;
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
@@ -1345,6 +1419,10 @@ export class Messages extends HeyApiClient {
                  * The tool call input arguments. Pass the exact input from the stopped task.
                  */
                 input: unknown;
+                /**
+                 * The tool's original human-readable name from the stopped task. Display-only; pass back unchanged. Capped at 100 characters, matching the cap applied when the name is ingested from the server.
+                 */
+                toolDisplayName?: string | null;
                 /**
                  * Label shown while the tool is running (e.g. "Running migration").
                  */
@@ -1431,7 +1509,7 @@ export class McpServers extends HeyApiClient {
     /**
      * Create MCP Server
      *
-     * Creates a new MCP server configuration. Limited to 10 servers per user.
+     * Creates a new MCP server configuration. Limited to 100 servers per user.
      */
     public create<ThrowOnError extends boolean = false>(parameters: {
         name: string;
