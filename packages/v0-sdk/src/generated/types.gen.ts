@@ -2373,7 +2373,11 @@ export type UsageEventList = {
          */
         waived: boolean;
         /**
-         * Persisted token counts, or null when the source message is unavailable.
+         * Whether the cost components are estimated or unavailable. When unavailable, creditsCost components are zero placeholders for compatibility and must be ignored; total and charged remain authoritative.
+         */
+        costBreakdownStatus?: 'estimated' | 'unavailable';
+        /**
+         * Persisted token counts, or null for image generation and when the source message is unavailable.
          */
         tokens: {
             /**
@@ -2415,7 +2419,7 @@ export type UsageEventList = {
              */
             cacheWrite: number;
             /**
-             * Total amount across all categories.
+             * Total recorded cost, including costs without an available breakdown.
              */
             total: number;
             /**

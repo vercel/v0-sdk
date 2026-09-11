@@ -4505,6 +4505,14 @@
                   "type": "boolean",
                   "description": "Whether credits fully waived this event."
                 },
+                "costBreakdownStatus": {
+                  "description": "Whether the cost components are estimated or unavailable. When unavailable, creditsCost components are zero placeholders for compatibility and must be ignored; total and charged remain authoritative.",
+                  "type": "string",
+                  "enum": [
+                    "estimated",
+                    "unavailable"
+                  ]
+                },
                 "tokens": {
                   "anyOf": [
                     {
@@ -4544,7 +4552,7 @@
                       "type": "null"
                     }
                   ],
-                  "description": "Persisted token counts, or null when the source message is unavailable."
+                  "description": "Persisted token counts, or null for image generation and when the source message is unavailable."
                 },
                 "creditsCost": {
                   "type": "object",
@@ -4567,7 +4575,7 @@
                     },
                     "total": {
                       "type": "number",
-                      "description": "Total amount across all categories."
+                      "description": "Total recorded cost, including costs without an available breakdown."
                     },
                     "charged": {
                       "type": "number",
