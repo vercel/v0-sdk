@@ -2,8 +2,8 @@
 
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, usageGetActivityResponseTransformer, usageGetSummaryResponseTransformer, usageListEventsResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromVercelProjectResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, usageGetActivityResponseTransformer, usageGetSummaryResponseTransformer, usageListEventsResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromVercelProjectErrors, ChatsCreateFromVercelProjectResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -282,6 +282,30 @@ export class Chats extends HeyApiClient {
             responseTransformer: chatsCreateFromRepoResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/chats/from-repo',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+    
+    /**
+     * Create Chat From Vercel Project
+     *
+     * Creates a new chat from an existing Vercel project.
+     */
+    public createFromVercelProject<ThrowOnError extends boolean = false>(parameters: {
+        vercelProjectId: string;
+        baseBranch?: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'body', key: 'vercelProjectId' }, { in: 'body', key: 'baseBranch' }] }]);
+        return (options?.client ?? this.client).post<ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectErrors, ThrowOnError>({
+            responseTransformer: chatsCreateFromVercelProjectResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/chats/from-vercel-project',
             ...options,
             ...params,
             headers: {
@@ -1181,6 +1205,8 @@ export class Messages extends HeyApiClient {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         modelConfiguration?: {
             /**
@@ -1312,6 +1338,8 @@ export class Messages extends HeyApiClient {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         modelConfiguration?: {
             /**
@@ -1442,6 +1470,8 @@ export class Messages extends HeyApiClient {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         modelConfiguration?: {
             /**

@@ -656,13 +656,42 @@ export type Message = {
             };
         } | {
             /**
+             * The agent is waiting for the current user to authorize a connector in a browser.
+             */
+            status: 'authorization-required';
+            /**
+             * Authorization request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+             */
+            requestId: string;
+            /**
+             * The service being authorized.
+             */
+            service: string;
+            /**
+             * Icon URL for the service, hosted on vercel.com.
+             */
+            serviceIconUrl?: string;
+            /**
+             * Connector being authorized.
+             */
+            connectorId: string;
+            /**
+             * Display name of the connector.
+             */
+            connectorName: string;
+            /**
+             * Open this vercel.com URL in a browser to sign in to the provider as the current user. Requires a vercel.com session for a member of the team.
+             */
+            authorizationUrl: string;
+        } | {
+            /**
              * The Connect action finished; no user input is needed.
              */
             status: 'completed';
             /**
              * The Connect action that ran.
              */
-            action: 'list' | 'create' | 'attach';
+            action: 'list' | 'create' | 'attach' | 'authorize';
             /**
              * Human-readable result summary.
              */
@@ -1138,13 +1167,42 @@ export type MessageListResponse = {
                 };
             } | {
                 /**
+                 * The agent is waiting for the current user to authorize a connector in a browser.
+                 */
+                status: 'authorization-required';
+                /**
+                 * Authorization request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                 */
+                requestId: string;
+                /**
+                 * The service being authorized.
+                 */
+                service: string;
+                /**
+                 * Icon URL for the service, hosted on vercel.com.
+                 */
+                serviceIconUrl?: string;
+                /**
+                 * Connector being authorized.
+                 */
+                connectorId: string;
+                /**
+                 * Display name of the connector.
+                 */
+                connectorName: string;
+                /**
+                 * Open this vercel.com URL in a browser to sign in to the provider as the current user. Requires a vercel.com session for a member of the team.
+                 */
+                authorizationUrl: string;
+            } | {
+                /**
                  * The Connect action finished; no user input is needed.
                  */
                 status: 'completed';
                 /**
                  * The Connect action that ran.
                  */
-                action: 'list' | 'create' | 'attach';
+                action: 'list' | 'create' | 'attach' | 'authorize';
                 /**
                  * Human-readable result summary.
                  */
@@ -1634,13 +1692,42 @@ export type MessageStreamEvent = {
             };
         } | {
             /**
+             * The agent is waiting for the current user to authorize a connector in a browser.
+             */
+            status: 'authorization-required';
+            /**
+             * Authorization request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+             */
+            requestId: string;
+            /**
+             * The service being authorized.
+             */
+            service: string;
+            /**
+             * Icon URL for the service, hosted on vercel.com.
+             */
+            serviceIconUrl?: string;
+            /**
+             * Connector being authorized.
+             */
+            connectorId: string;
+            /**
+             * Display name of the connector.
+             */
+            connectorName: string;
+            /**
+             * Open this vercel.com URL in a browser to sign in to the provider as the current user. Requires a vercel.com session for a member of the team.
+             */
+            authorizationUrl: string;
+        } | {
+            /**
              * The Connect action finished; no user input is needed.
              */
             status: 'completed';
             /**
              * The Connect action that ran.
              */
-            action: 'list' | 'create' | 'attach';
+            action: 'list' | 'create' | 'attach' | 'authorize';
             /**
              * Human-readable result summary.
              */
@@ -2373,7 +2460,11 @@ export type UsageEventList = {
          */
         waived: boolean;
         /**
-         * Persisted token counts, or null when the source message is unavailable.
+         * Whether the cost components are estimated or unavailable. When unavailable, creditsCost components are zero placeholders for compatibility and must be ignored; total and charged remain authoritative.
+         */
+        costBreakdownStatus?: 'estimated' | 'unavailable';
+        /**
+         * Persisted token counts, or null for image generation and when the source message is unavailable.
          */
         tokens: {
             /**
@@ -2415,7 +2506,7 @@ export type UsageEventList = {
              */
             cacheWrite: number;
             /**
-             * Total amount across all categories.
+             * Total recorded cost, including costs without an available breakdown.
              */
             total: number;
             /**
@@ -2906,6 +2997,56 @@ export type ChatsCreateFromRepoResponses = {
 };
 
 export type ChatsCreateFromRepoResponse = ChatsCreateFromRepoResponses[keyof ChatsCreateFromRepoResponses];
+
+export type ChatsCreateFromVercelProjectData = {
+    body: {
+        /**
+         * Vercel project ID in the active user or team scope.
+         */
+        vercelProjectId: string;
+        /**
+         * Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.
+         */
+        baseBranch?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/chats/from-vercel-project';
+};
+
+export type ChatsCreateFromVercelProjectErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromVercelProjectError = ChatsCreateFromVercelProjectErrors[keyof ChatsCreateFromVercelProjectErrors];
+
+export type ChatsCreateFromVercelProjectResponses = {
+    /**
+     * A chat response that also reports the usage.
+     */
+    200: ChatWithUsage;
+};
+
+export type ChatsCreateFromVercelProjectResponse = ChatsCreateFromVercelProjectResponses[keyof ChatsCreateFromVercelProjectResponses];
 
 export type ChatsCreateStreamData = {
     body: {
@@ -3753,6 +3894,8 @@ export type MessagesResolveData = {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         /**
          * Overrides for the model behavior.
@@ -3914,6 +4057,8 @@ export type MessagesResolveStreamData = {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         /**
          * Overrides for the model behavior.
@@ -4075,6 +4220,8 @@ export type MessagesResolveAsyncData = {
             userMessage?: string;
         } | {
             type: 'vercel-connect-setup';
+        } | {
+            type: 'vercel-connect-authorization';
         };
         /**
          * Overrides for the model behavior.
@@ -4873,13 +5020,42 @@ export type ChatsUpdateFilesResponses = {
                     };
                 } | {
                     /**
+                     * The agent is waiting for the current user to authorize a connector in a browser.
+                     */
+                    status: 'authorization-required';
+                    /**
+                     * Authorization request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                     */
+                    requestId: string;
+                    /**
+                     * The service being authorized.
+                     */
+                    service: string;
+                    /**
+                     * Icon URL for the service, hosted on vercel.com.
+                     */
+                    serviceIconUrl?: string;
+                    /**
+                     * Connector being authorized.
+                     */
+                    connectorId: string;
+                    /**
+                     * Display name of the connector.
+                     */
+                    connectorName: string;
+                    /**
+                     * Open this vercel.com URL in a browser to sign in to the provider as the current user. Requires a vercel.com session for a member of the team.
+                     */
+                    authorizationUrl: string;
+                } | {
+                    /**
                      * The Connect action finished; no user input is needed.
                      */
                     status: 'completed';
                     /**
                      * The Connect action that ran.
                      */
-                    action: 'list' | 'create' | 'attach';
+                    action: 'list' | 'create' | 'attach' | 'authorize';
                     /**
                      * Human-readable result summary.
                      */
@@ -5572,13 +5748,42 @@ export type ChatsRestoreMessageResponses = {
                     };
                 } | {
                     /**
+                     * The agent is waiting for the current user to authorize a connector in a browser.
+                     */
+                    status: 'authorization-required';
+                    /**
+                     * Authorization request identifier. Pass as `requestId` to GET /chats/{chatId}/connect/status to poll for completion.
+                     */
+                    requestId: string;
+                    /**
+                     * The service being authorized.
+                     */
+                    service: string;
+                    /**
+                     * Icon URL for the service, hosted on vercel.com.
+                     */
+                    serviceIconUrl?: string;
+                    /**
+                     * Connector being authorized.
+                     */
+                    connectorId: string;
+                    /**
+                     * Display name of the connector.
+                     */
+                    connectorName: string;
+                    /**
+                     * Open this vercel.com URL in a browser to sign in to the provider as the current user. Requires a vercel.com session for a member of the team.
+                     */
+                    authorizationUrl: string;
+                } | {
+                    /**
                      * The Connect action finished; no user input is needed.
                      */
                     status: 'completed';
                     /**
                      * The Connect action that ran.
                      */
-                    action: 'list' | 'create' | 'attach';
+                    action: 'list' | 'create' | 'attach' | 'authorize';
                     /**
                      * Human-readable result summary.
                      */
