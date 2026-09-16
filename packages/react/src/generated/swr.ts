@@ -3,6 +3,7 @@
 import {
   chatsCreateFromFilesResponseTransformer,
   chatsCreateFromRepoResponseTransformer,
+  chatsCreateFromVercelProjectResponseTransformer,
   chatsCreateFromZipResponseTransformer,
   chatsCreateResponseTransformer,
   chatsDuplicateResponseTransformer,
@@ -39,6 +40,9 @@ import type {
   ChatsCreateFromRepoData,
   ChatsCreateFromRepoError,
   ChatsCreateFromRepoResponse,
+  ChatsCreateFromVercelProjectData,
+  ChatsCreateFromVercelProjectError,
+  ChatsCreateFromVercelProjectResponse,
   ChatsCreateFromZipData,
   ChatsCreateFromZipError,
   ChatsCreateFromZipResponse,
@@ -155,6 +159,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.createAsync': 'useCreateChatAsync',
   'chats.createFromFiles': 'useCreateChatFromFiles',
   'chats.createFromRepo': 'useCreateChatFromRepo',
+  'chats.createFromVercelProject': 'useCreateChatFromVercelProject',
   'chats.createFromZip': 'useCreateChatFromZip',
   'chats.createStream': 'useCreateChat',
   'chats.createVercelProject': 'useCreateProject',
@@ -270,6 +275,25 @@ export function useCreateChatFromRepo(
   > = {},
 ) {
   return useV0Mutation(createChatFromRepoOperation, url, configuration)
+}
+
+const createChatFromVercelProjectOperation: V0Operation<ChatsCreateFromVercelProjectResponse> = {
+  id: 'chats.createFromVercelProject',
+  method: 'POST',
+  response: 'json',
+  transform: chatsCreateFromVercelProjectResponseTransformer,
+}
+
+export type CreateChatFromVercelProjectInput = ChatsCreateFromVercelProjectData['body']
+export function useCreateChatFromVercelProject(
+  url: string,
+  configuration: V0MutationConfiguration<
+    ChatsCreateFromVercelProjectResponse,
+    ChatsCreateFromVercelProjectError,
+    ChatsCreateFromVercelProjectData['body']
+  > = {},
+) {
+  return useV0Mutation(createChatFromVercelProjectOperation, url, configuration)
 }
 
 const createChatFromZipOperation: V0Operation<ChatsCreateFromZipResponse> = {

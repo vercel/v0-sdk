@@ -23,6 +23,9 @@ describe('generated hook surface', () => {
     expect(V0_REACT_OPERATION_HOOKS['chats.getConnectStatus']).toBe('useConnectStatus')
     expect(V0_REACT_OPERATION_HOOKS['chats.restoreMessage']).toBe('useRestoreMessage')
     expect(V0_REACT_OPERATION_HOOKS['chats.createVercelProject']).toBe('useCreateProject')
+    expect(V0_REACT_OPERATION_HOOKS['chats.createFromVercelProject']).toBe(
+      'useCreateChatFromVercelProject',
+    )
     expect(V0_REACT_OPERATION_HOOKS['chats.createStream']).toBe('useCreateChat')
     expect(V0_REACT_OPERATION_HOOKS['chats.create']).toBe('useCreateChatBlocking')
     expect(V0_REACT_OPERATION_HOOKS['messages.sendStream']).toBe('useSendMessage')

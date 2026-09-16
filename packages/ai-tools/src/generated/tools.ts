@@ -17,6 +17,7 @@ export type V0ToolName =
   | 'chatsCreateAsync'
   | 'chatsCreateFromFiles'
   | 'chatsCreateFromRepo'
+  | 'chatsCreateFromVercelProject'
   | 'chatsCreateFromZip'
   | 'chatsCreateStream'
   | 'chatsCreateVercelProject'
@@ -67,6 +68,7 @@ export type V0ToolsByCategory = {
     | 'chatsCreateAsync'
     | 'chatsCreateFromFiles'
     | 'chatsCreateFromRepo'
+    | 'chatsCreateFromVercelProject'
     | 'chatsCreateFromZip'
     | 'chatsCreateStream'
     | 'chatsCreateVercelProject'
@@ -304,6 +306,16 @@ const chatsCreateFromRepoInputSchema = z.object({
   metadata: z
     .record(z.string(), z.string())
     .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+})
+
+const chatsCreateFromVercelProjectInputSchema = z.object({
+  vercelProjectId: z.string().describe('Vercel project ID in the active user or team scope.'),
+  baseBranch: z
+    .string()
+    .describe(
+      'Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.',
+    )
     .optional(),
 })
 
@@ -742,6 +754,9 @@ const messagesResolveInputSchema = z.object({
       z.object({
         type: z.enum(['vercel-connect-setup']),
       }),
+      z.object({
+        type: z.enum(['vercel-connect-authorization']),
+      }),
     ])
     .describe(
       'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
@@ -881,6 +896,9 @@ const messagesResolveAsyncInputSchema = z.object({
       z.object({
         type: z.enum(['vercel-connect-setup']),
       }),
+      z.object({
+        type: z.enum(['vercel-connect-authorization']),
+      }),
     ])
     .describe(
       'The task resolution data. Use this when the chat is waiting for user input on the matching task type.',
@@ -1019,6 +1037,9 @@ const messagesResolveStreamInputSchema = z.object({
       }),
       z.object({
         type: z.enum(['vercel-connect-setup']),
+      }),
+      z.object({
+        type: z.enum(['vercel-connect-authorization']),
       }),
     ])
     .describe(
@@ -1389,6 +1410,18 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           metadata: input.metadata,
         }
         return toToolResult(await client.chats.createFromRepo(parameters))
+      },
+    }),
+    chatsCreateFromVercelProject: tool({
+      description:
+        'Create Chat From Vercel Project: Creates a new chat from an existing Vercel project.',
+      inputSchema: chatsCreateFromVercelProjectInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          vercelProjectId: input.vercelProjectId,
+          baseBranch: input.baseBranch,
+        }
+        return toToolResult(await client.chats.createFromVercelProject(parameters))
       },
     }),
     chatsCreateFromZip: tool({
@@ -1902,6 +1935,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsCreateAsync: pickTool(tools, 'chatsCreateAsync'),
       chatsCreateFromFiles: pickTool(tools, 'chatsCreateFromFiles'),
       chatsCreateFromRepo: pickTool(tools, 'chatsCreateFromRepo'),
+      chatsCreateFromVercelProject: pickTool(tools, 'chatsCreateFromVercelProject'),
       chatsCreateFromZip: pickTool(tools, 'chatsCreateFromZip'),
       chatsCreateStream: pickTool(tools, 'chatsCreateStream'),
       chatsCreateVercelProject: pickTool(tools, 'chatsCreateVercelProject'),
