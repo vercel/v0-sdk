@@ -79,6 +79,8 @@ const semanticNames = {
   'mcpServers.delete': 'useDeleteMcpServer',
   'settings.getPreviewHosts': 'usePreviewHosts',
   'settings.setPreviewHosts': 'useSetPreviewHosts',
+  'settings.appendPreviewHosts': 'useAppendPreviewHosts',
+  'settings.deletePreviewHosts': 'useDeletePreviewHosts',
   'usage.getActivity': 'useUsageActivity',
   'usage.getSummary': 'useUsageSummary',
   'usage.listEvents': 'useUsageEvents',

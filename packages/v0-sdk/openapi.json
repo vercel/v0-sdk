@@ -5779,7 +5779,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
-                    "maxItems": 20,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -5844,7 +5844,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
-                    "maxItems": 20,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -5909,7 +5909,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
-                    "maxItems": 20,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -14109,7 +14109,7 @@
           "Chats"
         ],
         "summary": "Update Chat Files",
-        "description": "Creates, updates, or deletes files for a chat. Pass null to delete. This requires the chat's preview to be running.",
+        "description": "Creates, updates, or deletes files for a chat. Pass null to delete.",
         "operationId": "chats.updateFiles",
         "parameters": [
           {
@@ -14133,6 +14133,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -14176,6 +14177,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -14219,6 +14221,7 @@
                 "properties": {
                   "files": {
                     "minItems": 1,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -15283,16 +15286,6 @@
           },
           "404": {
             "description": "Response for status 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Response for status 409",
             "content": {
               "application/json": {
                 "schema": {
@@ -19037,7 +19030,7 @@
           "Settings"
         ],
         "summary": "Get Trusted Preview Hosts",
-        "description": "Returns the hostname patterns trusted to embed previews for the current team. Organization child teams inherit the parent organization’s hosts.",
+        "description": "Returns the hostname patterns trusted to embed previews for the current team.",
         "operationId": "settings.getPreviewHosts",
         "responses": {
           "200": {
@@ -19097,7 +19090,7 @@
           "Settings"
         ],
         "summary": "Set Trusted Preview Hosts",
-        "description": "Sets the host patterns trusted to embed previews for a standalone team or parent organization. Organization child teams cannot override this setting.",
+        "description": "Sets the host patterns trusted to embed previews for a team.",
         "operationId": "settings.setPreviewHosts",
         "requestBody": {
           "required": true,
@@ -19108,7 +19101,7 @@
                 "type": "object",
                 "properties": {
                   "hosts": {
-                    "maxItems": 5,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -19129,7 +19122,7 @@
                 "type": "object",
                 "properties": {
                   "hosts": {
-                    "maxItems": 5,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -19150,7 +19143,7 @@
                 "type": "object",
                 "properties": {
                   "hosts": {
-                    "maxItems": 5,
+                    "maxItems": 100,
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -19174,6 +19167,301 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TrustedPreviewHosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Append Trusted Preview Hosts",
+        "description": "Appends host patterns without replacing existing hosts. Returns 422 if any normalized pattern already exists or the resulting list exceeds 100 hosts. The entire request succeeds or fails together.",
+        "operationId": "settings.appendPreviewHosts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to append. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to append. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to append. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedPreviewHosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Delete Trusted Preview Hosts",
+        "description": "Deletes exact normalized host patterns. Returns 404 if any pattern is not configured. Wildcard coverage does not count as an exact match. The entire request succeeds or fails together.",
+        "operationId": "settings.deletePreviewHosts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to delete. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to delete. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "hosts": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "description": "Distinct hostname patterns to delete. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison."
+                  }
+                },
+                "required": [
+                  "hosts"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ],
+                  "additionalProperties": false
                 }
               }
             }

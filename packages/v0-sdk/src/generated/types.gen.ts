@@ -4651,10 +4651,6 @@ export type ChatsUpdateFilesErrors = {
      */
     404: Error;
     /**
-     * Response for status 409
-     */
-    409: Error;
-    /**
      * Response for status 422
      */
     422: {
@@ -6562,6 +6558,54 @@ export type McpServersUpdateResponses = {
 
 export type McpServersUpdateResponse = McpServersUpdateResponses[keyof McpServersUpdateResponses];
 
+export type SettingsDeletePreviewHostsData = {
+    body: {
+        /**
+         * Distinct hostname patterns to delete. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison.
+         */
+        hosts: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/settings/preview-hosts';
+};
+
+export type SettingsDeletePreviewHostsErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SettingsDeletePreviewHostsError = SettingsDeletePreviewHostsErrors[keyof SettingsDeletePreviewHostsErrors];
+
+export type SettingsDeletePreviewHostsResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        success: true;
+    };
+};
+
+export type SettingsDeletePreviewHostsResponse = SettingsDeletePreviewHostsResponses[keyof SettingsDeletePreviewHostsResponses];
+
 export type SettingsGetPreviewHostsData = {
     body?: never;
     path?: never;
@@ -6598,6 +6642,52 @@ export type SettingsGetPreviewHostsResponses = {
 };
 
 export type SettingsGetPreviewHostsResponse = SettingsGetPreviewHostsResponses[keyof SettingsGetPreviewHostsResponses];
+
+export type SettingsAppendPreviewHostsData = {
+    body: {
+        /**
+         * Distinct hostname patterns to append. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison.
+         */
+        hosts: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/settings/preview-hosts';
+};
+
+export type SettingsAppendPreviewHostsErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SettingsAppendPreviewHostsError = SettingsAppendPreviewHostsErrors[keyof SettingsAppendPreviewHostsErrors];
+
+export type SettingsAppendPreviewHostsResponses = {
+    /**
+     * Response for status 200
+     */
+    200: TrustedPreviewHosts;
+};
+
+export type SettingsAppendPreviewHostsResponse = SettingsAppendPreviewHostsResponses[keyof SettingsAppendPreviewHostsResponses];
 
 export type SettingsSetPreviewHostsData = {
     body: {
