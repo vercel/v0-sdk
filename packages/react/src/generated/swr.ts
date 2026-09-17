@@ -117,6 +117,12 @@ import type {
   MessagesSendStreamError,
   MessagesStopError,
   MessagesStopResponse,
+  SettingsAppendPreviewHostsData,
+  SettingsAppendPreviewHostsError,
+  SettingsAppendPreviewHostsResponse,
+  SettingsDeletePreviewHostsData,
+  SettingsDeletePreviewHostsError,
+  SettingsDeletePreviewHostsResponse,
   SettingsGetPreviewHostsError,
   SettingsGetPreviewHostsResponse,
   SettingsSetPreviewHostsData,
@@ -190,6 +196,8 @@ export const V0_REACT_OPERATION_HOOKS = {
   'messages.sendAsync': 'useSendMessageAsync',
   'messages.sendStream': 'useSendMessage',
   'messages.stop': 'useStopMessage',
+  'settings.appendPreviewHosts': 'useAppendPreviewHosts',
+  'settings.deletePreviewHosts': 'useDeletePreviewHosts',
   'settings.getPreviewHosts': 'usePreviewHosts',
   'settings.setPreviewHosts': 'useSetPreviewHosts',
   'usage.getActivity': 'useUsageActivity',
@@ -847,6 +855,42 @@ export function useStopMessage(
   configuration: V0MutationConfiguration<MessagesStopResponse, MessagesStopError, never> = {},
 ) {
   return useV0Mutation(stopMessageOperation, url, configuration)
+}
+
+const appendPreviewHostsOperation: V0Operation<SettingsAppendPreviewHostsResponse> = {
+  id: 'settings.appendPreviewHosts',
+  method: 'PATCH',
+  response: 'json',
+}
+
+export type AppendPreviewHostsInput = SettingsAppendPreviewHostsData['body']
+export function useAppendPreviewHosts(
+  url: string,
+  configuration: V0MutationConfiguration<
+    SettingsAppendPreviewHostsResponse,
+    SettingsAppendPreviewHostsError,
+    SettingsAppendPreviewHostsData['body']
+  > = {},
+) {
+  return useV0Mutation(appendPreviewHostsOperation, url, configuration)
+}
+
+const deletePreviewHostsOperation: V0Operation<SettingsDeletePreviewHostsResponse> = {
+  id: 'settings.deletePreviewHosts',
+  method: 'DELETE',
+  response: 'json',
+}
+
+export type DeletePreviewHostsInput = SettingsDeletePreviewHostsData['body']
+export function useDeletePreviewHosts(
+  url: string,
+  configuration: V0MutationConfiguration<
+    SettingsDeletePreviewHostsResponse,
+    SettingsDeletePreviewHostsError,
+    SettingsDeletePreviewHostsData['body']
+  > = {},
+) {
+  return useV0Mutation(deletePreviewHostsOperation, url, configuration)
 }
 
 const previewHostsOperation: V0Operation<SettingsGetPreviewHostsResponse> = {

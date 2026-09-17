@@ -48,6 +48,8 @@ export type V0ToolName =
   | 'messagesSendAsync'
   | 'messagesSendStream'
   | 'messagesStop'
+  | 'settingsAppendPreviewHosts'
+  | 'settingsDeletePreviewHosts'
   | 'settingsGetPreviewHosts'
   | 'settingsSetPreviewHosts'
   | 'usageGetActivity'
@@ -106,7 +108,13 @@ export type V0ToolsByCategory = {
     | 'messagesSendStream'
     | 'messagesStop'
   >
-  settings: Pick<V0ToolsFlat, 'settingsGetPreviewHosts' | 'settingsSetPreviewHosts'>
+  settings: Pick<
+    V0ToolsFlat,
+    | 'settingsAppendPreviewHosts'
+    | 'settingsDeletePreviewHosts'
+    | 'settingsGetPreviewHosts'
+    | 'settingsSetPreviewHosts'
+  >
   usage: Pick<V0ToolsFlat, 'usageGetActivity' | 'usageGetSummary' | 'usageListEvents'>
   webhooks: Pick<
     V0ToolsFlat,
@@ -1263,6 +1271,22 @@ const messagesStopInputSchema = z.object({
   messageId: z.string(),
 })
 
+const settingsAppendPreviewHostsInputSchema = z.object({
+  hosts: z
+    .array(z.string())
+    .describe(
+      'Distinct hostname patterns to append. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison.',
+    ),
+})
+
+const settingsDeletePreviewHostsInputSchema = z.object({
+  hosts: z
+    .array(z.string())
+    .describe(
+      'Distinct hostname patterns to delete. Provide hostnames only, without scheme, port, path, userinfo, query, or fragment. *.example.com matches one subdomain label; **.example.com matches one or more. Neither includes the apex. Patterns are canonicalized before comparison.',
+    ),
+})
+
 const settingsGetPreviewHostsInputSchema = z.object({})
 
 const settingsSetPreviewHostsInputSchema = z.object({
@@ -1609,7 +1633,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsUpdateFiles: tool({
       description:
-        "Update Chat Files: Creates, updates, or deletes files for a chat. Pass null to delete. This requires the chat's preview to be running.",
+        'Update Chat Files: Creates, updates, or deletes files for a chat. Pass null to delete.',
       inputSchema: chatsUpdateFilesInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1806,9 +1830,31 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.messages.stop(parameters))
       },
     }),
+    settingsAppendPreviewHosts: tool({
+      description:
+        'Append Trusted Preview Hosts: Appends host patterns without replacing existing hosts. Returns 422 if any normalized pattern already exists or the resulting list exceeds 100 hosts. The entire request succeeds or fails together.',
+      inputSchema: settingsAppendPreviewHostsInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          hosts: input.hosts,
+        }
+        return toToolResult(await client.settings.appendPreviewHosts(parameters))
+      },
+    }),
+    settingsDeletePreviewHosts: tool({
+      description:
+        'Delete Trusted Preview Hosts: Deletes exact normalized host patterns. Returns 404 if any pattern is not configured. Wildcard coverage does not count as an exact match. The entire request succeeds or fails together.',
+      inputSchema: settingsDeletePreviewHostsInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          hosts: input.hosts,
+        }
+        return toToolResult(await client.settings.deletePreviewHosts(parameters))
+      },
+    }),
     settingsGetPreviewHosts: tool({
       description:
-        'Get Trusted Preview Hosts: Returns the hostname patterns trusted to embed previews for the current team. Organization child teams inherit the parent organization’s hosts.',
+        'Get Trusted Preview Hosts: Returns the hostname patterns trusted to embed previews for the current team.',
       inputSchema: settingsGetPreviewHostsInputSchema,
       execute: async () => {
         return toToolResult(await client.settings.getPreviewHosts())
@@ -1816,7 +1862,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     settingsSetPreviewHosts: tool({
       description:
-        'Set Trusted Preview Hosts: Sets the host patterns trusted to embed previews for a standalone team or parent organization. Organization child teams cannot override this setting.',
+        'Set Trusted Preview Hosts: Sets the host patterns trusted to embed previews for a team.',
       inputSchema: settingsSetPreviewHostsInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1972,6 +2018,8 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       messagesStop: pickTool(tools, 'messagesStop'),
     },
     settings: {
+      settingsAppendPreviewHosts: pickTool(tools, 'settingsAppendPreviewHosts'),
+      settingsDeletePreviewHosts: pickTool(tools, 'settingsDeletePreviewHosts'),
       settingsGetPreviewHosts: pickTool(tools, 'settingsGetPreviewHosts'),
       settingsSetPreviewHosts: pickTool(tools, 'settingsSetPreviewHosts'),
     },
