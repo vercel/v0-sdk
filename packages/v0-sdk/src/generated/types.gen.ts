@@ -601,7 +601,9 @@ export type Message = {
              */
             requestedIntegrations: Array<string>;
             /**
-             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             * Deprecated. npm registry connections are no longer requested; this array is always empty.
+             *
+             * @deprecated
              */
             requestedNpmRegistryIds: Array<string>;
             /**
@@ -1112,7 +1114,9 @@ export type MessageListResponse = {
                  */
                 requestedIntegrations: Array<string>;
                 /**
-                 * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                 * Deprecated. npm registry connections are no longer requested; this array is always empty.
+                 *
+                 * @deprecated
                  */
                 requestedNpmRegistryIds: Array<string>;
                 /**
@@ -1637,7 +1641,9 @@ export type MessageStreamEvent = {
              */
             requestedIntegrations: Array<string>;
             /**
-             * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+             * Deprecated. npm registry connections are no longer requested; this array is always empty.
+             *
+             * @deprecated
              */
             requestedNpmRegistryIds: Array<string>;
             /**
@@ -3808,7 +3814,9 @@ export type MessagesResolveData = {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**
@@ -3971,7 +3979,9 @@ export type MessagesResolveStreamData = {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**
@@ -4134,7 +4144,9 @@ export type MessagesResolveAsyncData = {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**
@@ -4961,7 +4973,9 @@ export type ChatsUpdateFilesResponses = {
                      */
                     requestedIntegrations: Array<string>;
                     /**
-                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     * Deprecated. npm registry connections are no longer requested; this array is always empty.
+                     *
+                     * @deprecated
                      */
                     requestedNpmRegistryIds: Array<string>;
                     /**
@@ -5689,7 +5703,9 @@ export type ChatsRestoreMessageResponses = {
                      */
                     requestedIntegrations: Array<string>;
                     /**
-                     * Qualified npm registry IDs the agent is asking you to connect (for example, "npm:https://registry.example.com/"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task.
+                     * Deprecated. npm registry connections are no longer requested; this array is always empty.
+                     *
+                     * @deprecated
                      */
                     requestedNpmRegistryIds: Array<string>;
                     /**

@@ -657,7 +657,7 @@ const messagesResolveInputSchema = z.object({
         connectedNpmRegistryIds: z
           .array(z.string())
           .describe(
-            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
+            'Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -799,7 +799,7 @@ const messagesResolveAsyncInputSchema = z.object({
         connectedNpmRegistryIds: z
           .array(z.string())
           .describe(
-            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
+            'Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.',
           )
           .optional(),
         connectedMcpPresetNames: z
@@ -941,7 +941,7 @@ const messagesResolveStreamInputSchema = z.object({
         connectedNpmRegistryIds: z
           .array(z.string())
           .describe(
-            'Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.',
+            'Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.',
           )
           .optional(),
         connectedMcpPresetNames: z
