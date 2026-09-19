@@ -1119,7 +1119,9 @@ export class Messages extends HeyApiClient {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**
@@ -1252,7 +1254,9 @@ export class Messages extends HeyApiClient {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**
@@ -1384,7 +1388,9 @@ export class Messages extends HeyApiClient {
              */
             connectedIntegrationNames?: Array<string>;
             /**
-             * Qualified npm registry IDs that were successfully connected (e.g. "npm:https://registry.example.com/"). Pass an empty array to skip.
+             * Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.
+             *
+             * @deprecated
              */
             connectedNpmRegistryIds?: Array<string>;
             /**

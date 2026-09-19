@@ -1108,7 +1108,8 @@
                               "items": {
                                 "type": "string"
                               },
-                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                              "description": "Deprecated. npm registry connections are no longer requested; this array is always empty.",
+                              "deprecated": true
                             },
                             "requestedMcpPresets": {
                               "type": "array",
@@ -2095,7 +2096,8 @@
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                    "description": "Deprecated. npm registry connections are no longer requested; this array is always empty.",
+                                    "deprecated": true
                                   },
                                   "requestedMcpPresets": {
                                     "type": "array",
@@ -3114,7 +3116,8 @@
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                  "description": "Deprecated. npm registry connections are no longer requested; this array is always empty.",
+                                  "deprecated": true
                                 },
                                 "requestedMcpPresets": {
                                   "type": "array",
@@ -10145,7 +10148,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -10475,7 +10479,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -10805,7 +10810,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -11234,7 +11240,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -11564,7 +11571,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -11894,7 +11902,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -12323,7 +12332,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -12653,7 +12663,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -12983,7 +12994,8 @@
                             }
                           },
                           "connectedNpmRegistryIds": {
-                            "description": "Qualified npm registry IDs that were successfully connected (e.g. \"npm:https://registry.example.com/\"). Pass an empty array to skip.",
+                            "description": "Deprecated. npm registry connections are no longer supported; this field is accepted for compatibility and ignored.",
+                            "deprecated": true,
                             "default": [],
                             "maxItems": 100,
                             "type": "array",
@@ -14815,7 +14827,8 @@
                                               "items": {
                                                 "type": "string"
                                               },
-                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                              "description": "Deprecated. npm registry connections are no longer requested; this array is always empty.",
+                                              "deprecated": true
                                             },
                                             "requestedMcpPresets": {
                                               "type": "array",
@@ -16313,7 +16326,8 @@
                                               "items": {
                                                 "type": "string"
                                               },
-                                              "description": "Qualified npm registry IDs the agent is asking you to connect (for example, \"npm:https://registry.example.com/\"). Pass these back in `connectedNpmRegistryIds` when resolving with a `confirmed-steps` task."
+                                              "description": "Deprecated. npm registry connections are no longer requested; this array is always empty.",
+                                              "deprecated": true
                                             },
                                             "requestedMcpPresets": {
                                               "type": "array",
