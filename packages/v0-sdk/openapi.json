@@ -6533,6 +6533,34 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [
@@ -6558,6 +6586,34 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [
@@ -6583,6 +6639,34 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [
@@ -16885,6 +16969,19 @@
                   "title": {
                     "description": "Custom title for the duplicated chat. If omitted, the original title is reused with an incremented suffix (e.g. \"My Chat (2)\").",
                     "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [
@@ -16916,6 +17013,19 @@
                   "title": {
                     "description": "Custom title for the duplicated chat. If omitted, the original title is reused with an incremented suffix (e.g. \"My Chat (2)\").",
                     "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [
@@ -16947,6 +17057,19 @@
                   "title": {
                     "description": "Custom title for the duplicated chat. If omitted, the original title is reused with an incremented suffix (e.g. \"My Chat (2)\").",
                     "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
                   }
                 },
                 "required": [

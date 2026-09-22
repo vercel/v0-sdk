@@ -300,8 +300,19 @@ export class Chats extends HeyApiClient {
     public createFromVercelProject<ThrowOnError extends boolean = false>(parameters: {
         vercelProjectId: string;
         baseBranch?: string;
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        title?: string;
+        metadata?: {
+            [key: string]: string;
+        };
     }, options?: Options<never, ThrowOnError>) {
-        const params = buildClientParams([parameters], [{ args: [{ in: 'body', key: 'vercelProjectId' }, { in: 'body', key: 'baseBranch' }] }]);
+        const params = buildClientParams([parameters], [{ args: [
+                    { in: 'body', key: 'vercelProjectId' },
+                    { in: 'body', key: 'baseBranch' },
+                    { in: 'body', key: 'privacy' },
+                    { in: 'body', key: 'title' },
+                    { in: 'body', key: 'metadata' }
+                ] }]);
         return (options?.client ?? this.client).post<ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectErrors, ThrowOnError>({
             responseTransformer: chatsCreateFromVercelProjectResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
@@ -712,11 +723,15 @@ export class Chats extends HeyApiClient {
         chatId: string;
         privacy: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         title?: string;
+        metadata?: {
+            [key: string]: string;
+        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
                     { in: 'body', key: 'privacy' },
-                    { in: 'body', key: 'title' }
+                    { in: 'body', key: 'title' },
+                    { in: 'body', key: 'metadata' }
                 ] }]);
         return (options?.client ?? this.client).post<ChatsDuplicateResponses, ChatsDuplicateErrors, ThrowOnError>({
             responseTransformer: chatsDuplicateResponseTransformer,

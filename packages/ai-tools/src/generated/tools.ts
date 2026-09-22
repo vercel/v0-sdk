@@ -325,6 +325,15 @@ const chatsCreateFromVercelProjectInputSchema = z.object({
       'Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.',
     )
     .optional(),
+  privacy: z
+    .enum(['public', 'private', 'team', 'team-edit', 'unlisted'])
+    .describe('Visibility setting for the new chat.')
+    .optional(),
+  title: z.string().describe('Title for the new chat.').optional(),
+  metadata: z
+    .record(z.string(), z.string())
+    .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
 })
 
 const chatsCreateFromZipInputSchema = z.object({
@@ -444,6 +453,10 @@ const chatsDuplicateInputSchema = z.object({
     .describe(
       'Custom title for the duplicated chat. If omitted, the original title is reused with an incremented suffix (e.g. "My Chat (2)").',
     )
+    .optional(),
+  metadata: z
+    .record(z.string(), z.string())
+    .describe('Arbitrary key-value data to attach to the chat.')
     .optional(),
 })
 
@@ -1444,6 +1457,9 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         const parameters = {
           vercelProjectId: input.vercelProjectId,
           baseBranch: input.baseBranch,
+          privacy: input.privacy,
+          title: input.title,
+          metadata: input.metadata,
         }
         return toToolResult(await client.chats.createFromVercelProject(parameters))
       },
@@ -1532,6 +1548,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           chatId: input.chatId,
           privacy: input.privacy,
           title: input.title,
+          metadata: input.metadata,
         }
         return toToolResult(await client.chats.duplicate(parameters))
       },
