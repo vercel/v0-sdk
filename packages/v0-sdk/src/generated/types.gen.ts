@@ -3014,6 +3014,20 @@ export type ChatsCreateFromVercelProjectData = {
          * Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.
          */
         baseBranch?: string;
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
     };
     path?: never;
     query?: never;
@@ -5952,6 +5966,12 @@ export type ChatsDuplicateData = {
          * Custom title for the duplicated chat. If omitted, the original title is reused with an incremented suffix (e.g. "My Chat (2)").
          */
         title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
     };
     path: {
         /**
