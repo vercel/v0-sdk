@@ -5770,7 +5770,7 @@
           "Chats"
         ],
         "summary": "Create Chat From Files",
-        "description": "Creates a new chat from inline source files.",
+        "description": "Creates a new chat from inline UTF-8 or base64-encoded source files.",
         "operationId": "chats.createFromFiles",
         "requestBody": {
           "required": true,
@@ -5794,7 +5794,15 @@
                         },
                         "content": {
                           "type": "string",
-                          "description": "UTF-8 text content of the file."
+                          "description": "File content encoded according to `encoding`."
+                        },
+                        "encoding": {
+                          "description": "How `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -5859,7 +5867,15 @@
                         },
                         "content": {
                           "type": "string",
-                          "description": "UTF-8 text content of the file."
+                          "description": "File content encoded according to `encoding`."
+                        },
+                        "encoding": {
+                          "description": "How `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -5924,7 +5940,15 @@
                         },
                         "content": {
                           "type": "string",
-                          "description": "UTF-8 text content of the file."
+                          "description": "File content encoded according to `encoding`."
+                        },
+                        "encoding": {
+                          "description": "How `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -10260,6 +10284,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -10591,6 +10616,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -10922,6 +10948,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -11352,6 +11379,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -11683,6 +11711,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -12014,6 +12043,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -12444,6 +12474,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -12775,6 +12806,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -13106,6 +13138,7 @@
                                 "Granola",
                                 "PostHog",
                                 "Contentful",
+                                "Mobbin",
                                 "Slack"
                               ]
                             }
@@ -14205,7 +14238,7 @@
           "Chats"
         ],
         "summary": "Update Chat Files",
-        "description": "Creates, updates, or deletes files for a chat. Pass null to delete.",
+        "description": "Creates, updates, or deletes UTF-8 or base64-encoded files for a chat. Pass null to delete.",
         "operationId": "chats.updateFiles",
         "parameters": [
           {
@@ -14249,6 +14282,14 @@
                             }
                           ],
                           "description": "New file content. Pass `null` to delete the file at this path."
+                        },
+                        "encoding": {
+                          "description": "How non-null `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -14293,6 +14334,14 @@
                             }
                           ],
                           "description": "New file content. Pass `null` to delete the file at this path."
+                        },
+                        "encoding": {
+                          "description": "How non-null `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -14337,6 +14386,14 @@
                             }
                           ],
                           "description": "New file content. Pass `null` to delete the file at this path."
+                        },
+                        "encoding": {
+                          "description": "How non-null `content` is encoded. Defaults to `utf8` when omitted.",
+                          "type": "string",
+                          "enum": [
+                            "utf8",
+                            "base64"
+                          ]
                         }
                       },
                       "required": [
@@ -17234,6 +17291,16 @@
           },
           "422": {
             "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
             "content": {
               "application/json": {
                 "schema": {

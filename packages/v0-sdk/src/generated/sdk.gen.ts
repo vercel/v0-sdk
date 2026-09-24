@@ -178,7 +178,7 @@ export class Chats extends HeyApiClient {
     /**
      * Create Chat From Files
      *
-     * Creates a new chat from inline source files.
+     * Creates a new chat from inline UTF-8 or base64-encoded source files.
      */
     public createFromFiles<ThrowOnError extends boolean = false>(parameters: {
         files: Array<{
@@ -187,9 +187,13 @@ export class Chats extends HeyApiClient {
              */
             name: string;
             /**
-             * UTF-8 text content of the file.
+             * File content encoded according to `encoding`.
              */
             content: string;
+            /**
+             * How `content` is encoded. Defaults to `utf8` when omitted.
+             */
+            encoding?: 'utf8' | 'base64';
         }>;
         privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
         title?: string;
@@ -625,7 +629,7 @@ export class Chats extends HeyApiClient {
     /**
      * Update Chat Files
      *
-     * Creates, updates, or deletes files for a chat. Pass null to delete.
+     * Creates, updates, or deletes UTF-8 or base64-encoded files for a chat. Pass null to delete.
      */
     public updateFiles<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -638,6 +642,10 @@ export class Chats extends HeyApiClient {
              * New file content. Pass `null` to delete the file at this path.
              */
             content: string | null;
+            /**
+             * How non-null `content` is encoded. Defaults to `utf8` when omitted.
+             */
+            encoding?: 'utf8' | 'base64';
         }>;
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'body', key: 'files' }] }]);
@@ -1142,7 +1150,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
@@ -1277,7 +1285,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
@@ -1411,7 +1419,7 @@ export class Messages extends HeyApiClient {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
