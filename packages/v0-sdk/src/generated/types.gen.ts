@@ -2817,9 +2817,13 @@ export type ChatsCreateFromFilesData = {
              */
             name: string;
             /**
-             * UTF-8 text content of the file.
+             * File content encoded according to `encoding`.
              */
             content: string;
+            /**
+             * How `content` is encoded. Defaults to `utf8` when omitted.
+             */
+            encoding?: 'utf8' | 'base64';
         }>;
         /**
          * Visibility setting for the new chat.
@@ -3836,7 +3840,7 @@ export type MessagesResolveData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
@@ -4001,7 +4005,7 @@ export type MessagesResolveStreamData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
@@ -4166,7 +4170,7 @@ export type MessagesResolveAsyncData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
             /**
              * Names of scripts that were applied.
              */
@@ -4651,6 +4655,10 @@ export type ChatsUpdateFilesData = {
              * New file content. Pass `null` to delete the file at this path.
              */
             content: string | null;
+            /**
+             * How non-null `content` is encoded. Defaults to `utf8` when omitted.
+             */
+            encoding?: 'utf8' | 'base64';
         }>;
     };
     path: {
@@ -6050,6 +6058,10 @@ export type ChatsDeployErrors = {
      * Response for status 422
      */
     422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
     /**
      * Response for status 500
      */

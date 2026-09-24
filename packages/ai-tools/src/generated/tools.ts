@@ -277,7 +277,11 @@ const chatsCreateFromFilesInputSchema = z.object({
     .array(
       z.object({
         name: z.string().describe('Path of the file in the project.'),
-        content: z.string().describe('UTF-8 text content of the file.'),
+        content: z.string().describe('File content encoded according to `encoding`.'),
+        encoding: z
+          .enum(['utf8', 'base64'])
+          .describe('How `content` is encoded. Defaults to `utf8` when omitted.')
+          .optional(),
       }),
     )
     .describe('Source files used to seed the new chat.'),
@@ -537,6 +541,10 @@ const chatsUpdateFilesInputSchema = z.object({
         content: z
           .union([z.string(), z.null()])
           .describe('New file content. Pass `null` to delete the file at this path.'),
+        encoding: z
+          .enum(['utf8', 'base64'])
+          .describe('How non-null `content` is encoded. Defaults to `utf8` when omitted.')
+          .optional(),
       }),
     )
     .describe('The files to create, update, or delete. Each path must be unique.'),
@@ -687,6 +695,7 @@ const messagesResolveInputSchema = z.object({
               'Granola',
               'PostHog',
               'Contentful',
+              'Mobbin',
               'Slack',
             ]),
           )
@@ -829,6 +838,7 @@ const messagesResolveAsyncInputSchema = z.object({
               'Granola',
               'PostHog',
               'Contentful',
+              'Mobbin',
               'Slack',
             ]),
           )
@@ -971,6 +981,7 @@ const messagesResolveStreamInputSchema = z.object({
               'Granola',
               'PostHog',
               'Contentful',
+              'Mobbin',
               'Slack',
             ]),
           )
@@ -1424,7 +1435,8 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
       },
     }),
     chatsCreateFromFiles: tool({
-      description: 'Create Chat From Files: Creates a new chat from inline source files.',
+      description:
+        'Create Chat From Files: Creates a new chat from inline UTF-8 or base64-encoded source files.',
       inputSchema: chatsCreateFromFilesInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1650,7 +1662,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsUpdateFiles: tool({
       description:
-        'Update Chat Files: Creates, updates, or deletes files for a chat. Pass null to delete.',
+        'Update Chat Files: Creates, updates, or deletes UTF-8 or base64-encoded files for a chat. Pass null to delete.',
       inputSchema: chatsUpdateFilesInputSchema,
       execute: async (input) => {
         const parameters = {
