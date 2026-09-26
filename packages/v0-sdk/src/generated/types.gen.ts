@@ -2766,6 +2766,15 @@ export type ChatsCreateData = {
         metadata?: {
             [key: string]: string;
         };
+        /**
+         * Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.
+         */
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
+        };
     };
     path?: never;
     query?: never;
@@ -3166,6 +3175,15 @@ export type ChatsCreateStreamData = {
         metadata?: {
             [key: string]: string;
         };
+        /**
+         * Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.
+         */
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
+        };
     };
     path?: never;
     query?: never;
@@ -3299,6 +3317,15 @@ export type ChatsCreateAsyncData = {
          */
         metadata?: {
             [key: string]: string;
+        };
+        /**
+         * Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.
+         */
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
         };
     };
     path?: never;

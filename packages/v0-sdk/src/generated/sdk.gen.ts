@@ -149,6 +149,12 @@ export class Chats extends HeyApiClient {
         metadata?: {
             [key: string]: string;
         };
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
+        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'body', key: 'message' },
@@ -159,7 +165,8 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
-                    { in: 'body', key: 'metadata' }
+                    { in: 'body', key: 'metadata' },
+                    { in: 'body', key: 'credentialAccess' }
                 ] }]);
         return (options?.client ?? this.client).post<ChatsCreateResponses, ChatsCreateErrors, ThrowOnError>({
             responseTransformer: chatsCreateResponseTransformer,
@@ -402,6 +409,12 @@ export class Chats extends HeyApiClient {
         metadata?: {
             [key: string]: string;
         };
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
+        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'body', key: 'message' },
@@ -412,7 +425,8 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
-                    { in: 'body', key: 'metadata' }
+                    { in: 'body', key: 'metadata' },
+                    { in: 'body', key: 'credentialAccess' }
                 ] }]);
         return (options?.client ?? this.client).sse.post<ChatsCreateStreamResponses, ChatsCreateStreamErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
@@ -498,6 +512,12 @@ export class Chats extends HeyApiClient {
         metadata?: {
             [key: string]: string;
         };
+        credentialAccess?: {
+            /**
+             * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
+             */
+            sharedNpm?: boolean;
+        };
     }, options?: Options<never, ThrowOnError>) {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'body', key: 'message' },
@@ -508,7 +528,8 @@ export class Chats extends HeyApiClient {
                     { in: 'body', key: 'skills' },
                     { in: 'body', key: 'privacy' },
                     { in: 'body', key: 'title' },
-                    { in: 'body', key: 'metadata' }
+                    { in: 'body', key: 'metadata' },
+                    { in: 'body', key: 'credentialAccess' }
                 ] }]);
         return (options?.client ?? this.client).post<ChatsCreateAsyncResponses, ChatsCreateAsyncErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],

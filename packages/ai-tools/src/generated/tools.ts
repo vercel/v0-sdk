@@ -196,6 +196,17 @@ const chatsCreateInputSchema = z.object({
     .record(z.string(), z.string())
     .describe('Arbitrary key-value data to attach to the chat.')
     .optional(),
+  credentialAccess: z
+    .object({
+      sharedNpm: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+        )
+        .optional(),
+    })
+    .describe("Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.")
+    .optional(),
 })
 
 const chatsCreateAsyncInputSchema = z.object({
@@ -269,6 +280,17 @@ const chatsCreateAsyncInputSchema = z.object({
   metadata: z
     .record(z.string(), z.string())
     .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+  credentialAccess: z
+    .object({
+      sharedNpm: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+        )
+        .optional(),
+    })
+    .describe("Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.")
     .optional(),
 })
 
@@ -424,6 +446,17 @@ const chatsCreateStreamInputSchema = z.object({
   metadata: z
     .record(z.string(), z.string())
     .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+  credentialAccess: z
+    .object({
+      sharedNpm: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+        )
+        .optional(),
+    })
+    .describe("Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.")
     .optional(),
 })
 
@@ -1411,6 +1444,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
+          credentialAccess: input.credentialAccess,
         }
         return toToolResult(await client.chats.create(parameters))
       },
@@ -1430,6 +1464,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
+          credentialAccess: input.credentialAccess,
         }
         return toToolResult(await client.chats.createAsync(parameters))
       },
@@ -1504,6 +1539,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           privacy: input.privacy,
           title: input.title,
           metadata: input.metadata,
+          credentialAccess: input.credentialAccess,
         }
         const result = await client.chats.createStream(parameters)
         yield* result.stream
