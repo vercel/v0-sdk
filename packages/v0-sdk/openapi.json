@@ -5084,6 +5084,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -5289,6 +5300,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -5494,6 +5516,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -6973,6 +7006,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7178,6 +7222,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7383,6 +7438,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7665,6 +7731,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -7870,6 +7947,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -8075,6 +8163,17 @@
                       "type": "string",
                       "maxLength": 500
                     }
+                  },
+                  "credentialAccess": {
+                    "description": "Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.",
+                    "type": "object",
+                    "properties": {
+                      "sharedNpm": {
+                        "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "required": [
