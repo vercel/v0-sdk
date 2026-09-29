@@ -341,7 +341,7 @@ export class Chats extends HeyApiClient {
     /**
      * Create Chat (Streaming)
      *
-     * Creates a new chat with a user message and returns a Server-Sent Events stream. Events include initial chat state, title deltas, content chunk deltas, and final chat state. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to ChatStreamEvent.
+     * Creates a new chat with a user message and returns a Server-Sent Events stream. Events include initial chat state, title deltas, content chunk deltas, and final chat state. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to ChatStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.
      */
     public createStream<ThrowOnError extends boolean = false>(parameters: {
         message: string;
@@ -972,7 +972,7 @@ export class Messages extends HeyApiClient {
     /**
      * Send Message (Streaming)
      *
-     * Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent.
+     * Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.
      */
     public sendStream<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -1287,7 +1287,7 @@ export class Messages extends HeyApiClient {
     /**
      * Resolve Task (Streaming)
      *
-     * Resolves a pending task in a chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent.
+     * Resolves a pending task in a chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of resolving the task again.
      */
     public resolveStream<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
