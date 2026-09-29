@@ -1526,7 +1526,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsCreateStream: tool({
       description:
-        'Create Chat (Streaming): Creates a new chat with a user message and returns a Server-Sent Events stream. Events include initial chat state, title deltas, content chunk deltas, and final chat state. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to ChatStreamEvent.',
+        'Create Chat (Streaming): Creates a new chat with a user message and returns a Server-Sent Events stream. Events include initial chat state, title deltas, content chunk deltas, and final chat state. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to ChatStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.',
       inputSchema: chatsCreateStreamInputSchema,
       execute: async function* (input) {
         const parameters = {
@@ -1819,7 +1819,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesResolveStream: tool({
       description:
-        'Resolve Task (Streaming): Resolves a pending task in a chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent.',
+        'Resolve Task (Streaming): Resolves a pending task in a chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of resolving the task again.',
       inputSchema: messagesResolveStreamInputSchema,
       execute: async function* (input) {
         const parameters = {
@@ -1867,7 +1867,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesSendStream: tool({
       description:
-        'Send Message (Streaming): Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent.',
+        'Send Message (Streaming): Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.',
       inputSchema: messagesSendStreamInputSchema,
       execute: async function* (input) {
         const parameters = {
