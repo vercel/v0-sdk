@@ -2774,6 +2774,14 @@ export type ChatsCreateData = {
              * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
              */
             sharedNpm?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.
+             */
+            vercel?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.
+             */
+            github?: boolean;
         };
     };
     path?: never;
@@ -3183,6 +3191,14 @@ export type ChatsCreateStreamData = {
              * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
              */
             sharedNpm?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.
+             */
+            vercel?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.
+             */
+            github?: boolean;
         };
     };
     path?: never;
@@ -3326,6 +3342,14 @@ export type ChatsCreateAsyncData = {
              * Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.
              */
             sharedNpm?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.
+             */
+            vercel?: boolean;
+            /**
+             * Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.
+             */
+            github?: boolean;
         };
     };
     path?: never;
@@ -3867,7 +3891,7 @@ export type MessagesResolveData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack' | 'Nitrosend'>;
             /**
              * Names of scripts that were applied.
              */
@@ -4032,7 +4056,7 @@ export type MessagesResolveStreamData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack' | 'Nitrosend'>;
             /**
              * Names of scripts that were applied.
              */
@@ -4197,7 +4221,7 @@ export type MessagesResolveAsyncData = {
             /**
              * Names of MCP presets that were connected (e.g. "Linear", "Sentry"). Pass an empty array to skip.
              */
-            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack'>;
+            connectedMcpPresetNames?: Array<'Linear' | 'Notion' | 'Context7' | 'Sentry' | 'Zapier' | 'Glean' | 'Hex' | 'Sanity' | 'Granola' | 'PostHog' | 'Contentful' | 'Mobbin' | 'Slack' | 'Nitrosend'>;
             /**
              * Names of scripts that were applied.
              */
