@@ -204,6 +204,18 @@ const chatsCreateInputSchema = z.object({
           "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
         )
         .optional(),
+      vercel: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+        )
+        .optional(),
+      github: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+        )
+        .optional(),
     })
     .describe("Credentials the chat's sandbox may use. Not supported for Vercel OIDC principals.")
     .optional(),
@@ -287,6 +299,18 @@ const chatsCreateAsyncInputSchema = z.object({
         .boolean()
         .describe(
           "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+        )
+        .optional(),
+      vercel: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+        )
+        .optional(),
+      github: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
         )
         .optional(),
     })
@@ -453,6 +477,18 @@ const chatsCreateStreamInputSchema = z.object({
         .boolean()
         .describe(
           "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+        )
+        .optional(),
+      vercel: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+        )
+        .optional(),
+      github: z
+        .boolean()
+        .describe(
+          "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
         )
         .optional(),
     })
@@ -730,6 +766,7 @@ const messagesResolveInputSchema = z.object({
               'Contentful',
               'Mobbin',
               'Slack',
+              'Nitrosend',
             ]),
           )
           .describe(
@@ -873,6 +910,7 @@ const messagesResolveAsyncInputSchema = z.object({
               'Contentful',
               'Mobbin',
               'Slack',
+              'Nitrosend',
             ]),
           )
           .describe(
@@ -1016,6 +1054,7 @@ const messagesResolveStreamInputSchema = z.object({
               'Contentful',
               'Mobbin',
               'Slack',
+              'Nitrosend',
             ]),
           )
           .describe(

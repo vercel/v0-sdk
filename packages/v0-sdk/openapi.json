@@ -5092,6 +5092,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -5308,6 +5316,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -5523,6 +5539,14 @@
                     "properties": {
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
                         "type": "boolean"
                       }
                     },
@@ -7014,6 +7038,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -7230,6 +7262,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -7445,6 +7485,14 @@
                     "properties": {
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
                         "type": "boolean"
                       }
                     },
@@ -7739,6 +7787,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -7955,6 +8011,14 @@
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
                         "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
+                        "type": "boolean"
                       }
                     },
                     "additionalProperties": false
@@ -8170,6 +8234,14 @@
                     "properties": {
                       "sharedNpm": {
                         "description": "Let the chat's sandbox install private packages with the team's shared npm credentials (`NPM_RC` / `NPM_TOKEN`). Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "vercel": {
+                        "description": "Let the chat's sandbox use the requesting user's Vercel credentials instead of a project-only token. Defaults to `false`.",
+                        "type": "boolean"
+                      },
+                      "github": {
+                        "description": "Let the chat's sandbox use the requesting user's GitHub credentials. Defaults to `false`.",
                         "type": "boolean"
                       }
                     },
@@ -10384,7 +10456,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -10716,7 +10789,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -11048,7 +11122,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -11479,7 +11554,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -11811,7 +11887,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -12143,7 +12220,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -12574,7 +12652,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -12906,7 +12985,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
@@ -13238,7 +13318,8 @@
                                 "PostHog",
                                 "Contentful",
                                 "Mobbin",
-                                "Slack"
+                                "Slack",
+                                "Nitrosend"
                               ]
                             }
                           },
