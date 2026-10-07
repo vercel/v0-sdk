@@ -767,6 +767,7 @@ const messagesResolveInputSchema = z.object({
               'Mobbin',
               'Slack',
               'Nitrosend',
+              'Datadog',
             ]),
           )
           .describe(
@@ -911,6 +912,7 @@ const messagesResolveAsyncInputSchema = z.object({
               'Mobbin',
               'Slack',
               'Nitrosend',
+              'Datadog',
             ]),
           )
           .describe(
@@ -1055,6 +1057,7 @@ const messagesResolveStreamInputSchema = z.object({
               'Mobbin',
               'Slack',
               'Nitrosend',
+              'Datadog',
             ]),
           )
           .describe(
