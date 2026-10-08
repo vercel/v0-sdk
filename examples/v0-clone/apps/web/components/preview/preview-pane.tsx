@@ -1,9 +1,11 @@
 'use client'
 
 import { useFiles, useMessages } from '@v0-sdk/react/swr'
+import type { Message } from '@v0-sdk/react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import {
   createDesignModeBridge,
+  readV0Stream,
   type DesignModeBridge,
   type DesignModeMessage,
   type DesignModeState,
@@ -17,12 +19,16 @@ export function PreviewPane({
   disabled,
   onReadyChange,
   onSavingChange,
+  onStart,
+  onAssistant,
   onSaved,
 }: {
   chatId: string
   disabled: boolean
   onReadyChange?: (ready: boolean) => void
   onSavingChange: (saving: boolean) => void
+  onStart: (message: DesignModeMessage) => void
+  onAssistant: (message: Message) => void
   onSaved: () => void
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -47,6 +53,7 @@ export function PreviewPane({
       if (disabled)
         throw new Error('Wait for the current chat operation before applying design edits.')
       setError(null)
+      onStart(message)
       onSavingChange(true)
 
       try {
@@ -56,16 +63,22 @@ export function PreviewPane({
           body: JSON.stringify(message),
           signal,
         })
-        const body: unknown = await response.json().catch(() => null)
-        if (!response.ok) throw new Error(responseError(body, 'Failed to save design edits.'))
-        if (
-          !body ||
-          typeof body !== 'object' ||
-          !('finishReason' in body) ||
-          body.finishReason !== 'stop'
-        ) {
-          throw new Error('The server did not confirm that the design edits completed.')
+        if (!response.ok) {
+          const body: unknown = await response.json().catch(() => null)
+          throw new Error(responseError(body, 'Failed to save design edits.'))
         }
+        const result = readV0Stream(response)
+        for await (const update of result.stream) {
+          if (signal.aborted) return false
+          if (update.message) onAssistant(update.message)
+        }
+        const final = await result.final
+        if (!final.message || final.message.finishReason !== 'stop') {
+          throw new Error(
+            'The server did not confirm that the design edits completed. Check the conversation for pending actions or errors.',
+          )
+        }
+        onAssistant(final.message)
 
         const [messages, files] = await Promise.allSettled([refreshMessages(), refreshFiles()])
         if (signal.aborted) return false

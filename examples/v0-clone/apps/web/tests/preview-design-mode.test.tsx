@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import { useEffect } from 'react'
 import type { DesignModeBridge, DesignModeBridgeOptions, DesignModeState } from 'v0/browser'
+import { readV0Stream } from 'v0'
+import { assistant, done, streamResponse, update, wire } from './design-mode-stream'
 
 ;(
   globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
@@ -61,7 +63,7 @@ const makeBridge = mock((options: DesignModeBridgeOptions): DesignModeBridge => 
   instances.push({ options, bridge, emit, abort })
   return bridge
 })
-mock.module('v0/browser', () => ({ createDesignModeBridge: makeBridge }))
+mock.module('v0/browser', () => ({ createDesignModeBridge: makeBridge, readV0Stream }))
 const { PreviewPane } = await import('../components/preview/preview-pane')
 
 const refreshRoute = mock(() => {})
@@ -91,9 +93,7 @@ const { ChatWorkspace } = await import('../components/chat/chat-workspace')
 
 const initialFetch = globalThis.fetch
 const initialWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
-const fetchMock = mock(async (_input: RequestInfo | URL, _init?: RequestInit) =>
-  Response.json({ id: 'assistant_1', finishReason: 'stop' }),
-)
+const fetchMock = mock(async (_input: RequestInfo | URL, _init?: RequestInit) => streamResponse())
 let renderer: ReactTestRenderer | undefined
 const iframe = { contentWindow: {}, src: 'https://preview.example/api/v0-preview/chat_1' }
 
@@ -107,7 +107,7 @@ beforeEach(() => {
   refreshMessages.mockResolvedValue({ messages: [], cursor: null })
   refreshFiles.mockResolvedValue({ files: [] })
   fetchMock.mockClear()
-  fetchMock.mockResolvedValue(Response.json({ id: 'assistant_1', finishReason: 'stop' }))
+  fetchMock.mockResolvedValue(streamResponse())
   globalThis.fetch = fetchMock as unknown as typeof fetch
   Object.defineProperty(globalThis, 'window', { configurable: true, value: new EventTarget() })
 })
@@ -127,7 +127,17 @@ async function render(disabled = false) {
   const onReadyChange = mock((_ready: boolean) => {})
   const onSavingChange = mock((_saving: boolean) => {})
   const onSaved = mock(() => {})
-  const props = { chatId: 'chat_1', disabled, onReadyChange, onSavingChange, onSaved }
+  const onStart = mock((_message: Parameters<DesignModeBridgeOptions['onApply']>[0]) => {})
+  const onAssistant = mock((_message: ReturnType<typeof assistant>) => {})
+  const props = {
+    chatId: 'chat_1',
+    disabled,
+    onReadyChange,
+    onSavingChange,
+    onStart,
+    onAssistant,
+    onSaved,
+  }
   await act(async () => {
     renderer = create(<PreviewPane {...props} />, {
       createNodeMock: (element) => (element.type === 'iframe' ? iframe : null),
@@ -137,7 +147,7 @@ async function render(disabled = false) {
   await act(async () => {
     instance.emit({ connected: true })
   })
-  return { instance, props, onReadyChange, onSavingChange, onSaved }
+  return { instance, props, onReadyChange, onSavingChange, onSaved, onStart, onAssistant }
 }
 
 const message = { designMode: { edits: [{ type: 'fontInjection' as const, fontName: 'Inter' }] } }
@@ -182,6 +192,70 @@ describe('example Design Mode preview', () => {
     expect(makeBridge).toHaveBeenCalledTimes(1)
   })
 
+  test('shows the optimistic user intent before the response headers arrive', async () => {
+    const { instance, onStart, onSavingChange, onAssistant } = await render()
+    let complete!: (response: Response) => void
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve
+        }),
+    )
+    let pending!: Promise<boolean | void>
+    await act(async () => {
+      pending = instance.options.onApply(message, { signal: instance.abort.signal })
+      await Promise.resolve()
+    })
+    expect(onStart).toHaveBeenCalledWith(message)
+    expect(onSavingChange).toHaveBeenCalledWith(true)
+    expect(onAssistant).not.toHaveBeenCalled()
+    await act(async () => {
+      complete(streamResponse())
+      await pending
+    })
+  })
+
+  test('streams agent activities while keeping Apply unacknowledged until completion', async () => {
+    const { instance, onAssistant, onSaved, onSavingChange } = await render()
+    let controller!: ReadableStreamDefaultController<Uint8Array>
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(value) {
+            controller = value
+          },
+        }),
+        { headers: { 'Content-Type': 'text/event-stream' } },
+      ),
+    )
+    let pending!: Promise<boolean | void>
+    await act(async () => {
+      pending = instance.options.onApply(message, { signal: instance.abort.signal })
+      await Promise.resolve()
+    })
+    const snapshot = assistant({
+      finishReason: null,
+      content: '',
+      parts: [{ type: 'file-read', paths: ['app/page.tsx'] }],
+    })
+    await act(async () => {
+      controller.enqueue(new TextEncoder().encode(wire('update', update(snapshot))))
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    })
+    expect(onAssistant).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'assistant_1', finishReason: null, parts: snapshot.parts }),
+    )
+    expect(onSaved).not.toHaveBeenCalled()
+    expect(onSavingChange.mock.calls.map(([saving]) => saving)).toEqual([true])
+    await act(async () => {
+      controller.enqueue(new TextEncoder().encode(wire('done', done(assistant()))))
+      controller.close()
+      await pending
+    })
+    expect(onSaved).toHaveBeenCalledTimes(1)
+    expect(onSavingChange.mock.calls.map(([saving]) => saving)).toEqual([true, false])
+  })
+
   test('rejects upstream errors and refreshes failed/pending turns for inspection', async () => {
     const { instance, onSaved, onSavingChange } = await render()
     fetchMock.mockResolvedValueOnce(
@@ -195,7 +269,7 @@ describe('example Design Mode preview', () => {
 
   test('does not report success for an unconfirmed generation', async () => {
     const { instance, onSaved } = await render()
-    fetchMock.mockResolvedValueOnce(Response.json({ id: 'assistant_1', finishReason: 'error' }))
+    fetchMock.mockResolvedValueOnce(streamResponse(assistant({ finishReason: 'error' })))
     await expect(apply(instance)).rejects.toThrow('did not confirm')
     expect(onSaved).not.toHaveBeenCalled()
   })
@@ -259,8 +333,10 @@ describe('example Design Mode preview', () => {
       await Promise.resolve()
     })
     expect(conversation!.externallyBusy).toBe(true)
+    expect(conversation!.designTurn?.text).toBe('Design Mode edit')
+    expect(conversation!.designTurn?.assistant).toBeNull()
     await act(async () => {
-      complete(Response.json({ id: 'assistant_1', finishReason: 'stop' }))
+      complete(streamResponse())
       await pending!
     })
     expect(conversation!.externallyBusy).toBe(false)

@@ -16,11 +16,14 @@ import { ConversationView } from '@/components/chat/conversation-view'
 import { PromptBox } from '@/components/prompt-box'
 import type { ResolveTask } from '@/components/chat/task-resolution'
 import { useSettings } from '@/lib/hooks/useSettings'
+import { withDesignModeTurn, type DesignModeTurn } from '@/lib/design-mode-message'
 
 export function ChatConversation({
   chatId,
   messages: initialMessages,
   externallyBusy,
+  designTurn,
+  onDesignTurnSettled,
   onBusyChange,
   onContentChange,
   vercelProjectId,
@@ -28,6 +31,8 @@ export function ChatConversation({
   chatId: string
   messages: Message[]
   externallyBusy: boolean
+  designTurn: DesignModeTurn | null
+  onDesignTurnSettled: () => void
   onBusyChange: (busy: boolean) => void
   onContentChange: () => void
   vercelProjectId?: string
@@ -209,16 +214,34 @@ export function ChatConversation({
     }
   }
 
+  const designAssistantId = designTurn?.assistant?.id
+  useEffect(() => {
+    if (
+      !externallyBusy &&
+      designAssistantId &&
+      uiMessages.some((message) => message.id === designAssistantId)
+    ) {
+      onDesignTurnSettled()
+    }
+  }, [designAssistantId, externallyBusy, onDesignTurnSettled, uiMessages])
+  const visibleMessages = useMemo(
+    () => withDesignModeTurn(uiMessages, designTurn),
+    [uiMessages, designTurn],
+  )
   const isSubmitting = chatIsBusy || isResolving || externallyBusy
   const isStreaming =
-    activeAssistantMessage !== undefined && (status === 'streaming' || resolvingMessageId !== null)
+    (externallyBusy && Boolean(designTurn?.assistant)) ||
+    (activeAssistantMessage !== undefined &&
+      (status === 'streaming' || resolvingMessageId !== null))
   const error = actionError ?? chatError?.message
 
   return (
     <>
       <ConversationView
         isStreaming={isStreaming}
-        messages={uiMessages}
+        isProcessing={externallyBusy || status === 'submitted'}
+        processingLabel={externallyBusy ? 'Applying design changes…' : 'Thinking…'}
+        messages={visibleMessages}
         onRejectPermission={() => submitMessage('Do not run this action. Continue without it.')}
         onResolveTask={resolveTask}
         onRestoreMessage={restoreMessage}

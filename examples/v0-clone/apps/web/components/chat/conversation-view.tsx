@@ -10,6 +10,8 @@ import { RefreshIcon, SpinnerIcon } from '@/lib/icons'
 export function ConversationView({
   messages,
   isStreaming = false,
+  isProcessing = false,
+  processingLabel = 'Thinking…',
   pendingUserMessage,
   onRejectPermission,
   onResolveTask,
@@ -20,6 +22,8 @@ export function ConversationView({
 }: {
   messages: V0UIMessage[]
   isStreaming?: boolean
+  isProcessing?: boolean
+  processingLabel?: string
   pendingUserMessage?: string | null
   onRejectPermission?: () => void | Promise<void>
   onResolveTask?: (task: ResolveTask) => void | Promise<void>
@@ -53,10 +57,10 @@ export function ConversationView({
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end' })
-  }, [messages, isStreaming, pendingUserMessage])
+  }, [messages, isStreaming, isProcessing, pendingUserMessage])
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-3 py-4 text-[13px] leading-relaxed">
         {visibleMessages.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">No messages yet.</p>
@@ -77,6 +81,11 @@ export function ConversationView({
             />
           ))
         )}
+        {isProcessing ? (
+          <div role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <SpinnerIcon className="size-3 animate-spin" /> {processingLabel}
+          </div>
+        ) : null}
         <div ref={endRef} />
       </div>
     </div>
@@ -107,7 +116,7 @@ function ConversationMessage({
       <MessageContent
         className={
           message.role === 'user'
-            ? 'group-[.is-user]:max-w-[80%] group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-border group-[.is-user]:bg-muted group-[.is-user]:px-3 group-[.is-user]:py-1.5 group-[.is-user]:text-[13px]'
+            ? 'w-fit [overflow-wrap:anywhere] group-[.is-user]:max-w-[80%] group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-border group-[.is-user]:bg-muted group-[.is-user]:px-3 group-[.is-user]:py-1.5 group-[.is-user]:text-[13px]'
             : 'w-full text-[13px] leading-relaxed'
         }
       >

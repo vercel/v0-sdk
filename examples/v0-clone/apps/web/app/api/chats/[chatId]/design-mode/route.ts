@@ -1,7 +1,6 @@
 import { parseDesignModeMessage, type DesignModeMessage } from 'v0'
 import { authorizeProxyRequest } from '@/lib/proxy'
 import { v0 } from '@/lib/v0-client'
-import { toV0JsonResponse } from '@/lib/v0-response'
 
 export const maxDuration = 1800
 
@@ -20,16 +19,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ cha
     )
   }
 
-  const result = await v0.messages.send({ chatId, ...message }, { signal: request.signal })
-  if (result.error) return toV0JsonResponse(result)
-  if (!result.data || result.data.finishReason !== 'stop') {
-    return Response.json(
-      {
-        message:
-          'Design edits did not complete. Check the conversation for errors or pending actions before trying again.',
-      },
-      { status: 502 },
-    )
-  }
-  return toV0JsonResponse(result)
+  const result = await v0.messages.sendStream({ chatId, ...message }, { signal: request.signal })
+  return result.toResponse()
 }

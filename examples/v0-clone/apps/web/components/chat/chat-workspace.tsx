@@ -11,6 +11,8 @@ import {
 import { ChatHeader, type ChatView } from '@/components/chat/chat-header'
 import { ChatConversation } from '@/components/chat/chat-conversation'
 import { PreviewPane } from '@/components/preview/preview-pane'
+import { designModeMessageText, type DesignModeTurn } from '@/lib/design-mode-message'
+import type { DesignModeMessage } from 'v0/browser'
 
 export function ChatWorkspace({
   chat,
@@ -28,6 +30,32 @@ export function ChatWorkspace({
   const [isPreviewReady, setIsPreviewReady] = useState(false)
   const [isChatBusy, setIsChatBusy] = useState(false)
   const [isDesignSaving, setIsDesignSaving] = useState(false)
+  const [designTurn, setDesignTurn] = useState<DesignModeTurn | null>(null)
+
+  const handleDesignStart = useCallback((message: DesignModeMessage) => {
+    setDesignTurn({ text: designModeMessageText(message), assistant: null })
+  }, [])
+  const handleDesignAssistant = useCallback((assistant: Message) => {
+    setDesignTurn((turn) => {
+      if (!turn) return null
+      return { ...turn, assistant }
+    })
+  }, [])
+  const handleDesignSavingChange = useCallback((saving: boolean) => {
+    setIsDesignSaving(saving)
+    if (!saving)
+      setDesignTurn((turn) => {
+        if (turn?.assistant) return turn
+        return null
+      })
+  }, [])
+  const handleDesignTurnSettled = useCallback(() => {
+    setDesignTurn(null)
+  }, [])
+  const handleChatBusyChange = useCallback((busy: boolean) => {
+    setIsChatBusy(busy)
+    if (busy) setDesignTurn(null)
+  }, [])
 
   const handleContentChange = useCallback(() => {
     setIsPreviewReady(false)
@@ -50,12 +78,14 @@ export function ChatWorkspace({
         view={view}
       />
       <div className="flex min-h-0 flex-1">
-        <div className="flex w-full shrink-0 flex-col border-r border-border md:w-80 md:max-w-[42%]">
+        <div className="flex min-w-0 w-full shrink-0 flex-col border-r border-border md:w-80 md:max-w-[42%]">
           <ChatConversation
             chatId={chat.id}
             messages={messages}
             externallyBusy={isDesignSaving}
-            onBusyChange={setIsChatBusy}
+            onBusyChange={handleChatBusyChange}
+            designTurn={designTurn}
+            onDesignTurnSettled={handleDesignTurnSettled}
             onContentChange={handleContentChange}
             vercelProjectId={chat.vercelProjectId}
           />
@@ -67,7 +97,9 @@ export function ChatWorkspace({
               disabled={isChatBusy || view !== 'preview' || !chat.writePermission}
               key={previewRevision}
               onReadyChange={setIsPreviewReady}
-              onSavingChange={setIsDesignSaving}
+              onSavingChange={handleDesignSavingChange}
+              onStart={handleDesignStart}
+              onAssistant={handleDesignAssistant}
               onSaved={handleDesignSaved}
             />
           </div>
