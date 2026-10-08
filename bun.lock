@@ -104,7 +104,7 @@
       "name": "@v0-sdk/ai-tools",
       "version": "3.0.9",
       "dependencies": {
-        "v0": "3.0.8",
+        "v0": "3.0.9",
         "zod": "^4.1.11",
       },
       "devDependencies": {
@@ -145,7 +145,7 @@
       "name": "@v0-sdk/react",
       "version": "3.0.9",
       "dependencies": {
-        "v0": "3.0.8",
+        "v0": "3.0.9",
       },
       "devDependencies": {
         "@ai-sdk/react": "^4.0.34",
