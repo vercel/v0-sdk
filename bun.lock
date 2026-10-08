@@ -92,9 +92,12 @@
       },
       "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@types/bun": "1.3.14",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "@types/react-test-renderer": "^19.0.0",
+        "react-test-renderer": "19.2.5",
         "tailwindcss": "^4",
         "tw-animate-css": "^1.3.5",
         "typescript": "^6.0.3",

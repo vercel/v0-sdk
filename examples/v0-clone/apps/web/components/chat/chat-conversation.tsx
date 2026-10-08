@@ -20,11 +20,15 @@ import { useSettings } from '@/lib/hooks/useSettings'
 export function ChatConversation({
   chatId,
   messages: initialMessages,
+  externallyBusy,
+  onBusyChange,
   onContentChange,
   vercelProjectId,
 }: {
   chatId: string
   messages: Message[]
+  externallyBusy: boolean
+  onBusyChange: (busy: boolean) => void
   onContentChange: () => void
   vercelProjectId?: string
 }) {
@@ -88,6 +92,11 @@ export function ChatConversation({
   })
 
   const chatIsBusy = status === 'submitted' || status === 'streaming'
+  const busy = chatIsBusy || isResolving || isStopping || restoringMessageId !== null
+  useEffect(() => {
+    onBusyChange(busy)
+  }, [busy, onBusyChange])
+
   const activeAssistantMessage = resolvingMessageId
     ? uiMessages.find((message) => message.id === resolvingMessageId)
     : uiMessages.findLast(
@@ -112,6 +121,7 @@ export function ChatConversation({
   }
 
   const submitMessage = async (message: string) => {
+    if (externallyBusy) return
     setActionError(null)
     clearError()
 
@@ -129,6 +139,7 @@ export function ChatConversation({
   }
 
   const restoreMessage = async (messageId: string) => {
+    if (externallyBusy) return
     setActionError(null)
     setRestoringMessageId(messageId)
 
@@ -143,6 +154,7 @@ export function ChatConversation({
   }
 
   const resolveTask = async (task: ResolveTask) => {
+    if (externallyBusy) return
     setActionError(null)
     clearError()
     setIsResolving(true)
@@ -197,7 +209,7 @@ export function ChatConversation({
     }
   }
 
-  const isSubmitting = chatIsBusy || isResolving
+  const isSubmitting = chatIsBusy || isResolving || externallyBusy
   const isStreaming =
     activeAssistantMessage !== undefined && (status === 'streaming' || resolvingMessageId !== null)
   const error = actionError ?? chatError?.message

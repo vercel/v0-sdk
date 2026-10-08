@@ -1,6 +1,7 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Chat, Message } from '@v0-sdk/react'
 import {
   CodeEditorLoading,
@@ -20,14 +21,25 @@ export function ChatWorkspace({
   messages: Message[]
   filesPromise: Promise<ChatFilesResult>
 }) {
+  const router = useRouter()
   const [view, setView] = useState<ChatView>('preview')
   const [contentRevision, setContentRevision] = useState(0)
+  const [previewRevision, setPreviewRevision] = useState(0)
   const [isPreviewReady, setIsPreviewReady] = useState(false)
+  const [isChatBusy, setIsChatBusy] = useState(false)
+  const [isDesignSaving, setIsDesignSaving] = useState(false)
 
-  const handleContentChange = () => {
+  const handleContentChange = useCallback(() => {
     setIsPreviewReady(false)
     setContentRevision((revision) => revision + 1)
-  }
+    setPreviewRevision((revision) => revision + 1)
+  }, [])
+
+  const handleDesignSaved = useCallback(() => {
+    // Keep the iframe alive until the runtime receives its Apply acknowledgement.
+    setContentRevision((revision) => revision + 1)
+    router.refresh()
+  }, [router])
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -42,13 +54,22 @@ export function ChatWorkspace({
           <ChatConversation
             chatId={chat.id}
             messages={messages}
+            externallyBusy={isDesignSaving}
+            onBusyChange={setIsChatBusy}
             onContentChange={handleContentChange}
             vercelProjectId={chat.vercelProjectId}
           />
         </div>
         <div className="hidden min-w-0 flex-1 md:block">
           <div className={view === 'preview' ? 'h-full' : 'hidden'}>
-            <PreviewPane chatId={chat.id} key={contentRevision} onReadyChange={setIsPreviewReady} />
+            <PreviewPane
+              chatId={chat.id}
+              disabled={isChatBusy || view !== 'preview' || !chat.writePermission}
+              key={previewRevision}
+              onReadyChange={setIsPreviewReady}
+              onSavingChange={setIsDesignSaving}
+              onSaved={handleDesignSaved}
+            />
           </div>
           <div className={view === 'code' ? 'h-full' : 'hidden'}>
             <Suspense fallback={<CodeEditorLoading />}>

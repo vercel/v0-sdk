@@ -66,6 +66,7 @@ Then run from the repository root:
 
 ```bash
 bun install
+bun run build # Build the local SDK packages, including v0/browser helpers.
 bun --filter v0-clone dev
 ```
 
@@ -81,6 +82,21 @@ the generated project directory:
 bun install
 bun dev
 ```
+
+## Try Design Mode
+
+1. Start both apps as above and configure an API key using the dialog (or the same environment key on both apps). The key needs write access and available generation credits.
+2. Create a chat with a simple test page, for example: **“Build a minimal page with an h1 whose id is `design-mode-test`, text is `Hello`, and font size is 32px.”** Wait for generation to finish.
+3. Open **Preview**, wait for the runtime connection, and click **Design Mode** in the preview toolbar.
+4. Select the heading inside the iframe, edit its text/font size using the runtime controls, optionally add instructions, and click the runtime's **Apply** button.
+5. The toolbar shows **Saving design edits…**. Chat submission, restore, and task actions are disabled during the save. After completion, the conversation and **Code** view refresh; the preview stays mounted so Apply can receive its acknowledgement and the app can update through its normal preview runtime.
+6. Inspect the generated source in **Code** to confirm the edits persisted. The toolbar's **Refresh preview** button can reload the iframe while restoring its Design Mode state. Switching to Code or starting another chat operation turns Design Mode off.
+
+The frontend uses `createDesignModeBridge` from `v0/browser`. Apply goes through `/api/chats/[chatId]/design-mode`, which uses the same `authorizeProxyRequest` and server-side credential resolution as the other example endpoints. `parseDesignModeMessage` validates input and strips unrelated capabilities before calling `v0.messages.send`. A save is acknowledged only when the assistant completes with `finishReason: 'stop'`; errors/pending actions are exposed for inspection in the conversation. Cache-refresh failures after a confirmed save do not cause a duplicate generation.
+
+The API key is never passed to the preview bridge. The example's existing **no-auth/shared-workspace security warning still applies** to the new endpoint. These are real API generations and use normal credits; the example tests mock upstream generation and do not spend credits. Screenshots require API-key authentication, not Vercel OIDC.
+
+If the Design Mode button stays disabled, check that the dedicated preview proxy is configured and authenticated, its hostname is trusted, and preview assets (including the injected runtime) load successfully. A deployed app or raw sandbox URL is not a substitute for the proxied preview.
 
 ## Deploy it
 
@@ -156,6 +172,7 @@ entries are preserved.
   repository.
 - Assistant messages render text, reasoning, activities, and task-resolution
   controls from the SDK's ordered message parts.
+- The preview toolbar uses the SDK Design Mode bridge, keeps Apply connected while saving, refreshes message/file caches on completion, and disposes the bridge when the iframe/chat changes.
 - The web app points its iframe at the dedicated proxy origin. The proxy uses
   `fetchPreview`, and its `proxy.ts` keeps root-relative preview requests on the
   chat-specific proxy path.
