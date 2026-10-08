@@ -20,5 +20,6 @@
   "devDependencies": {
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0"
-  }
+  },
+  "packageManager": "bun@1.4.2"
 }

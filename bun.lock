@@ -102,9 +102,9 @@
     },
     "packages/ai-tools": {
       "name": "@v0-sdk/ai-tools",
-      "version": "3.0.8",
+      "version": "3.0.9",
       "dependencies": {
-        "v0": "3.0.8",
+        "v0": "3.0.9",
         "zod": "^4.1.11",
       },
       "devDependencies": {
@@ -120,7 +120,7 @@
     },
     "packages/create-v0-sdk-app": {
       "name": "create-v0-sdk-app",
-      "version": "3.0.8",
+      "version": "3.0.9",
       "bin": {
         "create-v0-sdk-app": "./dist/index.js",
       },
@@ -143,9 +143,9 @@
     },
     "packages/react": {
       "name": "@v0-sdk/react",
-      "version": "3.0.8",
+      "version": "3.0.9",
       "dependencies": {
-        "v0": "3.0.8",
+        "v0": "3.0.9",
       },
       "devDependencies": {
         "@ai-sdk/react": "^4.0.34",
@@ -173,7 +173,7 @@
     },
     "packages/v0-sdk": {
       "name": "v0",
-      "version": "3.0.8",
+      "version": "3.0.9",
       "dependencies": {
         "@vercel/oidc": "^3.5.0",
         "jsondiffpatch": "^0.7.2",
