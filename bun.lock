@@ -176,6 +176,7 @@
       "version": "3.0.8",
       "dependencies": {
         "@vercel/oidc": "^3.5.0",
+        "bidc": "0.0.3",
         "jsondiffpatch": "^0.7.2",
       },
       "devDependencies": {
@@ -818,6 +819,8 @@
     "baseline-browser-mapping": ["baseline-browser-mapping@2.10.37", "", { "bin": { "baseline-browser-mapping": "dist/cli.cjs" } }, "sha512-girxaJ7WZssDOFhzCGZTDKoTa1gk6A1TbflaYTpykLJ4UU9Fz9kx1aREM8JCuoVHbL8X8T/mJg7w2oYSq72Oig=="],
 
     "basic": ["basic@workspace:examples/basic"],
+
+    "bidc": ["bidc@0.0.3", "", {}, "sha512-stoXSIDBnqJhquTf0fNNoEfz2JfFCVXADoIim9c5QjWB7CoK3353ZtnJSydPNfzTLoeYuV5/0QNuSz34nSRSag=="],
 
     "birpc": ["birpc@4.0.0", "", {}, "sha512-LShSxJP0KTmd101b6DRyGBj57LZxSDYWKitQNW/mi8GRMvZb078Uf9+pveax1DrVL89vm7mWe+TovdI/UDOuPw=="],
 

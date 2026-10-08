@@ -13,3 +13,6 @@ export type {
 export type * from './generated/types.gen'
 export * from './generated/transformers.gen'
 export * from './stream'
+export { createDesignModeBridge } from './design-mode/bridge'
+export { parseDesignModeMessage, toDesignModeMessage } from './design-mode/payload'
+export type * from './design-mode/types'

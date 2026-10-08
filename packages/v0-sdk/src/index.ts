@@ -5,6 +5,14 @@ import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
 import { vercelOidcAuth } from './vercel-oidc'
 
+export { parseDesignModeMessage, toDesignModeMessage } from './design-mode/payload'
+export type {
+  DesignModeEdit,
+  DesignModeElement,
+  DesignModeInput,
+  DesignModeMessage,
+  DesignModeRuntimePayload,
+} from './design-mode/types'
 export { fetchPreview } from './preview-proxy'
 export * from './stream'
 export type { FetchPreviewOptions } from './preview-proxy'
