@@ -8429,7 +8429,7 @@
           "Messages"
         ],
         "summary": "Send Message",
-        "description": "Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response.",
+        "description": "Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided.",
         "operationId": "messages.send",
         "parameters": [
           {
@@ -8452,9 +8452,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -8617,9 +8891,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -8629,9 +8900,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -8794,9 +9339,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -8806,9 +9348,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -8971,9 +9787,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             }
@@ -9143,7 +9956,7 @@
           "Messages"
         ],
         "summary": "Send Message (Streaming)",
-        "description": "Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.",
+        "description": "Sends a new message to an existing chat and returns a Server-Sent Events stream. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.",
         "operationId": "messages.sendStream",
         "parameters": [
           {
@@ -9166,9 +9979,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -9331,9 +10418,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -9343,9 +10427,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -9508,9 +10866,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -9520,9 +10875,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -9685,9 +11314,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             }
@@ -9763,7 +11389,7 @@
           "Messages"
         ],
         "summary": "Send Message (Async)",
-        "description": "Sends a new message to an existing chat and processes it in the background. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.",
+        "description": "Sends a new message to an existing chat and processes it in the background. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.",
         "operationId": "messages.sendAsync",
         "parameters": [
           {
@@ -9786,9 +11412,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -9951,9 +11851,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -9963,9 +11860,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -10128,9 +12299,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             },
@@ -10140,9 +12308,283 @@
                 "type": "object",
                 "properties": {
                   "message": {
+                    "description": "The prompt or instruction to send to the model. May be omitted when designMode contains edits.",
                     "type": "string",
-                    "minLength": 1,
-                    "description": "The prompt or instruction to send to the model."
+                    "minLength": 1
+                  },
+                  "designMode": {
+                    "type": "object",
+                    "properties": {
+                      "edits": {
+                        "description": "Element edits to apply to the source code. Maximum 100.",
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "style"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "changes": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "description": "Previous value. Context for the model, not a checked precondition."
+                                      },
+                                      "to": {
+                                        "type": "string",
+                                        "description": "Requested value."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "to"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "description": "CSS property names in camelCase mapped to old and new values. Use textContent for text replacement."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "changes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "deleteElement"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "move"
+                                  ]
+                                },
+                                "element": {
+                                  "type": "object",
+                                  "properties": {
+                                    "selectorPath": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "CSS selector identifying the rendered element."
+                                    },
+                                    "tagName": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "description": "HTML tag name, such as h1 or button."
+                                    },
+                                    "id": {
+                                      "description": "Element ID, if present.",
+                                      "type": "string"
+                                    },
+                                    "classNames": {
+                                      "description": "Element CSS classes.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "textContent": {
+                                      "description": "Current text of the element, to help locate its source.",
+                                      "type": "string"
+                                    },
+                                    "reactComponentName": {
+                                      "description": "React component name, if known.",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "selectorPath",
+                                    "tagName"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "toParentSelector": {
+                                  "description": "Destination parent selector. Required when position is inside.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "targetSelector": {
+                                  "description": "Destination sibling selector. Required when position is before or after.",
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "position": {
+                                  "type": "string",
+                                  "enum": [
+                                    "before",
+                                    "after",
+                                    "inside"
+                                  ],
+                                  "description": "Placement relative to the destination."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "element",
+                                "position"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fontInjection"
+                                  ]
+                                },
+                                "fontName": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "description": "Font to add to the project, such as Inter."
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "fontName"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "element": {
+                        "description": "CSS selector limiting the scope of the message instructions.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "screenshot": {
+                        "description": "Screenshot providing visual context for the requested edits.",
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals."
+                          },
+                          "anchorElement": {
+                            "description": "CSS selector anchoring the screenshot to a rendered element.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId."
                   },
                   "systemPrompt": {
                     "description": "System-level context for the chat, such as frameworks or development environment details.",
@@ -10305,9 +12747,6 @@
                     }
                   }
                 },
-                "required": [
-                  "message"
-                ],
                 "additionalProperties": false
               }
             }
