@@ -18,5 +18,5 @@
     "oxfmt": "^0.55.0",
     "turbo": "^2.5.8"
   },
-  "packageManager": "bun@1.2.20"
+  "packageManager": "bun@1.4.2"
 }
