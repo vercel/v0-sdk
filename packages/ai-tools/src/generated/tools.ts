@@ -1169,7 +1169,127 @@ const messagesResolveStreamInputSchema = z.object({
 
 const messagesSendInputSchema = z.object({
   chatId: z.string(),
-  message: z.string().describe('The prompt or instruction to send to the model.'),
+  message: z
+    .string()
+    .describe(
+      'The prompt or instruction to send to the model. May be omitted when designMode contains edits.',
+    )
+    .optional(),
+  designMode: z
+    .object({
+      edits: z
+        .array(
+          z.union([
+            z.object({
+              type: z.enum(['style']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              changes: z
+                .record(
+                  z.string(),
+                  z.object({
+                    from: z
+                      .string()
+                      .describe(
+                        'Previous value. Context for the model, not a checked precondition.',
+                      ),
+                    to: z.string().describe('Requested value.'),
+                  }),
+                )
+                .describe(
+                  'CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.',
+                ),
+            }),
+            z.object({
+              type: z.enum(['deleteElement']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+            }),
+            z.object({
+              type: z.enum(['move']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              toParentSelector: z
+                .string()
+                .describe('Destination parent selector. Required when position is inside.')
+                .optional(),
+              targetSelector: z
+                .string()
+                .describe(
+                  'Destination sibling selector. Required when position is before or after.',
+                )
+                .optional(),
+              position: z
+                .enum(['before', 'after', 'inside'])
+                .describe('Placement relative to the destination.'),
+            }),
+            z.object({
+              type: z.enum(['fontInjection']),
+              fontName: z.string().describe('Font to add to the project, such as Inter.'),
+            }),
+          ]),
+        )
+        .describe('Element edits to apply to the source code. Maximum 100.')
+        .optional(),
+      element: z
+        .string()
+        .describe('CSS selector limiting the scope of the message instructions.')
+        .optional(),
+      screenshot: z
+        .object({
+          url: z
+            .string()
+            .describe(
+              'HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.',
+            ),
+          anchorElement: z
+            .string()
+            .describe('CSS selector anchoring the screenshot to a rendered element.')
+            .optional(),
+        })
+        .describe('Screenshot providing visual context for the requested edits.')
+        .optional(),
+    })
+    .describe(
+      'Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.',
+    )
+    .optional(),
   systemPrompt: z
     .string()
     .describe(
@@ -1235,7 +1355,127 @@ const messagesSendInputSchema = z.object({
 
 const messagesSendAsyncInputSchema = z.object({
   chatId: z.string(),
-  message: z.string().describe('The prompt or instruction to send to the model.'),
+  message: z
+    .string()
+    .describe(
+      'The prompt or instruction to send to the model. May be omitted when designMode contains edits.',
+    )
+    .optional(),
+  designMode: z
+    .object({
+      edits: z
+        .array(
+          z.union([
+            z.object({
+              type: z.enum(['style']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              changes: z
+                .record(
+                  z.string(),
+                  z.object({
+                    from: z
+                      .string()
+                      .describe(
+                        'Previous value. Context for the model, not a checked precondition.',
+                      ),
+                    to: z.string().describe('Requested value.'),
+                  }),
+                )
+                .describe(
+                  'CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.',
+                ),
+            }),
+            z.object({
+              type: z.enum(['deleteElement']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+            }),
+            z.object({
+              type: z.enum(['move']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              toParentSelector: z
+                .string()
+                .describe('Destination parent selector. Required when position is inside.')
+                .optional(),
+              targetSelector: z
+                .string()
+                .describe(
+                  'Destination sibling selector. Required when position is before or after.',
+                )
+                .optional(),
+              position: z
+                .enum(['before', 'after', 'inside'])
+                .describe('Placement relative to the destination.'),
+            }),
+            z.object({
+              type: z.enum(['fontInjection']),
+              fontName: z.string().describe('Font to add to the project, such as Inter.'),
+            }),
+          ]),
+        )
+        .describe('Element edits to apply to the source code. Maximum 100.')
+        .optional(),
+      element: z
+        .string()
+        .describe('CSS selector limiting the scope of the message instructions.')
+        .optional(),
+      screenshot: z
+        .object({
+          url: z
+            .string()
+            .describe(
+              'HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.',
+            ),
+          anchorElement: z
+            .string()
+            .describe('CSS selector anchoring the screenshot to a rendered element.')
+            .optional(),
+        })
+        .describe('Screenshot providing visual context for the requested edits.')
+        .optional(),
+    })
+    .describe(
+      'Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.',
+    )
+    .optional(),
   systemPrompt: z
     .string()
     .describe(
@@ -1301,7 +1541,127 @@ const messagesSendAsyncInputSchema = z.object({
 
 const messagesSendStreamInputSchema = z.object({
   chatId: z.string(),
-  message: z.string().describe('The prompt or instruction to send to the model.'),
+  message: z
+    .string()
+    .describe(
+      'The prompt or instruction to send to the model. May be omitted when designMode contains edits.',
+    )
+    .optional(),
+  designMode: z
+    .object({
+      edits: z
+        .array(
+          z.union([
+            z.object({
+              type: z.enum(['style']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              changes: z
+                .record(
+                  z.string(),
+                  z.object({
+                    from: z
+                      .string()
+                      .describe(
+                        'Previous value. Context for the model, not a checked precondition.',
+                      ),
+                    to: z.string().describe('Requested value.'),
+                  }),
+                )
+                .describe(
+                  'CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.',
+                ),
+            }),
+            z.object({
+              type: z.enum(['deleteElement']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+            }),
+            z.object({
+              type: z.enum(['move']),
+              element: z.object({
+                selectorPath: z.string().describe('CSS selector identifying the rendered element.'),
+                tagName: z.string().describe('HTML tag name, such as h1 or button.'),
+                id: z.string().describe('Element ID, if present.').optional(),
+                classNames: z.array(z.string()).describe('Element CSS classes.').optional(),
+                textContent: z
+                  .string()
+                  .describe('Current text of the element, to help locate its source.')
+                  .optional(),
+                reactComponentName: z
+                  .string()
+                  .describe('React component name, if known.')
+                  .optional(),
+              }),
+              toParentSelector: z
+                .string()
+                .describe('Destination parent selector. Required when position is inside.')
+                .optional(),
+              targetSelector: z
+                .string()
+                .describe(
+                  'Destination sibling selector. Required when position is before or after.',
+                )
+                .optional(),
+              position: z
+                .enum(['before', 'after', 'inside'])
+                .describe('Placement relative to the destination.'),
+            }),
+            z.object({
+              type: z.enum(['fontInjection']),
+              fontName: z.string().describe('Font to add to the project, such as Inter.'),
+            }),
+          ]),
+        )
+        .describe('Element edits to apply to the source code. Maximum 100.')
+        .optional(),
+      element: z
+        .string()
+        .describe('CSS selector limiting the scope of the message instructions.')
+        .optional(),
+      screenshot: z
+        .object({
+          url: z
+            .string()
+            .describe(
+              'HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.',
+            ),
+          anchorElement: z
+            .string()
+            .describe('CSS selector anchoring the screenshot to a rendered element.')
+            .optional(),
+        })
+        .describe('Screenshot providing visual context for the requested edits.')
+        .optional(),
+    })
+    .describe(
+      'Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.',
+    )
+    .optional(),
   systemPrompt: z
     .string()
     .describe(
@@ -1875,12 +2235,13 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesSend: tool({
       description:
-        'Send Message: Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response.',
+        'Send Message: Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided.',
       inputSchema: messagesSendInputSchema,
       execute: async (input) => {
         const parameters = {
           chatId: input.chatId,
           message: input.message,
+          designMode: input.designMode,
           systemPrompt: input.systemPrompt,
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,
@@ -1892,12 +2253,13 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesSendAsync: tool({
       description:
-        'Send Message (Async): Sends a new message to an existing chat and processes it in the background. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.',
+        'Send Message (Async): Sends a new message to an existing chat and processes it in the background. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.',
       inputSchema: messagesSendAsyncInputSchema,
       execute: async (input) => {
         const parameters = {
           chatId: input.chatId,
           message: input.message,
+          designMode: input.designMode,
           systemPrompt: input.systemPrompt,
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,
@@ -1909,12 +2271,13 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     messagesSendStream: tool({
       description:
-        'Send Message (Streaming): Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.',
+        'Send Message (Streaming): Sends a new message to an existing chat and returns a Server-Sent Events stream. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\\n\\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.',
       inputSchema: messagesSendStreamInputSchema,
       execute: async function* (input) {
         const parameters = {
           chatId: input.chatId,
           message: input.message,
+          designMode: input.designMode,
           systemPrompt: input.systemPrompt,
           modelConfiguration: input.modelConfiguration,
           mcpServerIds: input.mcpServerIds,

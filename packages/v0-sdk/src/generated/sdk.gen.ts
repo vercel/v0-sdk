@@ -886,11 +886,151 @@ export class Messages extends HeyApiClient {
     /**
      * Send Message
      *
-     * Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response.
+     * Sends a new message to an existing chat. Blocks until the model response is complete and returns the message response. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided.
      */
     public send<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
-        message: string;
+        message?: string;
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         systemPrompt?: string;
         modelConfiguration?: {
             /**
@@ -954,6 +1094,7 @@ export class Messages extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
                     { in: 'body', key: 'message' },
+                    { in: 'body', key: 'designMode' },
                     { in: 'body', key: 'systemPrompt' },
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
@@ -996,11 +1137,151 @@ export class Messages extends HeyApiClient {
     /**
      * Send Message (Streaming)
      *
-     * Sends a new message to an existing chat and returns a Server-Sent Events stream. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.
+     * Sends a new message to an existing chat and returns a Server-Sent Events stream. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Events include the initial assistant-message snapshot, content chunk deltas, final usage, and a closing message snapshot. The response is `text/event-stream`; each event is `data: <JSON>\n\n` where the JSON conforms to MessageStreamEvent. If the stream disconnects before the final event, reconnect with `POST /chats/{chatId}/resume` instead of sending the message again.
      */
     public sendStream<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
-        message: string;
+        message?: string;
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         systemPrompt?: string;
         modelConfiguration?: {
             /**
@@ -1064,6 +1345,7 @@ export class Messages extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
                     { in: 'body', key: 'message' },
+                    { in: 'body', key: 'designMode' },
                     { in: 'body', key: 'systemPrompt' },
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },
@@ -1086,11 +1368,151 @@ export class Messages extends HeyApiClient {
     /**
      * Send Message (Async)
      *
-     * Sends a new message to an existing chat and processes it in the background. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.
+     * Sends a new message to an existing chat and processes it in the background. Include designMode to apply element-scoped design edits; message may be omitted when edits are provided. Returns immediately with the assistant message ID. Poll GET /chats/:chatId/messages/:messageId and check `finishReason` to detect completion.
      */
     public sendAsync<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
-        message: string;
+        message?: string;
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         systemPrompt?: string;
         modelConfiguration?: {
             /**
@@ -1154,6 +1576,7 @@ export class Messages extends HeyApiClient {
         const params = buildClientParams([parameters], [{ args: [
                     { in: 'path', key: 'chatId' },
                     { in: 'body', key: 'message' },
+                    { in: 'body', key: 'designMode' },
                     { in: 'body', key: 'systemPrompt' },
                     { in: 'body', key: 'modelConfiguration' },
                     { in: 'body', key: 'mcpServerIds' },

@@ -3449,9 +3449,152 @@ export type MessagesListResponse = MessagesListResponses[keyof MessagesListRespo
 export type MessagesSendData = {
     body: {
         /**
-         * The prompt or instruction to send to the model.
+         * The prompt or instruction to send to the model. May be omitted when designMode contains edits.
          */
-        message: string;
+        message?: string;
+        /**
+         * Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.
+         */
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
@@ -3624,9 +3767,152 @@ export type MessagesGetResponse = MessagesGetResponses[keyof MessagesGetResponse
 export type MessagesSendStreamData = {
     body: {
         /**
-         * The prompt or instruction to send to the model.
+         * The prompt or instruction to send to the model. May be omitted when designMode contains edits.
          */
-        message: string;
+        message?: string;
+        /**
+         * Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.
+         */
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
@@ -3749,9 +4035,152 @@ export type MessagesSendStreamResponse = MessagesSendStreamResponses[keyof Messa
 export type MessagesSendAsyncData = {
     body: {
         /**
-         * The prompt or instruction to send to the model.
+         * The prompt or instruction to send to the model. May be omitted when designMode contains edits.
          */
-        message: string;
+        message?: string;
+        /**
+         * Apply element-scoped design edits using Design Mode. Source changes are model-generated, not deterministic DOM patches. The Design Mode model is selected automatically, regardless of modelConfiguration.modelId.
+         */
+        designMode?: {
+            /**
+             * Element edits to apply to the source code. Maximum 100.
+             */
+            edits?: Array<{
+                type: 'style';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * CSS property names in camelCase mapped to old and new values. Use textContent for text replacement.
+                 */
+                changes: {
+                    [key: string]: {
+                        /**
+                         * Previous value. Context for the model, not a checked precondition.
+                         */
+                        from: string;
+                        /**
+                         * Requested value.
+                         */
+                        to: string;
+                    };
+                };
+            } | {
+                type: 'deleteElement';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+            } | {
+                type: 'move';
+                element: {
+                    /**
+                     * CSS selector identifying the rendered element.
+                     */
+                    selectorPath: string;
+                    /**
+                     * HTML tag name, such as h1 or button.
+                     */
+                    tagName: string;
+                    /**
+                     * Element ID, if present.
+                     */
+                    id?: string;
+                    /**
+                     * Element CSS classes.
+                     */
+                    classNames?: Array<string>;
+                    /**
+                     * Current text of the element, to help locate its source.
+                     */
+                    textContent?: string;
+                    /**
+                     * React component name, if known.
+                     */
+                    reactComponentName?: string;
+                };
+                /**
+                 * Destination parent selector. Required when position is inside.
+                 */
+                toParentSelector?: string;
+                /**
+                 * Destination sibling selector. Required when position is before or after.
+                 */
+                targetSelector?: string;
+                /**
+                 * Placement relative to the destination.
+                 */
+                position: 'before' | 'after' | 'inside';
+            } | {
+                type: 'fontInjection';
+                /**
+                 * Font to add to the project, such as Inter.
+                 */
+                fontName: string;
+            }>;
+            /**
+             * CSS selector limiting the scope of the message instructions.
+             */
+            element?: string;
+            /**
+             * Screenshot providing visual context for the requested edits.
+             */
+            screenshot?: {
+                /**
+                 * HTTPS image URL or base64 image data URI. Counts toward the attachment limits. Not supported for Vercel OIDC principals.
+                 */
+                url: string;
+                /**
+                 * CSS selector anchoring the screenshot to a rendered element.
+                 */
+                anchorElement?: string;
+            };
+        };
         /**
          * System-level context for the chat, such as frameworks or development environment details.
          */
