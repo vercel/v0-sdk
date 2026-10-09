@@ -10,7 +10,10 @@ import { assistant, done, streamResponse, update, wire } from './design-mode-str
 ).IS_REACT_ACT_ENVIRONMENT = true
 const refreshMessages = mock(async () => ({ messages: [], cursor: null }))
 const refreshFiles = mock(async () => ({ files: [] }))
+// Preserve unrelated hooks for test files that run after this module mock.
+const swrHooks = await import('@v0-sdk/react/swr')
 mock.module('@v0-sdk/react/swr', () => ({
+  ...swrHooks,
   useMessages: () => ({ mutate: refreshMessages }),
   useFiles: () => ({ mutate: refreshFiles }),
 }))
