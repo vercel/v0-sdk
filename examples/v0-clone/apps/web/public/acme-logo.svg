@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <style>
+    .background { fill: #0a0a0a; }
+    .letter { fill: #fff; }
+    @media (prefers-color-scheme: dark) {
+      .background { fill: #f5f5f5; }
+      .letter { fill: #171717; }
+    }
+  </style>
+  <rect class="background" width="24" height="24" rx="6" />
+  <text class="letter" x="12" y="12" dy=".35em" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="600">A</text>
+</svg>

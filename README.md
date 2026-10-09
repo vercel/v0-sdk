@@ -4,7 +4,7 @@ TypeScript SDK for the v0 API.
 
 This repository contains the v2 SDK package and compatible examples:
 
-- [`v0`](./packages/v0-sdk) - TypeScript SDK generated from the v0 API OpenAPI schema, with helpers for streaming responses and Vercel OIDC auth.
+- [`v0`](./packages/v0-sdk) - TypeScript SDK generated from the v0 API OpenAPI schema, with helpers for streaming responses, Vercel OIDC auth, and browser-side Design Mode integration.
 - [`@v0-sdk/react`](./packages/react) - AI SDK transport and generated `/swr` hooks for browser clients that call an application-owned v0 proxy.
 - [`examples/basic`](./examples/basic) - Small TypeScript scripts for synchronous and streaming chat creation.
 - [`examples/react-chat`](./examples/react-chat) - Minimal Next.js chat using AI SDK `useChat` with `V0Transport`.
@@ -76,6 +76,14 @@ for await (const update of result.stream) {
 
 console.log(await result.final)
 ```
+
+## Design Mode
+
+`v0/browser` exports `createDesignModeBridge` for customer-owned frontends that embed v0 previews. It handles enabling/disabling Design Mode, Apply callbacks, screenshot conversion, selection/layer state, document reloads, and connection cleanup—without exposing an API key in the browser.
+
+`toDesignModeMessage` converts raw runtime payloads, and `parseDesignModeMessage` validates normalized input on your backend. Both are also exported from `v0` for server-side use.
+
+See the [Design Mode integration guide](./packages/v0-sdk/README.md#design-mode) for the browser bridge, authenticated backend forwarding, and preview requirements.
 
 ## Development
 

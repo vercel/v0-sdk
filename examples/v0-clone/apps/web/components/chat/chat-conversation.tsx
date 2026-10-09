@@ -16,15 +16,24 @@ import { ConversationView } from '@/components/chat/conversation-view'
 import { PromptBox } from '@/components/prompt-box'
 import type { ResolveTask } from '@/components/chat/task-resolution'
 import { useSettings } from '@/lib/hooks/useSettings'
+import { withDesignModeTurn, type DesignModeTurn } from '@/lib/design-mode-message'
 
 export function ChatConversation({
   chatId,
   messages: initialMessages,
+  externallyBusy,
+  designTurn,
+  onDesignTurnSettled,
+  onBusyChange,
   onContentChange,
   vercelProjectId,
 }: {
   chatId: string
   messages: Message[]
+  externallyBusy: boolean
+  designTurn: DesignModeTurn | null
+  onDesignTurnSettled: () => void
+  onBusyChange: (busy: boolean) => void
   onContentChange: () => void
   vercelProjectId?: string
 }) {
@@ -88,6 +97,11 @@ export function ChatConversation({
   })
 
   const chatIsBusy = status === 'submitted' || status === 'streaming'
+  const busy = chatIsBusy || isResolving || isStopping || restoringMessageId !== null
+  useEffect(() => {
+    onBusyChange(busy)
+  }, [busy, onBusyChange])
+
   const activeAssistantMessage = resolvingMessageId
     ? uiMessages.find((message) => message.id === resolvingMessageId)
     : uiMessages.findLast(
@@ -112,6 +126,7 @@ export function ChatConversation({
   }
 
   const submitMessage = async (message: string) => {
+    if (externallyBusy) return
     setActionError(null)
     clearError()
 
@@ -129,6 +144,7 @@ export function ChatConversation({
   }
 
   const restoreMessage = async (messageId: string) => {
+    if (externallyBusy) return
     setActionError(null)
     setRestoringMessageId(messageId)
 
@@ -143,6 +159,7 @@ export function ChatConversation({
   }
 
   const resolveTask = async (task: ResolveTask) => {
+    if (externallyBusy) return
     setActionError(null)
     clearError()
     setIsResolving(true)
@@ -197,16 +214,34 @@ export function ChatConversation({
     }
   }
 
-  const isSubmitting = chatIsBusy || isResolving
+  const designAssistantId = designTurn?.assistant?.id
+  useEffect(() => {
+    if (
+      !externallyBusy &&
+      designAssistantId &&
+      uiMessages.some((message) => message.id === designAssistantId)
+    ) {
+      onDesignTurnSettled()
+    }
+  }, [designAssistantId, externallyBusy, onDesignTurnSettled, uiMessages])
+  const visibleMessages = useMemo(
+    () => withDesignModeTurn(uiMessages, designTurn),
+    [uiMessages, designTurn],
+  )
+  const isSubmitting = chatIsBusy || isResolving || externallyBusy
   const isStreaming =
-    activeAssistantMessage !== undefined && (status === 'streaming' || resolvingMessageId !== null)
+    (externallyBusy && Boolean(designTurn?.assistant)) ||
+    (activeAssistantMessage !== undefined &&
+      (status === 'streaming' || resolvingMessageId !== null))
   const error = actionError ?? chatError?.message
 
   return (
     <>
       <ConversationView
         isStreaming={isStreaming}
-        messages={uiMessages}
+        isProcessing={externallyBusy || status === 'submitted'}
+        processingLabel={externallyBusy ? 'Applying design changes…' : 'Thinking…'}
+        messages={visibleMessages}
         onRejectPermission={() => submitMessage('Do not run this action. Continue without it.')}
         onResolveTask={resolveTask}
         onRestoreMessage={restoreMessage}

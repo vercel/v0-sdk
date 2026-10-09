@@ -3,6 +3,7 @@
 import type { V0UIMessage } from '@v0-sdk/react'
 import type { ReactNode } from 'react'
 import { Response } from '@/components/ai-elements/response'
+import { persistedDesignModeText } from '@/lib/design-mode-message'
 import {
   AgentIcon,
   ChevronDownIcon,
@@ -27,16 +28,35 @@ export function MessageParts({
   isStreaming?: boolean
 }) {
   if (message.role === 'user') {
+    const text = message.parts
+      .filter((part) => part.type === 'text')
+      .map((part) => part.text)
+      .join('\n')
+    const designModeText = persistedDesignModeText(text)
+    if (designModeText !== null) {
+      return <p className="whitespace-pre-wrap [overflow-wrap:anywhere]">{designModeText}</p>
+    }
     return (
       <div className="flex min-w-0 flex-col gap-2">
-        {message.parts.map((part, index) => (
-          <MessagePartView
-            isAssistant={false}
-            isStreaming={false}
-            key={`${message.id}-${index}`}
-            part={part}
-          />
-        ))}
+        {message.parts
+          .filter((part) => part.type !== 'file')
+          .map((part, index) =>
+            part.type === 'text' ? (
+              <p
+                className="whitespace-pre-wrap [overflow-wrap:anywhere]"
+                key={`${message.id}-${index}`}
+              >
+                {part.text}
+              </p>
+            ) : (
+              <MessagePartView
+                isAssistant={false}
+                isStreaming={false}
+                key={`${message.id}-${index}`}
+                part={part}
+              />
+            ),
+          )}
       </div>
     )
   }
