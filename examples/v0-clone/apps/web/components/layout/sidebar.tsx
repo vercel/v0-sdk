@@ -56,9 +56,7 @@ function SidebarSkeleton({
         <div className="flex w-64 flex-1 flex-col gap-1 overflow-y-auto p-2">
           <div className="mb-1 flex items-center gap-1">
             <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-1.5 py-1 text-sm font-medium text-sidebar-foreground">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-foreground text-xs font-semibold text-background">
-                A
-              </span>
+              <img src="/acme-logo.svg" alt="" width={24} height={24} className="size-6 shrink-0" />
               <span className="truncate">Acme Team</span>
               <ChevronDownIcon className="ml-auto size-3.5 text-muted-foreground" />
             </div>
@@ -190,9 +188,7 @@ function SidebarContent({ open, apiKeyStatus, onToggle, sidebarChats }: SidebarP
         <div className="flex w-64 flex-1 flex-col gap-1 overflow-y-auto p-2">
           <div className="mb-1 flex items-center gap-1">
             <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-1.5 py-1 text-sm font-medium text-sidebar-foreground">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-foreground text-xs font-semibold text-background">
-                A
-              </span>
+              <img src="/acme-logo.svg" alt="" width={24} height={24} className="size-6 shrink-0" />
               <span className="truncate">Acme Team</span>
               <ChevronDownIcon className="ml-auto size-3.5 text-muted-foreground" />
             </div>

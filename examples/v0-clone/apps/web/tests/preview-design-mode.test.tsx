@@ -109,7 +109,10 @@ beforeEach(() => {
   fetchMock.mockClear()
   fetchMock.mockResolvedValue(streamResponse())
   globalThis.fetch = fetchMock as unknown as typeof fetch
-  Object.defineProperty(globalThis, 'window', { configurable: true, value: new EventTarget() })
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: Object.assign(new EventTarget(), { location: { origin: 'https://acme.example' } }),
+  })
 })
 
 afterEach(async () => {
@@ -170,6 +173,10 @@ describe('example Design Mode preview', () => {
   test('toggles the helper and only constructs one bridge across state updates', async () => {
     const { instance } = await render()
     expect(instance.options.targetOrigin).toBe('https://preview.example')
+    expect(instance.options.logo).toEqual({
+      url: 'https://acme.example/acme-logo.svg',
+      alt: 'Acme Team',
+    })
     await act(async () => {
       designButton().props['onClick']()
     })

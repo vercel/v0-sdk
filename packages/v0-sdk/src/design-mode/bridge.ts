@@ -4,11 +4,21 @@ import type {
   DesignModeBridge,
   DesignModeBridgeOptions,
   DesignModeLayer,
+  DesignModeLogo,
   DesignModeSelection,
   DesignModeState,
 } from './types'
 
 const activeBridges = new WeakMap<HTMLIFrameElement, DesignModeBridge>()
+
+function parseLogo(value: unknown): DesignModeLogo | undefined {
+  if (value === undefined || typeof value === 'boolean') return value
+  const input = record(value, 'logo')
+  const url = new URL(string(input['url'], 'logo.url'))
+  if ((url.protocol !== 'https:' && url.protocol !== 'http:') || url.username || url.password)
+    throw new TypeError('logo.url must be an HTTP(S) URL without credentials')
+  return { url: url.href, alt: string(input['alt'], 'logo.alt', true) }
+}
 
 function selection(value: unknown): DesignModeSelection | null {
   if (value === null) return null
@@ -77,6 +87,7 @@ export function createDesignModeBridge(options: DesignModeBridgeOptions): Design
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0)
     throw new TypeError('timeoutMs must be positive')
 
+  const logo = parseLogo(options.logo)
   let enabled = options.enabled ?? false
   let disposed = false
   let state: DesignModeState = Object.freeze({
@@ -110,7 +121,12 @@ export function createDesignModeBridge(options: DesignModeBridgeOptions): Design
 
   function toggle() {
     target!.postMessage(
-      { __v0_remote__: 1, type: 'v0_design_mode_toggle', enabled },
+      {
+        __v0_remote__: 1,
+        type: 'v0_design_mode_toggle',
+        enabled,
+        ...(enabled && logo !== undefined ? { logo } : {}),
+      },
       options.targetOrigin,
     )
   }

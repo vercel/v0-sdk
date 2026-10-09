@@ -97,6 +97,58 @@ describe('createDesignModeBridge', () => {
     ])
   })
 
+  test.each([true, false, { url: 'https://acme.example/logo.svg', alt: 'Acme Team' }])(
+    'sends configured branding on enable and restores it after reload: %j',
+    async (logo) => {
+      const { runtime, bridge } = fixture({ logo })
+      runtime.connect()
+      await bridge.ready
+      const expected = { __v0_remote__: 1, type: 'v0_design_mode_toggle', enabled: true, logo }
+      expect(runtime.child.posted.at(-1)?.data).toEqual(expected)
+      runtime.load()
+      expect(runtime.child.posted.at(-1)?.data).toEqual(expected)
+      runtime.connect()
+      await settle()
+      expect(runtime.child.posted.at(-1)?.data).toEqual(expected)
+      bridge.setEnabled(false)
+      expect(runtime.child.posted.at(-1)?.data).toEqual({
+        __v0_remote__: 1,
+        type: 'v0_design_mode_toggle',
+        enabled: false,
+      })
+      bridge.setEnabled(true)
+      expect(runtime.child.posted.at(-1)?.data).toEqual(expected)
+      bridge.dispose()
+      expect(runtime.child.posted.at(-1)?.data).not.toHaveProperty('logo')
+    },
+  )
+
+  test.each([
+    null,
+    'hidden',
+    {},
+    { url: 'https://acme.example/logo.svg' },
+    { url: '/logo.svg', alt: 'Acme' },
+    { url: 'data:image/svg+xml,<svg/>', alt: 'Acme' },
+    { url: 'javascript:alert(1)', alt: 'Acme' },
+    { url: 'https://user:password@acme.example/logo.svg', alt: 'Acme' },
+    { url: 'https://acme.example/logo.svg', alt: 123 },
+  ])('rejects invalid logo configuration: %j', (logo) => {
+    const runtime = preview()
+    try {
+      expect(() =>
+        createDesignModeBridge({
+          iframe: runtime.iframe,
+          targetOrigin: runtime.child.origin,
+          onApply: async () => {},
+          logo: logo as DesignModeBridgeOptions['logo'],
+        }),
+      ).toThrow()
+    } finally {
+      runtime.cleanup()
+    }
+  })
+
   test('ignores forged state notifications from other windows and origins', () => {
     const { runtime, bridge } = fixture({ enabled: false })
     const notification = { __v0_remote__: 1, type: 'v0_design_mode_state', enabled: true }

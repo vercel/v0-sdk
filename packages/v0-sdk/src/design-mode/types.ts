@@ -44,6 +44,9 @@ export type DesignModeState = Readonly<{
   tree: DesignModeLayer | null
 }>
 
+/** Default v0 branding, no logo, or a custom HTTP(S) image. */
+export type DesignModeLogo = boolean | { url: string; alt: string }
+
 export type DesignModeBridgeOptions = {
   iframe: HTMLIFrameElement
   /** Exact origin of the iframe, including the customer's preview proxy when used. */
@@ -51,6 +54,8 @@ export type DesignModeBridgeOptions = {
   /** Forward the normalized message to your backend. Return false to reject Apply. */
   onApply: (message: DesignModeMessage, context: { signal: AbortSignal }) => Promise<boolean | void>
   enabled?: boolean
+  /** Sent on every enable, including reconnects. Omit to use the runtime's v0 logo. */
+  logo?: DesignModeLogo
   onError?: (error: Error) => void
   /** Timeout for parent-to-preview RPC calls, not for the onApply callback. */
   timeoutMs?: number

@@ -98,6 +98,8 @@ bridge.dispose()
 
 `ready` resolves after a source- and origin-checked runtime handshake. `setEnabled` is an immediate toggle; the runtime can also report changes caused by its own controls. The helper restores the desired enabled state after iframe navigation, clears document-local selection/tree state when the runtime reconnects, and never automatically resubmits an Apply request.
 
+The optional bridge `logo` setting controls runtime editor branding: omit it (or use `true`) for v0, use `false` to hide the logo, or pass `{ url, alt }` for a custom image. Custom URLs must be absolute HTTP(S) URLs without embedded credentials, for example `logo: { url: new URL('/acme-logo.svg', window.location.origin).href, alt: 'Acme Team' }`. The bridge sends the configuration on every enable and restores it after iframe navigation. This requires a preview runtime with parent-controlled logo support; older runtimes retain their default branding.
+
 `getState()` returns an immutable snapshot:
 
 ```ts

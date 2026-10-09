@@ -115,6 +115,8 @@ export function PreviewPane({
     const bridge = createDesignModeBridge({
       iframe,
       targetOrigin: previewProxyOrigin,
+      // The runtime requires an absolute HTTP(S) image URL, not a data URL or preview-relative path.
+      logo: { url: new URL('/acme-logo.svg', window.location.origin).href, alt: 'Acme Team' },
       onApply: (message, context) => apply(message, context),
       onError: (error) => {
         if (active) reportError(error)
