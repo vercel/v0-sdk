@@ -57,7 +57,10 @@ export function PromptBox({
 
   return (
     <PromptInput
-      className={cn('rounded-2xl border-border bg-card shadow-sm', className)}
+      className={cn(
+        '*:data-[slot=input-group]:rounded-2xl *:data-[slot=input-group]:border-border *:data-[slot=input-group]:bg-card *:data-[slot=input-group]:shadow-sm',
+        className,
+      )}
       onSubmit={handleSubmit}
     >
       <PromptInputBody>
