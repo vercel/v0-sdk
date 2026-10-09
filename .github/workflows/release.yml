@@ -82,6 +82,9 @@ jobs:
           bun pm pkg set "version=${VERSION}"
           cd ../..
           bun install --lockfile-only
+          # Bun 1.4.2 needs a second pass to refresh workspace dependency pins.
+          bun install --lockfile-only
+          bun install --frozen-lockfile
           echo "sdk_name=${SDK_NAME}" >> "$GITHUB_OUTPUT"
           echo "ai_tools_name=${AI_TOOLS_NAME}" >> "$GITHUB_OUTPUT"
           echo "react_name=${REACT_NAME}" >> "$GITHUB_OUTPUT"
@@ -167,6 +170,7 @@ jobs:
           (cd packages/ai-tools && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
           (cd packages/react && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
           (cd packages/create-v0-sdk-app && bun pm pkg set "version=${VERSION}")
+          bun install --frozen-lockfile
       - name: Check for existing release PR
         id: existing
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
