@@ -3220,6 +3220,10 @@ export type ChatsCreateStreamErrors = {
      */
     404: Error;
     /**
+     * Response for status 409
+     */
+    409: Error;
+    /**
      * Response for status 422
      */
     422: Error;
@@ -4011,6 +4015,10 @@ export type MessagesSendStreamErrors = {
      * Response for status 404
      */
     404: Error;
+    /**
+     * Response for status 409
+     */
+    409: Error;
     /**
      * Response for status 422
      */
