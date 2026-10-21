@@ -88,9 +88,9 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -356,9 +356,9 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -467,9 +467,9 @@ export class Chats extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1034,9 +1034,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1285,9 +1285,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1516,9 +1516,9 @@ export class Messages extends HeyApiClient {
         systemPrompt?: string;
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1703,9 +1703,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1838,9 +1838,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -1972,9 +1972,9 @@ export class Messages extends HeyApiClient {
         };
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
