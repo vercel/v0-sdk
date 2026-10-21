@@ -2687,9 +2687,9 @@ export type ChatsCreateData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -3104,9 +3104,9 @@ export type ChatsCreateStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -3259,9 +3259,9 @@ export type ChatsCreateAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -3608,9 +3608,9 @@ export type MessagesSendData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -3926,9 +3926,9 @@ export type MessagesSendStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -4198,9 +4198,9 @@ export type MessagesSendAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -4416,9 +4416,9 @@ export type MessagesResolveData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -4581,9 +4581,9 @@ export type MessagesResolveStreamData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */
@@ -4746,9 +4746,9 @@ export type MessagesResolveAsyncData = {
          */
         modelConfiguration?: {
             /**
-             * Model to use for the generation.
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
              */
-            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast';
+            modelId?: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
             /**
              * Enables image generations to generate up to 5 images per version.
              */

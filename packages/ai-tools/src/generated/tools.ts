@@ -135,8 +135,10 @@ const chatsCreateInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -232,8 +234,10 @@ const chatsCreateAsyncInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -410,8 +414,10 @@ const chatsCreateStreamInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -865,8 +871,10 @@ const messagesResolveInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.')
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        )
         .optional(),
       imageGenerations: z
         .boolean()
@@ -1010,8 +1018,10 @@ const messagesResolveAsyncInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.')
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        )
         .optional(),
       imageGenerations: z
         .boolean()
@@ -1155,8 +1165,10 @@ const messagesResolveStreamInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.')
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        )
         .optional(),
       imageGenerations: z
         .boolean()
@@ -1299,8 +1311,10 @@ const messagesSendInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1485,8 +1499,10 @@ const messagesSendAsyncInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
@@ -1671,8 +1687,10 @@ const messagesSendStreamInputSchema = z.object({
   modelConfiguration: z
     .object({
       modelId: z
-        .enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast'])
-        .describe('Model to use for the generation.'),
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
       imageGenerations: z
         .boolean()
         .describe('Enables image generations to generate up to 5 images per version.'),
