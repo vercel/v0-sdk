@@ -2581,6 +2581,14 @@ export type ChatsListData = {
          */
         cursor?: string;
         /**
+         * Field to sort chats by (default createdAt). Pass the same value when paginating with a cursor.
+         */
+        orderBy?: 'createdAt' | 'updatedAt';
+        /**
+         * Sort direction (default desc, newest first). Pass the same value when paginating with a cursor.
+         */
+        orderDirection?: 'asc' | 'desc';
+        /**
          * Restrict results to chats created by this user. Must be a member of the calling scope.
          */
         authorId?: string;
@@ -3088,6 +3096,87 @@ export type ChatsCreateFromVercelProjectResponses = {
 };
 
 export type ChatsCreateFromVercelProjectResponse = ChatsCreateFromVercelProjectResponses[keyof ChatsCreateFromVercelProjectResponses];
+
+export type ChatsCreateFromVercelProjectWithMessageAsyncData = {
+    body: {
+        /**
+         * Vercel project ID in the active user or team scope.
+         */
+        vercelProjectId: string;
+        /**
+         * Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.
+         */
+        baseBranch?: string;
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
+        /**
+         * The prompt or instruction to send to the model.
+         */
+        message: string;
+        /**
+         * Overrides for the model behavior.
+         */
+        modelConfiguration?: {
+            /**
+             * Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.
+             */
+            modelId: 'v0-mini' | 'v0-pro' | 'v0-max' | 'v0-max-fast' | string;
+            /**
+             * Enables image generations to generate up to 5 images per version.
+             */
+            imageGenerations: boolean;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/chats/from-vercel-project/async';
+};
+
+export type ChatsCreateFromVercelProjectWithMessageAsyncErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromVercelProjectWithMessageAsyncError = ChatsCreateFromVercelProjectWithMessageAsyncErrors[keyof ChatsCreateFromVercelProjectWithMessageAsyncErrors];
+
+export type ChatsCreateFromVercelProjectWithMessageAsyncResponses = {
+    /**
+     * Response for status 202
+     */
+    202: AsyncChat;
+};
+
+export type ChatsCreateFromVercelProjectWithMessageAsyncResponse = ChatsCreateFromVercelProjectWithMessageAsyncResponses[keyof ChatsCreateFromVercelProjectWithMessageAsyncResponses];
 
 export type ChatsCreateStreamData = {
     body: {

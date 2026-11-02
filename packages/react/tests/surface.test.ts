@@ -26,6 +26,9 @@ describe('generated hook surface', () => {
     expect(V0_REACT_OPERATION_HOOKS['chats.createFromVercelProject']).toBe(
       'useCreateChatFromVercelProject',
     )
+    expect(V0_REACT_OPERATION_HOOKS['chats.createFromVercelProjectWithMessageAsync']).toBe(
+      'useCreateChatFromVercelProjectWithMessageAsync',
+    )
     expect(V0_REACT_OPERATION_HOOKS['chats.createStream']).toBe('useCreateChat')
     expect(V0_REACT_OPERATION_HOOKS['chats.create']).toBe('useCreateChatBlocking')
     expect(V0_REACT_OPERATION_HOOKS['messages.sendStream']).toBe('useSendMessage')

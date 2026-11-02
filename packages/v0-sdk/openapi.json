@@ -5659,7 +5659,7 @@
           "Chats"
         ],
         "summary": "List Chats",
-        "description": "Lists chats accessible to the authenticated user. Use metadata[key]=value style query parameters to filter by metadata.",
+        "description": "Lists chats accessible to the authenticated user, newest first. Use it to list, browse, find or search v0 chats when you do not have a chat ID. Use metadata[key]=value style query parameters to filter chats by metadata.",
         "operationId": "chats.list",
         "parameters": [
           {
@@ -5682,6 +5682,34 @@
               "type": "string"
             },
             "description": "Pagination cursor returned from a previous response."
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "updatedAt"
+              ],
+              "default": "createdAt"
+            },
+            "description": "Field to sort chats by (default createdAt). Pass the same value when paginating with a cursor."
+          },
+          {
+            "name": "orderDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction (default desc, newest first). Pass the same value when paginating with a cursor."
           },
           {
             "name": "authorId",
@@ -6365,7 +6393,7 @@
           "Chats"
         ],
         "summary": "Create Chat From Repository",
-        "description": "Creates a new chat from a GitHub repository.",
+        "description": "Creates a new chat from a GitHub repository. If the repository is already linked to a Vercel project in the current scope, the chat uses that project. Otherwise, a new Vercel project linked to the repository is created. To start from a specific project, create the chat from that Vercel project instead.",
         "operationId": "chats.createFromRepo",
         "requestBody": {
           "required": true,
@@ -6795,6 +6823,371 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChatWithUsage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/from-vercel-project/async": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create Chat From Vercel Project With Message (Async)",
+        "description": "Creates a new chat from an existing Vercel project and processes a first message in the background. Returns immediately with the chat ID and message ID. Poll for the assistant message by ID until `finishReason` is non-null. If the chat is created but the message cannot be sent, the error names the chat; retry with `messages.sendAsync` instead of creating another chat.",
+        "operationId": "chats.createFromVercelProjectWithMessageAsync",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "vercelProjectId": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$",
+                    "description": "Vercel project ID in the active user or team scope."
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
+                    "type": "object",
+                    "properties": {
+                      "modelId": {
+                        "default": "v0-pro",
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "v0-mini",
+                              "v0-pro",
+                              "v0-max",
+                              "v0-max-fast"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 200,
+                            "pattern": "^[a-z0-9][a-z0-9._-]*\\/[a-z0-9][a-z0-9._/-]*$"
+                          }
+                        ],
+                        "description": "Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected."
+                      },
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
+                      }
+                    },
+                    "required": [
+                      "modelId",
+                      "imageGenerations"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "vercelProjectId",
+                  "message"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "vercelProjectId": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$",
+                    "description": "Vercel project ID in the active user or team scope."
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
+                    "type": "object",
+                    "properties": {
+                      "modelId": {
+                        "default": "v0-pro",
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "v0-mini",
+                              "v0-pro",
+                              "v0-max",
+                              "v0-max-fast"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 200,
+                            "pattern": "^[a-z0-9][a-z0-9._-]*\\/[a-z0-9][a-z0-9._/-]*$"
+                          }
+                        ],
+                        "description": "Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected."
+                      },
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
+                      }
+                    },
+                    "required": [
+                      "modelId",
+                      "imageGenerations"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "vercelProjectId",
+                  "message"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "vercelProjectId": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$",
+                    "description": "Vercel project ID in the active user or team scope."
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The prompt or instruction to send to the model."
+                  },
+                  "modelConfiguration": {
+                    "description": "Overrides for the model behavior.",
+                    "type": "object",
+                    "properties": {
+                      "modelId": {
+                        "default": "v0-pro",
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "v0-mini",
+                              "v0-pro",
+                              "v0-max",
+                              "v0-max-fast"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 200,
+                            "pattern": "^[a-z0-9][a-z0-9._-]*\\/[a-z0-9][a-z0-9._/-]*$"
+                          }
+                        ],
+                        "description": "Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected."
+                      },
+                      "imageGenerations": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Enables image generations to generate up to 5 images per version."
+                      }
+                    },
+                    "required": [
+                      "modelId",
+                      "imageGenerations"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "vercelProjectId",
+                  "message"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Response for status 202",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsyncChat"
                 }
               }
             }
