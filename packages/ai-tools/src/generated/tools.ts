@@ -18,6 +18,7 @@ export type V0ToolName =
   | 'chatsCreateFromFiles'
   | 'chatsCreateFromRepo'
   | 'chatsCreateFromVercelProject'
+  | 'chatsCreateFromVercelProjectWithMessageAsync'
   | 'chatsCreateFromZip'
   | 'chatsCreateStream'
   | 'chatsCreateVercelProject'
@@ -71,6 +72,7 @@ export type V0ToolsByCategory = {
     | 'chatsCreateFromFiles'
     | 'chatsCreateFromRepo'
     | 'chatsCreateFromVercelProject'
+    | 'chatsCreateFromVercelProjectWithMessageAsync'
     | 'chatsCreateFromZip'
     | 'chatsCreateStream'
     | 'chatsCreateVercelProject'
@@ -390,6 +392,39 @@ const chatsCreateFromVercelProjectInputSchema = z.object({
     .optional(),
 })
 
+const chatsCreateFromVercelProjectWithMessageAsyncInputSchema = z.object({
+  vercelProjectId: z.string().describe('Vercel project ID in the active user or team scope.'),
+  baseBranch: z
+    .string()
+    .describe(
+      'Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.',
+    )
+    .optional(),
+  privacy: z
+    .enum(['public', 'private', 'team', 'team-edit', 'unlisted'])
+    .describe('Visibility setting for the new chat.')
+    .optional(),
+  title: z.string().describe('Title for the new chat.').optional(),
+  metadata: z
+    .record(z.string(), z.string())
+    .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+  message: z.string().describe('The prompt or instruction to send to the model.'),
+  modelConfiguration: z
+    .object({
+      modelId: z
+        .union([z.enum(['v0-mini', 'v0-pro', 'v0-max', 'v0-max-fast']), z.string()])
+        .describe(
+          'Model to use for the generation. Use a v0 model ID, or an [AI Gateway](https://vercel.com/ai-gateway/models) model ID in `creator/model` format. Gateway models must support tool calling and Zero Data Retention, and are subject to team model policy; unsupported IDs are rejected.',
+        ),
+      imageGenerations: z
+        .boolean()
+        .describe('Enables image generations to generate up to 5 images per version.'),
+    })
+    .describe('Overrides for the model behavior.')
+    .optional(),
+})
+
 const chatsCreateFromZipInputSchema = z.object({
   url: z.string().url().describe('Zip archive used to seed the new chat.'),
   privacy: z
@@ -563,6 +598,18 @@ const chatsListInputSchema = z.object({
     .describe('Maximum number of chats to return (1-100, default 20).')
     .optional(),
   cursor: z.string().describe('Pagination cursor returned from a previous response.').optional(),
+  orderBy: z
+    .enum(['createdAt', 'updatedAt'])
+    .describe(
+      'Field to sort chats by (default createdAt). Pass the same value when paginating with a cursor.',
+    )
+    .optional(),
+  orderDirection: z
+    .enum(['asc', 'desc'])
+    .describe(
+      'Sort direction (default desc, newest first). Pass the same value when paginating with a cursor.',
+    )
+    .optional(),
   authorId: z
     .string()
     .describe(
@@ -1904,7 +1951,8 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
       },
     }),
     chatsCreateFromRepo: tool({
-      description: 'Create Chat From Repository: Creates a new chat from a GitHub repository.',
+      description:
+        'Create Chat From Repository: Creates a new chat from a GitHub repository. If the repository is already linked to a Vercel project in the current scope, the chat uses that project. Otherwise, a new Vercel project linked to the repository is created. To start from a specific project, create the chat from that Vercel project instead.',
       inputSchema: chatsCreateFromRepoInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -1929,6 +1977,23 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           metadata: input.metadata,
         }
         return toToolResult(await client.chats.createFromVercelProject(parameters))
+      },
+    }),
+    chatsCreateFromVercelProjectWithMessageAsync: tool({
+      description:
+        'Create Chat From Vercel Project With Message (Async): Creates a new chat from an existing Vercel project and processes a first message in the background. Returns immediately with the chat ID and message ID. Poll for the assistant message by ID until `finishReason` is non-null. If the chat is created but the message cannot be sent, the error names the chat; retry with `messages.sendAsync` instead of creating another chat.',
+      inputSchema: chatsCreateFromVercelProjectWithMessageAsyncInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          vercelProjectId: input.vercelProjectId,
+          baseBranch: input.baseBranch,
+          privacy: input.privacy,
+          title: input.title,
+          metadata: input.metadata,
+          message: input.message,
+          modelConfiguration: input.modelConfiguration,
+        }
+        return toToolResult(await client.chats.createFromVercelProjectWithMessageAsync(parameters))
       },
     }),
     chatsCreateFromZip: tool({
@@ -2066,12 +2131,14 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     chatsList: tool({
       description:
-        'List Chats: Lists chats accessible to the authenticated user. Use metadata[key]=value style query parameters to filter by metadata.',
+        'List Chats: Lists chats accessible to the authenticated user, newest first. Use it to list, browse, find or search v0 chats when you do not have a chat ID. Use metadata[key]=value style query parameters to filter chats by metadata.',
       inputSchema: chatsListInputSchema,
       execute: async (input) => {
         const parameters = {
           limit: input.limit,
           cursor: input.cursor,
+          orderBy: input.orderBy,
+          orderDirection: input.orderDirection,
           authorId: input.authorId,
           vercelProjectId: input.vercelProjectId,
           metadata: input.metadata,
@@ -2470,6 +2537,10 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsCreateFromFiles: pickTool(tools, 'chatsCreateFromFiles'),
       chatsCreateFromRepo: pickTool(tools, 'chatsCreateFromRepo'),
       chatsCreateFromVercelProject: pickTool(tools, 'chatsCreateFromVercelProject'),
+      chatsCreateFromVercelProjectWithMessageAsync: pickTool(
+        tools,
+        'chatsCreateFromVercelProjectWithMessageAsync',
+      ),
       chatsCreateFromZip: pickTool(tools, 'chatsCreateFromZip'),
       chatsCreateStream: pickTool(tools, 'chatsCreateStream'),
       chatsCreateVercelProject: pickTool(tools, 'chatsCreateVercelProject'),

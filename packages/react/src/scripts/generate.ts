@@ -48,6 +48,7 @@ const semanticNames = {
   'chats.createFromZip': 'useCreateChatFromZip',
   'chats.createFromRepo': 'useCreateChatFromRepo',
   'chats.createFromVercelProject': 'useCreateChatFromVercelProject',
+  'chats.createFromVercelProjectWithMessageAsync': 'useCreateChatFromVercelProjectWithMessageAsync',
   'chats.createStream': 'useCreateChat',
   'chats.createAsync': 'useCreateChatAsync',
   'messages.list': 'useMessages',

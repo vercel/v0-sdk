@@ -6,6 +6,7 @@ import {
   createV0Key,
   useChat,
   useChats,
+  useCreateChatFromVercelProjectWithMessageAsync,
   useDownloadChatFiles,
   useMessagesInfinite,
   useSendMessage,
@@ -140,6 +141,40 @@ describe('v0 React hooks', () => {
     expect(request?.url).toBe('http://localhost/proxy/chats/chat_1/messages')
     expect(await request?.clone().json()).toEqual({ message: 'Hello' })
     expect(state?.data?.id).toBe('assistant_1')
+  })
+
+  test('creates a chat from a Vercel project with an async first message', async () => {
+    let request: Request | undefined
+    let state: ReturnType<typeof useCreateChatFromVercelProjectWithMessageAsync> | undefined
+    const response = { chatId: 'chat_1', messageId: 'assistant_1' }
+
+    function Fixture() {
+      state = useCreateChatFromVercelProjectWithMessageAsync(
+        'http://localhost/api/v0/chats/from-vercel-project/async',
+        {
+          request: {
+            fetch: async (input) => {
+              request = input instanceof Request ? input : new Request(input)
+              return Response.json(response, { status: 202 })
+            },
+          },
+        },
+      )
+      return null
+    }
+
+    renderer = await renderV0Hook(<Fixture />)
+    expect(request).toBeUndefined()
+
+    const body = { vercelProjectId: `prj_${'a'.repeat(28)}`, message: 'Build a dashboard' }
+    await act(async () => {
+      expect(await state!.trigger(body)).toEqual(response)
+    })
+
+    expect(request?.method).toBe('POST')
+    expect(request?.url).toBe('http://localhost/api/v0/chats/from-vercel-project/async')
+    expect(await request?.clone().json()).toEqual(body)
+    expect(state?.data).toEqual(response)
   })
 
   test('returns an unconsumed raw response for streaming mutations', async () => {
