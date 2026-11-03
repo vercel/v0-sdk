@@ -67,7 +67,7 @@ Then run from the repository root:
 ```bash
 bun install
 bun run build # Build the local SDK packages, including v0/browser helpers.
-bun --filter v0-clone dev
+bun run dev:v0-clone
 ```
 
 The one `dev` command starts both apps:
