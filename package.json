@@ -14,7 +14,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "ci": "turbo run lint fmt:check check:versions generate build typecheck test --filter=tag:ci",
-    "dev:v0-clone": "dotenv -e examples/v0-clone/.env.local -- turbo run dev --filter='./examples/v0-clone/apps/*'",
+    "dev:v0-clone": "bun --env-file=examples/v0-clone/.env.local run turbo run dev --filter='./examples/v0-clone/apps/*'",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
@@ -22,7 +22,6 @@
     "check:versions": "sh scripts/check-versions.sh"
   },
   "devDependencies": {
-    "dotenv-cli": "^8.0.0",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
     "turbo": "^2.11.7"
