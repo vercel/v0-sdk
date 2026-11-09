@@ -7,6 +7,18 @@ checked-in SDK copy of the v0 repo's `api/openapi-v2.json` spec. This is the
 same OpenAPI document used to generate the `v0` SDK. Every OpenAPI operation is
 exposed with a canonical key derived from its full `operationId`.
 
+## Requirements
+
+- `ai` 6.x or 7.x as a peer dependency. AI SDK 5 is no longer supported
+  because AI Gateway is removing support for it.
+- Node.js 22 or newer if you use AI SDK 7.
+
+If you are still on `ai@5`, upgrade it alongside this package:
+
+```sh
+npm install ai@^7 @v0-sdk/ai-tools@latest
+```
+
 ```ts
 import { generateText } from 'ai'
 import { openai } from '@ai-sdk/openai'

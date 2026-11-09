@@ -164,7 +164,7 @@ describe('generated v0 tools', () => {
         chatId: 'chat_123',
         message: 'Build a dashboard',
       },
-      { toolCallId: 'tool_call_123', messages: [] },
+      { toolCallId: 'tool_call_123', messages: [], context: {} },
     )
 
     expect(result).toEqual({ id: 'message_123' })
@@ -200,7 +200,7 @@ describe('generated v0 tools', () => {
         start: '2026-08-01T00:00:00.000Z',
         end: '2026-08-08T00:00:00.000Z',
       },
-      { toolCallId: 'tool_call_123', messages: [] },
+      { toolCallId: 'tool_call_123', messages: [], context: {} },
     )
 
     expect(calls).toEqual([
@@ -240,7 +240,7 @@ describe('generated v0 tools', () => {
         chatId: 'chat_123',
         message: 'Build a dashboard',
       },
-      { toolCallId: 'tool_call_123', messages: [] },
+      { toolCallId: 'tool_call_123', messages: [], context: {} },
     )
 
     expect(typeof (result as AsyncIterable<unknown>)[Symbol.asyncIterator]).toBe('function')
