@@ -44,11 +44,11 @@
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.8",
     "@types/bun": "latest",
-    "ai": "^5.0.0",
+    "ai": "^7.0.166",
     "tsdown": "^0.21.4",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "ai": "^5.0.0"
+    "ai": "^7.0.0"
   }
 }
