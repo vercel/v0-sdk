@@ -9,9 +9,9 @@ exposed with a canonical key derived from its full `operationId`.
 
 ## Requirements
 
-- `ai` 7.x as a peer dependency. AI SDK 5 is no longer supported because AI
-  Gateway is removing support for it.
-- Node.js 22 or newer, as required by AI SDK 7.
+- `ai` 6.x or 7.x as a peer dependency. AI SDK 5 is no longer supported
+  because AI Gateway is removing support for it.
+- Node.js 22 or newer if you use AI SDK 7.
 
 If you are still on `ai@5`, upgrade it alongside this package:
 

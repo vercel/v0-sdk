@@ -1,6 +1,6 @@
 {
   "name": "@v0-sdk/ai-tools",
-  "version": "3.0.13",
+  "version": "4.0.0",
   "description": "AI SDK tools for the v0 Platform API",
   "keywords": [
     "ai",
@@ -38,7 +38,7 @@
     "prepublishOnly": "bun run generate && bun run build"
   },
   "dependencies": {
-    "v0": "3.0.13",
+    "v0": "4.0.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {
@@ -49,6 +49,6 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "ai": "^7.0.0"
+    "ai": ">=6.0.0"
   }
 }
