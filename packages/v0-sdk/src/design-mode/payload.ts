@@ -161,7 +161,8 @@ export function parseDesignModeMessage(value: unknown): DesignModeMessage {
  */
 export function toDesignModeMessage(payload: unknown): DesignModeMessage {
   const input = record(payload, 'Design Mode payload')
-  const edits = input['edits']
+  let edits = input['edits']
+  if (edits === undefined) edits = []
   if (!Array.isArray(edits) || edits.length > 100) {
     throw new TypeError('edits must be an array containing at most 100 edits')
   }

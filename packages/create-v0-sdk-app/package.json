@@ -27,7 +27,7 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "bun run clean && tsc",
-    "clean": "rm -rf dist *.tsbuildinfo",
+    "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'No linting configured for create-v0-sdk-app package'",
     "prepublishOnly": "bun run build"

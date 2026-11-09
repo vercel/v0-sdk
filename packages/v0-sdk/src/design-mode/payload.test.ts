@@ -166,6 +166,11 @@ describe('toDesignModeMessage', () => {
         instructions: { message: 'Change this image', element: 'img.hero' },
       }),
     ).toEqual({ message: 'Change this image', designMode: { edits: [], element: 'img.hero' } })
+    expect(
+      toDesignModeMessage({
+        instructions: { message: 'Change this image', element: 'img.hero' },
+      }),
+    ).toEqual({ message: 'Change this image', designMode: { edits: [], element: 'img.hero' } })
   })
 
   test('strips non-contract fields', () => {
