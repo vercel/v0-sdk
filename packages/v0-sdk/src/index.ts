@@ -35,6 +35,8 @@ type GeneratedChats = GeneratedV0Client['chats']
 type GeneratedMessages = GeneratedV0Client['messages']
 type ChatsCreateStreamOptions = Parameters<GeneratedChats['createStream']>[0]
 type ChatsCreateStreamRequestOptions = Parameters<GeneratedChats['createStream']>[1]
+type ChatsDownloadArtifactOptions = Parameters<GeneratedChats['downloadArtifact']>[0]
+type ChatsDownloadArtifactRequestOptions = Parameters<GeneratedChats['downloadArtifact']>[1]
 type ChatsResumeOptions = Parameters<GeneratedChats['resume']>[0]
 type ChatsResumeRequestOptions = Parameters<GeneratedChats['resume']>[1]
 type MessagesResolveStreamOptions = Parameters<GeneratedMessages['resolveStream']>[0]
@@ -136,6 +138,15 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
           const result = await target.createStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
+      }
+
+      if (property === 'downloadArtifact') {
+        // Artifacts can be HTML, Markdown, CSV or JSON, which `parseAs: 'auto'` would
+        // return as text or parsed JSON instead of the Blob the response type declares.
+        return (
+          parameters: ChatsDownloadArtifactOptions,
+          options?: ChatsDownloadArtifactRequestOptions,
+        ) => target.downloadArtifact(parameters, { parseAs: 'blob', ...options })
       }
 
       if (property === 'resume') {
