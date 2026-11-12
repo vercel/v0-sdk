@@ -51,6 +51,7 @@ const semanticNames = {
   'chats.createFromVercelProjectWithMessageAsync': 'useCreateChatFromVercelProjectWithMessageAsync',
   'chats.createStream': 'useCreateChat',
   'chats.createAsync': 'useCreateChatAsync',
+  'chats.createFromTemplate': 'useCreateChatFromTemplate',
   'messages.list': 'useMessages',
   'messages.send': 'useSendMessageBlocking',
   'messages.get': 'useMessage',
@@ -68,6 +69,7 @@ const semanticNames = {
   'chats.getConnectStatus': 'useConnectStatus',
   'chats.updateFiles': 'useUpdateChatFiles',
   'chats.downloadFiles': 'useDownloadChatFiles',
+  'chats.downloadArtifact': 'useDownloadArtifact',
   'chats.restoreMessage': 'useRestoreMessage',
   'chats.duplicate': 'useDuplicateChat',
   'chats.deploy': 'useDeployChat',
@@ -78,6 +80,8 @@ const semanticNames = {
   'mcpServers.get': 'useMcpServer',
   'mcpServers.update': 'useUpdateMcpServer',
   'mcpServers.delete': 'useDeleteMcpServer',
+  'securityChecks.create': 'useCreateSecurityCheck',
+  'securityChecks.get': 'useSecurityCheck',
   'settings.getPreviewHosts': 'usePreviewHosts',
   'settings.setPreviewHosts': 'useSetPreviewHosts',
   'settings.appendPreviewHosts': 'useAppendPreviewHosts',
@@ -164,6 +168,7 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
       const responseKind = contentTypes.includes('text/event-stream')
         ? 'stream'
         : operationId === 'chats.downloadFiles' ||
+            operationId === 'chats.downloadArtifact' ||
             contentTypes.some((type) => type.includes('zip') || type.includes('octet-stream')) ||
             successResponses.some((response) => /\bzip\b|binary/i.test(response.description ?? ''))
           ? 'blob'

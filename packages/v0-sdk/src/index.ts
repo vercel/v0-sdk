@@ -1,8 +1,9 @@
-import { type ClientOptions, V0Sdk } from './generated'
+import type { ClientOptions } from './generated'
 import { createClient, createConfig } from './generated/client'
 import { client as generatedClient } from './generated/client.gen'
 import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
+import { V0Sdk } from './sdk'
 import { vercelOidcAuth } from './vercel-oidc'
 
 export { parseDesignModeMessage, toDesignModeMessage } from './design-mode/payload'
