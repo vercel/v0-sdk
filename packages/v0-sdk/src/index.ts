@@ -1,8 +1,9 @@
-import { type ClientOptions, V0Sdk } from './generated'
+import type { ClientOptions } from './generated'
 import { createClient, createConfig } from './generated/client'
 import { client as generatedClient } from './generated/client.gen'
 import type { Auth, AuthToken } from './generated/core/auth.gen'
 import { createV0StreamResult, type V0StreamResult } from './stream/result'
+import { V0Sdk } from './sdk'
 import { vercelOidcAuth } from './vercel-oidc'
 
 export { parseDesignModeMessage, toDesignModeMessage } from './design-mode/payload'
@@ -35,8 +36,6 @@ type GeneratedChats = GeneratedV0Client['chats']
 type GeneratedMessages = GeneratedV0Client['messages']
 type ChatsCreateStreamOptions = Parameters<GeneratedChats['createStream']>[0]
 type ChatsCreateStreamRequestOptions = Parameters<GeneratedChats['createStream']>[1]
-type ChatsDownloadArtifactOptions = Parameters<GeneratedChats['downloadArtifact']>[0]
-type ChatsDownloadArtifactRequestOptions = Parameters<GeneratedChats['downloadArtifact']>[1]
 type ChatsResumeOptions = Parameters<GeneratedChats['resume']>[0]
 type ChatsResumeRequestOptions = Parameters<GeneratedChats['resume']>[1]
 type MessagesResolveStreamOptions = Parameters<GeneratedMessages['resolveStream']>[0]
@@ -138,15 +137,6 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
           const result = await target.createStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
-      }
-
-      if (property === 'downloadArtifact') {
-        // Artifacts can be HTML, Markdown, CSV or JSON, which `parseAs: 'auto'` would
-        // return as text or parsed JSON instead of the Blob the response type declares.
-        return (
-          parameters: ChatsDownloadArtifactOptions,
-          options?: ChatsDownloadArtifactRequestOptions,
-        ) => target.downloadArtifact(parameters, { parseAs: 'blob', ...options })
       }
 
       if (property === 'resume') {

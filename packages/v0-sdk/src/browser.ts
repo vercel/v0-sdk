@@ -1,6 +1,7 @@
 // Browser-safe generated SDK primitives. This entrypoint intentionally does not
 // import the authenticated createV0Client/default client or Vercel OIDC helpers.
-export { Chats, McpServers, Messages, V0Sdk, Webhooks } from './generated/sdk.gen'
+export { McpServers, Messages, Webhooks } from './generated/sdk.gen'
+export { Chats, V0Sdk } from './sdk'
 export type { Options } from './generated/sdk.gen'
 export { createClient, createConfig, mergeHeaders } from './generated/client'
 export type {
