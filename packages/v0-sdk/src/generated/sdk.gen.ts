@@ -2,8 +2,8 @@
 
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromVercelProjectResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, usageGetActivityResponseTransformer, usageGetSummaryResponseTransformer, usageListEventsResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromVercelProjectErrors, ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectWithMessageAsyncErrors, ChatsCreateFromVercelProjectWithMessageAsyncResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SettingsAppendPreviewHostsErrors, SettingsAppendPreviewHostsResponses, SettingsDeletePreviewHostsErrors, SettingsDeletePreviewHostsResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromTemplateResponseTransformer, chatsCreateFromVercelProjectResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, securityChecksGetResponseTransformer, usageGetActivityResponseTransformer, usageGetSummaryResponseTransformer, usageListEventsResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromTemplateErrors, ChatsCreateFromTemplateResponses, ChatsCreateFromVercelProjectErrors, ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectWithMessageAsyncErrors, ChatsCreateFromVercelProjectWithMessageAsyncResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadArtifactErrors, ChatsDownloadArtifactResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SecurityChecksCreateErrors, SecurityChecksCreateResponses, SecurityChecksGetErrors, SecurityChecksGetResponses, SettingsAppendPreviewHostsErrors, SettingsAppendPreviewHostsResponses, SettingsDeletePreviewHostsErrors, SettingsDeletePreviewHostsResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -316,6 +316,39 @@ export class Chats extends HeyApiClient {
     }
     
     /**
+     * Create Chat From Template
+     *
+     * Creates a new chat from a v0 template, the same way opening it from v0.app/templates does.
+     */
+    public createFromTemplate<ThrowOnError extends boolean = false>(parameters: {
+        templateId: string;
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        title?: string;
+        metadata?: {
+            [key: string]: string;
+        };
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [
+                    { in: 'body', key: 'templateId' },
+                    { in: 'body', key: 'privacy' },
+                    { in: 'body', key: 'title' },
+                    { in: 'body', key: 'metadata' }
+                ] }]);
+        return (options?.client ?? this.client).post<ChatsCreateFromTemplateResponses, ChatsCreateFromTemplateErrors, ThrowOnError>({
+            responseTransformer: chatsCreateFromTemplateResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/chats/from-template',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+    
+    /**
      * Create Chat From Vercel Project
      *
      * Creates a new chat from an existing Vercel project.
@@ -616,6 +649,24 @@ export class Chats extends HeyApiClient {
                 ...options?.headers,
                 ...params.headers
             }
+        });
+    }
+    
+    /**
+     * Download Artifact
+     *
+     * Downloads the saved bytes of an artifact the agent showed in this chat. Find artifact IDs on `show_artifact` agent-action message parts. The response `Content-Type` is the artifact’s file type, such as `text/html`, `text/markdown`, `application/json`, `text/csv`, or an image type.
+     */
+    public downloadArtifact<ThrowOnError extends boolean = false>(parameters: {
+        chatId: string;
+        artifactId: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'path', key: 'artifactId' }] }]);
+        return (options?.client ?? this.client).get<ChatsDownloadArtifactResponses, ChatsDownloadArtifactErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/chats/{chatId}/artifacts/{artifactId}',
+            ...options,
+            ...params
         });
     }
     
@@ -2069,6 +2120,68 @@ export class Messages extends HeyApiClient {
     }
 }
 
+export class SecurityChecks extends HeyApiClient {
+    /**
+     * Get Security Check
+     *
+     * Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.
+     */
+    public get<ThrowOnError extends boolean = false>(parameters: {
+        chatId: string;
+        checkId: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'chatId' }, { in: 'path', key: 'checkId' }] }]);
+        return (options?.client ?? this.client).get<SecurityChecksGetResponses, SecurityChecksGetErrors, ThrowOnError>({
+            responseTransformer: securityChecksGetResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/chats/{chatId}/security-checks/{checkId}',
+            ...options,
+            ...params
+        });
+    }
+    
+    /**
+     * Create Security Check
+     *
+     * Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.
+     */
+    public create<ThrowOnError extends boolean = false>(parameters: {
+        scope: 'project' | 'changes';
+        chatId?: string;
+        repo?: {
+            /**
+             * GitHub repository URL, for example https://github.com/vercel/next.js.
+             */
+            url: string;
+            /**
+             * Branch to import. If omitted, v0 uses the repository default branch.
+             */
+            branch?: string;
+        };
+        vercelProjectId?: string;
+        baseBranch?: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [
+                    { in: 'body', key: 'scope' },
+                    { in: 'body', key: 'chatId' },
+                    { in: 'body', key: 'repo' },
+                    { in: 'body', key: 'vercelProjectId' },
+                    { in: 'body', key: 'baseBranch' }
+                ] }]);
+        return (options?.client ?? this.client).post<SecurityChecksCreateResponses, SecurityChecksCreateErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/security-checks/',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+}
+
 export class McpServers extends HeyApiClient {
     /**
      * List MCP Servers
@@ -2568,6 +2681,11 @@ export class V0Sdk extends HeyApiClient {
     private _messages?: Messages;
     get messages(): Messages {
         return this._messages ??= new Messages({ client: this.client });
+    }
+    
+    private _securityChecks?: SecurityChecks;
+    get securityChecks(): SecurityChecks {
+        return this._securityChecks ??= new SecurityChecks({ client: this.client });
     }
     
     private _mcpServers?: McpServers;

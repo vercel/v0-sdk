@@ -541,7 +541,7 @@ export type Message = {
          */
         summary: string;
         /**
-         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+         * Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.
          */
         data?: {
             /**
@@ -732,6 +732,121 @@ export type Message = {
                  */
                 name: string;
             };
+        } | {
+            /**
+             * Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}.
+             */
+            artifactId: string;
+            /**
+             * Short title the agent gave the artifact.
+             */
+            title: string;
+            /**
+             * File name of the artifact, including its extension.
+             */
+            fileName: string;
+            /**
+             * How the artifact is rendered in v0.
+             */
+            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+            /**
+             * Size of the artifact in bytes.
+             */
+            size: number;
+            /**
+             * Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`).
+             */
+            display: 'tab' | 'inline';
+        } | {
+            outcome: 'running';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+        } | {
+            outcome: 'clean';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'findings';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'incomplete';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+             */
+            reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+            /**
+             * How long it ran before it ended, when known.
+             */
+            durationMs: number | null;
         };
         /**
          * ISO timestamp when this part began.
@@ -1054,7 +1169,7 @@ export type MessageListResponse = {
              */
             summary: string;
             /**
-             * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+             * Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.
              */
             data?: {
                 /**
@@ -1245,6 +1360,121 @@ export type MessageListResponse = {
                      */
                     name: string;
                 };
+            } | {
+                /**
+                 * Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}.
+                 */
+                artifactId: string;
+                /**
+                 * Short title the agent gave the artifact.
+                 */
+                title: string;
+                /**
+                 * File name of the artifact, including its extension.
+                 */
+                fileName: string;
+                /**
+                 * How the artifact is rendered in v0.
+                 */
+                kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                /**
+                 * Size of the artifact in bytes.
+                 */
+                size: number;
+                /**
+                 * Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`).
+                 */
+                display: 'tab' | 'inline';
+            } | {
+                outcome: 'running';
+                /**
+                 * Project-relative paths of the files the review covered.
+                 */
+                files: Array<string>;
+                /**
+                 * How many other files the review read for context.
+                 */
+                contextFileCount: number;
+            } | {
+                outcome: 'clean';
+                /**
+                 * Project-relative paths of the files the review covered.
+                 */
+                files: Array<string>;
+                /**
+                 * How many other files the review read for context.
+                 */
+                contextFileCount: number;
+                /**
+                 * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                 */
+                potentialIssueCount: number;
+                /**
+                 * Potential issues by severity.
+                 */
+                severities: {
+                    critical: number;
+                    high: number;
+                    medium: number;
+                    /**
+                     * Non-security bugs the review reported.
+                     */
+                    bug: number;
+                    low: number;
+                };
+                /**
+                 * How long the review ran.
+                 */
+                durationMs: number;
+            } | {
+                outcome: 'findings';
+                /**
+                 * Project-relative paths of the files the review covered.
+                 */
+                files: Array<string>;
+                /**
+                 * How many other files the review read for context.
+                 */
+                contextFileCount: number;
+                /**
+                 * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                 */
+                potentialIssueCount: number;
+                /**
+                 * Potential issues by severity.
+                 */
+                severities: {
+                    critical: number;
+                    high: number;
+                    medium: number;
+                    /**
+                     * Non-security bugs the review reported.
+                     */
+                    bug: number;
+                    low: number;
+                };
+                /**
+                 * How long the review ran.
+                 */
+                durationMs: number;
+            } | {
+                outcome: 'incomplete';
+                /**
+                 * Project-relative paths of the files the review covered.
+                 */
+                files: Array<string>;
+                /**
+                 * How many other files the review read for context.
+                 */
+                contextFileCount: number;
+                /**
+                 * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+                 */
+                reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+                /**
+                 * How long it ran before it ended, when known.
+                 */
+                durationMs: number | null;
             };
             /**
              * ISO timestamp when this part began.
@@ -1581,7 +1811,7 @@ export type MessageStreamEvent = {
          */
         summary: string;
         /**
-         * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+         * Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.
          */
         data?: {
             /**
@@ -1772,6 +2002,121 @@ export type MessageStreamEvent = {
                  */
                 name: string;
             };
+        } | {
+            /**
+             * Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}.
+             */
+            artifactId: string;
+            /**
+             * Short title the agent gave the artifact.
+             */
+            title: string;
+            /**
+             * File name of the artifact, including its extension.
+             */
+            fileName: string;
+            /**
+             * How the artifact is rendered in v0.
+             */
+            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+            /**
+             * Size of the artifact in bytes.
+             */
+            size: number;
+            /**
+             * Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`).
+             */
+            display: 'tab' | 'inline';
+        } | {
+            outcome: 'running';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+        } | {
+            outcome: 'clean';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'findings';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'incomplete';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+             */
+            reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+            /**
+             * How long it ran before it ended, when known.
+             */
+            durationMs: number | null;
         };
         /**
          * ISO timestamp when this part began.
@@ -2446,6 +2791,23 @@ export type UsageEventList = {
          */
         userId?: string;
         /**
+         * Attributed user details. Omitted when the user cannot be resolved.
+         */
+        user?: {
+            /**
+             * User identifier.
+             */
+            id: string;
+            /**
+             * User email address.
+             */
+            email: string;
+            /**
+             * User display name, when set.
+             */
+            name?: string;
+        };
+        /**
          * Related chat identifier.
          */
         chatId?: string;
@@ -3032,6 +3394,66 @@ export type ChatsCreateFromRepoResponses = {
 };
 
 export type ChatsCreateFromRepoResponse = ChatsCreateFromRepoResponses[keyof ChatsCreateFromRepoResponses];
+
+export type ChatsCreateFromTemplateData = {
+    body: {
+        /**
+         * ID of the v0 template to start from, as shown in its v0.app/templates URL.
+         */
+        templateId: string;
+        /**
+         * Visibility setting for the new chat.
+         */
+        privacy?: 'public' | 'private' | 'team' | 'team-edit' | 'unlisted';
+        /**
+         * Title for the new chat.
+         */
+        title?: string;
+        /**
+         * Arbitrary key-value data to attach to the chat.
+         */
+        metadata?: {
+            [key: string]: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/chats/from-template';
+};
+
+export type ChatsCreateFromTemplateErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsCreateFromTemplateError = ChatsCreateFromTemplateErrors[keyof ChatsCreateFromTemplateErrors];
+
+export type ChatsCreateFromTemplateResponses = {
+    /**
+     * A chat response that also reports the usage.
+     */
+    200: ChatWithUsage;
+};
+
+export type ChatsCreateFromTemplateResponse = ChatsCreateFromTemplateResponses[keyof ChatsCreateFromTemplateResponses];
 
 export type ChatsCreateFromVercelProjectData = {
     body: {
@@ -4951,6 +5373,303 @@ export type MessagesStopResponses = {
 
 export type MessagesStopResponse = MessagesStopResponses[keyof MessagesStopResponses];
 
+export type SecurityChecksGetData = {
+    body?: never;
+    path: {
+        /**
+         * The unique identifier of the chat.
+         */
+        chatId: string;
+        /**
+         * The Security Check ID.
+         */
+        checkId: string;
+    };
+    query?: never;
+    url: '/chats/{chatId}/security-checks/{checkId}';
+};
+
+export type SecurityChecksGetErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SecurityChecksGetError = SecurityChecksGetErrors[keyof SecurityChecksGetErrors];
+
+export type SecurityChecksGetResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        /**
+         * The Security Check ID, which is also the ID of the assistant message that runs it.
+         */
+        id: string;
+        object: 'security_check';
+        /**
+         * The chat the check runs in.
+         */
+        chatId: string;
+        /**
+         * `changes`: what changed in the chat. `project`: the riskiest files across the app.
+         */
+        scope: 'project' | 'changes';
+        /**
+         * `completed` once v0 has finished its reply.
+         */
+        status: 'running' | 'completed';
+        /**
+         * How the review itself went. Absent until it starts, while v0 retries an attempt that couldn't start, and when v0 didn't run one (for example, when there were no changes to review, or reviews aren't available for this chat).
+         */
+        review?: {
+            outcome: 'running';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+        } | {
+            outcome: 'clean';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'findings';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+             */
+            potentialIssueCount: number;
+            /**
+             * Potential issues by severity.
+             */
+            severities: {
+                critical: number;
+                high: number;
+                medium: number;
+                /**
+                 * Non-security bugs the review reported.
+                 */
+                bug: number;
+                low: number;
+            };
+            /**
+             * How long the review ran.
+             */
+            durationMs: number;
+        } | {
+            outcome: 'incomplete';
+            /**
+             * Project-relative paths of the files the review covered.
+             */
+            files: Array<string>;
+            /**
+             * How many other files the review read for context.
+             */
+            contextFileCount: number;
+            /**
+             * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+             */
+            reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+            /**
+             * How long it ran before it ended, when known.
+             */
+            durationMs: number | null;
+        };
+        /**
+         * Counts of v0's checked findings. Present whenever `findings` is.
+         */
+        summary?: {
+            /**
+             * Findings v0 confirmed.
+             */
+            confirmed: number;
+            /**
+             * Findings v0 dismissed after checking.
+             */
+            dismissed: number;
+            /**
+             * The most severe confirmed finding, or null when none was confirmed. For example, fail a deploy when it is `critical` or `high`.
+             */
+            highestSeverity: 'critical' | 'high' | 'medium' | 'low' | 'bug' | null;
+            /**
+             * Confirmed findings by severity.
+             */
+            bySeverity: {
+                critical: number;
+                high: number;
+                medium: number;
+                low: number;
+                bug: number;
+            };
+        };
+        /**
+         * v0's checked findings: confirmed first, then most severe first. Empty for a clean review. Absent until v0 records them, and when no review finished with a result.
+         */
+        findings?: Array<{
+            /**
+             * The finding's number within this check.
+             */
+            id: string;
+            /**
+             * Short name of the issue.
+             */
+            title: string;
+            /**
+             * The severity v0 concluded after checking, most severe first; `bug` is a non-security bug.
+             */
+            severity: 'critical' | 'high' | 'medium' | 'low' | 'bug';
+            /**
+             * Project-relative file path.
+             */
+            file: string;
+            /**
+             * 1-based line of the issue, or null when it spans the file.
+             */
+            line: number | null;
+            /**
+             * `confirmed`: a real risk. `dismissed`: other code in the project already handles it.
+             */
+            status: 'confirmed' | 'dismissed';
+            /**
+             * Why it is a risk, or which code handles it when dismissed.
+             */
+            explanation: string;
+            /**
+             * The suggested fix for a confirmed finding.
+             */
+            fix: string | null;
+        }>;
+        /**
+         * v0's final reply, once the check is completed.
+         */
+        reply?: string;
+        /**
+         * What the check's AI calls cost so far. v0's own reply is billed like any message and isn't included.
+         */
+        cost?: {
+            /**
+             * v0 credits used by the check's AI calls, as a decimal string.
+             */
+            credits: string;
+            /**
+             * Whether the credits were charged; false when v0 covered them.
+             */
+            charged: boolean;
+        };
+        /**
+         * When the check was started.
+         */
+        createdAt: Date;
+    };
+};
+
+export type SecurityChecksGetResponse = SecurityChecksGetResponses[keyof SecurityChecksGetResponses];
+
+export type ChatsDownloadArtifactData = {
+    body?: never;
+    path: {
+        /**
+         * The unique identifier of the chat.
+         */
+        chatId: string;
+        /**
+         * The `artifactId` from a `show_artifact` message part.
+         */
+        artifactId: string;
+    };
+    query?: never;
+    url: '/chats/{chatId}/artifacts/{artifactId}';
+};
+
+export type ChatsDownloadArtifactErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsDownloadArtifactError = ChatsDownloadArtifactErrors[keyof ChatsDownloadArtifactErrors];
+
+export type ChatsDownloadArtifactResponses = {
+    /**
+     * The artifact file.
+     */
+    200: Blob | File;
+};
+
+export type ChatsDownloadArtifactResponse = ChatsDownloadArtifactResponses[keyof ChatsDownloadArtifactResponses];
+
 export type ChatsDeleteData = {
     body?: never;
     path: {
@@ -5512,7 +6231,7 @@ export type ChatsUpdateFilesResponses = {
                  */
                 summary: string;
                 /**
-                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+                 * Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.
                  */
                 data?: {
                     /**
@@ -5703,6 +6422,121 @@ export type ChatsUpdateFilesResponses = {
                          */
                         name: string;
                     };
+                } | {
+                    /**
+                     * Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}.
+                     */
+                    artifactId: string;
+                    /**
+                     * Short title the agent gave the artifact.
+                     */
+                    title: string;
+                    /**
+                     * File name of the artifact, including its extension.
+                     */
+                    fileName: string;
+                    /**
+                     * How the artifact is rendered in v0.
+                     */
+                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                    /**
+                     * Size of the artifact in bytes.
+                     */
+                    size: number;
+                    /**
+                     * Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`).
+                     */
+                    display: 'tab' | 'inline';
+                } | {
+                    outcome: 'running';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                } | {
+                    outcome: 'clean';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                     */
+                    potentialIssueCount: number;
+                    /**
+                     * Potential issues by severity.
+                     */
+                    severities: {
+                        critical: number;
+                        high: number;
+                        medium: number;
+                        /**
+                         * Non-security bugs the review reported.
+                         */
+                        bug: number;
+                        low: number;
+                    };
+                    /**
+                     * How long the review ran.
+                     */
+                    durationMs: number;
+                } | {
+                    outcome: 'findings';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                     */
+                    potentialIssueCount: number;
+                    /**
+                     * Potential issues by severity.
+                     */
+                    severities: {
+                        critical: number;
+                        high: number;
+                        medium: number;
+                        /**
+                         * Non-security bugs the review reported.
+                         */
+                        bug: number;
+                        low: number;
+                    };
+                    /**
+                     * How long the review ran.
+                     */
+                    durationMs: number;
+                } | {
+                    outcome: 'incomplete';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+                     */
+                    reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+                    /**
+                     * How long it ran before it ended, when known.
+                     */
+                    durationMs: number | null;
                 };
                 /**
                  * ISO timestamp when this part began.
@@ -6242,7 +7076,7 @@ export type ChatsRestoreMessageResponses = {
                  */
                 summary: string;
                 /**
-                 * Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.
+                 * Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.
                  */
                 data?: {
                     /**
@@ -6433,6 +7267,121 @@ export type ChatsRestoreMessageResponses = {
                          */
                         name: string;
                     };
+                } | {
+                    /**
+                     * Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}.
+                     */
+                    artifactId: string;
+                    /**
+                     * Short title the agent gave the artifact.
+                     */
+                    title: string;
+                    /**
+                     * File name of the artifact, including its extension.
+                     */
+                    fileName: string;
+                    /**
+                     * How the artifact is rendered in v0.
+                     */
+                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                    /**
+                     * Size of the artifact in bytes.
+                     */
+                    size: number;
+                    /**
+                     * Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`).
+                     */
+                    display: 'tab' | 'inline';
+                } | {
+                    outcome: 'running';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                } | {
+                    outcome: 'clean';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                     */
+                    potentialIssueCount: number;
+                    /**
+                     * Potential issues by severity.
+                     */
+                    severities: {
+                        critical: number;
+                        high: number;
+                        medium: number;
+                        /**
+                         * Non-security bugs the review reported.
+                         */
+                        bug: number;
+                        low: number;
+                    };
+                    /**
+                     * How long the review ran.
+                     */
+                    durationMs: number;
+                } | {
+                    outcome: 'findings';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message.
+                     */
+                    potentialIssueCount: number;
+                    /**
+                     * Potential issues by severity.
+                     */
+                    severities: {
+                        critical: number;
+                        high: number;
+                        medium: number;
+                        /**
+                         * Non-security bugs the review reported.
+                         */
+                        bug: number;
+                        low: number;
+                    };
+                    /**
+                     * How long the review ran.
+                     */
+                    durationMs: number;
+                } | {
+                    outcome: 'incomplete';
+                    /**
+                     * Project-relative paths of the files the review covered.
+                     */
+                    files: Array<string>;
+                    /**
+                     * How many other files the review read for context.
+                     */
+                    contextFileCount: number;
+                    /**
+                     * Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read).
+                     */
+                    reason: 'ai-error' | 'credits' | 'timeout' | 'stopped' | 'not-started' | 'interrupted';
+                    /**
+                     * How long it ran before it ended, when known.
+                     */
+                    durationMs: number | null;
                 };
                 /**
                  * ISO timestamp when this part began.
@@ -6770,6 +7719,96 @@ export type ChatsResumeResponses = {
 };
 
 export type ChatsResumeResponse = ChatsResumeResponses[keyof ChatsResumeResponses];
+
+export type SecurityChecksCreateData = {
+    /**
+     * Provide exactly one of `chatId`, `repo` or `vercelProjectId`.
+     */
+    body: {
+        /**
+         * `changes`: what changed in the chat. `project`: the riskiest files across the app.
+         */
+        scope: 'project' | 'changes';
+        /**
+         * The v0 chat to check.
+         */
+        chatId?: string;
+        /**
+         * A GitHub repository to import and check. Requires scope `project`.
+         */
+        repo?: {
+            /**
+             * GitHub repository URL, for example https://github.com/vercel/next.js.
+             */
+            url: string;
+            /**
+             * Branch to import. If omitted, v0 uses the repository default branch.
+             */
+            branch?: string;
+        };
+        /**
+         * A Vercel project to import and check. Requires scope `project`.
+         */
+        vercelProjectId?: string;
+        /**
+         * Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.
+         */
+        baseBranch?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/security-checks/';
+};
+
+export type SecurityChecksCreateErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 409
+     */
+    409: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type SecurityChecksCreateError = SecurityChecksCreateErrors[keyof SecurityChecksCreateErrors];
+
+export type SecurityChecksCreateResponses = {
+    /**
+     * Response for status 202
+     */
+    202: {
+        /**
+         * The Security Check ID. Poll GET /chats/:chatId/security-checks/:checkId for its status and findings.
+         */
+        id: string;
+        object: 'security_check';
+        chatId: string;
+        /**
+         * `changes`: what changed in the chat. `project`: the riskiest files across the app.
+         */
+        scope: 'project' | 'changes';
+        status: 'running';
+    };
+};
+
+export type SecurityChecksCreateResponse = SecurityChecksCreateResponses[keyof SecurityChecksCreateResponses];
 
 export type McpServersListData = {
     body?: never;

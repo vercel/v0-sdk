@@ -3,6 +3,7 @@
 import {
   chatsCreateFromFilesResponseTransformer,
   chatsCreateFromRepoResponseTransformer,
+  chatsCreateFromTemplateResponseTransformer,
   chatsCreateFromVercelProjectResponseTransformer,
   chatsCreateFromZipResponseTransformer,
   chatsCreateResponseTransformer,
@@ -21,6 +22,7 @@ import {
   messagesListResponseTransformer,
   messagesResolveResponseTransformer,
   messagesSendResponseTransformer,
+  securityChecksGetResponseTransformer,
   usageGetActivityResponseTransformer,
   usageGetSummaryResponseTransformer,
   usageListEventsResponseTransformer,
@@ -40,6 +42,9 @@ import type {
   ChatsCreateFromRepoData,
   ChatsCreateFromRepoError,
   ChatsCreateFromRepoResponse,
+  ChatsCreateFromTemplateData,
+  ChatsCreateFromTemplateError,
+  ChatsCreateFromTemplateResponse,
   ChatsCreateFromVercelProjectData,
   ChatsCreateFromVercelProjectError,
   ChatsCreateFromVercelProjectResponse,
@@ -59,6 +64,7 @@ import type {
   ChatsDeleteResponse,
   ChatsDeployError,
   ChatsDeployResponse,
+  ChatsDownloadArtifactError,
   ChatsDownloadFilesError,
   ChatsDuplicateData,
   ChatsDuplicateError,
@@ -120,6 +126,11 @@ import type {
   MessagesSendStreamError,
   MessagesStopError,
   MessagesStopResponse,
+  SecurityChecksCreateData,
+  SecurityChecksCreateError,
+  SecurityChecksCreateResponse,
+  SecurityChecksGetError,
+  SecurityChecksGetResponse,
   SettingsAppendPreviewHostsData,
   SettingsAppendPreviewHostsError,
   SettingsAppendPreviewHostsResponse,
@@ -168,6 +179,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.createAsync': 'useCreateChatAsync',
   'chats.createFromFiles': 'useCreateChatFromFiles',
   'chats.createFromRepo': 'useCreateChatFromRepo',
+  'chats.createFromTemplate': 'useCreateChatFromTemplate',
   'chats.createFromVercelProject': 'useCreateChatFromVercelProject',
   'chats.createFromVercelProjectWithMessageAsync': 'useCreateChatFromVercelProjectWithMessageAsync',
   'chats.createFromZip': 'useCreateChatFromZip',
@@ -175,6 +187,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.createVercelProject': 'useCreateProject',
   'chats.delete': 'useDeleteChat',
   'chats.deploy': 'useDeployChat',
+  'chats.downloadArtifact': 'useDownloadArtifact',
   'chats.downloadFiles': 'useDownloadChatFiles',
   'chats.duplicate': 'useDuplicateChat',
   'chats.get': 'useChat',
@@ -200,6 +213,8 @@ export const V0_REACT_OPERATION_HOOKS = {
   'messages.sendAsync': 'useSendMessageAsync',
   'messages.sendStream': 'useSendMessage',
   'messages.stop': 'useStopMessage',
+  'securityChecks.create': 'useCreateSecurityCheck',
+  'securityChecks.get': 'useSecurityCheck',
   'settings.appendPreviewHosts': 'useAppendPreviewHosts',
   'settings.deletePreviewHosts': 'useDeletePreviewHosts',
   'settings.getPreviewHosts': 'usePreviewHosts',
@@ -287,6 +302,25 @@ export function useCreateChatFromRepo(
   > = {},
 ) {
   return useV0Mutation(createChatFromRepoOperation, url, configuration)
+}
+
+const createChatFromTemplateOperation: V0Operation<ChatsCreateFromTemplateResponse> = {
+  id: 'chats.createFromTemplate',
+  method: 'POST',
+  response: 'json',
+  transform: chatsCreateFromTemplateResponseTransformer,
+}
+
+export type CreateChatFromTemplateInput = ChatsCreateFromTemplateData['body']
+export function useCreateChatFromTemplate(
+  url: string,
+  configuration: V0MutationConfiguration<
+    ChatsCreateFromTemplateResponse,
+    ChatsCreateFromTemplateError,
+    ChatsCreateFromTemplateData['body']
+  > = {},
+) {
+  return useV0Mutation(createChatFromTemplateOperation, url, configuration)
 }
 
 const createChatFromVercelProjectOperation: V0Operation<ChatsCreateFromVercelProjectResponse> = {
@@ -408,6 +442,19 @@ export function useDeployChat(
   configuration: V0MutationConfiguration<ChatsDeployResponse, ChatsDeployError, never> = {},
 ) {
   return useV0Mutation(deployChatOperation, url, configuration)
+}
+
+const downloadArtifactOperation: V0Operation<Blob> = {
+  id: 'chats.downloadArtifact',
+  method: 'GET',
+  response: 'blob',
+}
+
+export function useDownloadArtifact(
+  url: string,
+  configuration: V0MutationConfiguration<Blob, ChatsDownloadArtifactError, never> = {},
+) {
+  return useV0Mutation(downloadArtifactOperation, url, configuration)
 }
 
 const downloadChatFilesOperation: V0Operation<Blob> = {
@@ -879,6 +926,43 @@ export function useStopMessage(
   configuration: V0MutationConfiguration<MessagesStopResponse, MessagesStopError, never> = {},
 ) {
   return useV0Mutation(stopMessageOperation, url, configuration)
+}
+
+const createSecurityCheckOperation: V0Operation<SecurityChecksCreateResponse> = {
+  id: 'securityChecks.create',
+  method: 'POST',
+  response: 'json',
+}
+
+export type CreateSecurityCheckInput = SecurityChecksCreateData['body']
+export function useCreateSecurityCheck(
+  url: string,
+  configuration: V0MutationConfiguration<
+    SecurityChecksCreateResponse,
+    SecurityChecksCreateError,
+    SecurityChecksCreateData['body']
+  > = {},
+) {
+  return useV0Mutation(createSecurityCheckOperation, url, configuration)
+}
+
+const securityCheckOperation: V0Operation<SecurityChecksGetResponse> = {
+  id: 'securityChecks.get',
+  method: 'GET',
+  response: 'json',
+  transform: securityChecksGetResponseTransformer,
+}
+
+export function useSecurityCheck(
+  url: V0Url,
+  configuration: V0QueryConfiguration<SecurityChecksGetResponse, SecurityChecksGetError> = {},
+) {
+  return useV0Query<SecurityChecksGetResponse, SecurityChecksGetError, undefined>(
+    securityCheckOperation,
+    url,
+    undefined,
+    configuration,
+  )
 }
 
 const appendPreviewHostsOperation: V0Operation<SettingsAppendPreviewHostsResponse> = {

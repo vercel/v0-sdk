@@ -17,6 +17,7 @@ export type V0ToolName =
   | 'chatsCreateAsync'
   | 'chatsCreateFromFiles'
   | 'chatsCreateFromRepo'
+  | 'chatsCreateFromTemplate'
   | 'chatsCreateFromVercelProject'
   | 'chatsCreateFromVercelProjectWithMessageAsync'
   | 'chatsCreateFromZip'
@@ -24,6 +25,7 @@ export type V0ToolName =
   | 'chatsCreateVercelProject'
   | 'chatsDelete'
   | 'chatsDeploy'
+  | 'chatsDownloadArtifact'
   | 'chatsDownloadFiles'
   | 'chatsDuplicate'
   | 'chatsGet'
@@ -49,6 +51,8 @@ export type V0ToolName =
   | 'messagesSendAsync'
   | 'messagesSendStream'
   | 'messagesStop'
+  | 'securityChecksCreate'
+  | 'securityChecksGet'
   | 'settingsAppendPreviewHosts'
   | 'settingsDeletePreviewHosts'
   | 'settingsGetPreviewHosts'
@@ -71,6 +75,7 @@ export type V0ToolsByCategory = {
     | 'chatsCreateAsync'
     | 'chatsCreateFromFiles'
     | 'chatsCreateFromRepo'
+    | 'chatsCreateFromTemplate'
     | 'chatsCreateFromVercelProject'
     | 'chatsCreateFromVercelProjectWithMessageAsync'
     | 'chatsCreateFromZip'
@@ -78,6 +83,7 @@ export type V0ToolsByCategory = {
     | 'chatsCreateVercelProject'
     | 'chatsDelete'
     | 'chatsDeploy'
+    | 'chatsDownloadArtifact'
     | 'chatsDownloadFiles'
     | 'chatsDuplicate'
     | 'chatsGet'
@@ -110,6 +116,7 @@ export type V0ToolsByCategory = {
     | 'messagesSendStream'
     | 'messagesStop'
   >
+  securityChecks: Pick<V0ToolsFlat, 'securityChecksCreate' | 'securityChecksGet'>
   settings: Pick<
     V0ToolsFlat,
     | 'settingsAppendPreviewHosts'
@@ -373,6 +380,21 @@ const chatsCreateFromRepoInputSchema = z.object({
     .optional(),
 })
 
+const chatsCreateFromTemplateInputSchema = z.object({
+  templateId: z
+    .string()
+    .describe('ID of the v0 template to start from, as shown in its v0.app/templates URL.'),
+  privacy: z
+    .enum(['public', 'private', 'team', 'team-edit', 'unlisted'])
+    .describe('Visibility setting for the new chat.')
+    .optional(),
+  title: z.string().describe('Title for the new chat.').optional(),
+  metadata: z
+    .record(z.string(), z.string())
+    .describe('Arbitrary key-value data to attach to the chat.')
+    .optional(),
+})
+
 const chatsCreateFromVercelProjectInputSchema = z.object({
   vercelProjectId: z.string().describe('Vercel project ID in the active user or team scope.'),
   baseBranch: z
@@ -551,6 +573,11 @@ const chatsDeleteInputSchema = z.object({
 
 const chatsDeployInputSchema = z.object({
   chatId: z.string(),
+})
+
+const chatsDownloadArtifactInputSchema = z.object({
+  chatId: z.string(),
+  artifactId: z.string(),
 })
 
 const chatsDownloadFilesInputSchema = z.object({
@@ -1795,6 +1822,40 @@ const messagesStopInputSchema = z.object({
   messageId: z.string(),
 })
 
+const securityChecksCreateInputSchema = z.object({
+  scope: z
+    .enum(['project', 'changes'])
+    .describe('`changes`: what changed in the chat. `project`: the riskiest files across the app.'),
+  chatId: z.string().describe('The v0 chat to check.').optional(),
+  repo: z
+    .object({
+      url: z
+        .string()
+        .describe('GitHub repository URL, for example https://github.com/vercel/next.js.'),
+      branch: z
+        .string()
+        .describe('Branch to import. If omitted, v0 uses the repository default branch.')
+        .optional(),
+    })
+    .describe('A GitHub repository to import and check. Requires scope `project`.')
+    .optional(),
+  vercelProjectId: z
+    .string()
+    .describe('A Vercel project to import and check. Requires scope `project`.')
+    .optional(),
+  baseBranch: z
+    .string()
+    .describe(
+      'Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.',
+    )
+    .optional(),
+})
+
+const securityChecksGetInputSchema = z.object({
+  chatId: z.string(),
+  checkId: z.string(),
+})
+
 const settingsAppendPreviewHostsInputSchema = z.object({
   hosts: z
     .array(z.string())
@@ -1964,6 +2025,20 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.chats.createFromRepo(parameters))
       },
     }),
+    chatsCreateFromTemplate: tool({
+      description:
+        'Create Chat From Template: Creates a new chat from a v0 template, the same way opening it from v0.app/templates does.',
+      inputSchema: chatsCreateFromTemplateInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          templateId: input.templateId,
+          privacy: input.privacy,
+          title: input.title,
+          metadata: input.metadata,
+        }
+        return toToolResult(await client.chats.createFromTemplate(parameters))
+      },
+    }),
     chatsCreateFromVercelProject: tool({
       description:
         'Create Chat From Vercel Project: Creates a new chat from an existing Vercel project.',
@@ -2061,6 +2136,18 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
           chatId: input.chatId,
         }
         return toToolResult(await client.chats.deploy(parameters))
+      },
+    }),
+    chatsDownloadArtifact: tool({
+      description:
+        'Download Artifact: Downloads the saved bytes of an artifact the agent showed in this chat. Find artifact IDs on `show_artifact` agent-action message parts. The response `Content-Type` is the artifact’s file type, such as `text/html`, `text/markdown`, `application/json`, `text/csv`, or an image type.',
+      inputSchema: chatsDownloadArtifactInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          chatId: input.chatId,
+          artifactId: input.artifactId,
+        }
+        return toToolResult(await client.chats.downloadArtifact(parameters))
       },
     }),
     chatsDownloadFiles: tool({
@@ -2385,6 +2472,33 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.messages.stop(parameters))
       },
     }),
+    securityChecksCreate: tool({
+      description:
+        "Create Security Check: Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
+      inputSchema: securityChecksCreateInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          scope: input.scope,
+          chatId: input.chatId,
+          repo: input.repo,
+          vercelProjectId: input.vercelProjectId,
+          baseBranch: input.baseBranch,
+        }
+        return toToolResult(await client.securityChecks.create(parameters))
+      },
+    }),
+    securityChecksGet: tool({
+      description:
+        "Get Security Check: Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
+      inputSchema: securityChecksGetInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          chatId: input.chatId,
+          checkId: input.checkId,
+        }
+        return toToolResult(await client.securityChecks.get(parameters))
+      },
+    }),
     settingsAppendPreviewHosts: tool({
       description:
         'Append Trusted Preview Hosts: Appends host patterns without replacing existing hosts. Returns 422 if any normalized pattern already exists or the resulting list exceeds 100 hosts. The entire request succeeds or fails together.',
@@ -2536,6 +2650,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsCreateAsync: pickTool(tools, 'chatsCreateAsync'),
       chatsCreateFromFiles: pickTool(tools, 'chatsCreateFromFiles'),
       chatsCreateFromRepo: pickTool(tools, 'chatsCreateFromRepo'),
+      chatsCreateFromTemplate: pickTool(tools, 'chatsCreateFromTemplate'),
       chatsCreateFromVercelProject: pickTool(tools, 'chatsCreateFromVercelProject'),
       chatsCreateFromVercelProjectWithMessageAsync: pickTool(
         tools,
@@ -2546,6 +2661,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsCreateVercelProject: pickTool(tools, 'chatsCreateVercelProject'),
       chatsDelete: pickTool(tools, 'chatsDelete'),
       chatsDeploy: pickTool(tools, 'chatsDeploy'),
+      chatsDownloadArtifact: pickTool(tools, 'chatsDownloadArtifact'),
       chatsDownloadFiles: pickTool(tools, 'chatsDownloadFiles'),
       chatsDuplicate: pickTool(tools, 'chatsDuplicate'),
       chatsGet: pickTool(tools, 'chatsGet'),
@@ -2575,6 +2691,10 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       messagesSendAsync: pickTool(tools, 'messagesSendAsync'),
       messagesSendStream: pickTool(tools, 'messagesSendStream'),
       messagesStop: pickTool(tools, 'messagesStop'),
+    },
+    securityChecks: {
+      securityChecksCreate: pickTool(tools, 'securityChecksCreate'),
+      securityChecksGet: pickTool(tools, 'securityChecksGet'),
     },
     settings: {
       settingsAppendPreviewHosts: pickTool(tools, 'settingsAppendPreviewHosts'),

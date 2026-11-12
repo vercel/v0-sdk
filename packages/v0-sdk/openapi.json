@@ -999,7 +999,7 @@
                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                     },
                     "data": {
-                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                      "description": "Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.",
                       "anyOf": [
                         {
                           "type": "object",
@@ -1343,6 +1343,333 @@
                             }
                           ],
                           "description": "Structured payload for a `configure_vercel_connect` agent action."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "artifactId": {
+                              "type": "string",
+                              "description": "Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}."
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Short title the agent gave the artifact."
+                            },
+                            "fileName": {
+                              "type": "string",
+                              "description": "File name of the artifact, including its extension."
+                            },
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "html",
+                                "markdown",
+                                "json",
+                                "csv",
+                                "text",
+                                "image",
+                                "audio",
+                                "video",
+                                "pdf",
+                                "model",
+                                "code",
+                                "document",
+                                "spreadsheet",
+                                "file"
+                              ],
+                              "description": "How the artifact is rendered in v0."
+                            },
+                            "size": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "Size of the artifact in bytes."
+                            },
+                            "display": {
+                              "type": "string",
+                              "enum": [
+                                "tab",
+                                "inline"
+                              ],
+                              "description": "Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`)."
+                            }
+                          },
+                          "required": [
+                            "artifactId",
+                            "title",
+                            "fileName",
+                            "kind",
+                            "size",
+                            "display"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Structured payload for a `show_artifact` agent action: a file the agent saved to show the user, such as a report, chart, or interactive HTML page."
+                        },
+                        {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "outcome": {
+                                  "type": "string",
+                                  "enum": [
+                                    "running"
+                                  ]
+                                },
+                                "files": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Project-relative paths of the files the review covered."
+                                },
+                                "contextFileCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How many other files the review read for context."
+                                }
+                              },
+                              "required": [
+                                "outcome",
+                                "files",
+                                "contextFileCount"
+                              ],
+                              "additionalProperties": false,
+                              "description": "The review is running."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "outcome": {
+                                  "type": "string",
+                                  "enum": [
+                                    "clean"
+                                  ]
+                                },
+                                "files": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Project-relative paths of the files the review covered."
+                                },
+                                "contextFileCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How many other files the review read for context."
+                                },
+                                "potentialIssueCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                },
+                                "severities": {
+                                  "type": "object",
+                                  "properties": {
+                                    "critical": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "high": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "medium": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "bug": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "Non-security bugs the review reported."
+                                    },
+                                    "low": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    }
+                                  },
+                                  "required": [
+                                    "critical",
+                                    "high",
+                                    "medium",
+                                    "bug",
+                                    "low"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Potential issues by severity."
+                                },
+                                "durationMs": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How long the review ran."
+                                }
+                              },
+                              "required": [
+                                "outcome",
+                                "files",
+                                "contextFileCount",
+                                "potentialIssueCount",
+                                "severities",
+                                "durationMs"
+                              ],
+                              "additionalProperties": false,
+                              "description": "The review finished and reported no potential issues."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "outcome": {
+                                  "type": "string",
+                                  "enum": [
+                                    "findings"
+                                  ]
+                                },
+                                "files": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Project-relative paths of the files the review covered."
+                                },
+                                "contextFileCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How many other files the review read for context."
+                                },
+                                "potentialIssueCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                },
+                                "severities": {
+                                  "type": "object",
+                                  "properties": {
+                                    "critical": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "high": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "medium": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "bug": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "Non-security bugs the review reported."
+                                    },
+                                    "low": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    }
+                                  },
+                                  "required": [
+                                    "critical",
+                                    "high",
+                                    "medium",
+                                    "bug",
+                                    "low"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Potential issues by severity."
+                                },
+                                "durationMs": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How long the review ran."
+                                }
+                              },
+                              "required": [
+                                "outcome",
+                                "files",
+                                "contextFileCount",
+                                "potentialIssueCount",
+                                "severities",
+                                "durationMs"
+                              ],
+                              "additionalProperties": false,
+                              "description": "The review finished and reported potential issues."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "outcome": {
+                                  "type": "string",
+                                  "enum": [
+                                    "incomplete"
+                                  ]
+                                },
+                                "files": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Project-relative paths of the files the review covered."
+                                },
+                                "contextFileCount": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "How many other files the review read for context."
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "ai-error",
+                                    "credits",
+                                    "timeout",
+                                    "stopped",
+                                    "not-started",
+                                    "interrupted"
+                                  ],
+                                  "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                                },
+                                "durationMs": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ],
+                                  "description": "How long it ran before it ended, when known."
+                                }
+                              },
+                              "required": [
+                                "outcome",
+                                "files",
+                                "contextFileCount",
+                                "reason",
+                                "durationMs"
+                              ],
+                              "additionalProperties": false,
+                              "description": "The review ended without a result."
+                            }
+                          ],
+                          "description": "Payload for `security_review` parts. Narrow by `outcome`: only finished reviews carry counts, and only incomplete ones carry a `reason`."
                         }
                       ]
                     },
@@ -1987,7 +2314,7 @@
                             "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                           },
                           "data": {
-                            "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                            "description": "Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.",
                             "anyOf": [
                               {
                                 "type": "object",
@@ -2331,6 +2658,333 @@
                                   }
                                 ],
                                 "description": "Structured payload for a `configure_vercel_connect` agent action."
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "artifactId": {
+                                    "type": "string",
+                                    "description": "Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}."
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "Short title the agent gave the artifact."
+                                  },
+                                  "fileName": {
+                                    "type": "string",
+                                    "description": "File name of the artifact, including its extension."
+                                  },
+                                  "kind": {
+                                    "type": "string",
+                                    "enum": [
+                                      "html",
+                                      "markdown",
+                                      "json",
+                                      "csv",
+                                      "text",
+                                      "image",
+                                      "audio",
+                                      "video",
+                                      "pdf",
+                                      "model",
+                                      "code",
+                                      "document",
+                                      "spreadsheet",
+                                      "file"
+                                    ],
+                                    "description": "How the artifact is rendered in v0."
+                                  },
+                                  "size": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991,
+                                    "description": "Size of the artifact in bytes."
+                                  },
+                                  "display": {
+                                    "type": "string",
+                                    "enum": [
+                                      "tab",
+                                      "inline"
+                                    ],
+                                    "description": "Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`)."
+                                  }
+                                },
+                                "required": [
+                                  "artifactId",
+                                  "title",
+                                  "fileName",
+                                  "kind",
+                                  "size",
+                                  "display"
+                                ],
+                                "additionalProperties": false,
+                                "description": "Structured payload for a `show_artifact` agent action: a file the agent saved to show the user, such as a report, chart, or interactive HTML page."
+                              },
+                              {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "outcome": {
+                                        "type": "string",
+                                        "enum": [
+                                          "running"
+                                        ]
+                                      },
+                                      "files": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Project-relative paths of the files the review covered."
+                                      },
+                                      "contextFileCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How many other files the review read for context."
+                                      }
+                                    },
+                                    "required": [
+                                      "outcome",
+                                      "files",
+                                      "contextFileCount"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "The review is running."
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "outcome": {
+                                        "type": "string",
+                                        "enum": [
+                                          "clean"
+                                        ]
+                                      },
+                                      "files": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Project-relative paths of the files the review covered."
+                                      },
+                                      "contextFileCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How many other files the review read for context."
+                                      },
+                                      "potentialIssueCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                      },
+                                      "severities": {
+                                        "type": "object",
+                                        "properties": {
+                                          "critical": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "high": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "medium": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "bug": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991,
+                                            "description": "Non-security bugs the review reported."
+                                          },
+                                          "low": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          }
+                                        },
+                                        "required": [
+                                          "critical",
+                                          "high",
+                                          "medium",
+                                          "bug",
+                                          "low"
+                                        ],
+                                        "additionalProperties": false,
+                                        "description": "Potential issues by severity."
+                                      },
+                                      "durationMs": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How long the review ran."
+                                      }
+                                    },
+                                    "required": [
+                                      "outcome",
+                                      "files",
+                                      "contextFileCount",
+                                      "potentialIssueCount",
+                                      "severities",
+                                      "durationMs"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "The review finished and reported no potential issues."
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "outcome": {
+                                        "type": "string",
+                                        "enum": [
+                                          "findings"
+                                        ]
+                                      },
+                                      "files": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Project-relative paths of the files the review covered."
+                                      },
+                                      "contextFileCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How many other files the review read for context."
+                                      },
+                                      "potentialIssueCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                      },
+                                      "severities": {
+                                        "type": "object",
+                                        "properties": {
+                                          "critical": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "high": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "medium": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "bug": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991,
+                                            "description": "Non-security bugs the review reported."
+                                          },
+                                          "low": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          }
+                                        },
+                                        "required": [
+                                          "critical",
+                                          "high",
+                                          "medium",
+                                          "bug",
+                                          "low"
+                                        ],
+                                        "additionalProperties": false,
+                                        "description": "Potential issues by severity."
+                                      },
+                                      "durationMs": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How long the review ran."
+                                      }
+                                    },
+                                    "required": [
+                                      "outcome",
+                                      "files",
+                                      "contextFileCount",
+                                      "potentialIssueCount",
+                                      "severities",
+                                      "durationMs"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "The review finished and reported potential issues."
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "outcome": {
+                                        "type": "string",
+                                        "enum": [
+                                          "incomplete"
+                                        ]
+                                      },
+                                      "files": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Project-relative paths of the files the review covered."
+                                      },
+                                      "contextFileCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991,
+                                        "description": "How many other files the review read for context."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "ai-error",
+                                          "credits",
+                                          "timeout",
+                                          "stopped",
+                                          "not-started",
+                                          "interrupted"
+                                        ],
+                                        "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                                      },
+                                      "durationMs": {
+                                        "anyOf": [
+                                          {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ],
+                                        "description": "How long it ran before it ended, when known."
+                                      }
+                                    },
+                                    "required": [
+                                      "outcome",
+                                      "files",
+                                      "contextFileCount",
+                                      "reason",
+                                      "durationMs"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "The review ended without a result."
+                                  }
+                                ],
+                                "description": "Payload for `security_review` parts. Narrow by `outcome`: only finished reviews carry counts, and only incomplete ones carry a `reason`."
                               }
                             ]
                           },
@@ -3007,7 +3661,7 @@
                           "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                         },
                         "data": {
-                          "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                          "description": "Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.",
                           "anyOf": [
                             {
                               "type": "object",
@@ -3351,6 +4005,333 @@
                                 }
                               ],
                               "description": "Structured payload for a `configure_vercel_connect` agent action."
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "artifactId": {
+                                  "type": "string",
+                                  "description": "Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}."
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "Short title the agent gave the artifact."
+                                },
+                                "fileName": {
+                                  "type": "string",
+                                  "description": "File name of the artifact, including its extension."
+                                },
+                                "kind": {
+                                  "type": "string",
+                                  "enum": [
+                                    "html",
+                                    "markdown",
+                                    "json",
+                                    "csv",
+                                    "text",
+                                    "image",
+                                    "audio",
+                                    "video",
+                                    "pdf",
+                                    "model",
+                                    "code",
+                                    "document",
+                                    "spreadsheet",
+                                    "file"
+                                  ],
+                                  "description": "How the artifact is rendered in v0."
+                                },
+                                "size": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "Size of the artifact in bytes."
+                                },
+                                "display": {
+                                  "type": "string",
+                                  "enum": [
+                                    "tab",
+                                    "inline"
+                                  ],
+                                  "description": "Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`)."
+                                }
+                              },
+                              "required": [
+                                "artifactId",
+                                "title",
+                                "fileName",
+                                "kind",
+                                "size",
+                                "display"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Structured payload for a `show_artifact` agent action: a file the agent saved to show the user, such as a report, chart, or interactive HTML page."
+                            },
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "outcome": {
+                                      "type": "string",
+                                      "enum": [
+                                        "running"
+                                      ]
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Project-relative paths of the files the review covered."
+                                    },
+                                    "contextFileCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How many other files the review read for context."
+                                    }
+                                  },
+                                  "required": [
+                                    "outcome",
+                                    "files",
+                                    "contextFileCount"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "The review is running."
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "outcome": {
+                                      "type": "string",
+                                      "enum": [
+                                        "clean"
+                                      ]
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Project-relative paths of the files the review covered."
+                                    },
+                                    "contextFileCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How many other files the review read for context."
+                                    },
+                                    "potentialIssueCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                    },
+                                    "severities": {
+                                      "type": "object",
+                                      "properties": {
+                                        "critical": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "high": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "medium": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "bug": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991,
+                                          "description": "Non-security bugs the review reported."
+                                        },
+                                        "low": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        }
+                                      },
+                                      "required": [
+                                        "critical",
+                                        "high",
+                                        "medium",
+                                        "bug",
+                                        "low"
+                                      ],
+                                      "additionalProperties": false,
+                                      "description": "Potential issues by severity."
+                                    },
+                                    "durationMs": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How long the review ran."
+                                    }
+                                  },
+                                  "required": [
+                                    "outcome",
+                                    "files",
+                                    "contextFileCount",
+                                    "potentialIssueCount",
+                                    "severities",
+                                    "durationMs"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "The review finished and reported no potential issues."
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "outcome": {
+                                      "type": "string",
+                                      "enum": [
+                                        "findings"
+                                      ]
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Project-relative paths of the files the review covered."
+                                    },
+                                    "contextFileCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How many other files the review read for context."
+                                    },
+                                    "potentialIssueCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                    },
+                                    "severities": {
+                                      "type": "object",
+                                      "properties": {
+                                        "critical": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "high": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "medium": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "bug": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991,
+                                          "description": "Non-security bugs the review reported."
+                                        },
+                                        "low": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        }
+                                      },
+                                      "required": [
+                                        "critical",
+                                        "high",
+                                        "medium",
+                                        "bug",
+                                        "low"
+                                      ],
+                                      "additionalProperties": false,
+                                      "description": "Potential issues by severity."
+                                    },
+                                    "durationMs": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How long the review ran."
+                                    }
+                                  },
+                                  "required": [
+                                    "outcome",
+                                    "files",
+                                    "contextFileCount",
+                                    "potentialIssueCount",
+                                    "severities",
+                                    "durationMs"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "The review finished and reported potential issues."
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "outcome": {
+                                      "type": "string",
+                                      "enum": [
+                                        "incomplete"
+                                      ]
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Project-relative paths of the files the review covered."
+                                    },
+                                    "contextFileCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991,
+                                      "description": "How many other files the review read for context."
+                                    },
+                                    "reason": {
+                                      "type": "string",
+                                      "enum": [
+                                        "ai-error",
+                                        "credits",
+                                        "timeout",
+                                        "stopped",
+                                        "not-started",
+                                        "interrupted"
+                                      ],
+                                      "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                                    },
+                                    "durationMs": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ],
+                                      "description": "How long it ran before it ended, when known."
+                                    }
+                                  },
+                                  "required": [
+                                    "outcome",
+                                    "files",
+                                    "contextFileCount",
+                                    "reason",
+                                    "durationMs"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "The review ended without a result."
+                                }
+                              ],
+                              "description": "Payload for `security_review` parts. Narrow by `outcome`: only finished reviews carry counts, and only incomplete ones carry a `reason`."
                             }
                           ]
                         },
@@ -4627,6 +5608,29 @@
                 "userId": {
                   "description": "Attributed user identifier.",
                   "type": "string"
+                },
+                "user": {
+                  "description": "Attributed user details. Omitted when the user cannot be resolved.",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "User identifier."
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "User email address."
+                    },
+                    "name": {
+                      "description": "User display name, when set.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email"
+                  ],
+                  "additionalProperties": false
                 },
                 "chatId": {
                   "description": "Related chat identifier.",
@@ -6574,6 +7578,218 @@
                 },
                 "required": [
                   "repo"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A chat response that also reports the usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatWithUsage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/from-template": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create Chat From Template",
+        "description": "Creates a new chat from a v0 template, the same way opening it from v0.app/templates does.",
+        "operationId": "chats.createFromTemplate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "templateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "ID of the v0 template to start from, as shown in its v0.app/templates URL."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "templateId"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "templateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "ID of the v0 template to start from, as shown in its v0.app/templates URL."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "templateId"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "templateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "ID of the v0 template to start from, as shown in its v0.app/templates URL."
+                  },
+                  "privacy": {
+                    "description": "Visibility setting for the new chat.",
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "private",
+                      "team",
+                      "team-edit",
+                      "unlisted"
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the new chat.",
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "description": "Arbitrary key-value data to attach to the chat.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "required": [
+                  "templateId"
                 ],
                 "additionalProperties": false
               }
@@ -16918,6 +18134,695 @@
         }
       }
     },
+    "/chats/{chatId}/security-checks/{checkId}": {
+      "get": {
+        "tags": [
+          "Security Checks"
+        ],
+        "summary": "Get Security Check",
+        "description": "Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
+        "operationId": "securityChecks.get",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique identifier of the chat."
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The Security Check ID."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The Security Check ID, which is also the ID of the assistant message that runs it."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "security_check"
+                      ]
+                    },
+                    "chatId": {
+                      "type": "string",
+                      "description": "The chat the check runs in."
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "project",
+                        "changes"
+                      ],
+                      "description": "`changes`: what changed in the chat. `project`: the riskiest files across the app."
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "running",
+                        "completed"
+                      ],
+                      "description": "`completed` once v0 has finished its reply."
+                    },
+                    "review": {
+                      "description": "How the review itself went. Absent until it starts, while v0 retries an attempt that couldn't start, and when v0 didn't run one (for example, when there were no changes to review, or reviews aren't available for this chat).",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "outcome": {
+                              "type": "string",
+                              "enum": [
+                                "running"
+                              ]
+                            },
+                            "files": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Project-relative paths of the files the review covered."
+                            },
+                            "contextFileCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How many other files the review read for context."
+                            }
+                          },
+                          "required": [
+                            "outcome",
+                            "files",
+                            "contextFileCount"
+                          ],
+                          "additionalProperties": false,
+                          "description": "The review is running."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "outcome": {
+                              "type": "string",
+                              "enum": [
+                                "clean"
+                              ]
+                            },
+                            "files": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Project-relative paths of the files the review covered."
+                            },
+                            "contextFileCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How many other files the review read for context."
+                            },
+                            "potentialIssueCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                            },
+                            "severities": {
+                              "type": "object",
+                              "properties": {
+                                "critical": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "high": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "medium": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "bug": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "Non-security bugs the review reported."
+                                },
+                                "low": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "critical",
+                                "high",
+                                "medium",
+                                "bug",
+                                "low"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Potential issues by severity."
+                            },
+                            "durationMs": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How long the review ran."
+                            }
+                          },
+                          "required": [
+                            "outcome",
+                            "files",
+                            "contextFileCount",
+                            "potentialIssueCount",
+                            "severities",
+                            "durationMs"
+                          ],
+                          "additionalProperties": false,
+                          "description": "The review finished and reported no potential issues."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "outcome": {
+                              "type": "string",
+                              "enum": [
+                                "findings"
+                              ]
+                            },
+                            "files": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Project-relative paths of the files the review covered."
+                            },
+                            "contextFileCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How many other files the review read for context."
+                            },
+                            "potentialIssueCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                            },
+                            "severities": {
+                              "type": "object",
+                              "properties": {
+                                "critical": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "high": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "medium": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "bug": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991,
+                                  "description": "Non-security bugs the review reported."
+                                },
+                                "low": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "critical",
+                                "high",
+                                "medium",
+                                "bug",
+                                "low"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Potential issues by severity."
+                            },
+                            "durationMs": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How long the review ran."
+                            }
+                          },
+                          "required": [
+                            "outcome",
+                            "files",
+                            "contextFileCount",
+                            "potentialIssueCount",
+                            "severities",
+                            "durationMs"
+                          ],
+                          "additionalProperties": false,
+                          "description": "The review finished and reported potential issues."
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "outcome": {
+                              "type": "string",
+                              "enum": [
+                                "incomplete"
+                              ]
+                            },
+                            "files": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Project-relative paths of the files the review covered."
+                            },
+                            "contextFileCount": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "description": "How many other files the review read for context."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "ai-error",
+                                "credits",
+                                "timeout",
+                                "stopped",
+                                "not-started",
+                                "interrupted"
+                              ],
+                              "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                            },
+                            "durationMs": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ],
+                              "description": "How long it ran before it ended, when known."
+                            }
+                          },
+                          "required": [
+                            "outcome",
+                            "files",
+                            "contextFileCount",
+                            "reason",
+                            "durationMs"
+                          ],
+                          "additionalProperties": false,
+                          "description": "The review ended without a result."
+                        }
+                      ]
+                    },
+                    "summary": {
+                      "description": "Counts of v0's checked findings. Present whenever `findings` is.",
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991,
+                          "description": "Findings v0 confirmed."
+                        },
+                        "dismissed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991,
+                          "description": "Findings v0 dismissed after checking."
+                        },
+                        "highestSeverity": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "critical",
+                                "high",
+                                "medium",
+                                "low",
+                                "bug"
+                              ],
+                              "description": "The severity v0 concluded after checking, most severe first; `bug` is a non-security bug."
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "The most severe confirmed finding, or null when none was confirmed. For example, fail a deploy when it is `critical` or `high`."
+                        },
+                        "bySeverity": {
+                          "type": "object",
+                          "properties": {
+                            "critical": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "high": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "medium": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "low": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "bug": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "critical",
+                            "high",
+                            "medium",
+                            "low",
+                            "bug"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Confirmed findings by severity."
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "dismissed",
+                        "highestSeverity",
+                        "bySeverity"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "findings": {
+                      "description": "v0's checked findings: confirmed first, then most severe first. Empty for a clean review. Absent until v0 records them, and when no review finished with a result.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The finding's number within this check."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Short name of the issue."
+                          },
+                          "severity": {
+                            "type": "string",
+                            "enum": [
+                              "critical",
+                              "high",
+                              "medium",
+                              "low",
+                              "bug"
+                            ],
+                            "description": "The severity v0 concluded after checking, most severe first; `bug` is a non-security bug."
+                          },
+                          "file": {
+                            "type": "string",
+                            "description": "Project-relative file path."
+                          },
+                          "line": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "1-based line of the issue, or null when it spans the file."
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "confirmed",
+                              "dismissed"
+                            ],
+                            "description": "`confirmed`: a real risk. `dismissed`: other code in the project already handles it."
+                          },
+                          "explanation": {
+                            "type": "string",
+                            "description": "Why it is a risk, or which code handles it when dismissed."
+                          },
+                          "fix": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The suggested fix for a confirmed finding."
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "severity",
+                          "file",
+                          "line",
+                          "status",
+                          "explanation",
+                          "fix"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "reply": {
+                      "description": "v0's final reply, once the check is completed.",
+                      "type": "string"
+                    },
+                    "cost": {
+                      "description": "What the check's AI calls cost so far. v0's own reply is billed like any message and isn't included.",
+                      "type": "object",
+                      "properties": {
+                        "credits": {
+                          "type": "string",
+                          "description": "v0 credits used by the check's AI calls, as a decimal string."
+                        },
+                        "charged": {
+                          "type": "boolean",
+                          "description": "Whether the credits were charged; false when v0 covered them."
+                        }
+                      },
+                      "required": [
+                        "credits",
+                        "charged"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                      "description": "When the check was started."
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "chatId",
+                    "scope",
+                    "status",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{chatId}/artifacts/{artifactId}": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "operationId": "chats.downloadArtifact",
+        "summary": "Download Artifact",
+        "description": "Downloads the saved bytes of an artifact the agent showed in this chat. Find artifact IDs on `show_artifact` agent-action message parts. The response `Content-Type` is the artifact’s file type, such as `text/html`, `text/markdown`, `application/json`, `text/csv`, or an image type.",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique identifier of the chat."
+            }
+          },
+          {
+            "name": "artifactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "description": "The `artifactId` from a `show_artifact` message part."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The artifact file.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/chats/{chatId}": {
       "get": {
         "tags": [
@@ -18170,7 +20075,7 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "description": "Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.",
                                       "anyOf": [
                                         {
                                           "type": "object",
@@ -18514,6 +20419,333 @@
                                             }
                                           ],
                                           "description": "Structured payload for a `configure_vercel_connect` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "artifactId": {
+                                              "type": "string",
+                                              "description": "Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}."
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "description": "Short title the agent gave the artifact."
+                                            },
+                                            "fileName": {
+                                              "type": "string",
+                                              "description": "File name of the artifact, including its extension."
+                                            },
+                                            "kind": {
+                                              "type": "string",
+                                              "enum": [
+                                                "html",
+                                                "markdown",
+                                                "json",
+                                                "csv",
+                                                "text",
+                                                "image",
+                                                "audio",
+                                                "video",
+                                                "pdf",
+                                                "model",
+                                                "code",
+                                                "document",
+                                                "spreadsheet",
+                                                "file"
+                                              ],
+                                              "description": "How the artifact is rendered in v0."
+                                            },
+                                            "size": {
+                                              "type": "integer",
+                                              "minimum": -9007199254740991,
+                                              "maximum": 9007199254740991,
+                                              "description": "Size of the artifact in bytes."
+                                            },
+                                            "display": {
+                                              "type": "string",
+                                              "enum": [
+                                                "tab",
+                                                "inline"
+                                              ],
+                                              "description": "Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`)."
+                                            }
+                                          },
+                                          "required": [
+                                            "artifactId",
+                                            "title",
+                                            "fileName",
+                                            "kind",
+                                            "size",
+                                            "display"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for a `show_artifact` agent action: a file the agent saved to show the user, such as a report, chart, or interactive HTML page."
+                                        },
+                                        {
+                                          "oneOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "running"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review is running."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "clean"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "potentialIssueCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                                },
+                                                "severities": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "critical": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "high": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "medium": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "bug": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991,
+                                                      "description": "Non-security bugs the review reported."
+                                                    },
+                                                    "low": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "critical",
+                                                    "high",
+                                                    "medium",
+                                                    "bug",
+                                                    "low"
+                                                  ],
+                                                  "additionalProperties": false,
+                                                  "description": "Potential issues by severity."
+                                                },
+                                                "durationMs": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How long the review ran."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "potentialIssueCount",
+                                                "severities",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review finished and reported no potential issues."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "findings"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "potentialIssueCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                                },
+                                                "severities": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "critical": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "high": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "medium": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "bug": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991,
+                                                      "description": "Non-security bugs the review reported."
+                                                    },
+                                                    "low": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "critical",
+                                                    "high",
+                                                    "medium",
+                                                    "bug",
+                                                    "low"
+                                                  ],
+                                                  "additionalProperties": false,
+                                                  "description": "Potential issues by severity."
+                                                },
+                                                "durationMs": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How long the review ran."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "potentialIssueCount",
+                                                "severities",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review finished and reported potential issues."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "incomplete"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "reason": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "ai-error",
+                                                    "credits",
+                                                    "timeout",
+                                                    "stopped",
+                                                    "not-started",
+                                                    "interrupted"
+                                                  ],
+                                                  "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                                                },
+                                                "durationMs": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ],
+                                                  "description": "How long it ran before it ended, when known."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "reason",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review ended without a result."
+                                            }
+                                          ],
+                                          "description": "Payload for `security_review` parts. Narrow by `outcome`: only finished reviews carry counts, and only incomplete ones carry a `reason`."
                                         }
                                       ]
                                     },
@@ -19669,7 +21901,7 @@
                                       "description": "A short human-readable summary of what happened. Always populated so clients can render something even without knowing the action name."
                                     },
                                     "data": {
-                                      "description": "Structured payload for input-requesting actions. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you; narrow by the part `name`. Omitted for actions that do not carry structured data.",
+                                      "description": "Structured payload for actions that carry data. Present on `ask_user_questions`, `exit_plan_mode`, `get_or_request_integration`, and `configure_vercel_connect` parts when the agent is waiting on you, and on `show_artifact` and `security_review` parts. Narrow by the part `name`: the presence of `data` alone does not mean the agent is waiting on you. Omitted for actions that do not carry structured data.",
                                       "anyOf": [
                                         {
                                           "type": "object",
@@ -20013,6 +22245,333 @@
                                             }
                                           ],
                                           "description": "Structured payload for a `configure_vercel_connect` agent action."
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "artifactId": {
+                                              "type": "string",
+                                              "description": "Artifact identifier. Download its bytes with GET /chats/{chatId}/artifacts/{artifactId}."
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "description": "Short title the agent gave the artifact."
+                                            },
+                                            "fileName": {
+                                              "type": "string",
+                                              "description": "File name of the artifact, including its extension."
+                                            },
+                                            "kind": {
+                                              "type": "string",
+                                              "enum": [
+                                                "html",
+                                                "markdown",
+                                                "json",
+                                                "csv",
+                                                "text",
+                                                "image",
+                                                "audio",
+                                                "video",
+                                                "pdf",
+                                                "model",
+                                                "code",
+                                                "document",
+                                                "spreadsheet",
+                                                "file"
+                                              ],
+                                              "description": "How the artifact is rendered in v0."
+                                            },
+                                            "size": {
+                                              "type": "integer",
+                                              "minimum": -9007199254740991,
+                                              "maximum": 9007199254740991,
+                                              "description": "Size of the artifact in bytes."
+                                            },
+                                            "display": {
+                                              "type": "string",
+                                              "enum": [
+                                                "tab",
+                                                "inline"
+                                              ],
+                                              "description": "Where v0 shows the artifact: embedded in the message (`inline`) or in a separate tab (`tab`)."
+                                            }
+                                          },
+                                          "required": [
+                                            "artifactId",
+                                            "title",
+                                            "fileName",
+                                            "kind",
+                                            "size",
+                                            "display"
+                                          ],
+                                          "additionalProperties": false,
+                                          "description": "Structured payload for a `show_artifact` agent action: a file the agent saved to show the user, such as a report, chart, or interactive HTML page."
+                                        },
+                                        {
+                                          "oneOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "running"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review is running."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "clean"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "potentialIssueCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                                },
+                                                "severities": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "critical": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "high": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "medium": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "bug": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991,
+                                                      "description": "Non-security bugs the review reported."
+                                                    },
+                                                    "low": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "critical",
+                                                    "high",
+                                                    "medium",
+                                                    "bug",
+                                                    "low"
+                                                  ],
+                                                  "additionalProperties": false,
+                                                  "description": "Potential issues by severity."
+                                                },
+                                                "durationMs": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How long the review ran."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "potentialIssueCount",
+                                                "severities",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review finished and reported no potential issues."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "findings"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "potentialIssueCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "Potential issues the review reported, before the agent checked them against the project. The checked findings are in the final message."
+                                                },
+                                                "severities": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "critical": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "high": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "medium": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    "bug": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991,
+                                                      "description": "Non-security bugs the review reported."
+                                                    },
+                                                    "low": {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "critical",
+                                                    "high",
+                                                    "medium",
+                                                    "bug",
+                                                    "low"
+                                                  ],
+                                                  "additionalProperties": false,
+                                                  "description": "Potential issues by severity."
+                                                },
+                                                "durationMs": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How long the review ran."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "potentialIssueCount",
+                                                "severities",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review finished and reported potential issues."
+                                            },
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "outcome": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "incomplete"
+                                                  ]
+                                                },
+                                                "files": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "description": "Project-relative paths of the files the review covered."
+                                                },
+                                                "contextFileCount": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991,
+                                                  "description": "How many other files the review read for context."
+                                                },
+                                                "reason": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "ai-error",
+                                                    "credits",
+                                                    "timeout",
+                                                    "stopped",
+                                                    "not-started",
+                                                    "interrupted"
+                                                  ],
+                                                  "description": "Why the review ended without a result: `ai-error` (the AI calls failed), `credits` (not enough v0 credits), `timeout`, `stopped` (the turn was stopped while it ran), `not-started` (it never started), or `interrupted` (it stopped partway, or its result could not be read)."
+                                                },
+                                                "durationMs": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "integer",
+                                                      "minimum": -9007199254740991,
+                                                      "maximum": 9007199254740991
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ],
+                                                  "description": "How long it ran before it ended, when known."
+                                                }
+                                              },
+                                              "required": [
+                                                "outcome",
+                                                "files",
+                                                "contextFileCount",
+                                                "reason",
+                                                "durationMs"
+                                              ],
+                                              "additionalProperties": false,
+                                              "description": "The review ended without a result."
+                                            }
+                                          ],
+                                          "description": "Payload for `security_review` parts. Narrow by `outcome`: only finished reviews carry counts, and only incomplete ones carry a `reason`."
                                         }
                                       ]
                                     },
@@ -20841,6 +23400,309 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/security-checks/": {
+      "post": {
+        "tags": [
+          "Security Checks"
+        ],
+        "summary": "Create Security Check",
+        "description": "Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
+        "operationId": "securityChecks.create",
+        "requestBody": {
+          "description": "Provide exactly one of `chatId`, `repo` or `vercelProjectId`.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "project",
+                      "changes"
+                    ],
+                    "description": "`changes`: what changed in the chat. `project`: the riskiest files across the app."
+                  },
+                  "chatId": {
+                    "description": "The v0 chat to check.",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "repo": {
+                    "description": "A GitHub repository to import and check. Requires scope `project`.",
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "vercelProjectId": {
+                    "description": "A Vercel project to import and check. Requires scope `project`.",
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$"
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  }
+                },
+                "required": [
+                  "scope"
+                ],
+                "additionalProperties": false,
+                "description": "Provide exactly one of `chatId`, `repo` or `vercelProjectId`."
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "project",
+                      "changes"
+                    ],
+                    "description": "`changes`: what changed in the chat. `project`: the riskiest files across the app."
+                  },
+                  "chatId": {
+                    "description": "The v0 chat to check.",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "repo": {
+                    "description": "A GitHub repository to import and check. Requires scope `project`.",
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "vercelProjectId": {
+                    "description": "A Vercel project to import and check. Requires scope `project`.",
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$"
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  }
+                },
+                "required": [
+                  "scope"
+                ],
+                "additionalProperties": false,
+                "description": "Provide exactly one of `chatId`, `repo` or `vercelProjectId`."
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "project",
+                      "changes"
+                    ],
+                    "description": "`changes`: what changed in the chat. `project`: the riskiest files across the app."
+                  },
+                  "chatId": {
+                    "description": "The v0 chat to check.",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "repo": {
+                    "description": "A GitHub repository to import and check. Requires scope `project`.",
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "GitHub repository URL, for example https://github.com/vercel/next.js."
+                      },
+                      "branch": {
+                        "description": "Branch to import. If omitted, v0 uses the repository default branch.",
+                        "type": "string",
+                        "maxLength": 250
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "vercelProjectId": {
+                    "description": "A Vercel project to import and check. Requires scope `project`.",
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 32,
+                    "pattern": "^prj_[A-Za-z0-9]+$"
+                  },
+                  "baseBranch": {
+                    "description": "Base branch for a GitHub-linked project. Defaults to the repository default branch. Ignored for projects without a GitHub link.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                  }
+                },
+                "required": [
+                  "scope"
+                ],
+                "additionalProperties": false,
+                "description": "Provide exactly one of `chatId`, `repo` or `vercelProjectId`."
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Response for status 202",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The Security Check ID. Poll GET /chats/:chatId/security-checks/:checkId for its status and findings."
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "security_check"
+                      ]
+                    },
+                    "chatId": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "project",
+                        "changes"
+                      ],
+                      "description": "`changes`: what changed in the chat. `project`: the riskiest files across the app."
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "running"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "object",
+                    "chatId",
+                    "scope",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Response for status 409",
             "content": {
               "application/json": {
                 "schema": {
