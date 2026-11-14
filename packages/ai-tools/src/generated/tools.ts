@@ -2474,7 +2474,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     securityChecksCreate: tool({
       description:
-        "Create Security Check: Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
+        "Create Security Check: Runs a DeepSec Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
       inputSchema: securityChecksCreateInputSchema,
       execute: async (input) => {
         const parameters = {
@@ -2489,7 +2489,7 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
     }),
     securityChecksGet: tool({
       description:
-        "Get Security Check: Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
+        "Get Security Check: Returns a DeepSec Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
       inputSchema: securityChecksGetInputSchema,
       execute: async (input) => {
         const parameters = {

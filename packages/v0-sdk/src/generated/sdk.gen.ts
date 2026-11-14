@@ -2124,7 +2124,7 @@ export class SecurityChecks extends HeyApiClient {
     /**
      * Get Security Check
      *
-     * Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.
+     * Returns a DeepSec Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.
      */
     public get<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -2143,7 +2143,7 @@ export class SecurityChecks extends HeyApiClient {
     /**
      * Create Security Check
      *
-     * Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.
+     * Runs a DeepSec Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.
      */
     public create<ThrowOnError extends boolean = false>(parameters: {
         scope: 'project' | 'changes';
