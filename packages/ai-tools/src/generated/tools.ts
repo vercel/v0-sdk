@@ -52,13 +52,6 @@ export type V0ToolName =
   | 'messagesSendAsync'
   | 'messagesSendStream'
   | 'messagesStop'
-  | 'poolCreditLimitsGetDefault'
-  | 'poolCreditLimitsMembersGet'
-  | 'poolCreditLimitsMembersList'
-  | 'poolCreditLimitsMembersReset'
-  | 'poolCreditLimitsMembersSet'
-  | 'poolCreditLimitsMembersUpdate'
-  | 'poolCreditLimitsSetDefault'
   | 'securityChecksCreate'
   | 'securityChecksGet'
   | 'settingsAppendPreviewHosts'
@@ -124,16 +117,6 @@ export type V0ToolsByCategory = {
     | 'messagesSendAsync'
     | 'messagesSendStream'
     | 'messagesStop'
-  >
-  poolCreditLimits: Pick<
-    V0ToolsFlat,
-    | 'poolCreditLimitsGetDefault'
-    | 'poolCreditLimitsMembersGet'
-    | 'poolCreditLimitsMembersList'
-    | 'poolCreditLimitsMembersReset'
-    | 'poolCreditLimitsMembersSet'
-    | 'poolCreditLimitsMembersUpdate'
-    | 'poolCreditLimitsSetDefault'
   >
   securityChecks: Pick<V0ToolsFlat, 'securityChecksCreate' | 'securityChecksGet'>
   settings: Pick<
@@ -1851,105 +1834,6 @@ const messagesStopInputSchema = z.object({
   messageId: z.string(),
 })
 
-const poolCreditLimitsGetDefaultInputSchema = z.object({})
-
-const poolCreditLimitsMembersGetInputSchema = z.object({
-  userId: z.string(),
-})
-
-const poolCreditLimitsMembersListInputSchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.number().int().optional(),
-})
-
-const poolCreditLimitsMembersResetInputSchema = z.object({
-  userId: z.string(),
-})
-
-const poolCreditLimitsMembersSetInputSchema = z.object({
-  userId: z.string(),
-  setting: z
-    .union([
-      z.object({
-        access: z
-          .enum(['unlimited'])
-          .describe('The member may spend shared-pool credits without a cap.'),
-      }),
-      z.object({
-        access: z.enum(['none']).describe('The member may spend only their monthly credits.'),
-      }),
-      z.object({
-        access: z
-          .enum(['limited'])
-          .describe('The member may spend up to `limit` of shared-pool credits per billing cycle.'),
-        limit: z.string().describe('USD amount per billing cycle, with up to two decimals.'),
-      }),
-    ])
-    .describe(
-      'How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.',
-    ),
-})
-
-const poolCreditLimitsMembersUpdateInputSchema = z.object({
-  updates: z
-    .array(
-      z.object({
-        userId: z.string().describe('Team member user ID, or `me` for the authenticated user.'),
-        setting: z
-          .union([
-            z.union([
-              z.object({
-                access: z
-                  .enum(['unlimited'])
-                  .describe('The member may spend shared-pool credits without a cap.'),
-              }),
-              z.object({
-                access: z
-                  .enum(['none'])
-                  .describe('The member may spend only their monthly credits.'),
-              }),
-              z.object({
-                access: z
-                  .enum(['limited'])
-                  .describe(
-                    'The member may spend up to `limit` of shared-pool credits per billing cycle.',
-                  ),
-                limit: z
-                  .string()
-                  .describe('USD amount per billing cycle, with up to two decimals.'),
-              }),
-            ]),
-            z.null(),
-          ])
-          .describe('The member’s own setting, or null to remove it so the team default applies.'),
-      }),
-    )
-    .describe('Up to 100 changes, applied together or not at all.'),
-})
-
-const poolCreditLimitsSetDefaultInputSchema = z.object({
-  setting: z
-    .union([
-      z.object({
-        access: z
-          .enum(['unlimited'])
-          .describe('The member may spend shared-pool credits without a cap.'),
-      }),
-      z.object({
-        access: z.enum(['none']).describe('The member may spend only their monthly credits.'),
-      }),
-      z.object({
-        access: z
-          .enum(['limited'])
-          .describe('The member may spend up to `limit` of shared-pool credits per billing cycle.'),
-        limit: z.string().describe('USD amount per billing cycle, with up to two decimals.'),
-      }),
-    ])
-    .describe(
-      'How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.',
-    ),
-})
-
 const securityChecksCreateInputSchema = z.object({
   scope: z
     .enum(['project', 'changes'])
@@ -2612,82 +2496,6 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         return toToolResult(await client.messages.stop(parameters))
       },
     }),
-    poolCreditLimitsGetDefault: tool({
-      description:
-        'Get Pool Credit Limit Default: Returns the setting for team members without their own. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsGetDefaultInputSchema,
-      execute: async () => {
-        return toToolResult(await client.poolCreditLimits.getDefault())
-      },
-    }),
-    poolCreditLimitsMembersGet: tool({
-      description:
-        'Get Pool Credit Limit Member: Returns the setting that applies to a team member and their shared-pool usage this billing cycle. Team owners and billing members can read anyone; other members can read only themselves.',
-      inputSchema: poolCreditLimitsMembersGetInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          userId: input.userId,
-        }
-        return toToolResult(await client.poolCreditLimits.members.get(parameters))
-      },
-    }),
-    poolCreditLimitsMembersList: tool({
-      description:
-        'List Pool Credit Limit Members: Lists team members with v0 access, each with the setting that applies to them. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsMembersListInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          cursor: input.cursor,
-          limit: input.limit,
-        }
-        return toToolResult(await client.poolCreditLimits.members.list(parameters))
-      },
-    }),
-    poolCreditLimitsMembersReset: tool({
-      description:
-        'Reset Pool Credit Limit Member: Removes a team member’s own setting, so the team default applies. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsMembersResetInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          userId: input.userId,
-        }
-        return toToolResult(await client.poolCreditLimits.members.reset(parameters))
-      },
-    }),
-    poolCreditLimitsMembersSet: tool({
-      description:
-        'Set Pool Credit Limit Member: Gives a team member their own setting, in place of the team default. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsMembersSetInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          userId: input.userId,
-          setting: input.setting,
-        }
-        return toToolResult(await client.poolCreditLimits.members.set(parameters))
-      },
-    }),
-    poolCreditLimitsMembersUpdate: tool({
-      description:
-        'Update Pool Credit Limit Members: Sets or removes up to 100 members’ own settings in one request. Every change is validated first, and either all of them are saved or none are. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsMembersUpdateInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          updates: input.updates,
-        }
-        return toToolResult(await client.poolCreditLimits.members.update(parameters))
-      },
-    }),
-    poolCreditLimitsSetDefault: tool({
-      description:
-        'Set Pool Credit Limit Default: Sets the setting for team members without their own. Team owners and billing members only.',
-      inputSchema: poolCreditLimitsSetDefaultInputSchema,
-      execute: async (input) => {
-        const parameters = {
-          setting: input.setting,
-        }
-        return toToolResult(await client.poolCreditLimits.setDefault(parameters))
-      },
-    }),
     securityChecksCreate: tool({
       description:
         "Create Security Check: Runs a DeepSec Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
@@ -2908,15 +2716,6 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       messagesSendAsync: pickTool(tools, 'messagesSendAsync'),
       messagesSendStream: pickTool(tools, 'messagesSendStream'),
       messagesStop: pickTool(tools, 'messagesStop'),
-    },
-    poolCreditLimits: {
-      poolCreditLimitsGetDefault: pickTool(tools, 'poolCreditLimitsGetDefault'),
-      poolCreditLimitsMembersGet: pickTool(tools, 'poolCreditLimitsMembersGet'),
-      poolCreditLimitsMembersList: pickTool(tools, 'poolCreditLimitsMembersList'),
-      poolCreditLimitsMembersReset: pickTool(tools, 'poolCreditLimitsMembersReset'),
-      poolCreditLimitsMembersSet: pickTool(tools, 'poolCreditLimitsMembersSet'),
-      poolCreditLimitsMembersUpdate: pickTool(tools, 'poolCreditLimitsMembersUpdate'),
-      poolCreditLimitsSetDefault: pickTool(tools, 'poolCreditLimitsSetDefault'),
     },
     securityChecks: {
       securityChecksCreate: pickTool(tools, 'securityChecksCreate'),

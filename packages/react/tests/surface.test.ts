@@ -5,16 +5,24 @@ import { V0_REACT_OPERATION_HOOKS } from '../src/generated/swr'
 
 const methods = new Set(['get', 'post', 'put', 'patch', 'delete'])
 
+// Billing records have no hooks: hook caches aren't scoped to the signed-in account.
+const hasNoHook = (operationId: string) => operationId.startsWith('poolCreditLimits.')
+
 describe('generated hook surface', () => {
   test('maps every OpenAPI operation exactly once', () => {
     const operationIds = Object.values(openapi.paths).flatMap((pathItem) =>
       Object.entries(pathItem)
         .filter(([method]) => methods.has(method))
-        .map(([, operation]) => (operation as { operationId: string }).operationId),
+        .map(([, operation]) => (operation as { operationId: string }).operationId)
+        .filter((operationId) => !hasNoHook(operationId)),
     )
 
     expect(Object.keys(V0_REACT_OPERATION_HOOKS).sort()).toEqual(operationIds.sort())
     expect(new Set(Object.values(V0_REACT_OPERATION_HOOKS)).size).toBe(operationIds.length)
+  })
+
+  test('has no hooks for billing records', () => {
+    expect(Object.keys(V0_REACT_OPERATION_HOOKS).filter(hasNoHook)).toEqual([])
   })
 
   test('uses the confirmed semantic names and streaming defaults', () => {
