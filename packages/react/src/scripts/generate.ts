@@ -87,13 +87,15 @@ const semanticNames = {
   'mcpServers.get': 'useMcpServer',
   'mcpServers.update': 'useUpdateMcpServer',
   'mcpServers.delete': 'useDeleteMcpServer',
-  'poolCreditLimits.getDefault': 'usePoolCreditLimitDefault',
-  'poolCreditLimits.setDefault': 'useSetPoolCreditLimitDefault',
-  'poolCreditLimits.members.list': 'usePoolCreditLimitMembers',
-  'poolCreditLimits.members.get': 'usePoolCreditLimitMember',
-  'poolCreditLimits.members.set': 'useSetPoolCreditLimitMember',
-  'poolCreditLimits.members.reset': 'useResetPoolCreditLimitMember',
-  'poolCreditLimits.members.update': 'useUpdatePoolCreditLimitMembers',
+  // Null means no hook. Hook caches aren't scoped to the signed-in account, so
+  // role-restricted billing records stay out of them.
+  'poolCreditLimits.getDefault': null,
+  'poolCreditLimits.setDefault': null,
+  'poolCreditLimits.members.list': null,
+  'poolCreditLimits.members.get': null,
+  'poolCreditLimits.members.set': null,
+  'poolCreditLimits.members.reset': null,
+  'poolCreditLimits.members.update': null,
   'securityChecks.create': 'useCreateSecurityCheck',
   'securityChecks.get': 'useSecurityCheck',
   'settings.getPreviewHosts': 'usePreviewHosts',
@@ -108,31 +110,16 @@ const semanticNames = {
   'webhooks.get': 'useWebhook',
   'webhooks.update': 'useUpdateWebhook',
   'webhooks.delete': 'useDeleteWebhook',
-} as const satisfies Record<V0SdkOperationId, string>
+} as const satisfies Record<V0SdkOperationId, string | null>
 
 const mutationInvalidations: Partial<Record<V0SdkOperationId, readonly V0SdkOperationId[]>> = {
   'chats.delete': ['chats.list'],
   'chats.restoreMessage': ['chats.getFiles', 'messages.list'],
   'chats.update': ['chats.get', 'chats.list'],
   'chats.updateFiles': ['chats.getFiles', 'messages.list'],
-  'poolCreditLimits.members.reset': [
-    'poolCreditLimits.members.get',
-    'poolCreditLimits.members.list',
-  ],
-  'poolCreditLimits.members.set': ['poolCreditLimits.members.get', 'poolCreditLimits.members.list'],
-  'poolCreditLimits.members.update': [
-    'poolCreditLimits.members.get',
-    'poolCreditLimits.members.list',
-  ],
-  'poolCreditLimits.setDefault': [
-    'poolCreditLimits.getDefault',
-    'poolCreditLimits.members.get',
-    'poolCreditLimits.members.list',
-  ],
 }
 
 const paginationCursorPaths: Partial<Record<V0SdkOperationId, string>> = {
-  'poolCreditLimits.members.list': 'pagination.cursor',
   'usage.listEvents': 'pagination.cursor',
 }
 
@@ -181,6 +168,10 @@ function collectOperations(spec: OpenApiDocument, availableTransformers: Set<str
 
       const operationId = operation.operationId as keyof typeof semanticNames
       const publicName = semanticNames[operationId]
+      if (publicName === null) {
+        foundIds.add(operationId)
+        continue
+      }
       if (foundNames.has(publicName)) {
         throw new Error(`Duplicate semantic React hook name ${publicName}`)
       }
