@@ -3,7 +3,7 @@
 import { buildClientParams, type Client, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
 import { chatsCreateFromFilesResponseTransformer, chatsCreateFromRepoResponseTransformer, chatsCreateFromTemplateResponseTransformer, chatsCreateFromVercelProjectResponseTransformer, chatsCreateFromZipResponseTransformer, chatsCreateResponseTransformer, chatsDuplicateResponseTransformer, chatsGetPreviewResponseTransformer, chatsGetResponseTransformer, chatsListResponseTransformer, chatsRestoreMessageResponseTransformer, chatsUpdateFilesResponseTransformer, chatsUpdateResponseTransformer, mcpServersCreateResponseTransformer, mcpServersGetResponseTransformer, mcpServersListResponseTransformer, mcpServersUpdateResponseTransformer, messagesGetResponseTransformer, messagesListResponseTransformer, messagesResolveResponseTransformer, messagesSendResponseTransformer, securityChecksGetResponseTransformer, usageGetActivityResponseTransformer, usageGetSummaryResponseTransformer, usageListEventsResponseTransformer, webhooksCreateResponseTransformer, webhooksGetResponseTransformer, webhooksUpdateResponseTransformer } from './transformers.gen';
-import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromTemplateErrors, ChatsCreateFromTemplateResponses, ChatsCreateFromVercelProjectErrors, ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectWithMessageAsyncErrors, ChatsCreateFromVercelProjectWithMessageAsyncResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadArtifactErrors, ChatsDownloadArtifactResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, SecurityChecksCreateErrors, SecurityChecksCreateResponses, SecurityChecksGetErrors, SecurityChecksGetResponses, SettingsAppendPreviewHostsErrors, SettingsAppendPreviewHostsResponses, SettingsDeletePreviewHostsErrors, SettingsDeletePreviewHostsResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
+import type { ChatsCreateAsyncErrors, ChatsCreateAsyncResponses, ChatsCreateErrors, ChatsCreateFromFilesErrors, ChatsCreateFromFilesResponses, ChatsCreateFromRepoErrors, ChatsCreateFromRepoResponses, ChatsCreateFromTemplateErrors, ChatsCreateFromTemplateResponses, ChatsCreateFromVercelProjectErrors, ChatsCreateFromVercelProjectResponses, ChatsCreateFromVercelProjectWithMessageAsyncErrors, ChatsCreateFromVercelProjectWithMessageAsyncResponses, ChatsCreateFromZipErrors, ChatsCreateFromZipResponses, ChatsCreateResponses, ChatsCreateStreamErrors, ChatsCreateStreamResponses, ChatsCreateVercelProjectErrors, ChatsCreateVercelProjectResponses, ChatsDeleteErrors, ChatsDeleteResponses, ChatsDeployErrors, ChatsDeployResponses, ChatsDownloadArtifactErrors, ChatsDownloadArtifactResponses, ChatsDownloadFilesErrors, ChatsDownloadFilesResponses, ChatsDuplicateErrors, ChatsDuplicateResponses, ChatsGetConnectStatusErrors, ChatsGetConnectStatusResponses, ChatsGetErrors, ChatsGetFilesErrors, ChatsGetFilesResponses, ChatsGetPreviewErrors, ChatsGetPreviewResponses, ChatsGetResponses, ChatsListErrors, ChatsListResponses, ChatsRestoreMessageErrors, ChatsRestoreMessageResponses, ChatsResumeErrors, ChatsResumeResponses, ChatsUpdateErrors, ChatsUpdateFilesErrors, ChatsUpdateFilesResponses, ChatsUpdateResponses, McpServersCreateErrors, McpServersCreateResponses, McpServersDeleteErrors, McpServersDeleteResponses, McpServersGetErrors, McpServersGetResponses, McpServersListErrors, McpServersListResponses, McpServersUpdateErrors, McpServersUpdateResponses, MessagesGetErrors, MessagesGetResponses, MessagesListErrors, MessagesListResponses, MessagesResolveAsyncErrors, MessagesResolveAsyncResponses, MessagesResolveErrors, MessagesResolveResponses, MessagesResolveStreamErrors, MessagesResolveStreamResponses, MessagesSendAsyncErrors, MessagesSendAsyncResponses, MessagesSendErrors, MessagesSendResponses, MessagesSendStreamErrors, MessagesSendStreamResponses, MessagesStopErrors, MessagesStopResponses, PoolCreditLimitsGetDefaultErrors, PoolCreditLimitsGetDefaultResponses, PoolCreditLimitsMembersGetErrors, PoolCreditLimitsMembersGetResponses, PoolCreditLimitsMembersListErrors, PoolCreditLimitsMembersListResponses, PoolCreditLimitsMembersResetErrors, PoolCreditLimitsMembersResetResponses, PoolCreditLimitsMembersSetErrors, PoolCreditLimitsMembersSetResponses, PoolCreditLimitsMembersUpdateErrors, PoolCreditLimitsMembersUpdateResponses, PoolCreditLimitsSetDefaultErrors, PoolCreditLimitsSetDefaultResponses, SecurityChecksCreateErrors, SecurityChecksCreateResponses, SecurityChecksGetErrors, SecurityChecksGetResponses, SettingsAppendPreviewHostsErrors, SettingsAppendPreviewHostsResponses, SettingsDeletePreviewHostsErrors, SettingsDeletePreviewHostsResponses, SettingsGetPreviewHostsErrors, SettingsGetPreviewHostsResponses, SettingsSetPreviewHostsErrors, SettingsSetPreviewHostsResponses, UsageGetActivityErrors, UsageGetActivityResponses, UsageGetSummaryErrors, UsageGetSummaryResponses, UsageListEventsErrors, UsageListEventsResponses, WebhooksCreateErrors, WebhooksCreateResponses, WebhooksDeleteErrors, WebhooksDeleteResponses, WebhooksGetErrors, WebhooksGetResponses, WebhooksListErrors, WebhooksListResponses, WebhooksUpdateErrors, WebhooksUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -2124,7 +2124,7 @@ export class SecurityChecks extends HeyApiClient {
     /**
      * Get Security Check
      *
-     * Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.
+     * Returns a DeepSec Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.
      */
     public get<ThrowOnError extends boolean = false>(parameters: {
         chatId: string;
@@ -2143,7 +2143,7 @@ export class SecurityChecks extends HeyApiClient {
     /**
      * Create Security Check
      *
-     * Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.
+     * Runs a DeepSec Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.
      */
     public create<ThrowOnError extends boolean = false>(parameters: {
         scope: 'project' | 'changes';
@@ -2384,6 +2384,213 @@ export class McpServers extends HeyApiClient {
                 ...params.headers
             }
         });
+    }
+}
+
+export class Members extends HeyApiClient {
+    /**
+     * List Pool Credit Limit Members
+     *
+     * Lists team members with v0 access, each with the setting that applies to them. Team owners and billing members only.
+     */
+    public list<ThrowOnError extends boolean = false>(parameters?: {
+        cursor?: string;
+        limit?: number;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'query', key: 'cursor' }, { in: 'query', key: 'limit' }] }]);
+        return (options?.client ?? this.client).get<PoolCreditLimitsMembersListResponses, PoolCreditLimitsMembersListErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/members',
+            ...options,
+            ...params
+        });
+    }
+    
+    /**
+     * Update Pool Credit Limit Members
+     *
+     * Sets or removes up to 100 members’ own settings in one request. Every change is validated first, and either all of them are saved or none are. Team owners and billing members only.
+     */
+    public update<ThrowOnError extends boolean = false>(parameters: {
+        updates: Array<{
+            /**
+             * Team member user ID, or `me` for the authenticated user.
+             */
+            userId: string;
+            /**
+             * The member’s own setting, or null to remove it so the team default applies.
+             */
+            setting: {
+                /**
+                 * The member may spend shared-pool credits without a cap.
+                 */
+                access: 'unlimited';
+            } | {
+                /**
+                 * The member may spend only their monthly credits.
+                 */
+                access: 'none';
+            } | {
+                /**
+                 * The member may spend up to `limit` of shared-pool credits per billing cycle.
+                 */
+                access: 'limited';
+                /**
+                 * USD amount per billing cycle, with up to two decimals.
+                 */
+                limit: string;
+            } | null;
+        }>;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'body', key: 'updates' }] }]);
+        return (options?.client ?? this.client).patch<PoolCreditLimitsMembersUpdateResponses, PoolCreditLimitsMembersUpdateErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/members',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+    
+    /**
+     * Reset Pool Credit Limit Member
+     *
+     * Removes a team member’s own setting, so the team default applies. Team owners and billing members only.
+     */
+    public reset<ThrowOnError extends boolean = false>(parameters: {
+        userId: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'userId' }] }]);
+        return (options?.client ?? this.client).delete<PoolCreditLimitsMembersResetResponses, PoolCreditLimitsMembersResetErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/members/{userId}',
+            ...options,
+            ...params
+        });
+    }
+    
+    /**
+     * Get Pool Credit Limit Member
+     *
+     * Returns the setting that applies to a team member and their shared-pool usage this billing cycle. Team owners and billing members can read anyone; other members can read only themselves.
+     */
+    public get<ThrowOnError extends boolean = false>(parameters: {
+        userId: string;
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'userId' }] }]);
+        return (options?.client ?? this.client).get<PoolCreditLimitsMembersGetResponses, PoolCreditLimitsMembersGetErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/members/{userId}',
+            ...options,
+            ...params
+        });
+    }
+    
+    /**
+     * Set Pool Credit Limit Member
+     *
+     * Gives a team member their own setting, in place of the team default. Team owners and billing members only.
+     */
+    public set<ThrowOnError extends boolean = false>(parameters: {
+        userId: string;
+        setting: {
+            /**
+             * The member may spend shared-pool credits without a cap.
+             */
+            access: 'unlimited';
+        } | {
+            /**
+             * The member may spend only their monthly credits.
+             */
+            access: 'none';
+        } | {
+            /**
+             * The member may spend up to `limit` of shared-pool credits per billing cycle.
+             */
+            access: 'limited';
+            /**
+             * USD amount per billing cycle, with up to two decimals.
+             */
+            limit: string;
+        };
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'path', key: 'userId' }, { in: 'body', key: 'setting' }] }]);
+        return (options?.client ?? this.client).put<PoolCreditLimitsMembersSetResponses, PoolCreditLimitsMembersSetErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/members/{userId}',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+}
+
+export class PoolCreditLimits extends HeyApiClient {
+    /**
+     * Get Pool Credit Limit Default
+     *
+     * Returns the setting for team members without their own. Team owners and billing members only.
+     */
+    public getDefault<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
+        return (options?.client ?? this.client).get<PoolCreditLimitsGetDefaultResponses, PoolCreditLimitsGetDefaultErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/default',
+            ...options
+        });
+    }
+    
+    /**
+     * Set Pool Credit Limit Default
+     *
+     * Sets the setting for team members without their own. Team owners and billing members only.
+     */
+    public setDefault<ThrowOnError extends boolean = false>(parameters: {
+        setting: {
+            /**
+             * The member may spend shared-pool credits without a cap.
+             */
+            access: 'unlimited';
+        } | {
+            /**
+             * The member may spend only their monthly credits.
+             */
+            access: 'none';
+        } | {
+            /**
+             * The member may spend up to `limit` of shared-pool credits per billing cycle.
+             */
+            access: 'limited';
+            /**
+             * USD amount per billing cycle, with up to two decimals.
+             */
+            limit: string;
+        };
+    }, options?: Options<never, ThrowOnError>) {
+        const params = buildClientParams([parameters], [{ args: [{ in: 'body', key: 'setting' }] }]);
+        return (options?.client ?? this.client).put<PoolCreditLimitsSetDefaultResponses, PoolCreditLimitsSetDefaultErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/pool-credit-limits/default',
+            ...options,
+            ...params,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+                ...params.headers
+            }
+        });
+    }
+    
+    private _members?: Members;
+    get members(): Members {
+        return this._members ??= new Members({ client: this.client });
     }
 }
 
@@ -2691,6 +2898,11 @@ export class V0Sdk extends HeyApiClient {
     private _mcpServers?: McpServers;
     get mcpServers(): McpServers {
         return this._mcpServers ??= new McpServers({ client: this.client });
+    }
+    
+    private _poolCreditLimits?: PoolCreditLimits;
+    get poolCreditLimits(): PoolCreditLimits {
+        return this._poolCreditLimits ??= new PoolCreditLimits({ client: this.client });
     }
     
     private _settings?: Settings;

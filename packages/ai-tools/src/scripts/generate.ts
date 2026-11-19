@@ -22,6 +22,8 @@ type HttpMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patc
 
 type OpenApiOperation = {
   operationId?: string
+  /** False for operations agents shouldn't run, such as billing records. */
+  'x-v0-mcp-tool'?: boolean
   summary?: string
   description?: string
   parameters?: OpenApiParameterLike[]
@@ -154,7 +156,7 @@ function formatGeneratedFile(filePath: string): void {
   }
 }
 
-function collectOperations(spec: OpenApiDocument): OperationMetadata[] {
+export function collectOperations(spec: OpenApiDocument): OperationMetadata[] {
   const operations: OperationMetadata[] = []
 
   for (const [urlPath, pathItem] of Object.entries(spec.paths)) {
@@ -164,6 +166,10 @@ function collectOperations(spec: OpenApiDocument): OperationMetadata[] {
       }
 
       const operation = maybeOperation as OpenApiOperation
+      // The v0 MCP server skips these operations too.
+      if (operation['x-v0-mcp-tool'] === false) {
+        continue
+      }
       if (!operation.operationId) {
         throw new Error(`${method.toUpperCase()} ${urlPath} is missing operationId`)
       }
@@ -825,4 +831,6 @@ function assertUnique(values: string[], label: string): void {
   }
 }
 
-await main()
+if (import.meta.main) {
+  await main()
+}

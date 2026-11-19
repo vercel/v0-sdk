@@ -42,6 +42,7 @@ export function message(
     attachments: [],
     restorable: false,
     finishReason: overrides.role === 'assistant' ? null : 'stop',
+    filesStatus: null,
     authorId: overrides.role === 'user' ? 'user_1' : null,
     usage,
     ...overrides,

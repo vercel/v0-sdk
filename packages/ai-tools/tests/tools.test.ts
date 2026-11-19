@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 type OpenApiDocument = {
-  paths: Record<string, Record<string, { operationId?: string }>>
+  paths: Record<string, Record<string, { operationId?: string; 'x-v0-mcp-tool'?: boolean }>>
 }
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -18,7 +18,9 @@ const httpMethods = new Set(['get', 'put', 'post', 'delete', 'options', 'head', 
 const operationIds = Object.values(openApi.paths)
   .flatMap((pathItem) =>
     Object.entries(pathItem)
-      .filter(([method]) => httpMethods.has(method))
+      .filter(
+        ([method, operation]) => httpMethods.has(method) && operation['x-v0-mcp-tool'] !== false,
+      )
       .map(([, operation]) => operation.operationId),
   )
   .filter((operationId): operationId is string => operationId !== undefined)

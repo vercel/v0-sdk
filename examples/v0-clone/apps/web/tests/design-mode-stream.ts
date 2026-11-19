@@ -10,6 +10,7 @@ export function assistant(overrides: Partial<Message> = {}): Message {
     updatedAt: new Date(),
     parts: [{ type: 'text', text: 'Updated' }],
     finishReason: 'stop',
+    filesStatus: null,
     restorable: false,
     authorId: null,
     usage: {

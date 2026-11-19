@@ -23,8 +23,15 @@ type PathItem = Partial<Record<HttpMethod, OperationObject>> & {
 }
 type OpenApiDocument = { paths: Record<string, PathItem> }
 
+/** Method paths of an SDK resource, walking into nested resources like `members`. */
+type OperationIdsOf<Api, Prefix extends string> = {
+  [Key in keyof Api & string]: Api[Key] extends (...args: never[]) => unknown
+    ? `${Prefix}${Key}`
+    : OperationIdsOf<Api[Key], `${Prefix}${Key}.`>
+}[keyof Api & string]
+
 type V0SdkOperationId = {
-  [Resource in keyof V0Sdk & string]: `${Resource}.${keyof V0Sdk[Resource] & string}`
+  [Resource in keyof V0Sdk & string]: OperationIdsOf<V0Sdk[Resource], `${Resource}.`>
 }[keyof V0Sdk & string]
 
 type Operation = {
@@ -80,6 +87,13 @@ const semanticNames = {
   'mcpServers.get': 'useMcpServer',
   'mcpServers.update': 'useUpdateMcpServer',
   'mcpServers.delete': 'useDeleteMcpServer',
+  'poolCreditLimits.getDefault': 'usePoolCreditLimitDefault',
+  'poolCreditLimits.setDefault': 'useSetPoolCreditLimitDefault',
+  'poolCreditLimits.members.list': 'usePoolCreditLimitMembers',
+  'poolCreditLimits.members.get': 'usePoolCreditLimitMember',
+  'poolCreditLimits.members.set': 'useSetPoolCreditLimitMember',
+  'poolCreditLimits.members.reset': 'useResetPoolCreditLimitMember',
+  'poolCreditLimits.members.update': 'useUpdatePoolCreditLimitMembers',
   'securityChecks.create': 'useCreateSecurityCheck',
   'securityChecks.get': 'useSecurityCheck',
   'settings.getPreviewHosts': 'usePreviewHosts',
@@ -101,9 +115,24 @@ const mutationInvalidations: Partial<Record<V0SdkOperationId, readonly V0SdkOper
   'chats.restoreMessage': ['chats.getFiles', 'messages.list'],
   'chats.update': ['chats.get', 'chats.list'],
   'chats.updateFiles': ['chats.getFiles', 'messages.list'],
+  'poolCreditLimits.members.reset': [
+    'poolCreditLimits.members.get',
+    'poolCreditLimits.members.list',
+  ],
+  'poolCreditLimits.members.set': ['poolCreditLimits.members.get', 'poolCreditLimits.members.list'],
+  'poolCreditLimits.members.update': [
+    'poolCreditLimits.members.get',
+    'poolCreditLimits.members.list',
+  ],
+  'poolCreditLimits.setDefault': [
+    'poolCreditLimits.getDefault',
+    'poolCreditLimits.members.get',
+    'poolCreditLimits.members.list',
+  ],
 }
 
 const paginationCursorPaths: Partial<Record<V0SdkOperationId, string>> = {
+  'poolCreditLimits.members.list': 'pagination.cursor',
   'usage.listEvents': 'pagination.cursor',
 }
 

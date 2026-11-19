@@ -862,6 +862,10 @@ export type Message = {
      */
     finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
+     * Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages.
+     */
+    filesStatus: 'pending' | 'ready' | 'failed' | null;
+    /**
      * True when this is an assistant message that produced restorable code and is not the currently active code.
      */
     restorable: boolean;
@@ -1489,6 +1493,10 @@ export type MessageListResponse = {
          * Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume.
          */
         finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
+        /**
+         * Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages.
+         */
+        filesStatus: 'pending' | 'ready' | 'failed' | null;
         /**
          * True when this is an assistant message that produced restorable code and is not the currently active code.
          */
@@ -2132,6 +2140,10 @@ export type MessageStreamEvent = {
      */
     finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
     /**
+     * Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages.
+     */
+    filesStatus: 'pending' | 'ready' | 'failed' | null;
+    /**
      * True when this is an assistant message that produced restorable code and is not the currently active code.
      */
     restorable: boolean;
@@ -2493,6 +2505,68 @@ export type SpendLimit = {
      * ISO timestamp of when the spend limit was last updated.
      */
     updatedAt: Date;
+};
+
+export type PoolCreditLimitDefault = {
+    object: 'pool_credit_limit_default';
+    /**
+     * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+     */
+    setting: {
+        /**
+         * The member may spend shared-pool credits without a cap.
+         */
+        access: 'unlimited';
+    } | {
+        /**
+         * The member may spend only their monthly credits.
+         */
+        access: 'none';
+    } | {
+        /**
+         * The member may spend up to `limit` of shared-pool credits per billing cycle.
+         */
+        access: 'limited';
+        /**
+         * USD amount per billing cycle, with up to two decimals.
+         */
+        limit: string;
+    };
+};
+
+export type PoolCreditLimitMember = {
+    object: 'pool_credit_limit_member';
+    /**
+     * Team member user ID.
+     */
+    userId: string;
+    /**
+     * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+     */
+    setting: {
+        /**
+         * The member may spend shared-pool credits without a cap.
+         */
+        access: 'unlimited';
+    } | {
+        /**
+         * The member may spend only their monthly credits.
+         */
+        access: 'none';
+    } | {
+        /**
+         * The member may spend up to `limit` of shared-pool credits per billing cycle.
+         */
+        access: 'limited';
+        /**
+         * USD amount per billing cycle, with up to two decimals.
+         */
+        limit: string;
+    };
+    /**
+     * `default` when the team default applies, `member` when the member has their own setting.
+     */
+    source: 'default' | 'member';
 };
 
 export type TrustedPreviewHosts = {
@@ -6552,6 +6626,10 @@ export type ChatsUpdateFilesResponses = {
              */
             finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
             /**
+             * Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages.
+             */
+            filesStatus: 'pending' | 'ready' | 'failed' | null;
+            /**
              * True when this is an assistant message that produced restorable code and is not the currently active code.
              */
             restorable: boolean;
@@ -7397,6 +7475,10 @@ export type ChatsRestoreMessageResponses = {
              */
             finishReason: 'stop' | 'length' | 'content-filter' | 'tool-calls' | 'error' | 'other' | null;
             /**
+             * Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages.
+             */
+            filesStatus: 'pending' | 'ready' | 'failed' | null;
+            /**
              * True when this is an assistant message that produced restorable code and is not the currently active code.
              */
             restorable: boolean;
@@ -8221,6 +8303,572 @@ export type McpServersUpdateResponses = {
 };
 
 export type McpServersUpdateResponse = McpServersUpdateResponses[keyof McpServersUpdateResponses];
+
+export type PoolCreditLimitsGetDefaultData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/pool-credit-limits/default';
+};
+
+export type PoolCreditLimitsGetDefaultErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsGetDefaultError = PoolCreditLimitsGetDefaultErrors[keyof PoolCreditLimitsGetDefaultErrors];
+
+export type PoolCreditLimitsGetDefaultResponses = {
+    /**
+     * Response for status 200
+     */
+    200: PoolCreditLimitDefault;
+};
+
+export type PoolCreditLimitsGetDefaultResponse = PoolCreditLimitsGetDefaultResponses[keyof PoolCreditLimitsGetDefaultResponses];
+
+export type PoolCreditLimitsSetDefaultData = {
+    body: {
+        /**
+         * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+         */
+        setting: {
+            /**
+             * The member may spend shared-pool credits without a cap.
+             */
+            access: 'unlimited';
+        } | {
+            /**
+             * The member may spend only their monthly credits.
+             */
+            access: 'none';
+        } | {
+            /**
+             * The member may spend up to `limit` of shared-pool credits per billing cycle.
+             */
+            access: 'limited';
+            /**
+             * USD amount per billing cycle, with up to two decimals.
+             */
+            limit: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/pool-credit-limits/default';
+};
+
+export type PoolCreditLimitsSetDefaultErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsSetDefaultError = PoolCreditLimitsSetDefaultErrors[keyof PoolCreditLimitsSetDefaultErrors];
+
+export type PoolCreditLimitsSetDefaultResponses = {
+    /**
+     * Response for status 200
+     */
+    200: PoolCreditLimitDefault;
+};
+
+export type PoolCreditLimitsSetDefaultResponse = PoolCreditLimitsSetDefaultResponses[keyof PoolCreditLimitsSetDefaultResponses];
+
+export type PoolCreditLimitsMembersListData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Next-page cursor.
+         */
+        cursor?: string;
+        /**
+         * Members per page, from 1 to 100. Defaults to 50.
+         */
+        limit?: number;
+    };
+    url: '/pool-credit-limits/members';
+};
+
+export type PoolCreditLimitsMembersListErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsMembersListError = PoolCreditLimitsMembersListErrors[keyof PoolCreditLimitsMembersListErrors];
+
+export type PoolCreditLimitsMembersListResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        object: 'list';
+        data: Array<{
+            object: 'pool_credit_limit_member';
+            /**
+             * Team member user ID.
+             */
+            userId: string;
+            /**
+             * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+             */
+            setting: {
+                /**
+                 * The member may spend shared-pool credits without a cap.
+                 */
+                access: 'unlimited';
+            } | {
+                /**
+                 * The member may spend only their monthly credits.
+                 */
+                access: 'none';
+            } | {
+                /**
+                 * The member may spend up to `limit` of shared-pool credits per billing cycle.
+                 */
+                access: 'limited';
+                /**
+                 * USD amount per billing cycle, with up to two decimals.
+                 */
+                limit: string;
+            };
+            /**
+             * `default` when the team default applies, `member` when the member has their own setting.
+             */
+            source: 'default' | 'member';
+            /**
+             * Display name.
+             */
+            name: string | null;
+            /**
+             * Username.
+             */
+            username: string | null;
+            /**
+             * Email address.
+             */
+            email: string | null;
+            /**
+             * Team role.
+             */
+            role: string;
+        }>;
+        pagination: {
+            hasMore: boolean;
+            /**
+             * Pass as `cursor` to fetch the next page.
+             */
+            cursor: string | null;
+        };
+    };
+};
+
+export type PoolCreditLimitsMembersListResponse = PoolCreditLimitsMembersListResponses[keyof PoolCreditLimitsMembersListResponses];
+
+export type PoolCreditLimitsMembersUpdateData = {
+    body: {
+        /**
+         * Up to 100 changes, applied together or not at all.
+         */
+        updates: Array<{
+            /**
+             * Team member user ID, or `me` for the authenticated user.
+             */
+            userId: string;
+            /**
+             * The member’s own setting, or null to remove it so the team default applies.
+             */
+            setting: {
+                /**
+                 * The member may spend shared-pool credits without a cap.
+                 */
+                access: 'unlimited';
+            } | {
+                /**
+                 * The member may spend only their monthly credits.
+                 */
+                access: 'none';
+            } | {
+                /**
+                 * The member may spend up to `limit` of shared-pool credits per billing cycle.
+                 */
+                access: 'limited';
+                /**
+                 * USD amount per billing cycle, with up to two decimals.
+                 */
+                limit: string;
+            } | null;
+        }>;
+    };
+    path?: never;
+    query?: never;
+    url: '/pool-credit-limits/members';
+};
+
+export type PoolCreditLimitsMembersUpdateErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsMembersUpdateError = PoolCreditLimitsMembersUpdateErrors[keyof PoolCreditLimitsMembersUpdateErrors];
+
+export type PoolCreditLimitsMembersUpdateResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        object: 'list';
+        data: Array<{
+            object: 'pool_credit_limit_member';
+            /**
+             * Team member user ID.
+             */
+            userId: string;
+            /**
+             * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+             */
+            setting: {
+                /**
+                 * The member may spend shared-pool credits without a cap.
+                 */
+                access: 'unlimited';
+            } | {
+                /**
+                 * The member may spend only their monthly credits.
+                 */
+                access: 'none';
+            } | {
+                /**
+                 * The member may spend up to `limit` of shared-pool credits per billing cycle.
+                 */
+                access: 'limited';
+                /**
+                 * USD amount per billing cycle, with up to two decimals.
+                 */
+                limit: string;
+            };
+            /**
+             * `default` when the team default applies, `member` when the member has their own setting.
+             */
+            source: 'default' | 'member';
+        }>;
+    };
+};
+
+export type PoolCreditLimitsMembersUpdateResponse = PoolCreditLimitsMembersUpdateResponses[keyof PoolCreditLimitsMembersUpdateResponses];
+
+export type PoolCreditLimitsMembersResetData = {
+    body?: never;
+    path: {
+        /**
+         * Team member user ID, or `me` for the authenticated user (for an API key, the user who created it).
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/pool-credit-limits/members/{userId}';
+};
+
+export type PoolCreditLimitsMembersResetErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsMembersResetError = PoolCreditLimitsMembersResetErrors[keyof PoolCreditLimitsMembersResetErrors];
+
+export type PoolCreditLimitsMembersResetResponses = {
+    /**
+     * Response for status 200
+     */
+    200: PoolCreditLimitMember;
+};
+
+export type PoolCreditLimitsMembersResetResponse = PoolCreditLimitsMembersResetResponses[keyof PoolCreditLimitsMembersResetResponses];
+
+export type PoolCreditLimitsMembersGetData = {
+    body?: never;
+    path: {
+        /**
+         * Team member user ID, or `me` for the authenticated user (for an API key, the user who created it).
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/pool-credit-limits/members/{userId}';
+};
+
+export type PoolCreditLimitsMembersGetErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsMembersGetError = PoolCreditLimitsMembersGetErrors[keyof PoolCreditLimitsMembersGetErrors];
+
+export type PoolCreditLimitsMembersGetResponses = {
+    /**
+     * Response for status 200
+     */
+    200: {
+        object: 'pool_credit_limit_member';
+        /**
+         * Team member user ID.
+         */
+        userId: string;
+        /**
+         * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+         */
+        setting: {
+            /**
+             * The member may spend shared-pool credits without a cap.
+             */
+            access: 'unlimited';
+        } | {
+            /**
+             * The member may spend only their monthly credits.
+             */
+            access: 'none';
+        } | {
+            /**
+             * The member may spend up to `limit` of shared-pool credits per billing cycle.
+             */
+            access: 'limited';
+            /**
+             * USD amount per billing cycle, with up to two decimals.
+             */
+            limit: string;
+        };
+        /**
+         * `default` when the team default applies, `member` when the member has their own setting.
+         */
+        source: 'default' | 'member';
+        usage: {
+            /**
+             * Shared-pool credits used since the billing cycle started, in USD.
+             */
+            used: string;
+            /**
+             * Shared-pool credits the member may still use under their setting this billing cycle, in USD, or null when unlimited. The team pool’s balance may be lower.
+             */
+            remaining: string | null;
+            /**
+             * Start of the current billing cycle.
+             */
+            cycleStart: string;
+            /**
+             * End of the current billing cycle.
+             */
+            cycleEnd: string;
+        };
+    };
+};
+
+export type PoolCreditLimitsMembersGetResponse = PoolCreditLimitsMembersGetResponses[keyof PoolCreditLimitsMembersGetResponses];
+
+export type PoolCreditLimitsMembersSetData = {
+    body: {
+        /**
+         * How much of the shared credit pool a member may spend per billing cycle, after their monthly credits.
+         */
+        setting: {
+            /**
+             * The member may spend shared-pool credits without a cap.
+             */
+            access: 'unlimited';
+        } | {
+            /**
+             * The member may spend only their monthly credits.
+             */
+            access: 'none';
+        } | {
+            /**
+             * The member may spend up to `limit` of shared-pool credits per billing cycle.
+             */
+            access: 'limited';
+            /**
+             * USD amount per billing cycle, with up to two decimals.
+             */
+            limit: string;
+        };
+    };
+    path: {
+        /**
+         * Team member user ID, or `me` for the authenticated user (for an API key, the user who created it).
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/pool-credit-limits/members/{userId}';
+};
+
+export type PoolCreditLimitsMembersSetErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 429
+     */
+    429: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type PoolCreditLimitsMembersSetError = PoolCreditLimitsMembersSetErrors[keyof PoolCreditLimitsMembersSetErrors];
+
+export type PoolCreditLimitsMembersSetResponses = {
+    /**
+     * Response for status 200
+     */
+    200: PoolCreditLimitMember;
+};
+
+export type PoolCreditLimitsMembersSetResponse = PoolCreditLimitsMembersSetResponses[keyof PoolCreditLimitsMembersSetResponses];
 
 export type SettingsDeletePreviewHostsData = {
     body: {
