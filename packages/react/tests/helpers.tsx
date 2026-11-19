@@ -40,6 +40,7 @@ export function message(
     content: '',
     parts: [],
     attachments: [],
+    filesStatus: null,
     restorable: false,
     finishReason: overrides.role === 'assistant' ? null : 'stop',
     authorId: overrides.role === 'user' ? 'user_1' : null,

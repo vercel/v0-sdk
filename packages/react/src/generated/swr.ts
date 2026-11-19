@@ -85,6 +85,9 @@ import type {
   ChatsRestoreMessageError,
   ChatsRestoreMessageResponse,
   ChatsResumeError,
+  ChatsSyncTemplateData,
+  ChatsSyncTemplateError,
+  ChatsSyncTemplateResponse,
   ChatsUpdateData,
   ChatsUpdateError,
   ChatsUpdateFilesData,
@@ -126,6 +129,24 @@ import type {
   MessagesSendStreamError,
   MessagesStopError,
   MessagesStopResponse,
+  PoolCreditLimitsGetDefaultError,
+  PoolCreditLimitsGetDefaultResponse,
+  PoolCreditLimitsMembersGetError,
+  PoolCreditLimitsMembersGetResponse,
+  PoolCreditLimitsMembersListData,
+  PoolCreditLimitsMembersListError,
+  PoolCreditLimitsMembersListResponse,
+  PoolCreditLimitsMembersResetError,
+  PoolCreditLimitsMembersResetResponse,
+  PoolCreditLimitsMembersSetData,
+  PoolCreditLimitsMembersSetError,
+  PoolCreditLimitsMembersSetResponse,
+  PoolCreditLimitsMembersUpdateData,
+  PoolCreditLimitsMembersUpdateError,
+  PoolCreditLimitsMembersUpdateResponse,
+  PoolCreditLimitsSetDefaultData,
+  PoolCreditLimitsSetDefaultError,
+  PoolCreditLimitsSetDefaultResponse,
   SecurityChecksCreateData,
   SecurityChecksCreateError,
   SecurityChecksCreateResponse,
@@ -197,6 +218,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.list': 'useChats',
   'chats.restoreMessage': 'useRestoreMessage',
   'chats.resume': 'useResumeChat',
+  'chats.syncTemplate': 'useSyncChatTemplate',
   'chats.update': 'useUpdateChat',
   'chats.updateFiles': 'useUpdateChatFiles',
   'mcpServers.create': 'useCreateMcpServer',
@@ -213,6 +235,13 @@ export const V0_REACT_OPERATION_HOOKS = {
   'messages.sendAsync': 'useSendMessageAsync',
   'messages.sendStream': 'useSendMessage',
   'messages.stop': 'useStopMessage',
+  'poolCreditLimits.getDefault': 'usePoolCreditLimitDefault',
+  'poolCreditLimits.members.get': 'usePoolCreditLimitMember',
+  'poolCreditLimits.members.list': 'usePoolCreditLimitMembers',
+  'poolCreditLimits.members.reset': 'useResetPoolCreditLimitMember',
+  'poolCreditLimits.members.set': 'useSetPoolCreditLimitMember',
+  'poolCreditLimits.members.update': 'useUpdatePoolCreditLimitMembers',
+  'poolCreditLimits.setDefault': 'useSetPoolCreditLimitDefault',
   'securityChecks.create': 'useCreateSecurityCheck',
   'securityChecks.get': 'useSecurityCheck',
   'settings.appendPreviewHosts': 'useAppendPreviewHosts',
@@ -626,6 +655,24 @@ export function useResumeChat(
   return useV0Mutation(resumeChatOperation, url, configuration)
 }
 
+const syncChatTemplateOperation: V0Operation<ChatsSyncTemplateResponse> = {
+  id: 'chats.syncTemplate',
+  method: 'POST',
+  response: 'json',
+}
+
+export type SyncChatTemplateInput = ChatsSyncTemplateData['body']
+export function useSyncChatTemplate(
+  url: string,
+  configuration: V0MutationConfiguration<
+    ChatsSyncTemplateResponse,
+    ChatsSyncTemplateError,
+    ChatsSyncTemplateData['body']
+  > = {},
+) {
+  return useV0Mutation(syncChatTemplateOperation, url, configuration)
+}
+
 const updateChatOperation: V0Operation<ChatsUpdateResponse> = {
   id: 'chats.update',
   method: 'PATCH',
@@ -926,6 +973,165 @@ export function useStopMessage(
   configuration: V0MutationConfiguration<MessagesStopResponse, MessagesStopError, never> = {},
 ) {
   return useV0Mutation(stopMessageOperation, url, configuration)
+}
+
+const poolCreditLimitDefaultOperation: V0Operation<PoolCreditLimitsGetDefaultResponse> = {
+  id: 'poolCreditLimits.getDefault',
+  method: 'GET',
+  response: 'json',
+}
+
+export function usePoolCreditLimitDefault(
+  url: V0Url,
+  configuration: V0QueryConfiguration<
+    PoolCreditLimitsGetDefaultResponse,
+    PoolCreditLimitsGetDefaultError
+  > = {},
+) {
+  return useV0Query<PoolCreditLimitsGetDefaultResponse, PoolCreditLimitsGetDefaultError, undefined>(
+    poolCreditLimitDefaultOperation,
+    url,
+    undefined,
+    configuration,
+  )
+}
+
+const poolCreditLimitMemberOperation: V0Operation<PoolCreditLimitsMembersGetResponse> = {
+  id: 'poolCreditLimits.members.get',
+  method: 'GET',
+  response: 'json',
+}
+
+export function usePoolCreditLimitMember(
+  url: V0Url,
+  configuration: V0QueryConfiguration<
+    PoolCreditLimitsMembersGetResponse,
+    PoolCreditLimitsMembersGetError
+  > = {},
+) {
+  return useV0Query<PoolCreditLimitsMembersGetResponse, PoolCreditLimitsMembersGetError, undefined>(
+    poolCreditLimitMemberOperation,
+    url,
+    undefined,
+    configuration,
+  )
+}
+
+const poolCreditLimitMembersOperation: V0Operation<PoolCreditLimitsMembersListResponse> = {
+  id: 'poolCreditLimits.members.list',
+  method: 'GET',
+  response: 'json',
+}
+
+export function usePoolCreditLimitMembers(
+  url: V0Url,
+  params?: NonNullable<PoolCreditLimitsMembersListData['query']>,
+  configuration: V0QueryConfiguration<
+    PoolCreditLimitsMembersListResponse,
+    PoolCreditLimitsMembersListError
+  > = {},
+) {
+  return useV0Query<
+    PoolCreditLimitsMembersListResponse,
+    PoolCreditLimitsMembersListError,
+    NonNullable<PoolCreditLimitsMembersListData['query']> | undefined
+  >(poolCreditLimitMembersOperation, url, params, configuration)
+}
+
+export function usePoolCreditLimitMembersInfinite(
+  url: V0Url,
+  params?: Omit<NonNullable<PoolCreditLimitsMembersListData['query']>, 'cursor'>,
+  configuration: V0InfiniteConfiguration<
+    PoolCreditLimitsMembersListResponse,
+    PoolCreditLimitsMembersListError
+  > = {},
+) {
+  return useV0CursorQuery(
+    poolCreditLimitMembersOperation,
+    url,
+    params ?? {},
+    (page) => page.pagination.cursor,
+    configuration,
+  )
+}
+
+const resetPoolCreditLimitMemberOperation: V0Operation<PoolCreditLimitsMembersResetResponse> = {
+  id: 'poolCreditLimits.members.reset',
+  method: 'DELETE',
+  response: 'json',
+  invalidates: ['poolCreditLimits.members.list', 'poolCreditLimits.members.get'],
+}
+
+export function useResetPoolCreditLimitMember(
+  url: string,
+  configuration: V0MutationConfiguration<
+    PoolCreditLimitsMembersResetResponse,
+    PoolCreditLimitsMembersResetError,
+    never
+  > = {},
+) {
+  return useV0Mutation(resetPoolCreditLimitMemberOperation, url, configuration)
+}
+
+const setPoolCreditLimitMemberOperation: V0Operation<PoolCreditLimitsMembersSetResponse> = {
+  id: 'poolCreditLimits.members.set',
+  method: 'PUT',
+  response: 'json',
+  invalidates: ['poolCreditLimits.members.list', 'poolCreditLimits.members.get'],
+}
+
+export type SetPoolCreditLimitMemberInput = PoolCreditLimitsMembersSetData['body']
+export function useSetPoolCreditLimitMember(
+  url: string,
+  configuration: V0MutationConfiguration<
+    PoolCreditLimitsMembersSetResponse,
+    PoolCreditLimitsMembersSetError,
+    PoolCreditLimitsMembersSetData['body']
+  > = {},
+) {
+  return useV0Mutation(setPoolCreditLimitMemberOperation, url, configuration)
+}
+
+const updatePoolCreditLimitMembersOperation: V0Operation<PoolCreditLimitsMembersUpdateResponse> = {
+  id: 'poolCreditLimits.members.update',
+  method: 'PATCH',
+  response: 'json',
+  invalidates: ['poolCreditLimits.members.list', 'poolCreditLimits.members.get'],
+}
+
+export type UpdatePoolCreditLimitMembersInput = PoolCreditLimitsMembersUpdateData['body']
+export function useUpdatePoolCreditLimitMembers(
+  url: string,
+  configuration: V0MutationConfiguration<
+    PoolCreditLimitsMembersUpdateResponse,
+    PoolCreditLimitsMembersUpdateError,
+    PoolCreditLimitsMembersUpdateData['body']
+  > = {},
+) {
+  return useV0Mutation(updatePoolCreditLimitMembersOperation, url, configuration)
+}
+
+const setPoolCreditLimitDefaultOperation: V0Operation<PoolCreditLimitsSetDefaultResponse> = {
+  id: 'poolCreditLimits.setDefault',
+  method: 'PUT',
+  response: 'json',
+  invalidates: [
+    'poolCreditLimits.getDefault',
+    'poolCreditLimits.members.list',
+    'poolCreditLimits.members.get',
+  ],
+}
+
+export type SetPoolCreditLimitDefaultInput = PoolCreditLimitsSetDefaultData['body']
+export function useSetPoolCreditLimitDefault(
+  url: string,
+  configuration: V0MutationConfiguration<
+    PoolCreditLimitsSetDefaultResponse,
+    PoolCreditLimitsSetDefaultError,
+    PoolCreditLimitsSetDefaultData['body']
+  > = {},
+) {
+  return useV0Mutation(setPoolCreditLimitDefaultOperation, url, configuration)
 }
 
 const createSecurityCheckOperation: V0Operation<SecurityChecksCreateResponse> = {
