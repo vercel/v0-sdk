@@ -35,6 +35,7 @@ export type V0ToolName =
   | 'chatsList'
   | 'chatsRestoreMessage'
   | 'chatsResume'
+  | 'chatsSyncTemplate'
   | 'chatsUpdate'
   | 'chatsUpdateFiles'
   | 'mcpServersCreate'
@@ -93,6 +94,7 @@ export type V0ToolsByCategory = {
     | 'chatsList'
     | 'chatsRestoreMessage'
     | 'chatsResume'
+    | 'chatsSyncTemplate'
     | 'chatsUpdate'
     | 'chatsUpdateFiles'
   >
@@ -664,6 +666,16 @@ const chatsRestoreMessageInputSchema = z.object({
 
 const chatsResumeInputSchema = z.object({
   chatId: z.string(),
+})
+
+const chatsSyncTemplateInputSchema = z.object({
+  chatId: z.string(),
+  expectedGitSha: z
+    .string()
+    .describe(
+      'Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.',
+    )
+    .optional(),
 })
 
 const chatsUpdateInputSchema = z.object({
@@ -2257,6 +2269,18 @@ export function v0Tools(config: V0ToolsConfig = {}): V0ToolsFlat {
         yield* result.stream
       },
     }),
+    chatsSyncTemplate: tool({
+      description:
+        "Sync Chat Template: Republishes the template published from this chat at the commit of the chat's READY production deployment, like Sync from Repo in the template settings. Only templates connected to a GitHub repository can be synced, by the template's author or an owner of the team the template is shared with. Call it after a production deployment is ready, for example from a GitHub Actions workflow.",
+      inputSchema: chatsSyncTemplateInputSchema,
+      execute: async (input) => {
+        const parameters = {
+          chatId: input.chatId,
+          expectedGitSha: input.expectedGitSha,
+        }
+        return toToolResult(await client.chats.syncTemplate(parameters))
+      },
+    }),
     chatsUpdate: tool({
       description: "Update Chat: Updates a chat's title, privacy, or metadata.",
       inputSchema: chatsUpdateInputSchema,
@@ -2671,6 +2695,7 @@ export function v0ToolsByCategory(config: V0ToolsConfig = {}): V0ToolsByCategory
       chatsList: pickTool(tools, 'chatsList'),
       chatsRestoreMessage: pickTool(tools, 'chatsRestoreMessage'),
       chatsResume: pickTool(tools, 'chatsResume'),
+      chatsSyncTemplate: pickTool(tools, 'chatsSyncTemplate'),
       chatsUpdate: pickTool(tools, 'chatsUpdate'),
       chatsUpdateFiles: pickTool(tools, 'chatsUpdateFiles'),
     },

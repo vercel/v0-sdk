@@ -2335,6 +2335,25 @@ export type MessageStreamEvent = {
     code?: string;
 };
 
+export type ChatTemplateSync = {
+    /**
+     * ID of the template published from this chat, as shown in its v0.app/templates URL.
+     */
+    templateId: string;
+    /**
+     * Commit the template is pinned to after the sync.
+     */
+    gitSha: string;
+    /**
+     * Commit the template was pinned to before the sync, or null if none was recorded.
+     */
+    previousGitSha: string | null;
+    /**
+     * Whether the sync published a new template version. False when the template was already pinned to the production commit.
+     */
+    changed: boolean;
+};
+
 /**
  * The source files of a chat.
  */
@@ -5743,6 +5762,61 @@ export type ChatsDownloadArtifactResponses = {
 };
 
 export type ChatsDownloadArtifactResponse = ChatsDownloadArtifactResponses[keyof ChatsDownloadArtifactResponses];
+
+export type ChatsSyncTemplateData = {
+    body: {
+        /**
+         * Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.
+         */
+        expectedGitSha?: string;
+    };
+    path: {
+        /**
+         * The unique identifier of the chat the template is published from.
+         */
+        chatId: string;
+    };
+    query?: never;
+    url: '/chats/{chatId}/template/sync';
+};
+
+export type ChatsSyncTemplateErrors = {
+    /**
+     * Response for status 401
+     */
+    401: Error;
+    /**
+     * Response for status 403
+     */
+    403: Error;
+    /**
+     * Response for status 404
+     */
+    404: Error;
+    /**
+     * Response for status 409
+     */
+    409: Error;
+    /**
+     * Response for status 422
+     */
+    422: Error;
+    /**
+     * Response for status 500
+     */
+    500: Error;
+};
+
+export type ChatsSyncTemplateError = ChatsSyncTemplateErrors[keyof ChatsSyncTemplateErrors];
+
+export type ChatsSyncTemplateResponses = {
+    /**
+     * Response for status 200
+     */
+    200: ChatTemplateSync;
+};
+
+export type ChatsSyncTemplateResponse = ChatsSyncTemplateResponses[keyof ChatsSyncTemplateResponses];
 
 export type ChatsDeleteData = {
     body?: never;

@@ -85,6 +85,9 @@ import type {
   ChatsRestoreMessageError,
   ChatsRestoreMessageResponse,
   ChatsResumeError,
+  ChatsSyncTemplateData,
+  ChatsSyncTemplateError,
+  ChatsSyncTemplateResponse,
   ChatsUpdateData,
   ChatsUpdateError,
   ChatsUpdateFilesData,
@@ -197,6 +200,7 @@ export const V0_REACT_OPERATION_HOOKS = {
   'chats.list': 'useChats',
   'chats.restoreMessage': 'useRestoreMessage',
   'chats.resume': 'useResumeChat',
+  'chats.syncTemplate': 'useSyncChatTemplate',
   'chats.update': 'useUpdateChat',
   'chats.updateFiles': 'useUpdateChatFiles',
   'mcpServers.create': 'useCreateMcpServer',
@@ -624,6 +628,24 @@ export function useResumeChat(
   configuration: V0MutationConfiguration<Response, ChatsResumeError, never> = {},
 ) {
   return useV0Mutation(resumeChatOperation, url, configuration)
+}
+
+const syncChatTemplateOperation: V0Operation<ChatsSyncTemplateResponse> = {
+  id: 'chats.syncTemplate',
+  method: 'POST',
+  response: 'json',
+}
+
+export type SyncChatTemplateInput = ChatsSyncTemplateData['body']
+export function useSyncChatTemplate(
+  url: string,
+  configuration: V0MutationConfiguration<
+    ChatsSyncTemplateResponse,
+    ChatsSyncTemplateError,
+    ChatsSyncTemplateData['body']
+  > = {},
+) {
+  return useV0Mutation(syncChatTemplateOperation, url, configuration)
 }
 
 const updateChatOperation: V0Operation<ChatsUpdateResponse> = {

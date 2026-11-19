@@ -4768,6 +4768,42 @@
         ],
         "description": "A single Server-Sent Events payload emitted by the streaming send-message endpoint. Each SSE event is `data: <JSON>\\n\\n` where the JSON conforms to one of the union members."
       },
+      "ChatTemplateSync": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "description": "ID of the template published from this chat, as shown in its v0.app/templates URL."
+          },
+          "gitSha": {
+            "type": "string",
+            "description": "Commit the template is pinned to after the sync."
+          },
+          "previousGitSha": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Commit the template was pinned to before the sync, or null if none was recorded."
+          },
+          "changed": {
+            "type": "boolean",
+            "description": "Whether the sync published a new template version. False when the template was already pinned to the production commit."
+          }
+        },
+        "required": [
+          "templateId",
+          "gitSha",
+          "previousGitSha",
+          "changed"
+        ],
+        "additionalProperties": false
+      },
       "Files": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -19009,6 +19045,150 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{chatId}/template/sync": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Sync Chat Template",
+        "description": "Republishes the template published from this chat at the commit of the chat's READY production deployment, like Sync from Repo in the template settings. Only templates connected to a GitHub repository can be synced, by the template's author or an owner of the team the template is shared with. Call it after a production deployment is ready, for example from a GitHub Actions workflow.",
+        "operationId": "chats.syncTemplate",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique identifier of the chat the template is published from."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatTemplateSync"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Response for status 409",
             "content": {
               "application/json": {
                 "schema": {

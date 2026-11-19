@@ -23,15 +23,16 @@ type PathItem = Partial<Record<HttpMethod, OperationObject>> & {
 }
 type OpenApiDocument = { paths: Record<string, PathItem> }
 
-/** Method paths of an SDK resource, walking into nested resources like `members`. */
-type OperationIdsOf<Api, Prefix extends string> = {
-  [Key in keyof Api & string]: Api[Key] extends (...args: never[]) => unknown
-    ? `${Prefix}${Key}`
-    : OperationIdsOf<Api[Key], `${Prefix}${Key}.`>
-}[keyof Api & string]
+// Sub-resources such as `poolCreditLimits.members` are getters that return
+// another client, so their methods have three-part operation IDs.
+type OperationIdsOf<Client, Prefix extends string> = {
+  [Key in keyof Client & string]: Client[Key] extends (...args: never[]) => unknown
+    ? `${Prefix}.${Key}`
+    : OperationIdsOf<Client[Key], `${Prefix}.${Key}`>
+}[keyof Client & string]
 
 type V0SdkOperationId = {
-  [Resource in keyof V0Sdk & string]: OperationIdsOf<V0Sdk[Resource], `${Resource}.`>
+  [Resource in keyof V0Sdk & string]: OperationIdsOf<V0Sdk[Resource], Resource>
 }[keyof V0Sdk & string]
 
 type Operation = {
@@ -59,6 +60,7 @@ const semanticNames = {
   'chats.createStream': 'useCreateChat',
   'chats.createAsync': 'useCreateChatAsync',
   'chats.createFromTemplate': 'useCreateChatFromTemplate',
+  'chats.syncTemplate': 'useSyncChatTemplate',
   'messages.list': 'useMessages',
   'messages.send': 'useSendMessageBlocking',
   'messages.get': 'useMessage',
@@ -92,10 +94,10 @@ const semanticNames = {
   'poolCreditLimits.getDefault': null,
   'poolCreditLimits.setDefault': null,
   'poolCreditLimits.members.list': null,
+  'poolCreditLimits.members.update': null,
   'poolCreditLimits.members.get': null,
   'poolCreditLimits.members.set': null,
   'poolCreditLimits.members.reset': null,
-  'poolCreditLimits.members.update': null,
   'securityChecks.create': 'useCreateSecurityCheck',
   'securityChecks.get': 'useSecurityCheck',
   'settings.getPreviewHosts': 'usePreviewHosts',
@@ -117,6 +119,7 @@ const mutationInvalidations: Partial<Record<V0SdkOperationId, readonly V0SdkOper
   'chats.restoreMessage': ['chats.getFiles', 'messages.list'],
   'chats.update': ['chats.get', 'chats.list'],
   'chats.updateFiles': ['chats.getFiles', 'messages.list'],
+  // Members without their own setting follow the team default.
 }
 
 const paginationCursorPaths: Partial<Record<V0SdkOperationId, string>> = {
