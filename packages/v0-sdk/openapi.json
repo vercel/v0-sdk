@@ -1719,6 +1719,22 @@
             ],
             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
           },
+          "filesStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "ready",
+                  "failed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages."
+          },
           "restorable": {
             "type": "boolean",
             "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
@@ -1866,6 +1882,7 @@
           "content",
           "parts",
           "finishReason",
+          "filesStatus",
           "restorable",
           "authorId",
           "usage"
@@ -3034,6 +3051,22 @@
                   ],
                   "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                 },
+                "filesStatus": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "ready",
+                        "failed"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages."
+                },
                 "restorable": {
                   "type": "boolean",
                   "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
@@ -3181,6 +3214,7 @@
                 "content",
                 "parts",
                 "finishReason",
+                "filesStatus",
                 "restorable",
                 "authorId",
                 "usage"
@@ -4381,6 +4415,22 @@
                 ],
                 "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
               },
+              "filesStatus": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "ready",
+                      "failed"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages."
+              },
               "restorable": {
                 "type": "boolean",
                 "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
@@ -4535,6 +4585,7 @@
               "content",
               "parts",
               "finishReason",
+              "filesStatus",
               "restorable",
               "authorId",
               "usage",
@@ -4716,6 +4767,42 @@
           }
         ],
         "description": "A single Server-Sent Events payload emitted by the streaming send-message endpoint. Each SSE event is `data: <JSON>\\n\\n` where the JSON conforms to one of the union members."
+      },
+      "ChatTemplateSync": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "description": "ID of the template published from this chat, as shown in its v0.app/templates URL."
+          },
+          "gitSha": {
+            "type": "string",
+            "description": "Commit the template is pinned to after the sync."
+          },
+          "previousGitSha": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Commit the template was pinned to before the sync, or null if none was recorded."
+          },
+          "changed": {
+            "type": "boolean",
+            "description": "Whether the sync published a new template version. False when the template was already pinned to the production commit."
+          }
+        },
+        "required": [
+          "templateId",
+          "gitSha",
+          "previousGitSha",
+          "changed"
+        ],
+        "additionalProperties": false
       },
       "Files": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -5075,6 +5162,172 @@
           "source",
           "createdAt",
           "updatedAt"
+        ],
+        "additionalProperties": false
+      },
+      "PoolCreditLimitDefault": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "pool_credit_limit_default"
+            ]
+          },
+          "setting": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "unlimited"
+                    ],
+                    "description": "The member may spend shared-pool credits without a cap."
+                  }
+                },
+                "required": [
+                  "access"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "none"
+                    ],
+                    "description": "The member may spend only their monthly credits."
+                  }
+                },
+                "required": [
+                  "access"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "limited"
+                    ],
+                    "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                  },
+                  "limit": {
+                    "type": "string",
+                    "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                    "description": "USD amount per billing cycle, with up to two decimals."
+                  }
+                },
+                "required": [
+                  "access",
+                  "limit"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+          }
+        },
+        "required": [
+          "object",
+          "setting"
+        ],
+        "additionalProperties": false
+      },
+      "PoolCreditLimitMember": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "pool_credit_limit_member"
+            ]
+          },
+          "userId": {
+            "type": "string",
+            "description": "Team member user ID."
+          },
+          "setting": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "unlimited"
+                    ],
+                    "description": "The member may spend shared-pool credits without a cap."
+                  }
+                },
+                "required": [
+                  "access"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "none"
+                    ],
+                    "description": "The member may spend only their monthly credits."
+                  }
+                },
+                "required": [
+                  "access"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "type": "string",
+                    "enum": [
+                      "limited"
+                    ],
+                    "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                  },
+                  "limit": {
+                    "type": "string",
+                    "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                    "description": "USD amount per billing cycle, with up to two decimals."
+                  }
+                },
+                "required": [
+                  "access",
+                  "limit"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "default",
+              "member"
+            ],
+            "description": "`default` when the team default applies, `member` when the member has their own setting."
+          }
+        },
+        "required": [
+          "object",
+          "userId",
+          "setting",
+          "source"
         ],
         "additionalProperties": false
       },
@@ -18140,7 +18393,7 @@
           "Security Checks"
         ],
         "summary": "Get Security Check",
-        "description": "Returns a Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
+        "description": "Returns a DeepSec Security Check's status, v0's checked findings, and what the check cost. Poll until `status` is `completed`.",
         "operationId": "securityChecks.get",
         "parameters": [
           {
@@ -18792,6 +19045,150 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{chatId}/template/sync": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Sync Chat Template",
+        "description": "Republishes the template published from this chat at the commit of the chat's READY production deployment, like Sync from Repo in the template settings. Only templates connected to a GitHub repository can be synced, by the template's author or an owner of the team the template is shared with. Call it after a production deployment is ready, for example from a GitHub Actions workflow.",
+        "operationId": "chats.syncTemplate",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique identifier of the chat the template is published from."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expectedGitSha": {
+                    "description": "Commit you expect the production deployment to be on, such as the commit of the deployment that triggered your workflow. A full SHA or a prefix of at least 7 characters. If production is on a different commit, the request fails with 409 and nothing is published.",
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{7,64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatTemplateSync"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Response for status 409",
             "content": {
               "application/json": {
                 "schema": {
@@ -20795,6 +21192,22 @@
                             ],
                             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                           },
+                          "filesStatus": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "ready",
+                                  "failed"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages."
+                          },
                           "restorable": {
                             "type": "boolean",
                             "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
@@ -20942,6 +21355,7 @@
                           "content",
                           "parts",
                           "finishReason",
+                          "filesStatus",
                           "restorable",
                           "authorId",
                           "usage"
@@ -22621,6 +23035,22 @@
                             ],
                             "description": "Why generation ended. Null while the agent is still generating; once non-null, the message is final and safe to consume."
                           },
+                          "filesStatus": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "ready",
+                                  "failed"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Whether `GET /chats/{chatId}/files` reflects this assistant message. `pending` while the agent is generating or its changes are still being saved, which can continue for a few seconds after `finishReason` is set; `ready` once they are saved; `failed` if saving them failed, in which case the files are those of the previous version. Null on user messages."
+                          },
                           "restorable": {
                             "type": "boolean",
                             "description": "True when this is an assistant message that produced restorable code and is not the currently active code."
@@ -22768,6 +23198,7 @@
                           "content",
                           "parts",
                           "finishReason",
+                          "filesStatus",
                           "restorable",
                           "authorId",
                           "usage"
@@ -23437,7 +23868,7 @@
           "Security Checks"
         ],
         "summary": "Create Security Check",
-        "description": "Runs a Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
+        "description": "Runs a DeepSec Security Check of your v0 app. To check an app that isn't in v0 yet, pass its GitHub repository or Vercel project, and v0 imports it into a new private chat. Poll GET /chats/:chatId/security-checks/:checkId for the result. Requires a user API key.",
         "operationId": "securityChecks.create",
         "requestBody": {
           "description": "Provide exactly one of `chatId`, `repo` or `vercelProjectId`.",
@@ -25380,6 +25811,1780 @@
           },
           "404": {
             "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pool-credit-limits/default": {
+      "get": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Get Pool Credit Limit Default",
+        "description": "Returns the setting for team members without their own. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.getDefault",
+        "x-v0-mcp-tool": false,
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolCreditLimitDefault"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Set Pool Credit Limit Default",
+        "description": "Sets the setting for team members without their own. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.setDefault",
+        "x-v0-mcp-tool": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolCreditLimitDefault"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pool-credit-limits/members": {
+      "get": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "List Pool Credit Limit Members",
+        "description": "Lists team members with v0 access, each with the setting that applies to them. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.members.list",
+        "x-v0-mcp-tool": false,
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Next-page cursor.",
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Members per page, from 1 to 100. Defaults to 50.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "list"
+                      ]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "object": {
+                            "type": "string",
+                            "enum": [
+                              "pool_credit_limit_member"
+                            ]
+                          },
+                          "userId": {
+                            "type": "string",
+                            "description": "Team member user ID."
+                          },
+                          "setting": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "unlimited"
+                                    ],
+                                    "description": "The member may spend shared-pool credits without a cap."
+                                  }
+                                },
+                                "required": [
+                                  "access"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "none"
+                                    ],
+                                    "description": "The member may spend only their monthly credits."
+                                  }
+                                },
+                                "required": [
+                                  "access"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "limited"
+                                    ],
+                                    "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                                  },
+                                  "limit": {
+                                    "type": "string",
+                                    "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                                    "description": "USD amount per billing cycle, with up to two decimals."
+                                  }
+                                },
+                                "required": [
+                                  "access",
+                                  "limit"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ],
+                            "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                          },
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "default",
+                              "member"
+                            ],
+                            "description": "`default` when the team default applies, `member` when the member has their own setting."
+                          },
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Display name."
+                          },
+                          "username": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Username."
+                          },
+                          "email": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Email address."
+                          },
+                          "role": {
+                            "type": "string",
+                            "description": "Team role."
+                          }
+                        },
+                        "required": [
+                          "object",
+                          "userId",
+                          "setting",
+                          "source",
+                          "name",
+                          "username",
+                          "email",
+                          "role"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "cursor": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Pass as `cursor` to fetch the next page."
+                        }
+                      },
+                      "required": [
+                        "hasMore",
+                        "cursor"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data",
+                    "pagination"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Update Pool Credit Limit Members",
+        "description": "Sets or removes up to 100 members’ own settings in one request. Every change is validated first, and either all of them are saved or none are. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.members.update",
+        "x-v0-mcp-tool": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Team member user ID, or `me` for the authenticated user."
+                        },
+                        "setting": {
+                          "anyOf": [
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "unlimited"
+                                      ],
+                                      "description": "The member may spend shared-pool credits without a cap."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "none"
+                                      ],
+                                      "description": "The member may spend only their monthly credits."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "limited"
+                                      ],
+                                      "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                                    },
+                                    "limit": {
+                                      "type": "string",
+                                      "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                                      "description": "USD amount per billing cycle, with up to two decimals."
+                                    }
+                                  },
+                                  "required": [
+                                    "access",
+                                    "limit"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ],
+                              "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "The member’s own setting, or null to remove it so the team default applies."
+                        }
+                      },
+                      "required": [
+                        "userId",
+                        "setting"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Up to 100 changes, applied together or not at all."
+                  }
+                },
+                "required": [
+                  "updates"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Team member user ID, or `me` for the authenticated user."
+                        },
+                        "setting": {
+                          "anyOf": [
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "unlimited"
+                                      ],
+                                      "description": "The member may spend shared-pool credits without a cap."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "none"
+                                      ],
+                                      "description": "The member may spend only their monthly credits."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "limited"
+                                      ],
+                                      "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                                    },
+                                    "limit": {
+                                      "type": "string",
+                                      "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                                      "description": "USD amount per billing cycle, with up to two decimals."
+                                    }
+                                  },
+                                  "required": [
+                                    "access",
+                                    "limit"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ],
+                              "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "The member’s own setting, or null to remove it so the team default applies."
+                        }
+                      },
+                      "required": [
+                        "userId",
+                        "setting"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Up to 100 changes, applied together or not at all."
+                  }
+                },
+                "required": [
+                  "updates"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "description": "Team member user ID, or `me` for the authenticated user."
+                        },
+                        "setting": {
+                          "anyOf": [
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "unlimited"
+                                      ],
+                                      "description": "The member may spend shared-pool credits without a cap."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "none"
+                                      ],
+                                      "description": "The member may spend only their monthly credits."
+                                    }
+                                  },
+                                  "required": [
+                                    "access"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "access": {
+                                      "type": "string",
+                                      "enum": [
+                                        "limited"
+                                      ],
+                                      "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                                    },
+                                    "limit": {
+                                      "type": "string",
+                                      "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                                      "description": "USD amount per billing cycle, with up to two decimals."
+                                    }
+                                  },
+                                  "required": [
+                                    "access",
+                                    "limit"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ],
+                              "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "The member’s own setting, or null to remove it so the team default applies."
+                        }
+                      },
+                      "required": [
+                        "userId",
+                        "setting"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Up to 100 changes, applied together or not at all."
+                  }
+                },
+                "required": [
+                  "updates"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "list"
+                      ]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "object": {
+                            "type": "string",
+                            "enum": [
+                              "pool_credit_limit_member"
+                            ]
+                          },
+                          "userId": {
+                            "type": "string",
+                            "description": "Team member user ID."
+                          },
+                          "setting": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "unlimited"
+                                    ],
+                                    "description": "The member may spend shared-pool credits without a cap."
+                                  }
+                                },
+                                "required": [
+                                  "access"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "none"
+                                    ],
+                                    "description": "The member may spend only their monthly credits."
+                                  }
+                                },
+                                "required": [
+                                  "access"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "access": {
+                                    "type": "string",
+                                    "enum": [
+                                      "limited"
+                                    ],
+                                    "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                                  },
+                                  "limit": {
+                                    "type": "string",
+                                    "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                                    "description": "USD amount per billing cycle, with up to two decimals."
+                                  }
+                                },
+                                "required": [
+                                  "access",
+                                  "limit"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ],
+                            "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                          },
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "default",
+                              "member"
+                            ],
+                            "description": "`default` when the team default applies, `member` when the member has their own setting."
+                          }
+                        },
+                        "required": [
+                          "object",
+                          "userId",
+                          "setting",
+                          "source"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pool-credit-limits/members/{userId}": {
+      "get": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Get Pool Credit Limit Member",
+        "description": "Returns the setting that applies to a team member and their shared-pool usage this billing cycle. Team owners and billing members can read anyone; other members can read only themselves.",
+        "operationId": "poolCreditLimits.members.get",
+        "x-v0-mcp-tool": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Team member user ID, or `me` for the authenticated user (for an API key, the user who created it)."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "pool_credit_limit_member"
+                      ]
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "Team member user ID."
+                    },
+                    "setting": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "access": {
+                              "type": "string",
+                              "enum": [
+                                "unlimited"
+                              ],
+                              "description": "The member may spend shared-pool credits without a cap."
+                            }
+                          },
+                          "required": [
+                            "access"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "access": {
+                              "type": "string",
+                              "enum": [
+                                "none"
+                              ],
+                              "description": "The member may spend only their monthly credits."
+                            }
+                          },
+                          "required": [
+                            "access"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "access": {
+                              "type": "string",
+                              "enum": [
+                                "limited"
+                              ],
+                              "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                            },
+                            "limit": {
+                              "type": "string",
+                              "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                              "description": "USD amount per billing cycle, with up to two decimals."
+                            }
+                          },
+                          "required": [
+                            "access",
+                            "limit"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ],
+                      "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "default",
+                        "member"
+                      ],
+                      "description": "`default` when the team default applies, `member` when the member has their own setting."
+                    },
+                    "usage": {
+                      "type": "object",
+                      "properties": {
+                        "used": {
+                          "type": "string",
+                          "description": "Shared-pool credits used since the billing cycle started, in USD."
+                        },
+                        "remaining": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Shared-pool credits the member may still use under their setting this billing cycle, in USD, or null when unlimited. The team pool’s balance may be lower."
+                        },
+                        "cycleStart": {
+                          "type": "string",
+                          "description": "Start of the current billing cycle."
+                        },
+                        "cycleEnd": {
+                          "type": "string",
+                          "description": "End of the current billing cycle."
+                        }
+                      },
+                      "required": [
+                        "used",
+                        "remaining",
+                        "cycleStart",
+                        "cycleEnd"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "userId",
+                    "setting",
+                    "source",
+                    "usage"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Set Pool Credit Limit Member",
+        "description": "Gives a team member their own setting, in place of the team default. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.members.set",
+        "x-v0-mcp-tool": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Team member user ID, or `me` for the authenticated user (for an API key, the user who created it)."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "setting": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "unlimited"
+                            ],
+                            "description": "The member may spend shared-pool credits without a cap."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "none"
+                            ],
+                            "description": "The member may spend only their monthly credits."
+                          }
+                        },
+                        "required": [
+                          "access"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "access": {
+                            "type": "string",
+                            "enum": [
+                              "limited"
+                            ],
+                            "description": "The member may spend up to `limit` of shared-pool credits per billing cycle."
+                          },
+                          "limit": {
+                            "type": "string",
+                            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+                            "description": "USD amount per billing cycle, with up to two decimals."
+                          }
+                        },
+                        "required": [
+                          "access",
+                          "limit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "How much of the shared credit pool a member may spend per billing cycle, after their monthly credits."
+                  }
+                },
+                "required": [
+                  "setting"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolCreditLimitMember"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response for status 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Pool Credit Limits"
+        ],
+        "summary": "Reset Pool Credit Limit Member",
+        "description": "Removes a team member’s own setting, so the team default applies. Team owners and billing members only.",
+        "operationId": "poolCreditLimits.members.reset",
+        "x-v0-mcp-tool": false,
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Team member user ID, or `me` for the authenticated user (for an API key, the user who created it)."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response for status 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolCreditLimitMember"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Response for status 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Response for status 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for status 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Response for status 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Response for status 429",
             "content": {
               "application/json": {
                 "schema": {
