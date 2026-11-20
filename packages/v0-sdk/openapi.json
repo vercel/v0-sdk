@@ -1375,6 +1375,7 @@
                                 "code",
                                 "document",
                                 "spreadsheet",
+                                "presentation",
                                 "file"
                               ],
                               "description": "How the artifact is rendered in v0."
@@ -2707,6 +2708,7 @@
                                       "code",
                                       "document",
                                       "spreadsheet",
+                                      "presentation",
                                       "file"
                                     ],
                                     "description": "How the artifact is rendered in v0."
@@ -4071,6 +4073,7 @@
                                     "code",
                                     "document",
                                     "spreadsheet",
+                                    "presentation",
                                     "file"
                                   ],
                                   "description": "How the artifact is rendered in v0."
@@ -20848,6 +20851,7 @@
                                                 "code",
                                                 "document",
                                                 "spreadsheet",
+                                                "presentation",
                                                 "file"
                                               ],
                                               "description": "How the artifact is rendered in v0."
@@ -22691,6 +22695,7 @@
                                                 "code",
                                                 "document",
                                                 "spreadsheet",
+                                                "presentation",
                                                 "file"
                                               ],
                                               "description": "How the artifact is rendered in v0."
