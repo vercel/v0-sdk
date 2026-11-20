@@ -748,7 +748,7 @@ export type Message = {
             /**
              * How the artifact is rendered in v0.
              */
-            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'presentation' | 'file';
             /**
              * Size of the artifact in bytes.
              */
@@ -1380,7 +1380,7 @@ export type MessageListResponse = {
                 /**
                  * How the artifact is rendered in v0.
                  */
-                kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'presentation' | 'file';
                 /**
                  * Size of the artifact in bytes.
                  */
@@ -2026,7 +2026,7 @@ export type MessageStreamEvent = {
             /**
              * How the artifact is rendered in v0.
              */
-            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+            kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'presentation' | 'file';
             /**
              * Size of the artifact in bytes.
              */
@@ -6586,7 +6586,7 @@ export type ChatsUpdateFilesResponses = {
                     /**
                      * How the artifact is rendered in v0.
                      */
-                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'presentation' | 'file';
                     /**
                      * Size of the artifact in bytes.
                      */
@@ -7435,7 +7435,7 @@ export type ChatsRestoreMessageResponses = {
                     /**
                      * How the artifact is rendered in v0.
                      */
-                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'file';
+                    kind: 'html' | 'markdown' | 'json' | 'csv' | 'text' | 'image' | 'audio' | 'video' | 'pdf' | 'model' | 'code' | 'document' | 'spreadsheet' | 'presentation' | 'file';
                     /**
                      * Size of the artifact in bytes.
                      */
