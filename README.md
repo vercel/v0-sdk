@@ -87,7 +87,7 @@ See the [Design Mode integration guide](./packages/v0-sdk/README.md#design-mode)
 
 ## Development
 
-This repo uses Bun workspaces.
+This repo uses Bun workspaces and Turborepo.
 
 ```bash
 bun install
@@ -96,6 +96,7 @@ bun run build
 bun run typecheck
 bun run lint
 bun run fmt:check
+bun run ci # Every check CI runs, the Turborepo tasks tagged `ci`
 ```
 
 The generated SDK is built from [`packages/v0-sdk/openapi.json`](./packages/v0-sdk/openapi.json) with [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/get-started).

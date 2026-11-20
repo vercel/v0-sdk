@@ -1,0 +1,64 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "generate": {
+      "dependsOn": ["^generate"],
+      "outputs": ["src/generated/**"],
+      "tags": ["ci"]
+    },
+    "build": {
+      "dependsOn": ["^build", "generate"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "v0#build": {
+      "dependsOn": ["^build", "generate"],
+      "outputs": ["dist/**"],
+      "tags": ["ci"]
+    },
+    "@v0-sdk/ai-tools#build": {
+      "dependsOn": ["^build", "generate"],
+      "outputs": ["dist/**"],
+      "tags": ["ci"]
+    },
+    "@v0-sdk/react#build": {
+      "dependsOn": ["^build", "generate"],
+      "outputs": ["dist/**"],
+      "tags": ["ci"]
+    },
+    "create-v0-sdk-app#build": {
+      "dependsOn": ["^build", "generate"],
+      "outputs": ["dist/**"],
+      "tags": ["ci"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build", "generate"],
+      "tags": ["ci"]
+    },
+    "test": {
+      "dependsOn": ["^build", "generate"],
+      "tags": ["ci"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "V0_API_KEY",
+        "V0_CLONE_ORIGIN",
+        "V0_PREVIEW_PROXY_URL",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_RELATED_PROJECTS"
+      ]
+    },
+    "//#lint": {
+      "tags": ["ci"]
+    },
+    "//#fmt:check": {
+      "tags": ["ci"]
+    },
+    "//#check:versions": {
+      "inputs": ["$TURBO_ROOT$/packages/*/package.json", "$TURBO_ROOT$/scripts/check-versions.sh"],
+      "tags": ["ci"]
+    }
+  }
+}
