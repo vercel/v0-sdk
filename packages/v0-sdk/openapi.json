@@ -18860,7 +18860,7 @@
                           },
                           "explanation": {
                             "type": "string",
-                            "description": "Why it is a risk, or which code handles it when dismissed."
+                            "description": "Why it is a risk, or which code handles it when dismissed, as Markdown."
                           },
                           "fix": {
                             "anyOf": [
@@ -18871,7 +18871,7 @@
                                 "type": "null"
                               }
                             ],
-                            "description": "The suggested fix for a confirmed finding."
+                            "description": "The suggested fix for a confirmed finding, as Markdown: one sentence, followed by a `diff` code block when the fix changes code."
                           }
                         },
                         "required": [

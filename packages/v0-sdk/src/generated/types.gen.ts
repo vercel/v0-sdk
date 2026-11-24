@@ -5679,11 +5679,11 @@ export type SecurityChecksGetResponses = {
              */
             status: 'confirmed' | 'dismissed';
             /**
-             * Why it is a risk, or which code handles it when dismissed.
+             * Why it is a risk, or which code handles it when dismissed, as Markdown.
              */
             explanation: string;
             /**
-             * The suggested fix for a confirmed finding.
+             * The suggested fix for a confirmed finding, as Markdown: one sentence, followed by a `diff` code block when the fix changes code.
              */
             fix: string | null;
         }>;
