@@ -3,23 +3,28 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples/*",
+    "examples/basic",
+    "examples/react-chat",
     "examples/v0-clone/apps/*"
   ],
   "type": "module",
   "scripts": {
-    "generate": "bun --filter '*' generate",
-    "build": "bun --filter './packages/*' build",
-    "typecheck": "bun --filter '*' typecheck",
-    "test": "bun --filter '*' test",
+    "build": "turbo run build --filter='./packages/*'",
+    "generate": "turbo run generate",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "ci": "turbo run lint fmt:check check:versions generate build typecheck test --filter=tag:ci",
+    "dev:v0-clone": "bun --env-file=examples/v0-clone/.env.local run turbo run dev --filter='./examples/v0-clone/apps/*'",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "check:versions": "sh scripts/check-versions.sh"
   },
   "devDependencies": {
     "oxfmt": "^0.55.0",
-    "oxlint": "^1.70.0"
+    "oxlint": "^1.70.0",
+    "turbo": "^2.11.7"
   },
   "packageManager": "bun@1.4.4"
 }
